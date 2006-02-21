@@ -9,10 +9,9 @@ TARGET    = main
 
 # Includes:
 INCLUDES += introduction.tex
-INCLUDES += gettingstarted.tex
 
 # Examples:
-INCLUDES += examples/example.tex
+#INCLUDES += examples/example.tex
 
 
 # Compile once

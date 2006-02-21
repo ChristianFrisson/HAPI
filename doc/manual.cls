@@ -39,13 +39,13 @@
     pdfsubject={},%
     pdfkeywords={}}}
 
-\definecolor{sensegraphicscolor}{rgb}{.7,.2,.2}
+\definecolor{sensegraphicscolor}{rgb}{.2,.2,.8}
 
 \renewcommand{\maketitle}{%
   \thispagestyle{empty}
   \setlength{\unitlength}{1mm}
   \begin{picture}(150,150)(0,0)
-    \put(0,75){\textcolor{sensegraphicscolor}{\Huge\bf\scshape H3D API Manual}}
+    \put(0,75){\textcolor{sensegraphicscolor}{\Huge\bf\scshape HAPI Manual}}
     \put(0,70){\textcolor{sensegraphicscolor}{\rule{185mm}{3mm}}}
   \end{picture}\newpage}
 
