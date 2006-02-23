@@ -1,0 +1,105 @@
+
+\chapter {System Design}
+
+
+\section{Overall Design}
+
+HAPI has been designed to be a fully modular haptic rendering engine,
+allowing users to easily substitute or modify any component of the
+haptics rendering process. HAPI is primarily targetted at 3DOF and
+6DOF point based haptics rendering systems.
+
+
+
+\subsection{Device Abstraction Layer}
+The Device Abstraction Layer (DAL) provides a device independent
+interface for various haptics devices. The DAL covers the following
+areas:
+
+\begin{itemize}
+\item Device Initialisation
+\item Get Position / Orientation 
+\item Set Force / Torque
+\item Error management
+\item Device safety (max force, temperature, etc)
+\end{itemize}
+
+A DAL node is required for each haptics device to be supported by HAPI.
+
+
+\subsection{Thread Layer}
+The Thread Layer (TL) will provide simple real-time scheduling
+mechanisms for devices in the DAL. TL should allow for 1000Hz
+scheduling as a minimum, with options for higher or lower real-time
+rates.
+
+TL will also provide for thread synchronisation mechanisms between the
+real-time thread(s) and other threads.  Asyncrhonous callbacks will be
+necessary to prevent extended locking of the real-time threads.
+
+
+\subsection{Proxy Layer}
+The Proxy Layer (PL) is a flexible abstraction of proxy concepts. The
+base proxy class contains only the following members:
+
+\begin{itemize}
+\item {\it position}
+\item {\it orientation}
+\end{itemize}
+
+The design of HAPI is such that the other higher layers should be able
+to handle a point proxy, a spherical proxy and a proxy of arbitrary
+geometry or design that inherit from this base class.
+
+The default proxy, SphericalProxy, is a finite sized sphere that also
+contains a {\it radius} member.
+
+The {\it orientation} member can be used to affect surface friction
+and is useful with 6DOF devices.
+
+The PL also defines how a proxy should be connected to a haptics
+device. The proxy/device model of PL supports all combinations of
+connections; one to one, one to many, many to one and many to
+many. Just as one device can be connected to several proxies, one
+proxy can be connected to several devices. The default connection is a
+simple spring model, but this can be replaced by a custom model. The
+only requirement is that the connection must convert a proxy position
+and device position into a force to be rendered on that device.
+
+
+\subsection{Collision Detection Layer}
+The Collision Detection Layer (CDL) is called in the scene-graph loop
+to determine possible collision with a particular geometry.
+
+Will contain default classes for basic geometry primitives and
+triangle meshes.
+
+The CDL class is given a proxy node and a movement vector. If the CDL
+class detects a potential collision then it returns a simplified
+version of the geometry in the region of the proxy.
+
+
+\subsection{Realtime Collision Layer}
+
+The Relatime Collision Layer (RCL) runs, as its name indicates, in the
+real-time loop. The RCL performs collision detection between proxy and
+the simplified geometry. Collisions generate surfaces to be rendered
+by the SRL.
+
+The RCL works with simplified geometries, or implicit surfaces, and
+will require one node for each geometry type and proxy
+type. E.g. RCL for triangle mesh with spherical proxy.
+
+
+\subsection{Surface Rendering Layer}
+The Surface Rendering Layer (SRL) will update the position of the
+proxy based on previous proxy position and current finger
+position. SRL works in surface texture coordinate space.
+
+
+
+
+
+ 
+
+
