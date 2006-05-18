@@ -51,8 +51,8 @@
 #include <sstream>
 #include <string>
 #include <iostream>
-#include "H3DApi.h"
-#include "TimeStamp.h"
+#include <HAPI.h>
+#include <TimeStamp.h>
 
 using namespace std;
 
@@ -163,7 +163,7 @@ namespace H3D {
 
   typedef basic_dostream<char>    ConsoleStream;
 
-  extern H3DAPI_API ConsoleStream Console;
+  extern HAPI_API ConsoleStream Console;
 
 }
 #endif
