@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;..\..\..\src"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -33,7 +33,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
 				OutputFile="$(OutDir)/HAPI.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;"
@@ -72,7 +72,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;..\..\..\src"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
@@ -84,6 +84,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
 				OutputFile="$(OutDir)/HAPI.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;"
@@ -127,6 +128,9 @@
 				RelativePath="..\..\..\src\CollisionObjects.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\Console.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\Exception.cpp">
 			</File>
 			<File
@@ -164,6 +168,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Types\Rotation.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\Threads.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\TimeStamp.cpp">
