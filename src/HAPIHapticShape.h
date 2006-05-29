@@ -33,16 +33,18 @@
 #include <HAPISurfaceObject.h>
 #include <RefCountedClass.h>
 #include <CollisionObjects.h>
+#include <vector>
 
 namespace H3D {
+
 
   /// Base class for haptic shapes, i.e. geometrical objects that are rendered
   /// by letting their surfaces constrain the proxy. A HAPIHapticShape has a Surface
   /// object associated to it that defines the properties of the surface, e.g.
   /// stiffness and friction properties.
   ///
-  class HAPI_API HAPIHapticShape: public HAPIHapticObject, 
-                                  public RefCountedClass {
+  class HAPI_API HAPIHapticShape: public HAPIHapticObject,
+                                  public Bounds::CollisionObject {
   public:
     /// Constructor.
    HAPIHapticShape( void *_userdata,
@@ -52,6 +54,10 @@ namespace H3D {
       surface( _surface ),
       userdata( _userdata ) {}
     
+    virtual Vec3d closestPoint( const Vec3d &p ) {
+      return Vec3d();
+    }
+
     virtual bool lineIntersect( const Vec3d &from, 
                                 const Vec3d &to,
                                 Bounds::IntersectionInfo &result ) { 

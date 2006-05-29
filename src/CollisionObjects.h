@@ -39,6 +39,8 @@
 #include <AutoRef.h>
 
 namespace H3D {
+
+
   namespace Bounds {
 
     /// \brief The IntersectionInfo struct contains information about an 
@@ -61,12 +63,38 @@ namespace H3D {
       /// triangle index. -1 if no id exists.
       int id;
     };
-    
 
+  class HAPI_API PlaneConstraint {
+  public:
+    PlaneConstraint( const Vec3d &p, const Vec3d &n ):
+      point( p ), normal( n ) {}
+    
+    inline bool lineIntersect( const Vec3d &from, 
+                               const Vec3d &to,
+                               Bounds::IntersectionInfo &result ) {
+      Vec3d from_to = to - from;
+      if( normal * from_to > 0 ) return false;
+      H3DDouble denom = normal * from_to;
+      if( denom * denom < Constants::d_epsilon ) return false;
+      H3DDouble u = ( normal * ( point - from ) ) / denom; 
+      if( u <= 1 + Constants::d_epsilon && u > 0 - Constants::d_epsilon ) {
+        result.point = from + u * from_to;
+        result.normal = normal;
+        return true;
+      }
+      return false;
+    }
+    Vec3d point, normal;
+  };
+    
     /// \brief The CollisionObject class is the base class for objects that 
     /// can be used  in collision detection.
     class HAPI_API CollisionObject : public RefCountedClass {
     public:
+      virtual void getConstraints( const Vec3d &point,
+                                   H3DDouble radius,
+                                   std::vector< PlaneConstraint > &constraints ) {}
+
       /// Returns the closest point on the object to the given point p.
       virtual Vec3d closestPoint( const Vec3d &p ) = 0;
 
@@ -140,6 +168,10 @@ namespace H3D {
       Triangle( const Vec3f& a_, const Vec3f& b_, const Vec3f& c_) : 
         a(a_),b(b_),c(c_) {}
 
+      virtual void getConstraints( const Vec3d &point,
+                                   H3DDouble radius,
+                                   std::vector< PlaneConstraint > &constraints );
+      
       /// Returns the closest point on the object to the given point p.
       virtual Vec3d closestPoint( const Vec3d &p );
 
@@ -333,7 +365,13 @@ namespace H3D {
 
       /// Returns true if the tree is a leaf, i.e. has no sub-tress and hence just
       /// contains triangles. false otherwise.
-      inline isLeaf() { return left.get() == NULL && right.get() == NULL; }
+      inline bool isLeaf() { 
+        return left.get() == NULL && right.get() == NULL; 
+      }
+
+      virtual void getConstraints( const Vec3d &point,
+                                   H3DDouble radius,
+                                   std::vector< PlaneConstraint > &constraints );
 
       /// Render the outlines of the object for debugging purposes.
       virtual void render();
@@ -425,6 +463,7 @@ namespace H3D {
     };
 
 }
+  using Bounds::PlaneConstraint;
 }
 
 #endif

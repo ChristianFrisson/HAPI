@@ -60,6 +60,10 @@ namespace H3D {
       return intersect;
     }
 
+    virtual void getConstraints( const Vec3d &point,
+                                 H3DDouble radius,
+                                 std::vector< PlaneConstraint > &constraints );
+
     /// The Surface object describing the properties of the surface of the 
     /// HapticShape.
     Bounds::BinaryBoundTree *tree;

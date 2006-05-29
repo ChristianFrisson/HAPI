@@ -410,8 +410,108 @@ void BinaryBoundTree::render( int depth) {
 }
 
 Vec3d Triangle::closestPoint( const Vec3d &p ) {
-  assert( false );
-  return Vec3d();
+ 
+  Vec3d ca = a-c;
+  Vec3d cb = b-c;
+  Vec3d ab = b-a;
+  Vec3d ap = p-a ;
+
+  Vec3d normal = ca % cb;
+  if( H3DAbs( normal * normal ) > Constants::d_epsilon ) {
+    normal.normalizeSafe();
+    
+    Vec3d pp = p - (-ap).dotProduct( -normal ) * normal;
+    
+    // determine dominant axis
+    int axis;
+    if (H3DAbs( normal.x ) > H3DAbs( normal.y )) {
+      if (H3DAbs( normal.x ) > H3DAbs( normal.z )) axis = 0; 
+      else axis = 2;
+    } else {
+      if (H3DAbs( normal.y ) > H3DAbs( normal.z )) axis = 1; 
+      else axis = 2;
+    }
+    
+    int u_axis = (axis + 1 ) % 3;
+    int v_axis = (axis + 2 ) % 3;
+    
+    Vec3d cp = pp - c;
+    
+    H3DDouble denom = (ca[u_axis] * cb[v_axis] - ca[v_axis] * cb[u_axis]);
+    
+    H3DDouble du = 
+      (cp[u_axis] * cb[v_axis] - cp[v_axis] * cb[u_axis]) / denom;
+    
+    if( du >= 0 && du <= 1 ) {
+      H3DDouble dv = 
+        (ca[u_axis] * cp[v_axis] - ca[v_axis] * cp[u_axis]) / denom;
+      if( dv >= 0 && dv <= 1 ) {
+        H3DDouble dw = 1 - du - dv;
+        if( dw >= 0 && dw <= 1 ) {
+          return pp;
+        }
+      }
+    }
+  }
+
+  // point is on edge.
+
+  Vec3d bp = p-b ;
+  Vec3d cp = p-c ;
+
+  H3DDouble ca_length2 = ca.lengthSqr();
+  H3DDouble cb_length2 = cb.lengthSqr();
+  H3DDouble ab_length2 = ab.lengthSqr();
+
+  H3DDouble ca_t = (cp * ca) / ca_length2;
+  H3DDouble cb_t = (cp * cb) / cb_length2;
+  H3DDouble ab_t = (ap * ab) / ab_length2;
+
+  if( ca_t < 0 && cb_t < 0 )
+    return c;
+
+  if( cb_t > 1 && ab_t > 1 )
+    return b;
+
+  if( ca_t > 1 && ab_t < 0 )
+    return a;
+  
+  bool discard_ca = ca_t < 0 || ca_t > 1;
+  bool discard_cb = cb_t < 0 || cb_t > 1;;
+  bool discard_ab = ab_t < 0 || ab_t > 1;;
+
+  Vec3d ca_p = c + ca * ca_t;
+  Vec3d cb_p = c + cb * cb_t;
+  Vec3d ab_p = a + ab * ab_t;
+  
+  H3DDouble dist_cap = (ca_p - p).lengthSqr();  
+  H3DDouble dist_cbp = (cb_p - p).lengthSqr();  
+  H3DDouble dist_abp = (ab_p - p).lengthSqr();  
+
+  Vec3d closest;
+  H3DDouble dist;
+
+  if( !discard_ca ) {
+    closest = ca_p;
+    dist = dist_cap;
+  } else if( !discard_cb ) {
+    closest = cb_p;
+    dist = dist_cbp;
+  } else {
+    closest = ab_p;
+    dist = dist_abp;
+  }
+
+  if( !discard_cb && dist_cbp < dist ) {
+    closest = cb_p;
+    dist = dist_cbp;
+  } 
+
+  if( !discard_ab && dist_abp < dist ) {
+    closest = ab_p;
+  }
+
+  return closest;
 }
 
 bool Triangle::lineIntersect( const Vec3d &from, 
@@ -754,4 +854,32 @@ void OrientedBoxBound::render( ) {
   glEnd();
   glEnable( GL_LIGHTING );
   glPopMatrix();
+}
+
+void Triangle::getConstraints( const Vec3d &point,
+                               H3DDouble radius,
+                               std::vector< PlaneConstraint > &constraints ) {
+  Vec3d closest_point = closestPoint( point );
+  //cerr << closest_point << endl;
+  Vec3d normal = point - closest_point;
+  normal.normalizeSafe();
+  //cerr << closest_point << endl;
+  constraints.push_back( PlaneConstraint( closest_point + normal * 0.01, normal ) );
+}
+
+
+void BinaryBoundTree::getConstraints( const Vec3d &point,
+                                      H3DDouble radius,
+                                      std::vector< PlaneConstraint > &constraints ) {
+  if ( isLeaf() )	{
+    for( unsigned int i = 0; i < triangles.size(); i++ ) {
+      Triangle &t = triangles[i];
+      t.getConstraints( point, radius, constraints );
+		}
+	}	else 	{
+		//if ( bound->boundIntersect( from, to ) )	{
+    if (left.get()) left->getConstraints( point, radius, constraints );
+    if (right.get()) right->getConstraints( point, radius, constraints );
+    
+  }
 }
