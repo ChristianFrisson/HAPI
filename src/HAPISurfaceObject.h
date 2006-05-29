@@ -30,12 +30,45 @@
 #define __HAPISURFACEOBJECT_H__
 
 #include <HAPI.h>
+#include <H3DTypes.h>
 
 namespace H3D {
 
   class HAPI_API HAPISurfaceObject {
   public:
+    struct HAPI_API SurfaceInput {
+      Vec3d contact_point_global;
+      Vec3d contact_normal_global;
+      Vec3d probe_position_local;
+      Vec3d probe_position_global;
+      Vec3d tex_coord;
+      Vec3d x_axis;
+      Vec3d y_axis;
+      Vec3d z_axis;
+      // HAPIHapticsDevice *hd;
+
+      Vec3d inline pointToGlobal( const Vec3d &p ) { return Vec3d(); }
+      Vec3d inline pointToLocal( const Vec3d &p ) { return Vec3d(); }
+      Vec3d inline vectorToGlobal( const Vec3d &p ) { return Vec3d(); }
+      Vec3d inline vectorToLocal( const Vec3d &p ) { return Vec3d(); }
+
+    }; 
+
+    struct HAPI_API SurfaceOutput {
+      Vec3d force;
+      Vec3d torque;
+      Vec2d proxy_movement;
+      Matrix4f force_position_jacobian;
+      Matrix4f force_velocity_jacobian;
+    }; 
+
     virtual ~HAPISurfaceObject();
+
+    virtual void onContact( const SurfaceInput &input, SurfaceOutput &output ) {
+      
+    }
+    
+    
   };
 }
 

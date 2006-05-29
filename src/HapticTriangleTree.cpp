@@ -31,3 +31,19 @@
 
 using namespace H3D;
 
+
+void HapticTriangleTree::getConstraints( const Vec3d &point,
+                                         H3DDouble radius,
+                                         std::vector< PlaneConstraint > &constraints ) {
+  if( tree ) {
+    Vec3d p = transform.inverse() * point;
+    unsigned int size = constraints.size();
+    tree->getConstraints( p, radius, constraints);
+    for( unsigned int i = size; i < constraints.size(); i ++ ) {
+      PlaneConstraint &pc = constraints[i];
+      pc.point = transform * pc.point;
+      pc.normal = transform.getRotationPart() * pc.normal;
+    }
+  }
+  //result.push_back( Bounds::PlaneConstraint( (radius+0.0025) * v, v ) );
+}

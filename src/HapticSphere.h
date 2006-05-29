@@ -89,12 +89,22 @@ namespace H3D {
     /// hlRender is overriden to set up which sides of the sphere is touchable. 
     virtual void hlRender( HLHapticsDevice *hd );
 #endif
+    virtual bool lineIntersect( const Vec3d &from, 
+                                const Vec3d &to,
+                                Bounds::IntersectionInfo &result ); 
+
+    virtual void getConstraints( const Vec3d &point,
+                                 H3DDouble radius,
+                                 std::vector< PlaneConstraint > &constraints );
+
     /// The radius of the sphere in metres. 
     H3DFloat radius;
 
     /// If false, both the inside and outside of the sphere is rendered.
     /// If true, only the outside is rendered.
     bool solid;
+
+  
   };
 }
 
