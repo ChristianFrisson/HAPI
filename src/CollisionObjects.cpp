@@ -33,6 +33,35 @@
 using namespace H3D;
 using namespace Bounds;
 
+bool PlaneConstraint::lineIntersect( const Vec3d &from, 
+                                     const Vec3d &to,
+                                     Bounds::IntersectionInfo &result ) {
+      Vec3d from_to = to - from;
+      if( normal * from_to > Constants::f_epsilon ) { 
+        /*if( result.normal.z == 0.5 ) {
+          cerr << "a" << endl;
+          cerr << normal * from_to << endl;
+          }*/
+        return false;
+      }
+      H3DDouble denom = normal * from_to;
+      if( denom * denom < Constants::d_epsilon ) {
+        /*        if( result.normal.z == 0.5 )
+                  cerr << "b" << endl; */
+        return false;
+      }
+      H3DDouble u = ( normal * ( point - from ) ) / denom; 
+      /*      if( result.normal.z == 0.5 )
+              cerr << u << endl;*/
+      if( u <= 1 + Constants::f_epsilon && u >= 0 - Constants::f_epsilon ) {
+        result.point = from + u * from_to;
+        result.normal = normal;
+        return true;
+      }
+      return false;
+    }
+
+
 void AABoxBound::render() {
   glDisable( GL_LIGHTING );
   if( collided )
@@ -864,7 +893,23 @@ void Triangle::getConstraints( const Vec3d &point,
   Vec3d normal = point - closest_point;
   normal.normalizeSafe();
   //cerr << closest_point << endl;
-  constraints.push_back( PlaneConstraint( closest_point + normal * 0.01, normal ) );
+  constraints.push_back( PlaneConstraint( closest_point, normal ) );
+}
+
+void Triangle::getConstraints( const Vec3d &point,
+                               H3DDouble radius,
+                               const Matrix4d &matrix,
+                               std::vector< PlaneConstraint > &constraints ) {
+  Vec3f oa = a;
+  Vec3f ob = b;
+  Vec3f oc = c;
+  a = (Vec3f)(matrix * a);
+  b = (Vec3f)(matrix * b);
+  c = (Vec3f)(matrix * c);
+  getConstraints( point, radius, constraints );
+  a = oa;
+  b = ob;
+  c = oc;
 }
 
 
@@ -880,6 +925,23 @@ void BinaryBoundTree::getConstraints( const Vec3d &point,
 		//if ( bound->boundIntersect( from, to ) )	{
     if (left.get()) left->getConstraints( point, radius, constraints );
     if (right.get()) right->getConstraints( point, radius, constraints );
+    
+  }
+}
+
+void BinaryBoundTree::getConstraints( const Vec3d &point,
+                                      H3DDouble radius,
+                                      const Matrix4d &matrix,
+                                      std::vector< PlaneConstraint > &constraints ) {
+  if ( isLeaf() )	{
+    for( unsigned int i = 0; i < triangles.size(); i++ ) {
+      Triangle &t = triangles[i];
+      t.getConstraints( point, radius, matrix, constraints );
+		}
+	}	else 	{
+		//if ( bound->boundIntersect( from, to ) )	{
+    if (left.get()) left->getConstraints( point, radius, matrix, constraints );
+    if (right.get()) right->getConstraints( point, radius, matrix, constraints );
     
   }
 }

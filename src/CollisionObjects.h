@@ -40,6 +40,7 @@
 
 namespace H3D {
 
+  class HAPIHapticShape;    
 
   namespace Bounds {
 
@@ -66,25 +67,14 @@ namespace H3D {
 
   class HAPI_API PlaneConstraint {
   public:
-    PlaneConstraint( const Vec3d &p, const Vec3d &n ):
-      point( p ), normal( n ) {}
+    PlaneConstraint( const Vec3d &p, const Vec3d &n, HAPIHapticShape *shape = NULL ):
+      point( p ), normal( n ), haptic_shape( shape ) {}
     
     inline bool lineIntersect( const Vec3d &from, 
-                               const Vec3d &to,
-                               Bounds::IntersectionInfo &result ) {
-      Vec3d from_to = to - from;
-      if( normal * from_to > 0 ) return false;
-      H3DDouble denom = normal * from_to;
-      if( denom * denom < Constants::d_epsilon ) return false;
-      H3DDouble u = ( normal * ( point - from ) ) / denom; 
-      if( u <= 1 + Constants::d_epsilon && u > 0 - Constants::d_epsilon ) {
-        result.point = from + u * from_to;
-        result.normal = normal;
-        return true;
-      }
-      return false;
-    }
+                               const Vec3d &to,    
+                               Bounds::IntersectionInfo &result );
     Vec3d point, normal;
+    HAPIHapticShape * haptic_shape;
   };
     
     /// \brief The CollisionObject class is the base class for objects that 
@@ -93,6 +83,11 @@ namespace H3D {
     public:
       virtual void getConstraints( const Vec3d &point,
                                    H3DDouble radius,
+                                   std::vector< PlaneConstraint > &constraints ) {}
+
+      virtual void getConstraints( const Vec3d &point,
+                                   H3DDouble radius,
+                                   const Matrix4d &matrix,
                                    std::vector< PlaneConstraint > &constraints ) {}
 
       /// Returns the closest point on the object to the given point p.
@@ -170,6 +165,11 @@ namespace H3D {
 
       virtual void getConstraints( const Vec3d &point,
                                    H3DDouble radius,
+                                   std::vector< PlaneConstraint > &constraints );
+
+      virtual void getConstraints( const Vec3d &point,
+                                   H3DDouble radius,
+                                   const Matrix4d &matrix,
                                    std::vector< PlaneConstraint > &constraints );
       
       /// Returns the closest point on the object to the given point p.
@@ -371,6 +371,11 @@ namespace H3D {
 
       virtual void getConstraints( const Vec3d &point,
                                    H3DDouble radius,
+                                   std::vector< PlaneConstraint > &constraints );
+
+      virtual void getConstraints( const Vec3d &point,
+                                   H3DDouble radius,
+                                   const Matrix4d &matrix,
                                    std::vector< PlaneConstraint > &constraints );
 
       /// Render the outlines of the object for debugging purposes.
