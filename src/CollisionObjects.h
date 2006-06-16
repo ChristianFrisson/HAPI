@@ -124,6 +124,9 @@ namespace H3D {
                 lineIntersect( from, to, info ) );
                 
       }
+
+      virtual Vec3d boundClosestPoint( const Vec3d &p ) { return Vec3d(); }
+
     };
 
     /// \brief The BoundPrimitive class is the base class for simple bound 
@@ -239,6 +242,19 @@ namespace H3D {
       
       /// Returns the closest point on the object to the given point p.
       virtual Vec3d closestPoint( const Vec3d &p );
+
+      virtual Vec3d boundClosestPoint( const Vec3d &p ) {
+        Vec3d result;
+        // for each coordinate axis, if the point coordinate value
+        // is outside box, clamp it to the box, e;se keep it as it is
+        for( int i = 0; i < 3; i++ ) {
+          H3DDouble v = p[i];
+          if( v < min[i] ) v = min[i];
+          if( v > max[i] ) v = max[i];
+          result[i] = v;
+        }
+        return result;
+      }
 
       /// The max and min corners of the bounding box,
       Vec3f min;
@@ -377,6 +393,10 @@ namespace H3D {
                                    H3DDouble radius,
                                    const Matrix4d &matrix,
                                    std::vector< PlaneConstraint > &constraints );
+
+      virtual void getTrianglesWithinRadius( const Vec3d &p,
+                                             H3DDouble radius,
+                                             vector< Triangle > &triangles);
 
       /// Render the outlines of the object for debugging purposes.
       virtual void render();
