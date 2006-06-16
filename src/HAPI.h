@@ -37,6 +37,10 @@
 /// Haptics will then be disabled.
 //#define HAVE_OPENHAPTICS
 
+/// Undef if you do not have Haptik(www.haptiklibrary.org) installed. 
+/// HaptikDevice will not be usable.
+#define HAVE_HAPTIK_LIBRARY 
+
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL
 // are compiled with the HAPI_EXPORTS symbol defined on the command

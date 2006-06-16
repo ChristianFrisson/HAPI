@@ -406,7 +406,7 @@ void BinaryBoundTree::render() {
 }
 
 void Triangle::render() {
-  if( !collided ) return;
+//  if( !collided ) return;
   glDisable( GL_LIGHTING );
   if( collided )
     glColor3f( 1, 0, 0 );
@@ -440,11 +440,57 @@ void BinaryBoundTree::render( int depth) {
 
 Vec3d Triangle::closestPoint( const Vec3d &p ) {
  
-  Vec3d ca = a-c;
-  Vec3d cb = b-c;
-  Vec3d ab = b-a;
-  Vec3d ap = p-a ;
+  Vec3d ab = Vec3d(b)-Vec3d(a);
+  Vec3d ac = Vec3d(c)-Vec3d(a);
+  Vec3d ap = Vec3d(p)-Vec3d(a) ;
 
+  H3DDouble d1 = ab * ap;
+  H3DDouble d2 = ac * ap;
+  if( d1 <= Constants::d_epsilon && d2 <= Constants::d_epsilon )
+    return a;
+
+  Vec3d bp = p - b;
+  H3DDouble d3 = ab * bp;
+  H3DDouble d4 = ac * bp;
+
+  if( d3 >= -Constants::d_epsilon && d4 <= d3 )
+    return b;
+  
+  H3DDouble vc = d1*d4 - d3*d2;
+  if( vc <= Constants::d_epsilon && 
+      d1 >= -Constants::d_epsilon && 
+      d3 <= Constants::d_epsilon ) {
+    H3DDouble v = d1 / ( d1 - d3 );
+    return Vec3d(a) + v * ab;
+  }
+
+  Vec3d cp = p - c;
+  H3DDouble d5 = ab * cp;
+  H3DDouble d6 = ac * cp;
+  if( d6 >= -Constants::d_epsilon && d5 <= d6 )
+    return c;
+
+  H3DDouble vb = d5*d2 - d1*d6;
+  if( vb <= Constants::d_epsilon && 
+      d2 >= -Constants::d_epsilon &&
+      d6 <= Constants::d_epsilon ) {
+    H3DDouble w = d2 / ( d2 - d6 );
+    return Vec3d(a) + w * ac;
+  }
+  
+  H3DDouble va = d3*d6 - d5*d4;
+  if( va <= Constants::d_epsilon &&
+      (d4-d3) >= -Constants::d_epsilon &&
+      (d5-d6) >= -Constants::d_epsilon ) {
+    H3DDouble w = (d4-d3) /((d4 -d3) + (d5 - d6 ) );
+    return Vec3d(b) + w * (Vec3d(c)-Vec3d(b));
+  }
+
+  H3DDouble denom = 1 / ( va + vb + vc );
+  H3DDouble v = vb * denom;
+  H3DDouble w = vc * denom;
+  return Vec3d(a) + ab * v + ac * w;
+  /*
   Vec3d normal = ca % cb;
   if( H3DAbs( normal * normal ) > Constants::d_epsilon ) {
     normal.normalizeSafe();
@@ -540,7 +586,7 @@ Vec3d Triangle::closestPoint( const Vec3d &p ) {
     closest = ab_p;
   }
 
-  return closest;
+  return closest;*/
 }
 
 bool Triangle::lineIntersect( const Vec3d &from, 
@@ -943,5 +989,28 @@ void BinaryBoundTree::getConstraints( const Vec3d &point,
     if (left.get()) left->getConstraints( point, radius, matrix, constraints );
     if (right.get()) right->getConstraints( point, radius, matrix, constraints );
     
+  }
+}
+
+
+void BinaryBoundTree::getTrianglesWithinRadius( const Vec3d &p,
+                                                H3DDouble radius,
+                                                vector< Triangle > &result ) {
+  H3DDouble r2 = radius * radius;
+  if ( isLeaf() )	{
+    for( vector< Triangle >::iterator i = triangles.begin();
+         i != triangles.end(); i++ ) {
+      Vec3d cp = (*i).closestPoint( p );
+      if( (cp - p).lengthSqr() <= r2 )
+        result.push_back( *i );
+    }
+    //cerr << "!: " << triangles.size() << endl;
+           //result.insert( result.end(), triangles.begin(), triangles.end() );
+	}	else 	{
+    Vec3d cp = bound->boundClosestPoint( p );
+    if( (cp - p).lengthSqr() > r2 && !bound->insideBound(p) ) return;
+
+    if (left.get()) left->getTrianglesWithinRadius( p, radius, result );
+    if (right.get()) right->getTrianglesWithinRadius( p, radius, result );
   }
 }
