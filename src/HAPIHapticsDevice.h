@@ -32,6 +32,7 @@
 
 #include <HApi.h>
 #include <HAPIHapticShape.h>
+#include <RuspiniRenderer.h>
 #include <HapticForceEffect.h>
 #include <Threads.h>
 #include <AutoRefVector.h>
@@ -45,6 +46,9 @@ namespace H3D {
     typedef AutoRefVector< HAPIHapticShape > HapticShapeVector;
     typedef AutoRefVector< HapticForceEffect > HapticEffectVector;
 
+    HAPIHapticsDevice() {
+      setHapticsRenderer( new RuspiniRenderer );
+    }
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~HAPIHapticsDevice() {}
 
@@ -67,25 +71,64 @@ namespace H3D {
     /// \param objects The haptic shapes to render.
     ///
     inline void addShape( HAPIHapticShape *shape ) {
-      current_shapes.push_back( shape );
+      shape_lock.lock();
+      tmp_shapes.push_back( shape );
+      shape_lock.unlock();
     }
 
     inline void removeShape( HAPIHapticShape *shape ) {
-      current_shapes.erase( shape );
+      shape_lock.lock();
+      tmp_shapes.erase( shape );
+      shape_lock.unlock();
     }
 
     template< class InputIterator > 
     inline void addShapes( InputIterator begin, InputIterator end ) {
-      current_shapes.insert( current_shapes.end(), begin, end );
+      shape_lock.lock();
+      tmp_shapes.insert( tmp_shapes.end(), begin, end );
+      shape_lock.unlock();
     }
 
     inline void swapShapes( HapticShapeVector &shapes ) {
-      current_shapes.swap( shapes );
+      shape_lock.lock();
+      tmp_shapes.swap( shapes );
+      shape_lock.unlock();
     }
 
     virtual void clearShapes() {
-      current_shapes.clear();
+      shape_lock.lock();
+      tmp_shapes.clear();
+      shape_lock.unlock();
     }
+
+    inline void setPositionCalibration( const Matrix4d &m,
+                                        const Matrix4d &m_inv ) {
+      position_calibration = m;
+      position_calibration_inverse = m_inv;
+    }
+
+    inline void setPositionCalibration( const Matrix4d &m ) {
+      position_calibration = m;
+      position_calibration_inverse = m.inverse();
+    }
+
+    inline const Matrix4d &getPositionCalibration() { 
+      return position_calibration;
+    }
+
+    inline const Matrix4d &getPositionCalibrationInverse() { 
+      return position_calibration_inverse;
+    }
+
+
+    inline void setOrientationCalibration( const Rotation &r ) {
+      orientation_calibration = r;
+    }
+
+    inline const Rotation &setOrientationCalibration() {
+      return orientation_calibration;
+    }
+    
 
     /// Perform haptic rendering for the given HapticForceEffect instances. 
     /// HapticForceEffect objects that are to be be rendered haptically must
@@ -124,6 +167,16 @@ namespace H3D {
     /// Get the orientation of the haptics device. Only to be called in the 
     /// haptics loop.
     virtual Rotation getOrientation() = 0;
+
+    inline void setHapticsRenderer( HAPIHapticsRenderer *r ) {
+       haptics_renderer.reset( r );
+    }
+
+    inline HAPIHapticsRenderer *getHapticsRenderer() {
+       return haptics_renderer.get();
+    }
+
+
 
     /// Returns true if main button on haptics device pressed. Only to be called in the 
     /// haptics loop.
@@ -168,6 +221,11 @@ namespace H3D {
     // the shapes that are currently being rendered in the realtime loop.
     HapticShapeVector current_shapes;
 
+    MutexLock shape_lock;
+    HapticShapeVector tmp_shapes;
+
+    
+
     unsigned int nr_haptics_loops;
 
     /// The time at the beginning of the last rendering loop
@@ -176,6 +234,10 @@ namespace H3D {
     Vec3d proxy_position;
     Vec3d current_force;
     Vec3d current_torque;
+    Matrix4d position_calibration;
+    Matrix4d position_calibration_inverse;
+    Rotation orientation_calibration;
+    auto_ptr< HAPIHapticsRenderer > haptics_renderer;
 
   };
 }

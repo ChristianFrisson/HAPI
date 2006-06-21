@@ -51,6 +51,7 @@ namespace H3D {
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~HaptikDevice() {
       disableDevice();
+      releaseDevice();
     }
 
     /// Does all the initialization needed for the device before starting to

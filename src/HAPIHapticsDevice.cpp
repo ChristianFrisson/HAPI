@@ -33,6 +33,10 @@ using namespace H3D;
 
 
 void HAPIHapticsDevice::renderHapticsOneStep() {
+  shape_lock.lock();
+  current_shapes = tmp_shapes;
+  shape_lock.unlock();
+
   Rotation rot = getOrientation();
   Vec3d pos = getPosition();
   Vec3d vel = getVelocity();
@@ -41,9 +45,9 @@ void HAPIHapticsDevice::renderHapticsOneStep() {
   /// TODO: fix calibration
   // apply the calibration matrices to get the values to
   // in the H3D API coordinate space.
-  //pos = hd->positionCalibration->rt_pos_calibration * pos;
-  //vel = hd->positionCalibration->rt_pos_calibration * vel;
-  //  rot = hd->orientationCalibration->rt_orn_calibration * rot;
+  pos = position_calibration * pos;
+  vel = position_calibration.getScaleRotationPart() * vel;
+  rot = orientation_calibration * rot;
   TimeStamp now = TimeStamp();
   TimeStamp dt = now - last_loop_time;
   last_loop_time = now;
@@ -74,8 +78,11 @@ void HAPIHapticsDevice::renderHapticsOneStep() {
       output = output + (*i)->calculateForces( input );
   }
 
-  //output.force = 
-  //hd->positionCalibration->rt_inv_pos_rotation * output.force;
+  if( haptics_renderer.get() )
+    output = output + haptics_renderer->renderHapticsOneStep( input, current_shapes );
+
+  output.force = 
+    position_calibration_inverse.getRotationPart() * output.force;
 
     // add the resulting force and torque to the rendered force.
   sendForce( output.force );
