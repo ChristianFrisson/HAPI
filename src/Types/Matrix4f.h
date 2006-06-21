@@ -134,6 +134,11 @@ namespace H3D {
 												 m[2][0], m[2][1], m[2][2] );
 			}
 
+      /// Get the scaling part of the matrix for each axis.
+      inline Vec3f getScalePart() const {
+        return getScaleRotationPart().getScalePart();
+      }
+
 			/// Returns the rotation part of the Matrix4f.
 			Matrix3f getRotationPart() const;
 

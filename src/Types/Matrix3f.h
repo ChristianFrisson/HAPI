@@ -101,6 +101,9 @@ namespace H3D {
         return Vec3f( m[i][0], m[i][1], m[i][2] ); 
       }
 
+      /// Get the scaling part of the matrix for each axis.
+      Vec3f getScalePart() const;
+
       /// Get the euler angles( yaw, pitch, roll ) representation of 
       /// the rotation matrix. The Matrix3f must be a rotation matrix.
       Vec3f toEulerAngles();

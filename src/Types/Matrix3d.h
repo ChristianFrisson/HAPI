@@ -110,6 +110,9 @@ namespace H3D {
         return Vec3d( m[0][i], m[1][i], m[2][i] ); 
       }
 
+      /// Get the scaling part of the matrix for each axis.
+      Vec3d getScalePart() const;
+
     private:
       /// The matrix data.
       H3DDouble m[3][3];

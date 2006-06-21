@@ -31,6 +31,7 @@
 #include "Matrix3f.h"
 #include "Rotation.h"
 #include "Quaternion.h"
+#include "H3DTypeOperators.h"
 
 using namespace H3D;
 using namespace ArithmeticTypes;
@@ -164,4 +165,8 @@ ostream& H3D::ArithmeticTypes::operator<<( ostream &os, const Matrix3d &m ) {
   return os;
 }
 
-
+Vec3d Matrix3d::getScalePart() const {
+  return Vec3d( ( (*this) * Vec3d(1,0,0) ).length(),
+                ( (*this) * Vec3d(0,1,0) ).length(),
+                ( (*this) * Vec3d(0,0,1) ).length() );
+}
