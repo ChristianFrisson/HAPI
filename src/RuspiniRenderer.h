@@ -45,6 +45,9 @@ namespace H3D {
     renderHapticsOneStep( HapticForceEffect::EffectInput input,
                           const HapticShapeVector &shapes );
 
+    inline const Vec3d &getProxyPosition() {
+      return proxy_position;
+    }
   protected:
     H3DDouble proxy_radius;
     Vec3d proxy_position;

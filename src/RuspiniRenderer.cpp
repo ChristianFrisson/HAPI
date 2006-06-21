@@ -230,8 +230,8 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
   H3DDouble proxy_radius = 0.01;
   
   bool done = false;
-  
-  while( !done ) {
+  int counter = 0;
+  while( !done && counter < 25 ) {
     done = true;
     // make sure the proxy is above any constraints
     for( vector< Bounds::PlaneConstraint >::iterator i = constraints.begin();
@@ -243,6 +243,7 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
         done = false;
       }
     }
+    counter++;
       
   }
 
