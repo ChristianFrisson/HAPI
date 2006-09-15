@@ -47,7 +47,7 @@ namespace H3D {
                   bool _solid,
                   void *_userdata,
                   HAPISurfaceObject *_surface,
-                  const Matrix4f &_transform ):
+                  const Matrix4d &_transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       radius( _radius ),
       solid( _solid ) {}

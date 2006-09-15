@@ -41,14 +41,14 @@ namespace H3D {
   class HAPI_API HAPIHapticObject {
   public:
     /// Constructor
-    HAPIHapticObject( const H3D::ArithmeticTypes::Matrix4f & _transform ):
+    HAPIHapticObject( const H3D::ArithmeticTypes::Matrix4d & _transform ):
       transform( _transform ) {}
 
     /// Destructor. Virtual to make HapticObject a polymorphic type.
     virtual ~HAPIHapticObject() {}
 
     /// Matrix transforming from local space to global space.
-    Matrix4f transform;
+    Matrix4d transform;
   };
 }
 

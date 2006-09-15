@@ -44,14 +44,14 @@ namespace H3D {
     HapticTriangleTree( Bounds::BinaryBoundTree *triangle_tree,
                         void *_userdata,
                         HAPISurfaceObject *_surface,
-                        const H3D::ArithmeticTypes::Matrix4f & _transform ):
+                        const H3D::ArithmeticTypes::Matrix4d & _transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       tree( triangle_tree ) {}
     
     virtual bool lineIntersect( const Vec3d &from, 
                                 const Vec3d &to,
                                 Bounds::IntersectionInfo &result ) { 
-      Matrix4f inv = transform.inverse();
+      Matrix4d inv = transform.inverse();
       bool intersect = tree->lineIntersect( inv * from, inv * to, result );
       if( intersect ) {
         result.point = transform * result.point;

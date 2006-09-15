@@ -39,14 +39,14 @@ namespace H3D {
   class HAPI_API HapticSpring: public HapticForceEffect {
   public:
     /// Constructor
-    HapticSpring ( const H3D::ArithmeticTypes::Matrix4f & _transform,
+    HapticSpring ( const H3D::ArithmeticTypes::Matrix4d & _transform,
                    bool _interpolate ):
       HapticForceEffect( _transform, _interpolate ),
       position( Vec3f( 0, 0, 0 ) ),
       spring_constant( 0 ) { }
     
     /// Constructor
-    HapticSpring( const H3D::ArithmeticTypes::Matrix4f & _transform,
+    HapticSpring( const H3D::ArithmeticTypes::Matrix4d & _transform,
                   const Vec3f &_position,
                   H3DFloat _spring_constant,
                   bool _interpolate );

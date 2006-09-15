@@ -44,6 +44,8 @@ bool PlaneConstraint::lineIntersect( const Vec3d &from,
           }*/
         return false;
       }
+
+
       H3DDouble denom = normal * from_to;
       if( denom * denom < Constants::d_epsilon ) {
         /*        if( result.normal.z == 0.5 )
@@ -54,6 +56,10 @@ bool PlaneConstraint::lineIntersect( const Vec3d &from,
       /*      if( result.normal.z == 0.5 )
               cerr << u << endl;*/
       if( u <= 1 + Constants::f_epsilon && u >= 0 - Constants::f_epsilon ) {
+
+        if( u < 0 ) u = 0;
+        if( u > 1 ) u = 1;
+                //cerr << u << endl;
         result.point = from + u * from_to;
         result.normal = normal;
         return true;
@@ -65,39 +71,39 @@ bool PlaneConstraint::lineIntersect( const Vec3d &from,
 void AABoxBound::render() {
   glDisable( GL_LIGHTING );
   if( collided )
-    glColor3f( 1, 0, 0 );
+    glColor3d( 1, 0, 0 );
   else
-    glColor3f( 1, 1, 0 );
+    glColor3d( 1, 1, 0 );
   glBegin( GL_LINE_STRIP );
-  glVertex3f( min.x, min.y, min.z );
-  glVertex3f( min.x, max.y, min.z );
-  glVertex3f( max.x, max.y, min.z );
-  glVertex3f( max.x, min.y, min.z );
-  glVertex3f( min.x, min.y, min.z );
+  glVertex3d( min.x, min.y, min.z );
+  glVertex3d( min.x, max.y, min.z );
+  glVertex3d( max.x, max.y, min.z );
+  glVertex3d( max.x, min.y, min.z );
+  glVertex3d( min.x, min.y, min.z );
   glEnd();
   
   glBegin( GL_LINE_STRIP );
-  glVertex3f( min.x, min.y, max.z );
-  glVertex3f( min.x, max.y, max.z );
-  glVertex3f( max.x, max.y, max.z );
-  glVertex3f( max.x, min.y, max.z );
-  glVertex3f( min.x, min.y, max.z );
+  glVertex3d( min.x, min.y, max.z );
+  glVertex3d( min.x, max.y, max.z );
+  glVertex3d( max.x, max.y, max.z );
+  glVertex3d( max.x, min.y, max.z );
+  glVertex3d( min.x, min.y, max.z );
   glEnd();
   
   glBegin( GL_LINES );
-  glVertex3f( min.x, min.y, max.z );
-  glVertex3f( min.x, min.y, min.z );
-  glVertex3f( max.x, min.y, max.z );
-  glVertex3f( max.x, min.y, min.z );
-  glVertex3f( min.x, max.y, max.z );
-  glVertex3f( min.x, max.y, min.z );
-  glVertex3f( max.x, max.y, max.z );
-  glVertex3f( max.x, max.y, min.z );
+  glVertex3d( min.x, min.y, max.z );
+  glVertex3d( min.x, min.y, min.z );
+  glVertex3d( max.x, min.y, max.z );
+  glVertex3d( max.x, min.y, min.z );
+  glVertex3d( min.x, max.y, max.z );
+  glVertex3d( min.x, max.y, min.z );
+  glVertex3d( max.x, max.y, max.z );
+  glVertex3d( max.x, max.y, min.z );
   glEnd();
   glEnable( GL_LIGHTING );
 }
 
-void AABoxBound::fitAroundPoints( const vector< Vec3f > &points ) {
+void AABoxBound::fitAroundPoints( const vector< Vec3d > &points ) {
   if( points.size() == 0 ) return;
   min = points[0];
   max = points[0];
@@ -270,11 +276,11 @@ void SphereBound::render( ) {
   glDisable( GL_LIGHTING );
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
-  glTranslatef( center.x, center.y, center.z );
+  glTranslated( center.x, center.y, center.z );
   if( collided )
-    glColor3f( 1, 0, 0 );
+    glColor3d( 1, 0, 0 );
   else
-    glColor3f( 1, 1, 0 );
+    glColor3d( 1, 1, 0 );
   glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
   gluSphere( gl_quadric, radius, 10, 10 );
   glPopMatrix();
@@ -282,16 +288,16 @@ void SphereBound::render( ) {
   glEnable( GL_LIGHTING );
 }
 
-void SphereBound::fitAroundPoints( const vector< Vec3f > &points ) {
+void SphereBound::fitAroundPoints( const vector< Vec3d > &points ) {
 	AABoxBound box;
   box.fitAroundPoints( points );
-	Vec3f c = 0.5 * (box.min + box.max);
-	H3DFloat r = 0;
+	Vec3d c = 0.5 * (box.min + box.max);
+	H3DDouble r = 0;
 	
   //	find largest square distance
 	for(unsigned int i=0 ; i<points.size() ; i++) {
-    Vec3f from_center = points[i]-c;
-    H3DFloat d = from_center * from_center;
+    Vec3d from_center = points[i]-c;
+    H3DDouble d = from_center * from_center;
     if (d > r) r = d;
   }
 	
@@ -330,7 +336,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 			continue;
 		}
 
-		std::vector<Vec3f > points;
+		std::vector<Vec3d > points;
 		points.resize( stack_triangles.size() * 3 );
 		for (unsigned int i=0 ; i<stack_triangles.size() ; i++ ) {
       points[i*3]   = stack_triangles[i].a;
@@ -344,10 +350,10 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 		
     //	DIVIDE SUBSET AND RECURSE
     //	longest axis
-		Vec3f axis = stack_tree->bound->longestAxis();
+		Vec3d axis = stack_tree->bound->longestAxis();
 
     //	middle point of current set
-		Vec3f mid(0,0,0);
+		Vec3d mid(0,0,0);
 
     for(unsigned int i = 0 ; i < stack_triangles.size() ; i++) {
       mid = mid + stack_triangles[i].pointRepresentation();
@@ -360,7 +366,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 		std::vector<Triangle> right;
     
 		for( unsigned int i = 0 ; i<stack_triangles.size() ; i++ ) {
-      Vec3f mid_to_point = stack_triangles[i].pointRepresentation() - mid;
+      Vec3d mid_to_point = stack_triangles[i].pointRepresentation() - mid;
       if ( mid_to_point * axis < 0 )
 				left.push_back(stack_triangles[i]);
 			else
@@ -409,16 +415,16 @@ void Triangle::render() {
 //  if( !collided ) return;
   glDisable( GL_LIGHTING );
   if( collided )
-    glColor3f( 1, 0, 0 );
+    glColor3d( 1, 0, 0 );
   else {
-    glColor3f( 0, 0, 1 );
+    glColor3d( 0, 0, 1 );
   }
 
   glBegin( GL_LINE_STRIP );
-  glVertex3f( a.x, a.y, a.z );
-  glVertex3f( b.x, b.y, b.z );
-  glVertex3f( c.x, c.y, c.z );
-  glVertex3f( a.x, a.y, a.z );
+  glVertex3d( a.x, a.y, a.z );
+  glVertex3d( b.x, b.y, b.z );
+  glVertex3d( c.x, c.y, c.z );
+  glVertex3d( a.x, a.y, a.z );
   glEnd();
   glEnable( GL_LIGHTING );
 }
@@ -446,20 +452,25 @@ Vec3d Triangle::closestPoint( const Vec3d &p ) {
 
   H3DDouble d1 = ab * ap;
   H3DDouble d2 = ac * ap;
-  if( d1 <= Constants::d_epsilon && d2 <= Constants::d_epsilon )
+  if( d1 <= Constants::d_epsilon && d2 <= Constants::d_epsilon ) {
+    //cerr << "1" << endl;
     return a;
+  }
 
   Vec3d bp = p - b;
   H3DDouble d3 = ab * bp;
   H3DDouble d4 = ac * bp;
 
-  if( d3 >= -Constants::d_epsilon && d4 <= d3 )
+  if( d3 >= -Constants::d_epsilon && d4 <= d3 ) {
+    //    cerr << "2" << endl;
     return b;
+  }
   
   H3DDouble vc = d1*d4 - d3*d2;
   if( vc <= Constants::d_epsilon && 
       d1 >= -Constants::d_epsilon && 
       d3 <= Constants::d_epsilon ) {
+    // cerr << "3" << endl;
     H3DDouble v = d1 / ( d1 - d3 );
     return Vec3d(a) + v * ab;
   }
@@ -467,25 +478,30 @@ Vec3d Triangle::closestPoint( const Vec3d &p ) {
   Vec3d cp = p - c;
   H3DDouble d5 = ab * cp;
   H3DDouble d6 = ac * cp;
-  if( d6 >= -Constants::d_epsilon && d5 <= d6 )
+  if( d6 >= -Constants::d_epsilon && d5 <= d6 ) {
+    //cerr << "4" << endl;
     return c;
+  }
 
   H3DDouble vb = d5*d2 - d1*d6;
   if( vb <= Constants::d_epsilon && 
       d2 >= -Constants::d_epsilon &&
       d6 <= Constants::d_epsilon ) {
+    //cerr << "5" << endl;
     H3DDouble w = d2 / ( d2 - d6 );
-    return Vec3d(a) + w * ac;
+    return a + w * ac;
   }
   
   H3DDouble va = d3*d6 - d5*d4;
   if( va <= Constants::d_epsilon &&
       (d4-d3) >= -Constants::d_epsilon &&
       (d5-d6) >= -Constants::d_epsilon ) {
+    //cerr << "6" << endl;
     H3DDouble w = (d4-d3) /((d4 -d3) + (d5 - d6 ) );
     return Vec3d(b) + w * (Vec3d(c)-Vec3d(b));
   }
 
+  //cerr << "7" << endl;
   H3DDouble denom = 1 / ( va + vb + vc );
   H3DDouble v = vb * denom;
   H3DDouble w = vc * denom;
@@ -692,22 +708,22 @@ bool BinaryBoundTree::lineIntersect( const Vec3d &from,
 	}
 }
 
-Matrix3f covarianceMatrix( const vector< Vec3f >&points ) {
+Matrix3d covarianceMatrix( const vector< Vec3d >&points ) {
   // TODO: if no points?
 
   unsigned int nr_points = points.size();
 
-	Vec3f c = points[0];
+	Vec3d c = points[0];
 	for(unsigned int i=1 ; i < nr_points; i++) 
     c+= points[i];
 
 	c /= points.size();
 	
-  H3DFloat e00 = 0, e01 = 0, e02 = 0,
+  H3DDouble e00 = 0, e01 = 0, e02 = 0,
                     e11 = 0, e12 = 0,
                              e22 = 0;
 	for (unsigned int i = 0; i < nr_points; i++)	{
-		Vec3f p = points[i] - c;
+		Vec3d p = points[i] - c;
 		
 		e00 += p.x * p.x;
 		e11 += p.y * p.y;
@@ -717,7 +733,7 @@ Matrix3f covarianceMatrix( const vector< Vec3f >&points ) {
 		e12 += p.y * p.z;
 	}
 	
-	Matrix3f cov;
+	Matrix3d cov;
 	cov[0][0] = e00 / nr_points;
 	cov[1][1] = e11 / nr_points;
 	cov[2][2] = e22 / nr_points;
@@ -728,15 +744,15 @@ Matrix3f covarianceMatrix( const vector< Vec3f >&points ) {
 	return cov;
 }
 
-void symmetricSchurDecomposition( const Matrix3f &A, 
+void symmetricSchurDecomposition( const Matrix3d &A, 
                                   unsigned int p, 
                                   unsigned int q, 
-                                  H3DFloat &c, 
-                                  H3DFloat &s) {
+                                  H3DDouble &c, 
+                                  H3DDouble &s) {
   // TODO: epsilon??
 	if (H3DAbs(A[p][q]) > 0.0001f) {
-		H3DFloat r = (A[q][q] - A[p][p]) / (2.0f * A[p][q]);
-		H3DFloat t = (r >= 0.0f ? 
+		H3DDouble r = (A[q][q] - A[p][p]) / (2.0f * A[p][q]);
+		H3DDouble t = (r >= 0.0f ? 
                   1.0f / (r + H3DSqrt(1.0f + r*r)) : 
                   -1.0f / (-r + H3DSqrt(1.0f + r*r)) );
 		
@@ -748,18 +764,18 @@ void symmetricSchurDecomposition( const Matrix3f &A,
 	}
 }
 
-void eigenValuesAndEigenVectorsJacobi(const Matrix3f& A, 
-                                      Vec3f& eigValues, 
-                                      Matrix3f& eigVectors, 
+void eigenValuesAndEigenVectorsJacobi(const Matrix3d& A, 
+                                      Vec3d& eigValues, 
+                                      Matrix3d& eigVectors, 
                                       const unsigned int maxIterations = 50 ) {
   //!NOTE: on return rows (not cols) of eigVectors contains eigenvalues
 
-	Matrix3f a = A;
-	Matrix3f v;
+	Matrix3d a = A;
+	Matrix3d v;
 	
 	unsigned int i, j, n, p, q;
-	H3DFloat prevoff, c, s;
-	Matrix3f J, b, t;
+	H3DDouble prevoff, c, s;
+	Matrix3d J, b, t;
 
   // Repeat for some maximum number of iterations
 	for (n = 0; n < maxIterations; n++)	{
@@ -784,7 +800,7 @@ void eigenValuesAndEigenVectorsJacobi(const Matrix3f& A,
 		a = (J.transpose() * a) * J;
     
     //	eval norm
-		H3DFloat off = 0.0f;
+		H3DDouble off = 0.0;
 		for (i = 0; i < 3; i++) for (j = 0; j < 3; j++)	{
 			if (i == j) continue;
 			off += a[i][j] * a[i][j];
@@ -795,15 +811,15 @@ void eigenValuesAndEigenVectorsJacobi(const Matrix3f& A,
 		prevoff = off;
 	}
 	
-	eigValues = Vec3f(a[0][0],a[1][1],a[2][2]);
+	eigValues = Vec3d(a[0][0],a[1][1],a[2][2]);
 	eigVectors = v.transpose();
 }
 
-void OrientedBoxBound::fitAroundPoints( const vector< Vec3f > &points ) {
-  Matrix3f covariance = covarianceMatrix( points );
+void OrientedBoxBound::fitAroundPoints( const vector< Vec3d > &points ) {
+  Matrix3d covariance = covarianceMatrix( points );
 	
-	Vec3f eig_values;
-	Matrix3f eig_vectors;
+	Vec3d eig_values;
+	Matrix3d eig_vectors;
 
 	eigenValuesAndEigenVectorsJacobi(covariance, eig_values, eig_vectors);
 	
@@ -825,19 +841,19 @@ void OrientedBoxBound::fitAroundPoints( const vector< Vec3f > &points ) {
     }
   }
 
-	Vec3f principal( eig_vectors[length_order[0]][0],
+	Vec3d principal( eig_vectors[length_order[0]][0],
                    eig_vectors[length_order[0]][1],
                    eig_vectors[length_order[0]][2] );
 
-	Vec3f secondary( eig_vectors[length_order[1]][0],
+	Vec3d secondary( eig_vectors[length_order[1]][0],
                    eig_vectors[length_order[1]][1],
                    eig_vectors[length_order[1]][2] );
 
   principal.normalize();
   secondary.normalize();
-  Vec3f v = principal % secondary;
+  Vec3d v = principal % secondary;
 
-	Matrix3f frame( principal.x, principal.y, principal.z,
+	Matrix3d frame( principal.x, principal.y, principal.z,
                   secondary.x, secondary.y, secondary.z, 
                   v.x, v.y, v.z );
 		
@@ -845,7 +861,7 @@ void OrientedBoxBound::fitAroundPoints( const vector< Vec3f > &points ) {
   min = frame * points[0];
 	max = min;
 	for(unsigned int i=1 ; i<points.size() ; i++)	{
-		Vec3f pt = frame * points[i];
+		Vec3d pt = frame * points[i];
 		
 		if (pt.x < min.x) min.x = pt.x;
 		if (pt.y < min.y) min.y = pt.y;
@@ -888,44 +904,44 @@ bool OrientedBoxBound::insideBound( const Vec3d &p ) {
 }
 
 void OrientedBoxBound::render( ) {
-  Vec3f center = -orientation * ((max + min)/2);
+  Vec3d center = -orientation * ((max + min)/2);
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glDisable( GL_LIGHTING );
   if( collided )
-    glColor3f( 1, 0, 0 );
+    glColor3d( 1, 0, 0 );
   else
-    glColor3f( 1, 1, 0 );
-  glTranslatef( center.x, center.y, center.z );
-  glRotatef( -orientation.angle *180 / H3D::Constants::pi, 
+    glColor3d( 1, 1, 0 );
+  glTranslated( center.x, center.y, center.z );
+  glRotated( -orientation.angle *180 / H3D::Constants::pi, 
              orientation.axis.x, orientation.axis.y, orientation.axis.z );
-  Vec3f minf( - halfsize );
-  Vec3f maxf( halfsize );
+  Vec3d minf( - halfsize );
+  Vec3d maxf( halfsize );
   glBegin( GL_LINE_STRIP );
-  glVertex3f( minf.x, minf.y, minf.z );
-  glVertex3f( minf.x, maxf.y, minf.z );
-  glVertex3f( maxf.x, maxf.y, minf.z );
-  glVertex3f( maxf.x, minf.y, minf.z );
-  glVertex3f( minf.x, minf.y, minf.z );
+  glVertex3d( minf.x, minf.y, minf.z );
+  glVertex3d( minf.x, maxf.y, minf.z );
+  glVertex3d( maxf.x, maxf.y, minf.z );
+  glVertex3d( maxf.x, minf.y, minf.z );
+  glVertex3d( minf.x, minf.y, minf.z );
   glEnd();
   
   glBegin( GL_LINE_STRIP );
-  glVertex3f( minf.x, minf.y, maxf.z );
-  glVertex3f( minf.x, maxf.y, maxf.z );
-  glVertex3f( maxf.x, maxf.y, maxf.z );
-  glVertex3f( maxf.x, minf.y, maxf.z );
-  glVertex3f( minf.x, minf.y, maxf.z );
+  glVertex3d( minf.x, minf.y, maxf.z );
+  glVertex3d( minf.x, maxf.y, maxf.z );
+  glVertex3d( maxf.x, maxf.y, maxf.z );
+  glVertex3d( maxf.x, minf.y, maxf.z );
+  glVertex3d( minf.x, minf.y, maxf.z );
   glEnd();
   
   glBegin( GL_LINES );
-  glVertex3f( minf.x, minf.y, maxf.z );
-  glVertex3f( minf.x, minf.y, minf.z );
-  glVertex3f( maxf.x, minf.y, maxf.z );
-  glVertex3f( maxf.x, minf.y, minf.z );
-  glVertex3f( minf.x, maxf.y, maxf.z );
-  glVertex3f( minf.x, maxf.y, minf.z );
-  glVertex3f( maxf.x, maxf.y, maxf.z );
-  glVertex3f( maxf.x, maxf.y, minf.z );
+  glVertex3d( minf.x, minf.y, maxf.z );
+  glVertex3d( minf.x, minf.y, minf.z );
+  glVertex3d( maxf.x, minf.y, maxf.z );
+  glVertex3d( maxf.x, minf.y, minf.z );
+  glVertex3d( minf.x, maxf.y, maxf.z );
+  glVertex3d( minf.x, maxf.y, minf.z );
+  glVertex3d( maxf.x, maxf.y, maxf.z );
+  glVertex3d( maxf.x, maxf.y, minf.z );
   glEnd();
   glEnable( GL_LIGHTING );
   glPopMatrix();
@@ -937,6 +953,8 @@ void Triangle::getConstraints( const Vec3d &point,
   Vec3d closest_point = closestPoint( point );
   //cerr << closest_point << endl;
   Vec3d normal = point - closest_point;
+  H3DDouble n = normal.length();
+  //cerr << normal.length() << endl;
   normal.normalizeSafe();
   //cerr << closest_point << endl;
   constraints.push_back( PlaneConstraint( closest_point, normal ) );
@@ -946,12 +964,12 @@ void Triangle::getConstraints( const Vec3d &point,
                                H3DDouble radius,
                                const Matrix4d &matrix,
                                std::vector< PlaneConstraint > &constraints ) {
-  Vec3f oa = a;
-  Vec3f ob = b;
-  Vec3f oc = c;
-  a = (Vec3f)(matrix * a);
-  b = (Vec3f)(matrix * b);
-  c = (Vec3f)(matrix * c);
+  Vec3d oa = a;
+  Vec3d ob = b;
+  Vec3d oc = c;
+  a = (matrix * a);
+  b = (matrix * b);
+  c = (matrix * c);
   getConstraints( point, radius, constraints );
   a = oa;
   b = ob;

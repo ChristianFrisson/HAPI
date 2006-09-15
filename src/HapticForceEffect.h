@@ -107,7 +107,7 @@ namespace H3D {
     };
     
     /// Constructor.
-    HapticForceEffect( const H3D::ArithmeticTypes::Matrix4f & _transform,
+    HapticForceEffect( const H3D::ArithmeticTypes::Matrix4d & _transform,
                        bool _interpolate ):
       HAPIHapticObject( _transform ),
       interpolate( _interpolate ){}

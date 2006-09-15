@@ -42,11 +42,11 @@ namespace H3D {
                     H3DFloat _radius,
                     void *_userdata,
                     HAPISurfaceObject *_surface,
-                    const Matrix4f &_transform ):
+                    const Matrix4d &_transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       height( _height ),
       radius( _radius ) {}
-#ifdef HAVE_OPENHAPTICS
+#ifdef HAVE_OPhENHAPTICS
     /// Intersect the line segment from start_point to end_point with
     /// the object.  
     /// This is used by the callback functions of the HLCustomObject.

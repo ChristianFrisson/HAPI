@@ -35,7 +35,7 @@
 
 /// Undef if you do not have OpenHaptics(www.sensable.com) installed. 
 /// Haptics will then be disabled.
-//#define HAVE_OPENHAPTICS
+#define HAVE_OPENHAPTICS
 
 /// Undef if you do not have Haptik(www.haptiklibrary.org) installed. 
 /// HaptikDevice will not be usable.
