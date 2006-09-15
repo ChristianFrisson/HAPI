@@ -48,6 +48,14 @@ namespace H3D {
     inline const Vec3d &getProxyPosition() {
       return proxy_position;
     }
+
+    inline H3DDouble getProxyRadius() {
+      return proxy_radius;
+    }
+
+    inline void setProxyRadius( H3DDouble r ) {
+      proxy_radius = r;
+    }
   protected:
     H3DDouble proxy_radius;
     Vec3d proxy_position;

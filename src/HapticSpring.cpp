@@ -31,7 +31,7 @@
 
 using namespace H3D;
 
-HapticSpring::HapticSpring( const H3D::ArithmeticTypes::Matrix4f & _transform,
+HapticSpring::HapticSpring( const H3D::ArithmeticTypes::Matrix4d & _transform,
                             const Vec3f &_position,
                             H3DFloat _spring_constant,
                             bool _interpolate ):

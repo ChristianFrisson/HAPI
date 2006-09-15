@@ -31,7 +31,7 @@
 
 using namespace H3D;
 
-HapticForceField::HapticForceField( const H3D::ArithmeticTypes::Matrix4f & _transform,
+HapticForceField::HapticForceField( const H3D::ArithmeticTypes::Matrix4d & _transform,
                                     const Vec3f &_force,
                                     bool _interpolate ):
   HapticForceEffect( _transform, _interpolate ),

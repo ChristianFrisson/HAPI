@@ -227,8 +227,12 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
     (*i)->getConstraints( proxy_pos, 0.1, constraints );
   }
   
-  H3DDouble proxy_radius = 0.01;
+  for( vector< Bounds::PlaneConstraint >::iterator i = constraints.begin();
+       i != constraints.end(); i++ ) {
+    (*i).point += (*i).normal * proxy_radius;
+  }
   
+
   bool done = false;
   int counter = 0;
   while( !done && counter < 25 ) {

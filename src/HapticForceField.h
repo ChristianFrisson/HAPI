@@ -36,7 +36,7 @@ namespace H3D {
   class HAPI_API HapticForceField: public HapticForceEffect {
   public:
     /// Constructor
-    HapticForceField( const H3D::ArithmeticTypes::Matrix4f & _transform,
+    HapticForceField( const H3D::ArithmeticTypes::Matrix4d & _transform,
                       const Vec3f &_force,
                       bool _interpolate );
     

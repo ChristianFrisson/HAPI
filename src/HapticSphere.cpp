@@ -29,7 +29,7 @@
 #include "HapticSphere.h"
 
 using namespace H3D;
-#ifdef HAVE_OPENHAPTICS
+#ifdef HjAVE_OPENHAPTICS
 /// Intersect the line segment from start_point to end_point with
 /// the object.  
 ///
@@ -137,7 +137,7 @@ void HapticSphere::hlRender( HLHapticsDevice *hd) {
 #if HL_VERSION_MAJOR_NUMBER >= 2
      hlPushAttrib( HL_MATERIAL_BIT | HL_TOUCH_BIT );
 #endif
-     const Matrix4f &m = transform;
+     const Matrix4d &m = transform;
      HLfloat vt[] = { m[0][0], m[1][0], m[2][0], 0,
                       m[0][1], m[1][1], m[2][1], 0,
                       m[0][2], m[1][2], m[2][2], 0,

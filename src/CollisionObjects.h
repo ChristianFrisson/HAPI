@@ -137,11 +137,11 @@ namespace H3D {
       BoundPrimitive() : collided( false ) {}
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3f >&points ) = 0;
+      virtual void fitAroundPoints( const vector< Vec3d >&points ) = 0;
 
-      /// Returns a Vec3f specifying the longest axis of the bound primitive.
+      /// Returns a Vec3d specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
-      virtual Vec3f longestAxis() const = 0;
+      virtual Vec3d longestAxis() const = 0;
       
       bool collided;
     };
@@ -152,7 +152,7 @@ namespace H3D {
     public:
       /// Returns a point representing the primitive. Is used e.g. when
       /// building BinaryTreeBound.
-      virtual Vec3f pointRepresentation() const { return Vec3f(); }
+      virtual Vec3d pointRepresentation() const { return Vec3d(); }
       bool collided;
     };
     
@@ -163,7 +163,7 @@ namespace H3D {
       Triangle() {}
 
       /// Constructor.
-      Triangle( const Vec3f& a_, const Vec3f& b_, const Vec3f& c_) : 
+      Triangle( const Vec3d& a_, const Vec3d& b_, const Vec3d& c_) : 
         a(a_),b(b_),c(c_) {}
 
       virtual void getConstraints( const Vec3d &point,
@@ -189,7 +189,7 @@ namespace H3D {
                                   IntersectionInfo &result );
       /// Returns a point representing the primitive. In this case it is the 
       /// center of the triangle.
-      inline virtual Vec3f pointRepresentation() const {
+      inline virtual Vec3d pointRepresentation() const {
         return ( a + b + c ) / 3;
       }
 
@@ -197,7 +197,7 @@ namespace H3D {
       virtual void render();
       
       /// The corners of the triangle.
-      Vec3f a,b,c;
+      Vec3d a,b,c;
     };
     
     /// \brief The AABoxBound class represents an axis-aligned bounding box.
@@ -210,18 +210,18 @@ namespace H3D {
       /// false otherwise.
       virtual bool insideBound( const Vec3d &p );
 
-      /// Returns a Vec3f specifying the longest axis of the bound primitive.
+      /// Returns a Vec3d specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
-      inline virtual Vec3f longestAxis() const {
-        Vec3f dims = max - min;
+      inline virtual Vec3d longestAxis() const {
+        Vec3d dims = max - min;
         
-        if (dims.x >= dims.y && dims.x >= dims.z) return Vec3f(1,0,0);
-        if (dims.y >= dims.x && dims.y >= dims.z) return Vec3f(0,1,0);
-        else													return Vec3f(0,0,1);
+        if (dims.x >= dims.y && dims.x >= dims.z) return Vec3d(1,0,0);
+        if (dims.y >= dims.x && dims.y >= dims.z) return Vec3d(0,1,0);
+        else													return Vec3d(0,0,1);
       }
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3f > &points );
+      virtual void fitAroundPoints( const vector< Vec3d > &points );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -257,8 +257,8 @@ namespace H3D {
       }
 
       /// The max and min corners of the bounding box,
-      Vec3f min;
-      Vec3f max;
+      Vec3d min;
+      Vec3d max;
      
     };
 
@@ -272,14 +272,14 @@ namespace H3D {
       /// false otherwise.
       virtual bool insideBound( const Vec3d &p );
 
-      /// Returns a Vec3f specifying the longest axis of the bound primitive.
+      /// Returns a Vec3d specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
-      inline virtual Vec3f longestAxis() const {
-        return Vec3f(0,0,1);
+      inline virtual Vec3d longestAxis() const {
+        return Vec3d(0,0,1);
       }
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3f > &points );
+      virtual void fitAroundPoints( const vector< Vec3d > &points );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -315,7 +315,7 @@ namespace H3D {
       SphereBound(): gl_quadric( NULL ) {}
 
       /// Constructor.
-      SphereBound(const Vec3f& c,float r): 
+      SphereBound(const Vec3d& c, H3DDouble r): 
         center (c), radius(r), 
         gl_quadric( NULL ) {}
       
@@ -344,17 +344,17 @@ namespace H3D {
       virtual bool boundIntersect( const Vec3d &from, const Vec3d &to );
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3f > &points );
+      virtual void fitAroundPoints( const vector< Vec3d > &points );
 
-      /// Returns a Vec3f specifying the longest axis of the bound primitive.
+      /// Returns a Vec3d specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
-      virtual Vec3f longestAxis() const { return Vec3f( 1, 0, 0 ); }
+      virtual Vec3d longestAxis() const { return Vec3d( 1, 0, 0 ); }
 
       /// The center of the sphere
-      Vec3f center;
+      Vec3d center;
 
       /// The radius of the sphere.
-      H3DFloat radius;
+      H3DDouble radius;
 
       GLUquadricObj* gl_quadric;
     };

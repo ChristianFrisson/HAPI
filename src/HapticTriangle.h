@@ -44,7 +44,7 @@ namespace H3D {
     HapticTriangle( const Bounds::Triangle &_triangle,
                     void *_userdata,
                     HAPISurfaceObject *_surface,
-                    const H3D::ArithmeticTypes::Matrix4f & _transform ):
+                    const H3D::ArithmeticTypes::Matrix4d & _transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       triangle( _triangle ) {}
     

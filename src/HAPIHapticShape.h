@@ -49,7 +49,7 @@ namespace H3D {
     /// Constructor.
    HAPIHapticShape( void *_userdata,
                      HAPISurfaceObject *_surface,
-                     const H3D::ArithmeticTypes::Matrix4f & _transform ):
+                     const H3D::ArithmeticTypes::Matrix4d & _transform ):
       HAPIHapticObject( _transform ),
       surface( _surface ),
       userdata( _userdata ) {}
