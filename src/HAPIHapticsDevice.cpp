@@ -43,17 +43,13 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
 
   hd->updateDeviceValues();
   
-  Rotation rot = hd->getOrientation();
-  Vec3d pos = hd->getPosition();
-  Vec3d vel = hd->getVelocity();
-  H3DInt32 b = hd->getButtonStatus();
+  DeviceValues dv = hd->getDeviceValues();
   
-  /// TODO: fix calibration
-  // apply the calibration matrices to get the values to
-  // in the H3D API coordinate space.
-  pos = hd->position_calibration * pos;
-  vel = hd->position_calibration.getScaleRotationPart() * vel;
-  rot = hd->orientation_calibration * rot;
+  Rotation rot = dv.orientation;
+  Vec3d pos = dv.position;
+  Vec3d vel = dv.velocity;
+  H3DInt32 b = dv.button_status;
+  
   TimeStamp now = TimeStamp();
   TimeStamp dt = now - hd->last_loop_time;
   hd->last_loop_time = now;
@@ -87,10 +83,7 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
   if( hd->haptics_renderer.get() )
     output = output + hd->haptics_renderer->renderHapticsOneStep( input, hd->current_shapes );
 
-  output.force = 
-    hd->position_calibration_inverse.getRotationPart() * output.force;
-
-    // add the resulting force and torque to the rendered force.
+  // add the resulting force and torque to the rendered force.
   hd->sendForce( output.force );
   hd->sendTorque( output.torque );
 
