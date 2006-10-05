@@ -31,6 +31,12 @@
 
 using namespace H3D;
 
+// epsilon value for deciding if a point is the same
+const H3DDouble length_sqr_point_epsilon = 1e-12; //12
+
+// epsilon value for deciding if a normal is the same.
+const H3DDouble length_sqr_normal_epsilon = 1e-12;
+
 inline void onOnePlaneContact( const PlaneConstraint &c, 
                                HAPISurfaceObject::ContactInfo &contact ) {
   //cerr << "1";
@@ -45,6 +51,7 @@ inline void onOnePlaneContact( const PlaneConstraint &c,
 inline void onTwoPlaneContact( const PlaneConstraint &p0,
                                const PlaneConstraint &p1,
                                HAPISurfaceObject::ContactInfo &contact ) {
+
   Vec3d contact_global = contact.globalContactPoint();
 
   Vec3d line_dir = p0.normal % p1.normal;
@@ -69,7 +76,9 @@ inline void onTwoPlaneContact( const PlaneConstraint &p0,
     if( sum < 0 )
       weight = local_pos.x / sum;
     
-    contact.y_axis = p0.normal * weight + p1.normal * (1 - weight );
+    // TODO: ll
+    //contact.y_axis = p0.normal * weight + p1.normal * (1 - weight );
+    contact.y_axis = p0.normal * local_pos.x + p1.normal * local_pos.y;
     contact.y_axis.normalizeSafe();
     
     Vec3d a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
@@ -108,8 +117,8 @@ inline void onTwoPlaneContact( const PlaneConstraint &p0,
     Vec3d proxy_movement = 
       H3DMin( p0_proxy_movement, p1_proxy_movement ) * 
       line_dir_local;
-    if( p0_proxy_movement > 0.1 )
-      cerr << p0_proxy_movement << endl;
+    //if( p0_proxy_movement > 0.1 )
+    //cerr << p0_proxy_movement << endl;
     contact.proxy_movement_local = Vec2d( proxy_movement.x, proxy_movement.z ); 
       
     
@@ -176,6 +185,11 @@ inline void onThreeOrMorePlaneContact(  vector< PlaneConstraint > &constraints,
       p1.normal * weight.y + 
       p2.normal * weight.z;
     
+    // TODO: this is new
+    Vec3d bb = contact.globalContactPoint() - contact.globalProbePosition();
+    bb.normalizeSafe();
+    contact.y_axis= bb;
+
     Vec3d a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
     contact.x_axis = contact.y_axis % a;
     contact.z_axis = contact.x_axis % contact.y_axis;
@@ -224,7 +238,7 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
        i++ ) {
-    (*i)->getConstraints( proxy_pos, 0.1, constraints );
+    (*i)->getConstraints( proxy_pos, 100, constraints );
   }
   
   for( vector< Bounds::PlaneConstraint >::iterator i = constraints.begin();
@@ -271,13 +285,13 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
         H3DDouble distance = v * v; 
       
         if( (closest_intersection.point - intersection.point).lengthSqr()
-            < 1e-12 ) {
+            < length_sqr_point_epsilon ) {
           bool unique_constraint = true;
           for( vector< Bounds::PlaneConstraint >::iterator j = 
                  closest_constraints.begin();
                j != closest_constraints.end(); j++ ) {
             if( ( intersection.normal - (*j).normal ).lengthSqr() < 
-                1e-12 ) {
+                length_sqr_normal_epsilon ) {
               unique_constraint = false;
             }
           }
@@ -287,7 +301,7 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
           if( unique_constraint ) {
             closest_constraints.push_back( *i );
           } else {
-            intersected_constraints.push_back( *i );
+            //intersected_constraints.push_back( *i );
           }
         } else if( distance < d2 ) {
           closest_intersection = intersection;
