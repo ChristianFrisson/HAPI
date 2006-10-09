@@ -54,6 +54,28 @@ namespace H3D {
       Vec2f( H3DFloat _x,
              H3DFloat _y ) : x(_x), y(_y) {}
 						
+      /// Return the components by their index, 
+      /// x has index 0
+      /// y has index 1
+      inline H3DFloat &operator[]( int i ) { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
+
+      /// Return the components by their index, 
+      /// x has index 0
+      /// y has index 1
+      inline const H3DFloat &operator[]( int i ) const { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
+
       /// Conversion from Vec2d.
       explicit Vec2f( const Vec2d &v );
 

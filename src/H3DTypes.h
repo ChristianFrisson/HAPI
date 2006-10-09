@@ -58,7 +58,7 @@ namespace H3D {
       g( (H3DFloat) 0 ),
       b( (H3DFloat) 0 ) {}
 
-    /// Contructor.
+    /// Constructor.
     inline RGB( H3DFloat _r,
                 H3DFloat _g,
                 H3DFloat _b ): r(_r), g(_g), b(_b) {}

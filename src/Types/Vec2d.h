@@ -63,6 +63,28 @@ namespace H3D {
         return x*v.x + y*v.y;
       }
       
+      /// Return the components by their index, 
+      /// x has index 0
+      /// y has index 1
+      inline H3DDouble &operator[]( int i ) { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
+
+      /// Return the components by their index, 
+      /// x has index 0
+      /// y has index 1
+      inline const H3DDouble &operator[]( int i ) const { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
+
       /// Normalize the vector to be of length 1.
       /// \throws NormalizeError If the vector is of zero length.
       ///

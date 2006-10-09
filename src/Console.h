@@ -53,9 +53,7 @@
 #include <iostream>
 #include <HAPI.h>
 #include <TimeStamp.h>
-
-using namespace std;
-
+#include <iomanip>
 
 namespace H3D {
 
@@ -92,28 +90,48 @@ namespace H3D {
   
   protected:
 
-    int sync()  {
+    int sync() {
       TimeStamp time;
-
+      
       if ( outputlevel >= 0  &&  level >= outputlevel ) {
-        if ( showlevel || showtime )
+        if ( showlevel || showtime ){
           *outputstream << "[";
-        if ( showlevel )
-          *outputstream << level;
-        if ( showlevel && showtime )
-          *outputstream << " - ";
-        if ( showtime ) {
-          outputstream->width(10);
-          *outputstream << (time-starttime);
         }
-        if ( showlevel || showtime )
+        
+        if ( showlevel ) {
+          if ( level <= 2 ) {
+            *outputstream << "I"; }
+          else {
+            *outputstream << "W"; }
+        }
+        
+        if ( showlevel && showtime ) {
+          *outputstream << " ";
+        }
+        
+        if ( showtime ) {
+          *outputstream << std::setfill('0')
+                        << std::setprecision(2)
+                        << std::setiosflags(std::ios::fixed)
+                        << std::setw(6)
+                        << (time-starttime)
+            // Reset to default
+                        << std::setfill(' ')
+                        << std::setprecision(6)
+                        << std::resetiosflags(std::ios::floatfield);
+        }
+        if ( showlevel || showtime ) {
           *outputstream << "] ";
-        *outputstream << std::basic_stringbuf<CharT, TraitsT>::str().c_str(); 
+        }
+        
+        *outputstream << std::basic_stringbuf<CharT, TraitsT>::str();
       }
-      str(std::basic_string<CharT>());    // Clear the string buffer
+      
+      str( std::basic_string<CharT>() ); // Clear the string buffer
+      
       return 0;
     }
-  
+    
   };
 
 

@@ -106,11 +106,11 @@ namespace H3D {
         /// Returns the transpose of the matrix.
       inline Matrix4d transpose() const {
         return Matrix4d( m[0][0], m[1][0], m[2][0], m[3][0],
-												 m[0][1], m[1][1], m[2][1], m[3][1],
-												 m[0][2], m[1][2], m[2][2], m[3][2],
+                         m[0][1], m[1][1], m[2][1], m[3][1],
+                         m[0][2], m[1][2], m[2][2], m[3][2],
                          m[0][3], m[1][3], m[2][3], m[3][3] );
       };
-
+      
       /// Get a row of the matrix.				
       inline H3DDouble* operator[]( const int i ) { return m[i]; }
 				
@@ -125,6 +125,16 @@ namespace H3D {
       /// Get a column of the matrix.
       inline Vec4d getColumn( int i ) const { 
         return Vec4d( m[0][i], m[1][i], m[2][i], m[3][i] ); 
+      }
+
+      /// Get an element in the matrix.
+      inline H3DDouble getElement( int i, int j ) const { 
+        return m[i][j];
+      }
+
+      /// Set an element in the matrix.
+      inline void setElement( int i, int j, H3DDouble v ) { 
+        m[i][j] = v;
       }
 
 			/// Returns the scale and rotation part of the Matrix4d.

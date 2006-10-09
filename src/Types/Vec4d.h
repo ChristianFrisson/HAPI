@@ -34,6 +34,7 @@
 #include "H3DBasicTypes.h"
 #include "H3DTemplateOperators.h"
 #include "Vec4f.h"
+#include "Exception.h"
 
 namespace H3D {
   namespace ArithmeticTypes {
@@ -52,6 +53,36 @@ namespace H3D {
       
       /// Conversion from Vec4d.
       Vec4d( const Vec4f &v ): x( v.x ), y( v.y ), z( v.z ), w( v.w ) {}
+
+      /// Return the components by their index, 
+      /// x has index 0
+      /// y has index 1
+      /// z has index 2
+      /// w has index 3
+      inline H3DDouble &operator[]( int i ) { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        if( i == 2 ) return z;
+        if( i == 3 ) return w;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
+
+      /// Return the components by their index, 
+      /// x has index 0
+      /// y has index 1
+      /// z has index 2
+      /// w has index 3
+      inline const H3DDouble &operator[]( int i ) const { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        if( i == 2 ) return z;
+        if( i == 3 ) return w;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
 
       /// The public values of the vector.
       H3DDouble x, y, z, w;

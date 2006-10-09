@@ -51,7 +51,8 @@ namespace H3D {
       HAPIHapticShape( _userdata, _surface, _transform ),
       radius( _radius ),
       solid( _solid ) {}
-#ifdef HAVE_OPENHAPTICSf
+#ifdef HAVE_OPENHAPTICSfff
+fdas
     /// Intersect the line segment from start_point to end_point with
     /// the object.  
     /// This is used by the callback functions of the HLCustomObject.

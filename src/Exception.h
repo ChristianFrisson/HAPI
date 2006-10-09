@@ -207,19 +207,26 @@ namespace H3D {
   /// given to the constructor in place for the arguments function, filename 
   /// and linenumber. The exception will then include full info about the three 
   /// above mentioned arguments.
+#ifdef __BORLANDC__
+#define H3D_FULL_LOCATION __FUNC__, __FILE__, __LINE__
+#else
 #define H3D_FULL_LOCATION __FUNCTION__, __FILE__, __LINE__
-
+#endif
   /// Macro for use with H3D::Exception::H3DAPIException constructor. Are to be
   /// given to the constructor in place for the arguments function, filename
   /// and linenumber. The exception will then include info about file name and
   /// line number of the exception.
 #define H3D_FILE_LOCATION "", __FILE__, __LINE__
 
-  /// Macro for use with H3D::Exception::H3DAPIException constructor. Are to be 
+  /// Macro for use with H3D::Exception::H3DAPIException constructor. Are to be
   /// given to the constructor in place for the arguments function, filename
   /// and linenumber. The exception will then include info about the function
   /// in which the exception occured.
+#ifdef __BORLANDC__
+#define H3D_FUNCTION_LOCATION __FUNC__
+#else
 #define H3D_FUNCTION_LOCATION __FUNCTION__
+#endif
 
   /// Macro for easy creation of a H3D::Exception::ValueException class.
   /// \param value_type the type of the value

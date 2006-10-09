@@ -33,6 +33,7 @@
 #include "HAPI.h"
 #include "H3DBasicTypes.h"
 #include "H3DTemplateOperators.h"
+#include "Exception.h"
 #include <ostream>
 using namespace std;
 
@@ -55,6 +56,36 @@ namespace H3D {
 
       /// Conversion from Vec4d.
       explicit Vec4f( const Vec4d &v );
+
+       /// Return the components by their index, 
+      /// x has index 0
+      /// y has index 1
+      /// z has index 2
+      /// w has index 3
+      inline H3DFloat &operator[]( int i ) { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        if( i == 2 ) return z;
+        if( i == 3 ) return w;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
+
+      /// Return the components by their index, 
+      /// x has index 0
+      /// y has index 1
+      /// z has index 2
+      /// w has index 3
+      inline const H3DFloat &operator[]( int i ) const { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        if( i == 2 ) return z;
+        if( i == 3 ) return w;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
 
       /// The public values of the vector.
       H3DFloat x, y, z, w;
