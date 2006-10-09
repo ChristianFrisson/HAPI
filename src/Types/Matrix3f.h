@@ -101,6 +101,16 @@ namespace H3D {
         return Vec3f( m[i][0], m[i][1], m[i][2] ); 
       }
 
+      /// Get an element in the matrix.
+      inline H3DFloat getElement( int i, int j ) const { 
+        return m[i][j];
+      }
+
+      /// Set an element in the matrix.
+      inline void setElement( int i, int j, H3DFloat v ) { 
+        m[i][j] = v;
+      }
+
       /// Get the scaling part of the matrix for each axis.
       Vec3f getScalePart() const;
 

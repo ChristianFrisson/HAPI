@@ -41,6 +41,11 @@ Rotation H3D::ArithmeticTypes::operator*( const Rotation &r1 ,const Rotation &r2
 Rotation::Rotation( const Vec3f &euler_angles ) {
   *this = Quaternion( euler_angles );
 }
+
+/// Constructor. From Euler angles (yaw, pitch, roll ).
+Rotation::Rotation( const Vec3d &euler_angles ) {
+  *this = Quaternion( euler_angles );
+}
  
 
 /// Constructor. From Quaternion object.

@@ -28,6 +28,7 @@
 #define __REFCOUNTEDCLASS_H__
 
 #include <HApi.h>
+#include "Console.h"
 #include <string>
 #include <iostream>
 using namespace std;
@@ -48,7 +49,7 @@ namespace H3D {
 
     /// Destructor.
     virtual ~RefCountedClass() {
-#ifdef DEBUG
+#ifdef REF_COUNT_DEBUG
       Console(1) << "~RefCountedClass: " << this << endl;
 #endif
     }
@@ -109,6 +110,9 @@ namespace H3D {
       name = _name;
     }
     
+    /// Returns true if this node has been given a name.
+    inline bool hasName() { return name != ""; }
+
     /// Get the name of this Node type. E.g. if the Node is an IndexedFaceSet
     /// it should return "IndexedFaceSet"
     inline string getTypeName() {

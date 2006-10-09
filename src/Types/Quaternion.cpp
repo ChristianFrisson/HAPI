@@ -31,6 +31,7 @@
 #include "Matrix3f.h"
 #include "Rotation.h"
 #include "Matrix4f.h"
+#include "Vec3d.h"
 
 using namespace H3D;
 using namespace ArithmeticTypes;
@@ -55,6 +56,28 @@ Quaternion::Quaternion( const Vec3f &euler ) {
   v.x = sr * cpcy - cr * spsy;
   v.y = cr * sp * cy + sr * cp * sy;
   v.z = cr * cp * sy - sr * sp * cy; 
+}
+
+Quaternion::Quaternion( const Vec3d &euler ) {
+  H3DDouble roll = euler.x;
+  H3DDouble pitch = euler.y;
+  H3DDouble yaw   = euler.z;
+
+  H3DDouble cr = H3DCos(roll/2);
+  H3DDouble cp = H3DCos(pitch/2);
+  H3DDouble cy = H3DCos(yaw/2);
+  
+  H3DDouble sr = H3DSin(roll/2);
+  H3DDouble sp = H3DSin(pitch/2);
+  H3DDouble sy = H3DSin(yaw/2);
+  
+  H3DDouble cpcy = cp * cy;
+  H3DDouble spsy = sp * sy;
+  
+  w = (H3DFloat) ( cr * cpcy + sr * spsy );
+  v.x = (H3DFloat) ( sr * cpcy - cr * spsy );
+  v.y = (H3DFloat) (cr * sp * cy + sr * cp * sy);
+  v.z = (H3DFloat) (cr * cp * sy - sr * sp * cy); 
 }
 
 

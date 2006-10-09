@@ -36,7 +36,7 @@
 #include <pthread.h>
 
 #ifdef WIN32
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "pthreadVC2.lib" )
 #endif
 #define DEFAULT_THREAD_PRIORITY THREAD_PRIORITY_NORMAL

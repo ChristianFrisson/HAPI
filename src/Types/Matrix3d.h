@@ -83,8 +83,8 @@ namespace H3D {
       /// Returns the transpose of the matrix.
       inline Matrix3d transpose() const {
         return Matrix3d( m[0][0], m[1][0], m[2][0],
-												 m[0][1], m[1][1], m[2][1],
-												 m[0][2], m[1][2], m[2][2] );
+                         m[0][1], m[1][1], m[2][1],
+                         m[0][2], m[1][2], m[2][2] );
       };
 
       /// Returns the inverse of the matrix.
@@ -99,6 +99,16 @@ namespace H3D {
       /// Get a row of the matrix.
       inline Vec3d getRow( int i ) const { 
         return Vec3d( m[i][0], m[i][1], m[i][2] ); 
+      }
+
+      /// Get an element in the matrix.
+      inline H3DDouble getElement( int i, int j ) const { 
+        return m[i][j];
+      }
+
+      /// Set an element in the matrix.
+      inline void setElement( int i, int j, H3DDouble v ) { 
+        m[i][j] = v;
       }
 
       /// Get the euler angles( yaw, pitch, roll ) representation of 

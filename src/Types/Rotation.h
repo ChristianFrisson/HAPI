@@ -72,6 +72,9 @@ namespace H3D {
       /// Constructor. From Euler angles (yaw, pitch, roll ).
       explicit Rotation( const Vec3f &euler_angles );
 
+      /// Constructor. From Euler angles (yaw, pitch, roll ).
+      explicit Rotation( const Vec3d &euler_angles );
+
       /// Constructor. From Quaternion object.
       Rotation( const Quaternion &r );
       

@@ -132,17 +132,17 @@ bool HapticSphere::closestFeature( const Vec3f &query_point,
 void HapticSphere::hlRender( HLHapticsDevice *hd) {
   HLSurface *s = dynamic_cast< HLSurface * >( surface );
   if( s ) {
-     hlMatrixMode( HL_VIEWTOUCH );
-     hlPushMatrix();
+     glMatrixMode( GL_MODELVIEW );
+     glPushMatrix();
 #if HL_VERSION_MAJOR_NUMBER >= 2
      hlPushAttrib( HL_MATERIAL_BIT | HL_TOUCH_BIT );
 #endif
      const Matrix4d &m = transform;
-     HLfloat vt[] = { m[0][0], m[1][0], m[2][0], 0,
+     GLfloat vt[] = { m[0][0], m[1][0], m[2][0], 0,
                       m[0][1], m[1][1], m[2][1], 0,
                       m[0][2], m[1][2], m[2][2], 0,
                       m[0][3], m[1][3], m[2][3], 1 };
-     hlLoadMatrixf( vt );
+     glLoadMatrixf( vt );
      s->hlRender( hd );
      if( solid ) 
        hlTouchableFace( HL_FRONT );
@@ -152,10 +152,10 @@ void HapticSphere::hlRender( HLHapticsDevice *hd) {
 #if HL_VERSION_MAJOR_NUMBER >= 2
      hlPopAttrib();
 #endif
-     hlPopMatrix();
+     glPopMatrix();
   }
 }
-#endif
+#endif // HAVE_OPENHAPTICS
 
 bool HapticSphere::lineIntersect( const Vec3d &start_point, 
                                   const Vec3d &end_point,
