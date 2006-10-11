@@ -37,8 +37,8 @@ const H3DDouble length_sqr_point_epsilon = 1e-12; //12
 // epsilon value for deciding if a normal is the same.
 const H3DDouble length_sqr_normal_epsilon = 1e-12;
 
-inline void onOnePlaneContact( const PlaneConstraint &c, 
-                               HAPISurfaceObject::ContactInfo &contact ) {
+void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c, 
+                                         HAPISurfaceObject::ContactInfo &contact ) {
   //cerr << "1";
   contact.y_axis = c.normal;
   Vec3d a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
@@ -46,11 +46,13 @@ inline void onOnePlaneContact( const PlaneConstraint &c,
   contact.z_axis = contact.x_axis % contact.y_axis;
   assert( c.haptic_shape );
   c.haptic_shape->surface->onContact( contact );
+  //tmp_contacts[ c.haptic_shape ] = contact;
+  tmp_contacts.push_back( make_pair( c.haptic_shape, contact ) );
 }
 
-inline void onTwoPlaneContact( const PlaneConstraint &p0,
-                               const PlaneConstraint &p1,
-                               HAPISurfaceObject::ContactInfo &contact ) {
+void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
+                                         const PlaneConstraint &p1,
+                                         HAPISurfaceObject::ContactInfo &contact ) {
 
   Vec3d contact_global = contact.globalContactPoint();
 
@@ -121,15 +123,21 @@ inline void onTwoPlaneContact( const PlaneConstraint &p0,
     //cerr << p0_proxy_movement << endl;
     contact.proxy_movement_local = Vec2d( proxy_movement.x, proxy_movement.z ); 
       
-    
     //cerr << p0_proxy_movement.x << endl;
     contact.force_global = p0_force * weight + p1_force * ( 1 - weight );
+
+    //tmp_contacts[ p0.haptic_shape ] = contact;
+    //tmp_contacts[ p1.haptic_shape ] = contact;
+    tmp_contacts.push_back( make_pair( p0.haptic_shape, contact ) );
+    if( p0.haptic_shape != p1.haptic_shape )
+      tmp_contacts.push_back( make_pair( p1.haptic_shape, contact ) );
   }
 }
 
 
-inline void onThreeOrMorePlaneContact(  vector< PlaneConstraint > &constraints,
-                                        HAPISurfaceObject::ContactInfo &contact ) {
+void RuspiniRenderer::onThreeOrMorePlaneContact(  
+          vector< PlaneConstraint > &constraints,
+          HAPISurfaceObject::ContactInfo &contact ) {
   vector< PlaneConstraint >::iterator i = constraints.begin();
   PlaneConstraint &p0 = (*i++);
   PlaneConstraint &p1 = (*i++);
@@ -216,6 +224,10 @@ inline void onThreeOrMorePlaneContact(  vector< PlaneConstraint > &constraints,
       p0_force * weight.x + 
       p1_force * weight.y + 
       p2_force * weight.z;
+
+    //tmp_contacts[ p0.haptic_shape ] = contact;
+    //tmp_contacts[ p1.haptic_shape ] = contact;
+    //tmp_contacts[ p2.haptic_shape ] = contact;
   }
 }
 
@@ -224,8 +236,9 @@ inline void onThreeOrMorePlaneContact(  vector< PlaneConstraint > &constraints,
 
 HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticForceEffect::EffectInput input,
                                                                        const HapticShapeVector &shapes ) {
- 
- Vec3d proxy_pos = proxy_position;
+  // clear all previous contacts
+  tmp_contacts.clear();
+  Vec3d proxy_pos = proxy_position;
   HapticForceEffect::EffectOutput output;
   bool has_intersection = false;
   H3DDouble d2;
@@ -328,6 +341,7 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
 
   contact.contact_point_global = closest_intersection.point;
   contact.probe_position_global = input.position;
+  contact.proxy_radius = proxy_radius;
 
   //cerr << nr_constraints << endl;
 
@@ -389,6 +403,10 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
   proxy_position = new_proxy_pos;
   output.force = new_force;
     
+  contacts_lock.lock();
+  contacts.swap( tmp_contacts );
+  contacts_lock.unlock();
+
    // add the resulting force and torque to the rendered force.
     
   return output;
