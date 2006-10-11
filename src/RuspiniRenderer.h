@@ -31,6 +31,8 @@
 #define __RUSPINIRENDERER_H__
 
 #include <HAPIHapticsRenderer.h>
+#include <Threads.h>
+#include <map>
 
 namespace H3D {
 
@@ -56,9 +58,43 @@ namespace H3D {
     inline void setProxyRadius( H3DDouble r ) {
       proxy_radius = r;
     }
+    
+ /*   struct lt {
+      bool operator()(HAPIHapticShape *s1, HAPIHapticShape *s2) const {
+        if( s1 == s2 ) {
+          return s1->id < s2->id;
+        } else {
+          return s1 < s2;
+        }
+      }
+    };*/
+
+    typedef std::vector< pair< AutoRef< HAPIHapticShape >, HAPISurfaceObject::ContactInfo> > Contacts; 
+
+    inline Contacts getContacts() {
+      contacts_lock.lock();
+      Contacts c = contacts;
+      contacts_lock.unlock();
+      return c;
+    }
+
   protected:
+    void onOnePlaneContact( const PlaneConstraint &c, 
+                            HAPISurfaceObject::ContactInfo &contact );
+
+    void onTwoPlaneContact( const PlaneConstraint &p0,
+                            const PlaneConstraint &p1,
+                            HAPISurfaceObject::ContactInfo &contact );
+
+    void onThreeOrMorePlaneContact(  vector< PlaneConstraint > &constraints,
+                                     HAPISurfaceObject::ContactInfo &contact );
+    
     H3DDouble proxy_radius;
     Vec3d proxy_position;
+    MutexLock contacts_lock;
+    Contacts contacts;
+    Contacts tmp_contacts;
+
   };
 }
 
