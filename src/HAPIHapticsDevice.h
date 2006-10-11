@@ -137,7 +137,7 @@ namespace H3D {
         return ErrorCode::NOT_INITIALIZED;
       }
       
-      if( device_state == DeviceState::ENABLED ) 
+      //if( device_state != DeviceState::INITIALIZED ) 
         if( !releaseHapticsDevice() ) {
           return FAIL;
         }
