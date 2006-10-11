@@ -74,7 +74,8 @@ bool PhantomHapticsDevice::initHapticsDevice() {
 
 bool PhantomHapticsDevice::releaseHapticsDevice() {
   HAPIHapticsDevice::disableDevice();
-  //hdStopScheduler();
+  // TODO: should not stop scheduler unless it is the last device
+  hdStopScheduler();
   hdDisableDevice( device_handle );
   device_handle = 0;
   HLThread *hl_thread = static_cast< HLThread * >( thread );
