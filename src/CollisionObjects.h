@@ -378,7 +378,6 @@ namespace H3D {
       /// Builds a binary tree from a vector of triangles. The func argument specifies
       /// a function for creating  bound of the wanted type in each tree node.
       BinaryBoundTree( BoundNewFunc func, const vector< Triangle > &triangles );
-
       /// Returns true if the tree is a leaf, i.e. has no sub-tress and hence just
       /// contains triangles. false otherwise.
       inline bool isLeaf() { 
@@ -433,10 +432,14 @@ namespace H3D {
       virtual Vec3d closestPoint( const Vec3d &p ) { return Vec3d(); }
 
       void clearCollidedFlag();
-      union {
+
+      /*union {
         struct { AutoRef< BoundPrimitive > bound; };
         struct { vector< Triangle > triangles; };
-      };
+        };*/
+
+      AutoRef< BoundPrimitive > bound;
+      vector< Triangle > triangles;
 
       /// The left subtree.
       AutoRef< BinaryBoundTree > left;
