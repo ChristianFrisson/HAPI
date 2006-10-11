@@ -56,6 +56,8 @@ namespace H3D {
 
       Vec2d proxy_movement_local;
 
+      H3DDouble proxy_radius;
+
       // local
       bool has_inverse;
       Matrix4d inverse;
@@ -98,6 +100,14 @@ namespace H3D {
 
       inline Vec3d localContactPoint() {
         return pointToLocal( contact_point_global );
+      }
+
+      inline Vec3d globalSurfaceContactPoint() {
+        return contact_point_global - proxy_radius * y_axis;
+      }
+
+      inline Vec3d localSurfaceContactPoint() {
+        return pointToLocal( globalSurfaceContactPoint() );
       }
 
       inline Vec3d globalProbePosition() {
