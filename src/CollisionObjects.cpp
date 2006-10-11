@@ -689,6 +689,7 @@ bool BinaryBoundTree::lineIntersect( const Vec3d &from,
                                      const Vec3d &to,
                                      IntersectionInfo &result ) {
   if ( isLeaf() )	{
+    // TODO: find closest?
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
       Triangle &t = triangles[i];
       if( t.lineIntersect( from, to, result ) )	return true;
