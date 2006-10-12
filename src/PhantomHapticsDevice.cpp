@@ -30,7 +30,7 @@
 #include <PhantomHapticsDevice.h>
 #include <sstream>
 
-using namespace H3D;
+using namespace HAPI;
 
 #ifdef HAVE_OPENHAPTICS
 #ifdef _MSC_VER
@@ -85,7 +85,7 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
 }
 
 void PhantomHapticsDevice::updateDeviceValues( DeviceValues &dv,
-                                               H3DTime dt ) {
+                                               HAPITime dt ) {
   HDErrorInfo error;
   error = hdGetError();
   if (HD_DEVICE_ERROR(error))
@@ -95,18 +95,18 @@ void PhantomHapticsDevice::updateDeviceValues( DeviceValues &dv,
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
   HDdouble v[16];
   hdGetDoublev( HD_CURRENT_POSITION, v ); 
-  dv.position = Vec3d( v[0], v[1], v[2] );
+  dv.position = Vec3( v[0], v[1], v[2] );
   hdGetDoublev( HD_CURRENT_VELOCITY, v ); 
-  dv.velocity = Vec3d( v[0], v[1], v[2] );
+  dv.velocity = Vec3( v[0], v[1], v[2] );
   hdGetIntegerv( HD_CURRENT_BUTTONS, &dv.button_status );    
   hdGetDoublev( HD_CURRENT_TRANSFORM, v );
-  dv.orientation = Rotation( Matrix3d( v[0], v[4], v[8],
+  dv.orientation = Rotation( Matrix3( v[0], v[4], v[8],
                                        v[1], v[5], v[9],
                                        v[2], v[6], v[10] ) );
 }
 
 void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
-                                       H3DTime dt ) {
+                                       HAPITime dt ) {
   hdMakeCurrentDevice( device_handle );
   HDdouble v[3];
   v[0] = dv.force.x;

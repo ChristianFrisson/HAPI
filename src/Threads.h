@@ -44,7 +44,7 @@
 #define DEFAULT_THREAD_PRIORITY 0
 #endif
 
-namespace H3D {
+namespace HAPI {
   /// Mutual exclusion lock class for synchronisation between threads. 
   /// Most common usage is to make sure that only one thread enters a 
   /// "critical section" at a time. E.g. if both threads uses the same 

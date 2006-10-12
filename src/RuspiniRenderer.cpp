@@ -27,21 +27,22 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <RuspiniRenderer.h>
+#include "RuspiniRenderer.h"
+#include "H3DMath.h"
 
-using namespace H3D;
+using namespace HAPI;
 
 // epsilon value for deciding if a point is the same
-const H3DDouble length_sqr_point_epsilon = 1e-12; //12
+const HAPIFloat length_sqr_point_epsilon = 1e-12; //12
 
 // epsilon value for deciding if a normal is the same.
-const H3DDouble length_sqr_normal_epsilon = 1e-12;
+const HAPIFloat length_sqr_normal_epsilon = 1e-12;
 
 void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c, 
                                          HAPISurfaceObject::ContactInfo &contact ) {
   //cerr << "1";
   contact.y_axis = c.normal;
-  Vec3d a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
+  Vec3 a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
   contact.x_axis = contact.y_axis % a;
   contact.z_axis = contact.x_axis % contact.y_axis;
   assert( c.haptic_shape );
@@ -54,27 +55,27 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
                                          const PlaneConstraint &p1,
                                          HAPISurfaceObject::ContactInfo &contact ) {
 
-  Vec3d contact_global = contact.globalContactPoint();
+  Vec3 contact_global = contact.globalContactPoint();
 
-  Vec3d line_dir = p0.normal % p1.normal;
+  Vec3 line_dir = p0.normal % p1.normal;
   line_dir.normalizeSafe();
-  Matrix4d m( p0.normal.x, p1.normal.x, line_dir.x, contact_global.x, 
+  Matrix4 m( p0.normal.x, p1.normal.x, line_dir.x, contact_global.x, 
               p0.normal.y, p1.normal.y, line_dir.y, contact_global.y, 
               p0.normal.z, p1.normal.z, line_dir.z, contact_global.z,
               0, 0, 0, 1 );
-  Matrix4d m_inv = m.inverse();
+  Matrix4 m_inv = m.inverse();
   
-  Vec3d local_pos = m_inv * contact.globalProbePosition();
+  Vec3 local_pos = m_inv * contact.globalProbePosition();
 
-  if( local_pos.x > Constants::f_epsilon ) {
+  if( local_pos.x > Constants::epsilon ) {
     onOnePlaneContact( p1, contact );
-  } else if( local_pos.y > Constants::f_epsilon ) {
+  } else if( local_pos.y > Constants::epsilon ) {
     onOnePlaneContact( p0, contact );
   } else {
     //cerr << "2";
-    H3DDouble sum = local_pos.x + local_pos.y;
+    HAPIFloat sum = local_pos.x + local_pos.y;
     
-    H3DDouble weight = 0;
+    HAPIFloat weight = 0;
     if( sum < 0 )
       weight = local_pos.x / sum;
     
@@ -83,45 +84,45 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
     contact.y_axis = p0.normal * local_pos.x + p1.normal * local_pos.y;
     contact.y_axis.normalizeSafe();
     
-    Vec3d a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
+    Vec3 a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
     contact.x_axis = contact.y_axis % a;
     contact.z_axis = contact.x_axis % contact.y_axis;
     contact.z_axis.normalizeSafe();
     contact.x_axis.normalizeSafe();
     
-    Vec3d line_dir_local = contact.vectorToLocal( line_dir );
+    Vec3 line_dir_local = contact.vectorToLocal( line_dir );
 
-    Matrix3d mm = Matrix3d( contact.x_axis.x, contact.y_axis.x,  contact.z_axis.x,
+    Matrix3 mm = Matrix3( contact.x_axis.x, contact.y_axis.x,  contact.z_axis.x,
                  contact.x_axis.y,  contact.y_axis.y,  contact.z_axis.y,
                  contact.x_axis.z,  contact.y_axis.z,  contact.z_axis.z ).inverse();
-    Vec3d fff = mm * line_dir;
+    Vec3 fff = mm * line_dir;
 
     assert( p0.haptic_shape );
     p0.haptic_shape->surface->onContact( contact );
-    H3DDouble p0_proxy_movement = 
-      Vec3d( contact.proxy_movement_local.x, 
+    HAPIFloat p0_proxy_movement = 
+      Vec3( contact.proxy_movement_local.x, 
              0, 
              contact.proxy_movement_local.y ) *
       line_dir_local;
 
-    Vec3d p0_force = contact.force_global;
+    Vec3 p0_force = contact.force_global;
     
     assert( p1.haptic_shape );
     p1.haptic_shape->surface->onContact( contact );
-    H3DDouble p1_proxy_movement = 
-      Vec3d( contact.proxy_movement_local.x, 
+    HAPIFloat p1_proxy_movement = 
+      Vec3( contact.proxy_movement_local.x, 
              0, 
              contact.proxy_movement_local.y ) *
       line_dir_local;
 
-    Vec3d p1_force = contact.force_global;
+    Vec3 p1_force = contact.force_global;
     
-    Vec3d proxy_movement = 
-      H3DMin( p0_proxy_movement, p1_proxy_movement ) * 
+    Vec3 proxy_movement = 
+      H3DUtil::H3DMin( p0_proxy_movement, p1_proxy_movement ) * 
       line_dir_local;
     //if( p0_proxy_movement > 0.1 )
     //cerr << p0_proxy_movement << endl;
-    contact.proxy_movement_local = Vec2d( proxy_movement.x, proxy_movement.z ); 
+    contact.proxy_movement_local = Vec2( proxy_movement.x, proxy_movement.z ); 
       
     //cerr << p0_proxy_movement.x << endl;
     contact.force_global = p0_force * weight + p1_force * ( 1 - weight );
@@ -143,21 +144,21 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
   PlaneConstraint &p1 = (*i++);
   PlaneConstraint &p2 = (*i++);
 
-  Vec3d contact_global = contact.globalContactPoint();
+  Vec3 contact_global = contact.globalContactPoint();
 
   while( i != constraints.end() ) {
-    Matrix4d m( p0.normal.x, p1.normal.x, p2.normal.x, contact_global.x, 
+    Matrix4 m( p0.normal.x, p1.normal.x, p2.normal.x, contact_global.x, 
                 p0.normal.y, p1.normal.y, p2.normal.y, contact_global.y, 
                 p0.normal.z, p1.normal.z, p2.normal.z, contact_global.z,
                 0, 0, 0, 1 );
-    Matrix4d m_inv = m.inverse();
-    Vec3d local_pos = m_inv * contact.globalProbePosition();
+    Matrix4 m_inv = m.inverse();
+    Vec3 local_pos = m_inv * contact.globalProbePosition();
     
-    if( local_pos.x > Constants::f_epsilon ) {
+    if( local_pos.x > Constants::epsilon ) {
       std::swap( p0, *i++ ); 
-    } else if( local_pos.y > Constants::f_epsilon ) {
+    } else if( local_pos.y > Constants::epsilon ) {
       std::swap( p1, *i++ ); 
-    } else if( local_pos.z > Constants::f_epsilon ) {
+    } else if( local_pos.z > Constants::epsilon ) {
       std::swap( p2, *i++ );
     } else {
       break;
@@ -165,26 +166,26 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
   }
 
 
-  Matrix4d m( p0.normal.x, p1.normal.x, p2.normal.x, contact_global.x, 
+  Matrix4 m( p0.normal.x, p1.normal.x, p2.normal.x, contact_global.x, 
               p0.normal.y, p1.normal.y, p2.normal.y, contact_global.y, 
                 p0.normal.z, p1.normal.z, p2.normal.z, contact_global.z,
               0, 0, 0, 1 );
   
-  Matrix4d m_inv = m.inverse();
+  Matrix4 m_inv = m.inverse();
   
-  Vec3d local_pos = m_inv * contact.globalProbePosition();
+  Vec3 local_pos = m_inv * contact.globalProbePosition();
   
-  if( local_pos.x > Constants::f_epsilon ) {
+  if( local_pos.x > Constants::epsilon ) {
     onTwoPlaneContact( p1, p2, contact );
-  } else if( local_pos.y > Constants::f_epsilon ) {
+  } else if( local_pos.y > Constants::epsilon ) {
     onTwoPlaneContact( p0, p2, contact );
-  } else if( local_pos.z > Constants::f_epsilon ) {
+  } else if( local_pos.z > Constants::epsilon ) {
     onTwoPlaneContact( p0, p1, contact );
   } else {
     //cerr << "3";
-    H3DDouble sum = local_pos.x + local_pos.y + local_pos.z;
+    HAPIFloat sum = local_pos.x + local_pos.y + local_pos.z;
     
-    Vec3d weight;
+    Vec3 weight;
     if( sum < 0 )
       weight = local_pos / sum;
 
@@ -194,11 +195,11 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
       p2.normal * weight.z;
     
     // TODO: this is new
-    Vec3d bb = contact.globalContactPoint() - contact.globalProbePosition();
+    Vec3 bb = contact.globalContactPoint() - contact.globalProbePosition();
     bb.normalizeSafe();
     contact.y_axis= bb;
 
-    Vec3d a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
+    Vec3 a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
     contact.x_axis = contact.y_axis % a;
     contact.z_axis = contact.x_axis % contact.y_axis;
 
@@ -208,17 +209,17 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
 
     assert( p0.haptic_shape );
     p0.haptic_shape->surface->onContact( contact );
-    Vec3d p0_force = contact.force_global;
+    Vec3 p0_force = contact.force_global;
     
     assert( p1.haptic_shape );
     p1.haptic_shape->surface->onContact( contact );
-    Vec3d p1_force = contact.force_global;
+    Vec3 p1_force = contact.force_global;
 
     assert( p2.haptic_shape );
     p2.haptic_shape->surface->onContact( contact );
-    Vec3d p2_force = contact.force_global;
+    Vec3 p2_force = contact.force_global;
     
-    contact.proxy_movement_local = Vec2d( 0, 0 ); 
+    contact.proxy_movement_local = Vec2( 0, 0 ); 
     
     contact.force_global = 
       p0_force * weight.x + 
@@ -238,10 +239,10 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
                                                                        const HapticShapeVector &shapes ) {
   // clear all previous contacts
   tmp_contacts.clear();
-  Vec3d proxy_pos = proxy_position;
+  Vec3 proxy_pos = proxy_position;
   HapticForceEffect::EffectOutput output;
   bool has_intersection = false;
-  H3DDouble d2;
+  HAPIFloat d2;
   Bounds::IntersectionInfo closest_intersection;
   vector< Bounds::PlaneConstraint > constraints;
   
@@ -267,7 +268,7 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
     // make sure the proxy is above any constraints
     for( vector< Bounds::PlaneConstraint >::iterator i = constraints.begin();
          i != constraints.end(); i++ ) {
-      H3DDouble d = (*i).normal * (proxy_pos - (*i).point );
+      HAPIFloat d = (*i).normal * (proxy_pos - (*i).point );
       if( d < 0 && d > -proxy_radius ) {
         //cerr << (*i).normal << " " << d << endl;
         proxy_pos = proxy_pos + (*i).normal * (-d+1e-15);
@@ -284,18 +285,18 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
   for( vector< Bounds::PlaneConstraint >::iterator i = constraints.begin();
        i != constraints.end(); i++ ) {
     Bounds::IntersectionInfo intersection;
-    Vec3d vv = input.position -  proxy_pos;
+    Vec3 vv = input.position -  proxy_pos;
     vv.normalizeSafe();
     if( (*i).lineIntersect( proxy_pos, input.position, intersection ) ) {
       if( !has_intersection ) {
         closest_intersection = intersection;
-        Vec3d v = intersection.point - proxy_pos;
+        Vec3 v = intersection.point - proxy_pos;
         d2 = v * v;
         has_intersection = true;
         closest_constraints.push_back( *i );
       } else {
-        Vec3d v = intersection.point - proxy_pos;
-        H3DDouble distance = v * v; 
+        Vec3 v = intersection.point - proxy_pos;
+        HAPIFloat distance = v * v; 
       
         if( (closest_intersection.point - intersection.point).lengthSqr()
             < length_sqr_point_epsilon ) {
@@ -335,7 +336,7 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
 
   unsigned int nr_constraints = closest_constraints.size();
 
-  Vec3d new_proxy_pos, new_force;
+  Vec3 new_proxy_pos, new_force;
 
   HAPISurfaceObject::ContactInfo contact;
 
@@ -366,25 +367,25 @@ HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticFor
   }
     
   has_intersection = false;
-  Vec3d closest_point;
+  Vec3 closest_point;
   for( vector< Bounds::PlaneConstraint >::iterator i = 
          intersected_constraints.begin();
        i != intersected_constraints.end(); i++ ) {
       
     Bounds::IntersectionInfo intersection;
       
-    Vec3d vv = new_proxy_pos - proxy_pos;
+    Vec3 vv = new_proxy_pos - proxy_pos;
     vv.normalizeSafe();
     if( (*i).lineIntersect( closest_intersection.point, 
                             new_proxy_pos, intersection ) ) {
       if( !has_intersection ) {
         closest_point = intersection.point;
-        Vec3d v = intersection.point - proxy_pos;
+        Vec3 v = intersection.point - proxy_pos;
         d2 = v * v;
         has_intersection = true;
       } else {
-        Vec3d v = intersection.point - proxy_pos;
-        H3DDouble distance = v * v;
+        Vec3 v = intersection.point - proxy_pos;
+        HAPIFloat distance = v * v;
         if( distance < d2 ) {
           closest_point = intersection.point;
           d2 = distance;

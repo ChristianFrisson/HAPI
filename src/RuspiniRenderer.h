@@ -34,7 +34,7 @@
 #include <Threads.h>
 #include <map>
 
-namespace H3D {
+namespace HAPI {
 
   /// \class RuspiniRenderer
   /// Base class for all haptic devices. 
@@ -47,15 +47,15 @@ namespace H3D {
     renderHapticsOneStep( HapticForceEffect::EffectInput input,
                           const HapticShapeVector &shapes );
 
-    inline const Vec3d &getProxyPosition() {
+    inline const Vec3 &getProxyPosition() {
       return proxy_position;
     }
 
-    inline H3DDouble getProxyRadius() {
+    inline HAPIFloat getProxyRadius() {
       return proxy_radius;
     }
 
-    inline void setProxyRadius( H3DDouble r ) {
+    inline void setProxyRadius( HAPIFloat r ) {
       proxy_radius = r;
     }
     
@@ -69,7 +69,7 @@ namespace H3D {
       }
     };*/
 
-    typedef std::vector< pair< AutoRef< HAPIHapticShape >, HAPISurfaceObject::ContactInfo> > Contacts; 
+    typedef std::vector< pair< H3DUtil::AutoRef< HAPIHapticShape >, HAPISurfaceObject::ContactInfo> > Contacts; 
 
     inline Contacts getContacts() {
       contacts_lock.lock();
@@ -89,8 +89,8 @@ namespace H3D {
     void onThreeOrMorePlaneContact(  vector< PlaneConstraint > &constraints,
                                      HAPISurfaceObject::ContactInfo &contact );
     
-    H3DDouble proxy_radius;
-    Vec3d proxy_position;
+    HAPIFloat proxy_radius;
+    Vec3 proxy_position;
     MutexLock contacts_lock;
     Contacts contacts;
     Contacts tmp_contacts;

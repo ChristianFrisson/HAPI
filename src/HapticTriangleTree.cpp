@@ -29,18 +29,17 @@
 
 #include "HapticTriangleTree.h" 
 
-using namespace H3D;
+using namespace HAPI;
 
-
-void HapticTriangleTree::getConstraints( const Vec3d &point,
-                                         H3DDouble radius,
+void HapticTriangleTree::getConstraints( const Vec3 &point,
+                                         HAPIFloat radius,
                                          std::vector< PlaneConstraint > &constraints ) {
   if( tree ) {
     // TODO: check if transform has uniform scale
     bool uniform_scale = true;
 
     if( uniform_scale ) {
-      Vec3d p = transform.inverse() * point;
+      Vec3 p = transform.inverse() * point;
       unsigned int size = constraints.size();
       tree->getConstraints( p, radius, constraints);
       for( unsigned int i = size; i < constraints.size(); i ++ ) {

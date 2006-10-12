@@ -29,10 +29,10 @@
 
 #include "HapticForceField.h" 
 
-using namespace H3D;
+using namespace HAPI;
 
-HapticForceField::HapticForceField( const H3D::ArithmeticTypes::Matrix4d & _transform,
-                                    const Vec3f &_force,
+HapticForceField::HapticForceField( const Matrix4 & _transform,
+                                    const Vec3 &_force,
                                     bool _interpolate ):
   HapticForceEffect( _transform, _interpolate ),
   force( _force ) {}

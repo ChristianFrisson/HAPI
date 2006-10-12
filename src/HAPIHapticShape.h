@@ -35,7 +35,7 @@
 #include <CollisionObjects.h>
 #include <vector>
 
-namespace H3D {
+namespace HAPI {
 
 
   /// Base class for haptic shapes, i.e. geometrical objects that are rendered
@@ -49,17 +49,17 @@ namespace H3D {
     /// Constructor.
    HAPIHapticShape( void *_userdata,
                      HAPISurfaceObject *_surface,
-                     const H3D::ArithmeticTypes::Matrix4d & _transform ):
+                     const Matrix4 & _transform ):
       HAPIHapticObject( _transform ),
       surface( _surface ),
       userdata( _userdata ) {}
     
-    virtual Vec3d closestPoint( const Vec3d &p ) {
-      return Vec3d();
+    virtual Vec3 closestPoint( const Vec3 &p ) {
+      return Vec3();
     }
 
-    virtual bool lineIntersect( const Vec3d &from, 
-                                const Vec3d &to,
+    virtual bool lineIntersect( const Vec3 &from, 
+                                const Vec3 &to,
                                 Bounds::IntersectionInfo &result ) { 
       return false;
     }

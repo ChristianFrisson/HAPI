@@ -87,29 +87,29 @@ void HaptikDevice::releaseDevice() {
     haptik_device->Release();
 }
 
-Vec3d HaptikDevice::getPosition() {
+Vec3 HaptikDevice::getPosition() {
     if( haptik_device ) {
     RSLib::HaptikData data;
     haptik_device->Read( data );
-    return Vec3d( data.position.x, data.position.y, data.position.z );
+    return Vec3( data.position.x, data.position.y, data.position.z );
   } else {
-    return Vec3d( 0, 0, 0 );
+    return Vec3( 0, 0, 0 );
   }
 }
 
 /// Get the velocity of the haptics device. Only to be called in the 
 /// haptics loop.
-Vec3d HaptikDevice::getVelocity() {
+Vec3 HaptikDevice::getVelocity() {
   if( haptik_device ) {
     RSLib::HaptikData data;
     haptik_device->Read( data );
-    return Vec3d( data.velocity.x, data.velocity.y, data.velocity.z );
+    return Vec3( data.velocity.x, data.velocity.y, data.velocity.z );
   } else {
-    return Vec3d( 0, 0, 0 );
+    return Vec3( 0, 0, 0 );
   }
 }
 
-H3DInt32 HaptikDevice::getButtonStatus() {
+HAPIInt32 HaptikDevice::getButtonStatus() {
   if( haptik_device ) {
     RSLib::HaptikData data;
     haptik_device->Read( data );
@@ -140,7 +140,7 @@ Rotation HaptikDevice::getOrientation() {
 
 /// Send the force to render on the haptics device. Only to be called in the 
 /// haptics loop.
-void HaptikDevice::sendForceToDevice( const Vec3d &f ) {
+void HaptikDevice::sendForceToDevice( const Vec3 &f ) {
   if( haptik_device ) {
     RSLib::HaptikData data;
     data.forceFeedback.x = f.x;
@@ -155,7 +155,7 @@ void HaptikDevice::sendForceToDevice( const Vec3d &f ) {
 
 /// Send the torque to render on the haptics device. Only to be called in the 
 /// haptics loop.
-void HaptikDevice::sendTorqueToDevice( const Vec3d &t ) {
+void HaptikDevice::sendTorqueToDevice( const Vec3 &t ) {
   if( haptik_device ) {
     RSLib::HaptikData data;
     haptik_device->Read( data );

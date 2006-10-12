@@ -30,9 +30,9 @@
 #define __HAPISURFACEOBJECT_H__
 
 #include <HAPI.h>
-#include <H3DTypes.h>
+#include <HAPITypes.h>
 
-namespace H3D {
+namespace HAPI {
 
   class HAPI_API HAPISurfaceObject {
   public:
@@ -40,89 +40,89 @@ namespace H3D {
       ContactInfo(): has_inverse( false ) {}
 
       // input
-      Vec3d contact_point_global;
-      Vec3d probe_position_global;
-      Vec3d tex_coord;
-      Vec3d x_axis;
-      Vec3d y_axis;
-      Vec3d z_axis;
+      Vec3 contact_point_global;
+      Vec3 probe_position_global;
+      Vec3 tex_coord;
+      Vec3 x_axis;
+      Vec3 y_axis;
+      Vec3 z_axis;
 
 
       // output
-      Vec3d force_global;
-      Vec3d torque_global;
-      Matrix4f force_position_jacobian;
-      Matrix4f force_velocity_jacobian;
+      Vec3 force_global;
+      Vec3 torque_global;
+      Matrix4 force_position_jacobian;
+      Matrix4 force_velocity_jacobian;
 
-      Vec2d proxy_movement_local;
+      Vec2 proxy_movement_local;
 
-      H3DDouble proxy_radius;
+      HAPIFloat proxy_radius;
 
       // local
       bool has_inverse;
-      Matrix4d inverse;
+      Matrix4 inverse;
 
       // HAPIHapticsDevice *hd;
 
       inline void updateInverse() {
         inverse = 
-          Matrix4d( x_axis.x, y_axis.x, z_axis.x, contact_point_global.x,
-                    x_axis.y, y_axis.y, z_axis.y, contact_point_global.y,
-                    x_axis.z, y_axis.z, z_axis.z, contact_point_global.z,
-                    0,0,0,1 ).transformInverse();
+          Matrix4( x_axis.x, y_axis.x, z_axis.x, contact_point_global.x,
+                   x_axis.y, y_axis.y, z_axis.y, contact_point_global.y,
+                   x_axis.z, y_axis.z, z_axis.z, contact_point_global.z,
+                   0,0,0,1 ).transformInverse();
         has_inverse = true;
       }
 
-      inline Vec3d pointToGlobal( const Vec3d &p ) { 
+      inline Vec3 pointToGlobal( const Vec3 &p ) { 
         return p.x * x_axis + p.y * y_axis + p.z * z_axis + 
           contact_point_global;
       }
       
-      inline Vec3d pointToLocal( const Vec3d &p ) { 
+      inline Vec3 pointToLocal( const Vec3 &p ) { 
         if( !has_inverse ) updateInverse();
         return inverse * p; 
       }
 
-      inline Vec3d vectorToGlobal( const Vec3d &p ) { 
+      inline Vec3 vectorToGlobal( const Vec3 &p ) { 
         return p.x * x_axis + p.y * y_axis + p.z * z_axis;
       }
 
-      inline Vec3d vectorToLocal( const Vec3d &p ) {
+      inline Vec3 vectorToLocal( const Vec3 &p ) {
         //if( !has_inverse ) updateInverse();
-        return Matrix3d( x_axis.x, y_axis.x, z_axis.x,
+        return Matrix3( x_axis.x, y_axis.x, z_axis.x,
                          x_axis.y, y_axis.y, z_axis.y,
                          x_axis.z, y_axis.z, z_axis.z ).inverse() * p;
       }
       
-      inline Vec3d globalContactPoint() {
+      inline Vec3 globalContactPoint() {
         return contact_point_global;
       }
 
-      inline Vec3d localContactPoint() {
+      inline Vec3 localContactPoint() {
         return pointToLocal( contact_point_global );
       }
 
-      inline Vec3d globalSurfaceContactPoint() {
+      inline Vec3 globalSurfaceContactPoint() {
         return contact_point_global - proxy_radius * y_axis;
       }
 
-      inline Vec3d localSurfaceContactPoint() {
+      inline Vec3 localSurfaceContactPoint() {
         return pointToLocal( globalSurfaceContactPoint() );
       }
 
-      inline Vec3d globalProbePosition() {
+      inline Vec3 globalProbePosition() {
         return probe_position_global;
       }
 
-      inline Vec3d localProbePosition() {
+      inline Vec3 localProbePosition() {
         return pointToLocal( probe_position_global );
       }
 
-      inline void setLocalForce( const Vec3d &f ) {
+      inline void setLocalForce( const Vec3 &f ) {
         force_global = vectorToGlobal( f );
       }
 
-      inline void setGlobalForce( const Vec3d &f ) {
+      inline void setGlobalForce( const Vec3 &f ) {
         force_global = f;
       }
       

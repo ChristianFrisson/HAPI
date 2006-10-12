@@ -30,18 +30,18 @@
 #ifndef __HAPIHAPTICSRENDERER_H__
 #define __HAPIHAPTICSRENDERER_H__
 
-#include <HApi.h>
+#include <HAPI.h>
 #include <HAPIHapticShape.h>
 #include <HapticForceEffect.h>
 #include <AutoRefVector.h>
 
-namespace H3D {
+namespace HAPI {
 
   /// \class HAPIHapticsRenderer
   /// Base class for all haptic devices. 
   class HAPI_API HAPIHapticsRenderer {
   public:
-    typedef AutoRefVector< HAPIHapticShape > HapticShapeVector;
+    typedef H3DUtil::AutoRefVector< HAPIHapticShape > HapticShapeVector;
 
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~HAPIHapticsRenderer() {}

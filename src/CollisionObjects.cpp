@@ -30,14 +30,14 @@
 #include "CollisionObjects.h"
 #include <stack>
 
-using namespace H3D;
+using namespace HAPI;
 using namespace Bounds;
 
-bool PlaneConstraint::lineIntersect( const Vec3d &from, 
-                                     const Vec3d &to,
+bool PlaneConstraint::lineIntersect( const Vec3 &from, 
+                                     const Vec3 &to,
                                      Bounds::IntersectionInfo &result ) {
-      Vec3d from_to = to - from;
-      if( normal * from_to > Constants::f_epsilon ) { 
+      Vec3 from_to = to - from;
+      if( normal * from_to > Constants::epsilon ) { 
         /*if( result.normal.z == 0.5 ) {
           cerr << "a" << endl;
           cerr << normal * from_to << endl;
@@ -46,16 +46,16 @@ bool PlaneConstraint::lineIntersect( const Vec3d &from,
       }
 
 
-      H3DDouble denom = normal * from_to;
-      if( denom * denom < Constants::d_epsilon ) {
+      HAPIFloat denom = normal * from_to;
+      if( denom * denom < Constants::epsilon ) {
         /*        if( result.normal.z == 0.5 )
                   cerr << "b" << endl; */
         return false;
       }
-      H3DDouble u = ( normal * ( point - from ) ) / denom; 
+      HAPIFloat u = ( normal * ( point - from ) ) / denom; 
       /*      if( result.normal.z == 0.5 )
               cerr << u << endl;*/
-      if( u <= 1 + Constants::f_epsilon && u >= 0 - Constants::f_epsilon ) {
+      if( u <= 1 + Constants::epsilon && u >= 0 - Constants::epsilon ) {
 
         if( u < 0 ) u = 0;
         if( u > 1 ) u = 1;
@@ -103,7 +103,7 @@ void AABoxBound::render() {
   glEnable( GL_LIGHTING );
 }
 
-void AABoxBound::fitAroundPoints( const vector< Vec3d > &points ) {
+void AABoxBound::fitAroundPoints( const vector< Vec3 > &points ) {
   if( points.size() == 0 ) return;
   min = points[0];
   max = points[0];
@@ -120,42 +120,42 @@ void AABoxBound::fitAroundPoints( const vector< Vec3d > &points ) {
 }
 
 
-bool AABoxBound::boundIntersect( const Vec3d &from, 
-                                 const Vec3d &to ) {
-  Vec3d c = 0.5f*(min+max);
-	Vec3d e = max-c;
-	Vec3d m = 0.5f*(from+to);
-	Vec3d d = to-m;
+bool AABoxBound::boundIntersect( const Vec3 &from, 
+                                 const Vec3 &to ) {
+  Vec3 c = 0.5f*(min+max);
+	Vec3 e = max-c;
+	Vec3 m = 0.5f*(from+to);
+	Vec3 d = to-m;
 
 	m = m-c;
 
-	H3DDouble adx = H3DAbs(d.x);
-	if (H3DAbs(m.x) > e.x + adx) return false;
-	H3DDouble ady = H3DAbs(d.y);
-	if (H3DAbs(m.y) > e.y + ady) return false;
-	H3DDouble adz = H3DAbs(d.z);
-	if (H3DAbs(m.z) > e.z + adz) return false;
+  HAPIFloat adx = H3DUtil::H3DAbs(d.x);
+	if (H3DUtil::H3DAbs(m.x) > e.x + adx) return false;
+  HAPIFloat ady = H3DUtil::H3DAbs(d.y);
+	if (H3DUtil::H3DAbs(m.y) > e.y + ady) return false;
+	HAPIFloat adz = H3DUtil::H3DAbs(d.z);
+	if (H3DUtil::H3DAbs(m.z) > e.z + adz) return false;
 
   //	bias with an epsilon to increase robustness when segment is parallel 
   // to a box plane...
-	H3DDouble epsilon = (e*e)/100000;
+	HAPIFloat epsilon = (e*e)/100000;
 	adx += epsilon;
 	ady += epsilon;
 	adz += epsilon;
 
-	if (H3DAbs(m.y*d.z - m.z*d.y) > e.y*adz + e.z*ady) return false;
-	if (H3DAbs(m.z*d.x - m.x*d.z) > e.x*adz + e.z*adx) return false;
-	if (H3DAbs(m.x*d.y - m.y*d.x) > e.x*ady + e.y*adx) return false;
+	if (H3DUtil::H3DAbs(m.y*d.z - m.z*d.y) > e.y*adz + e.z*ady) return false;
+	if (H3DUtil::H3DAbs(m.z*d.x - m.x*d.z) > e.x*adz + e.z*adx) return false;
+	if (H3DUtil::H3DAbs(m.x*d.y - m.y*d.x) > e.x*ady + e.y*adx) return false;
 
 	return true;
 }
 
-Vec3d AABoxBound::closestPoint( const Vec3d &p ) {
+Vec3 AABoxBound::closestPoint( const Vec3 &p ) {
   assert( false );
-  return Vec3d();
+  return Vec3();
 }
 
-bool AABoxBound::insideBound( const Vec3d &p ) {
+bool AABoxBound::insideBound( const Vec3 &p ) {
   return ( p.x <= max.x &&
            p.x >= min.x &&
            p.y <= max.y &&
@@ -164,53 +164,53 @@ bool AABoxBound::insideBound( const Vec3d &p ) {
            p.z >= min.z );
 }
 
-Vec3d SphereBound::closestPoint( const Vec3d &p ) {
-  Vec3d dir = p - center;
-  if( dir * dir < Constants::f_epsilon )
-    return center + Vec3d( radius, 0, 0 ); 
+Vec3 SphereBound::closestPoint( const Vec3 &p ) {
+  Vec3 dir = p - center;
+  if( dir * dir < Constants::epsilon )
+    return center + Vec3( radius, 0, 0 ); 
   else {
     dir.normalize();
     return center + dir * radius;
   }
 }
 
-bool SphereBound::insideBound( const Vec3d &p ) {
-  Vec3d v = p - center;
-  H3DDouble d2 = v * v;
-  H3DDouble r2 = radius * radius;
+bool SphereBound::insideBound( const Vec3 &p ) {
+  Vec3 v = p - center;
+  HAPIFloat d2 = v * v;
+  HAPIFloat r2 = radius * radius;
   return d2 <= r2;
 }
 
-bool SphereBound::boundIntersect( const Vec3d &from, 
-                                  const Vec3d &to ) {
-  Vec3d ab = to - from;
-	Vec3d ap = center-from;
-	Vec3d bp = center-to;
-	H3DDouble r2 = radius * radius;
+bool SphereBound::boundIntersect( const Vec3 &from, 
+                                  const Vec3 &to ) {
+  Vec3 ab = to - from;
+	Vec3 ap = center-from;
+	Vec3 bp = center-to;
+	HAPIFloat r2 = radius * radius;
 
-	H3DDouble e = ap * ab;
+	HAPIFloat e = ap * ab;
 	if (e<0)  return ap*ap <= r2;
 	
-	H3DDouble f = ab * ab;
+	HAPIFloat f = ab * ab;
 	if (e>=f) return bp*bp <= r2;
 	
 	return (ap*ap - e*e/f) <= r2;
 }
 
-bool SphereBound::lineIntersect( const Vec3d &from, 
-                                 const Vec3d &to,
+bool SphereBound::lineIntersect( const Vec3 &from, 
+                                 const Vec3 &to,
                                  IntersectionInfo &result ) {
-  Vec3d start_point = from - center;
-  Vec3d end_point = to - center;
+  Vec3 start_point = from - center;
+  Vec3 end_point = to - center;
   bool flip_normal = false;
 
   // p is the starting point of the ray used for determinining intersection
   // v is the vector between this starting point and the end point.
   // the starting point must be outside the sphere.
-  Vec3d p, v;
-  H3DDouble r2 = radius * radius;
+  Vec3 p, v;
+  HAPIFloat r2 = radius * radius;
 
-  H3DDouble a0  = start_point * start_point - r2;
+  HAPIFloat a0  = start_point * start_point - r2;
   if (a0 <= 0) {
     // start_point is inside sphere
     a0 = end_point * end_point - r2;
@@ -230,27 +230,27 @@ bool SphereBound::lineIntersect( const Vec3d &from,
     v = end_point - start_point;
     
     // check that the line will intersect 
-    H3DDouble a1 = v * p;
+    HAPIFloat a1 = v * p;
     if (a1 >= 0) {
       // v is pointing away from the sphere so no intersection
       return false;
     }
   }
   // use implicit quadratic formula to find the roots
-  H3DDouble a = v.x*v.x + v.y*v.y + v.z*v.z;
-  H3DDouble b = 2 * (p.x*v.x + p.y*v.y + p.z*v.z);
-  H3DDouble c = p.x*p.x + p.y*p.y + p.z*p.z - r2;
+  HAPIFloat a = v.x*v.x + v.y*v.y + v.z*v.z;
+  HAPIFloat b = 2 * (p.x*v.x + p.y*v.y + p.z*v.z);
+  HAPIFloat c = p.x*p.x + p.y*p.y + p.z*p.z - r2;
 
-  H3DDouble s = b*b - 4*a*c;
+  HAPIFloat s = b*b - 4*a*c;
 
-  H3DDouble u;
+  HAPIFloat u;
   if( s == 0.0 ) {
     // line is a tangent to the sphere
     u = -b/(2*a);
   } else if( s > 0.0 ) {
     // line intersects sphere in two points
-    H3DDouble u0 = (-b + sqrt(s))/(2*a);
-    H3DDouble u1 = (-b - sqrt(s))/(2*a);
+    HAPIFloat u0 = (-b + sqrt(s))/(2*a);
+    HAPIFloat u1 = (-b - sqrt(s))/(2*a);
     u = u0 < u1 ? u0 : u1;
   }  else {
     // line does not intersect
@@ -288,21 +288,21 @@ void SphereBound::render( ) {
   glEnable( GL_LIGHTING );
 }
 
-void SphereBound::fitAroundPoints( const vector< Vec3d > &points ) {
+void SphereBound::fitAroundPoints( const vector< Vec3 > &points ) {
 	AABoxBound box;
   box.fitAroundPoints( points );
-	Vec3d c = 0.5 * (box.min + box.max);
-	H3DDouble r = 0;
+	Vec3 c = 0.5 * (box.min + box.max);
+	HAPIFloat r = 0;
 	
   //	find largest square distance
 	for(unsigned int i=0 ; i<points.size() ; i++) {
-    Vec3d from_center = points[i]-c;
-    H3DDouble d = from_center * from_center;
+    Vec3 from_center = points[i]-c;
+    HAPIFloat d = from_center * from_center;
     if (d > r) r = d;
   }
 	
   center = c;
-  radius = H3DSqrt( r );
+  radius = H3DUtil::H3DSqrt( r );
 }
 
 struct StackElement {
@@ -336,7 +336,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 			continue;
 		}
 
-		std::vector<Vec3d > points;
+		std::vector<Vec3 > points;
 		points.resize( stack_triangles.size() * 3 );
 		for (unsigned int i=0 ; i<stack_triangles.size() ; i++ ) {
       points[i*3]   = stack_triangles[i].a;
@@ -350,10 +350,10 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 		
     //	DIVIDE SUBSET AND RECURSE
     //	longest axis
-		Vec3d axis = stack_tree->bound->longestAxis();
+		Vec3 axis = stack_tree->bound->longestAxis();
 
     //	middle point of current set
-		Vec3d mid(0,0,0);
+		Vec3 mid(0,0,0);
 
     for(unsigned int i = 0 ; i < stack_triangles.size() ; i++) {
       mid = mid + stack_triangles[i].pointRepresentation();
@@ -366,7 +366,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 		std::vector<Triangle> right;
     
 		for( unsigned int i = 0 ; i<stack_triangles.size() ; i++ ) {
-      Vec3d mid_to_point = stack_triangles[i].pointRepresentation() - mid;
+      Vec3 mid_to_point = stack_triangles[i].pointRepresentation() - mid;
       if ( mid_to_point * axis < 0 )
 				left.push_back(stack_triangles[i]);
 			else
@@ -444,100 +444,100 @@ void BinaryBoundTree::render( int depth) {
   }
 }
 
-Vec3d Triangle::closestPoint( const Vec3d &p ) {
+Vec3 Triangle::closestPoint( const Vec3 &p ) {
  
-  Vec3d ab = Vec3d(b)-Vec3d(a);
-  Vec3d ac = Vec3d(c)-Vec3d(a);
-  Vec3d ap = Vec3d(p)-Vec3d(a) ;
+  Vec3 ab = Vec3(b)-Vec3(a);
+  Vec3 ac = Vec3(c)-Vec3(a);
+  Vec3 ap = Vec3(p)-Vec3(a) ;
 
-  H3DDouble d1 = ab * ap;
-  H3DDouble d2 = ac * ap;
-  if( d1 <= Constants::d_epsilon && d2 <= Constants::d_epsilon ) {
+  HAPIFloat d1 = ab * ap;
+  HAPIFloat d2 = ac * ap;
+  if( d1 <= Constants::epsilon && d2 <= Constants::epsilon ) {
     //cerr << "1" << endl;
     return a;
   }
 
-  Vec3d bp = p - b;
-  H3DDouble d3 = ab * bp;
-  H3DDouble d4 = ac * bp;
+  Vec3 bp = p - b;
+  HAPIFloat d3 = ab * bp;
+  HAPIFloat d4 = ac * bp;
 
-  if( d3 >= -Constants::d_epsilon && d4 <= d3 ) {
+  if( d3 >= -Constants::epsilon && d4 <= d3 ) {
     //    cerr << "2" << endl;
     return b;
   }
   
-  H3DDouble vc = d1*d4 - d3*d2;
-  if( vc <= Constants::d_epsilon && 
-      d1 >= -Constants::d_epsilon && 
-      d3 <= Constants::d_epsilon ) {
+  HAPIFloat vc = d1*d4 - d3*d2;
+  if( vc <= Constants::epsilon && 
+      d1 >= -Constants::epsilon && 
+      d3 <= Constants::epsilon ) {
     // cerr << "3" << endl;
-    H3DDouble v = d1 / ( d1 - d3 );
-    return Vec3d(a) + v * ab;
+    HAPIFloat v = d1 / ( d1 - d3 );
+    return Vec3(a) + v * ab;
   }
 
-  Vec3d cp = p - c;
-  H3DDouble d5 = ab * cp;
-  H3DDouble d6 = ac * cp;
-  if( d6 >= -Constants::d_epsilon && d5 <= d6 ) {
+  Vec3 cp = p - c;
+  HAPIFloat d5 = ab * cp;
+  HAPIFloat d6 = ac * cp;
+  if( d6 >= -Constants::epsilon && d5 <= d6 ) {
     //cerr << "4" << endl;
     return c;
   }
 
-  H3DDouble vb = d5*d2 - d1*d6;
-  if( vb <= Constants::d_epsilon && 
-      d2 >= -Constants::d_epsilon &&
-      d6 <= Constants::d_epsilon ) {
+  HAPIFloat vb = d5*d2 - d1*d6;
+  if( vb <= Constants::epsilon && 
+      d2 >= -Constants::epsilon &&
+      d6 <= Constants::epsilon ) {
     //cerr << "5" << endl;
-    H3DDouble w = d2 / ( d2 - d6 );
+    HAPIFloat w = d2 / ( d2 - d6 );
     return a + w * ac;
   }
   
-  H3DDouble va = d3*d6 - d5*d4;
-  if( va <= Constants::d_epsilon &&
-      (d4-d3) >= -Constants::d_epsilon &&
-      (d5-d6) >= -Constants::d_epsilon ) {
+  HAPIFloat va = d3*d6 - d5*d4;
+  if( va <= Constants::epsilon &&
+      (d4-d3) >= -Constants::epsilon &&
+      (d5-d6) >= -Constants::epsilon ) {
     //cerr << "6" << endl;
-    H3DDouble w = (d4-d3) /((d4 -d3) + (d5 - d6 ) );
-    return Vec3d(b) + w * (Vec3d(c)-Vec3d(b));
+    HAPIFloat w = (d4-d3) /((d4 -d3) + (d5 - d6 ) );
+    return Vec3(b) + w * (Vec3(c)-Vec3(b));
   }
 
   //cerr << "7" << endl;
-  H3DDouble denom = 1 / ( va + vb + vc );
-  H3DDouble v = vb * denom;
-  H3DDouble w = vc * denom;
-  return Vec3d(a) + ab * v + ac * w;
+  HAPIFloat denom = 1 / ( va + vb + vc );
+  HAPIFloat v = vb * denom;
+  HAPIFloat w = vc * denom;
+  return Vec3(a) + ab * v + ac * w;
   /*
-  Vec3d normal = ca % cb;
-  if( H3DAbs( normal * normal ) > Constants::d_epsilon ) {
+  Vec3 normal = ca % cb;
+  if( H3DUtil::H3DAbs( normal * normal ) > Constants::epsilon ) {
     normal.normalizeSafe();
     
-    Vec3d pp = p - (-ap).dotProduct( -normal ) * normal;
+    Vec3 pp = p - (-ap).dotProduct( -normal ) * normal;
     
     // determine dominant axis
     int axis;
-    if (H3DAbs( normal.x ) > H3DAbs( normal.y )) {
-      if (H3DAbs( normal.x ) > H3DAbs( normal.z )) axis = 0; 
+    if (H3DUtil::H3DAbs( normal.x ) > H3DUtil::H3DAbs( normal.y )) {
+      if (H3DUtil::H3DAbs( normal.x ) > H3DUtil::H3DAbs( normal.z )) axis = 0; 
       else axis = 2;
     } else {
-      if (H3DAbs( normal.y ) > H3DAbs( normal.z )) axis = 1; 
+      if (H3DUtil::H3DAbs( normal.y ) > H3DUtil::H3DAbs( normal.z )) axis = 1; 
       else axis = 2;
     }
     
     int u_axis = (axis + 1 ) % 3;
     int v_axis = (axis + 2 ) % 3;
     
-    Vec3d cp = pp - c;
+    Vec3 cp = pp - c;
     
-    H3DDouble denom = (ca[u_axis] * cb[v_axis] - ca[v_axis] * cb[u_axis]);
+    HAPIFloat denom = (ca[u_axis] * cb[v_axis] - ca[v_axis] * cb[u_axis]);
     
-    H3DDouble du = 
+    HAPIFloat du = 
       (cp[u_axis] * cb[v_axis] - cp[v_axis] * cb[u_axis]) / denom;
     
     if( du >= 0 && du <= 1 ) {
-      H3DDouble dv = 
+      HAPIFloat dv = 
         (ca[u_axis] * cp[v_axis] - ca[v_axis] * cp[u_axis]) / denom;
       if( dv >= 0 && dv <= 1 ) {
-        H3DDouble dw = 1 - du - dv;
+        HAPIFloat dw = 1 - du - dv;
         if( dw >= 0 && dw <= 1 ) {
           return pp;
         }
@@ -547,16 +547,16 @@ Vec3d Triangle::closestPoint( const Vec3d &p ) {
 
   // point is on edge.
 
-  Vec3d bp = p-b ;
-  Vec3d cp = p-c ;
+  Vec3 bp = p-b ;
+  Vec3 cp = p-c ;
 
-  H3DDouble ca_length2 = ca.lengthSqr();
-  H3DDouble cb_length2 = cb.lengthSqr();
-  H3DDouble ab_length2 = ab.lengthSqr();
+  HAPIFloat ca_length2 = ca.lengthSqr();
+  HAPIFloat cb_length2 = cb.lengthSqr();
+  HAPIFloat ab_length2 = ab.lengthSqr();
 
-  H3DDouble ca_t = (cp * ca) / ca_length2;
-  H3DDouble cb_t = (cp * cb) / cb_length2;
-  H3DDouble ab_t = (ap * ab) / ab_length2;
+  HAPIFloat ca_t = (cp * ca) / ca_length2;
+  HAPIFloat cb_t = (cp * cb) / cb_length2;
+  HAPIFloat ab_t = (ap * ab) / ab_length2;
 
   if( ca_t < 0 && cb_t < 0 )
     return c;
@@ -571,16 +571,16 @@ Vec3d Triangle::closestPoint( const Vec3d &p ) {
   bool discard_cb = cb_t < 0 || cb_t > 1;;
   bool discard_ab = ab_t < 0 || ab_t > 1;;
 
-  Vec3d ca_p = c + ca * ca_t;
-  Vec3d cb_p = c + cb * cb_t;
-  Vec3d ab_p = a + ab * ab_t;
+  Vec3 ca_p = c + ca * ca_t;
+  Vec3 cb_p = c + cb * cb_t;
+  Vec3 ab_p = a + ab * ab_t;
   
-  H3DDouble dist_cap = (ca_p - p).lengthSqr();  
-  H3DDouble dist_cbp = (cb_p - p).lengthSqr();  
-  H3DDouble dist_abp = (ab_p - p).lengthSqr();  
+  HAPIFloat dist_cap = (ca_p - p).lengthSqr();  
+  HAPIFloat dist_cbp = (cb_p - p).lengthSqr();  
+  HAPIFloat dist_abp = (ab_p - p).lengthSqr();  
 
-  Vec3d closest;
-  H3DDouble dist;
+  Vec3 closest;
+  HAPIFloat dist;
 
   if( !discard_ca ) {
     closest = ca_p;
@@ -605,57 +605,57 @@ Vec3d Triangle::closestPoint( const Vec3d &p ) {
   return closest;*/
 }
 
-bool Triangle::lineIntersect( const Vec3d &from, 
-                              const Vec3d &to,
+bool Triangle::lineIntersect( const Vec3 &from, 
+                              const Vec3 &to,
                               IntersectionInfo &result ) {
-  Vec3d ca = a-c;
-  Vec3d cb = b-c;
-  Vec3d dir = to - from;
-  Vec3d normal = ca % cb;
-  if( H3DAbs( normal * normal ) < Constants::d_epsilon ||
-      H3DAbs( dir * dir ) < Constants::d_epsilon ||
-      H3DAbs( normal * dir ) < Constants::d_epsilon ) {
+  Vec3 ca = a-c;
+  Vec3 cb = b-c;
+  Vec3 dir = to - from;
+  Vec3 normal = ca % cb;
+  if( H3DUtil::H3DAbs( normal * normal ) < Constants::epsilon ||
+      H3DUtil::H3DAbs( dir * dir ) < Constants::epsilon ||
+      H3DUtil::H3DAbs( normal * dir ) < Constants::epsilon ) {
     return false;
   }
   normal.normalizeSafe();
 
-  H3DDouble dir_length = dir.length();
+  HAPIFloat dir_length = dir.length();
   dir.normalizeSafe();
 
-  H3DDouble t = ( normal * ( c - from ) ) / ( normal * dir );
+  HAPIFloat t = ( normal * ( c - from ) ) / ( normal * dir );
   // check that the point is within the line segement
   if( t < 0 || t > dir_length ) return false;
 
-  Vec3d p = from + t * dir;
+  Vec3 p = from + t * dir;
 
   // determine dominant axis
   int axis;
-  if (H3DAbs( normal.x ) > H3DAbs( normal.y )) {
-    if (H3DAbs( normal.x ) > H3DAbs( normal.z )) axis = 0; 
+  if (H3DUtil::H3DAbs( normal.x ) > H3DUtil::H3DAbs( normal.y )) {
+    if (H3DUtil::H3DAbs( normal.x ) > H3DUtil::H3DAbs( normal.z )) axis = 0; 
     else axis = 2;
   } else {
-    if (H3DAbs( normal.y ) > H3DAbs( normal.z )) axis = 1; 
+    if (H3DUtil::H3DAbs( normal.y ) > H3DUtil::H3DAbs( normal.z )) axis = 1; 
     else axis = 2;
   }
 
   int u_axis = (axis + 1 ) % 3;
   int v_axis = (axis + 2 ) % 3;
 
-  Vec3d cp = p - c;
+  Vec3 cp = p - c;
 
-  H3DDouble denom = (ca[u_axis] * cb[v_axis] - ca[v_axis] * cb[u_axis]);
+  HAPIFloat denom = (ca[u_axis] * cb[v_axis] - ca[v_axis] * cb[u_axis]);
 
-  H3DDouble du = 
+  HAPIFloat du = 
     (cp[u_axis] * cb[v_axis] - cp[v_axis] * cb[u_axis]) / denom;
 
   if( du < 0 || du > 1 ) return false;
 
-  H3DDouble dv = 
+  HAPIFloat dv = 
     (ca[u_axis] * cp[v_axis] - ca[v_axis] * cp[u_axis]) / denom;
 
   if( dv < 0 || dv > 1 ) return false;
 
-  H3DDouble dw = 1 - du - dv;
+  HAPIFloat dw = 1 - du - dv;
 
   if( dw < 0 || dw > 1 ) {
     return false;
@@ -685,8 +685,8 @@ void BinaryBoundTree::clearCollidedFlag() {
   }
 }
 
-bool BinaryBoundTree::lineIntersect( const Vec3d &from, 
-                                     const Vec3d &to,
+bool BinaryBoundTree::lineIntersect( const Vec3 &from, 
+                                     const Vec3 &to,
                                      IntersectionInfo &result ) {
   if ( isLeaf() )	{
     // TODO: find closest?
@@ -709,22 +709,22 @@ bool BinaryBoundTree::lineIntersect( const Vec3d &from,
 	}
 }
 
-Matrix3d covarianceMatrix( const vector< Vec3d >&points ) {
+Matrix3 covarianceMatrix( const vector< Vec3 >&points ) {
   // TODO: if no points?
 
   unsigned int nr_points = points.size();
 
-	Vec3d c = points[0];
+	Vec3 c = points[0];
 	for(unsigned int i=1 ; i < nr_points; i++) 
     c+= points[i];
 
 	c /= points.size();
 	
-  H3DDouble e00 = 0, e01 = 0, e02 = 0,
+  HAPIFloat e00 = 0, e01 = 0, e02 = 0,
                     e11 = 0, e12 = 0,
                              e22 = 0;
 	for (unsigned int i = 0; i < nr_points; i++)	{
-		Vec3d p = points[i] - c;
+		Vec3 p = points[i] - c;
 		
 		e00 += p.x * p.x;
 		e11 += p.y * p.y;
@@ -734,7 +734,7 @@ Matrix3d covarianceMatrix( const vector< Vec3d >&points ) {
 		e12 += p.y * p.z;
 	}
 	
-	Matrix3d cov;
+	Matrix3 cov;
 	cov[0][0] = e00 / nr_points;
 	cov[1][1] = e11 / nr_points;
 	cov[2][2] = e22 / nr_points;
@@ -745,19 +745,19 @@ Matrix3d covarianceMatrix( const vector< Vec3d >&points ) {
 	return cov;
 }
 
-void symmetricSchurDecomposition( const Matrix3d &A, 
+void symmetricSchurDecomposition( const Matrix3 &A, 
                                   unsigned int p, 
                                   unsigned int q, 
-                                  H3DDouble &c, 
-                                  H3DDouble &s) {
+                                  HAPIFloat &c, 
+                                  HAPIFloat &s) {
   // TODO: epsilon??
-	if (H3DAbs(A[p][q]) > 0.0001f) {
-		H3DDouble r = (A[q][q] - A[p][p]) / (2.0f * A[p][q]);
-		H3DDouble t = (r >= 0.0f ? 
-                  1.0f / (r + H3DSqrt(1.0f + r*r)) : 
-                  -1.0f / (-r + H3DSqrt(1.0f + r*r)) );
+	if (H3DUtil::H3DAbs(A[p][q]) > 0.0001f) {
+		HAPIFloat r = (A[q][q] - A[p][p]) / (2.0f * A[p][q]);
+		HAPIFloat t = (r >= 0.0f ? 
+                  1.0f / (r + H3DUtil::H3DSqrt(1.0f + r*r)) : 
+                  -1.0f / (-r + H3DUtil::H3DSqrt(1.0f + r*r)) );
 		
-		c = 1.0f / H3DSqrt(1.0f + t*t);
+		c = 1.0f / H3DUtil::H3DSqrt(1.0f + t*t);
 		s = t * c;
 	}	else{
 		c = 1.0f;
@@ -765,25 +765,25 @@ void symmetricSchurDecomposition( const Matrix3d &A,
 	}
 }
 
-void eigenValuesAndEigenVectorsJacobi(const Matrix3d& A, 
-                                      Vec3d& eigValues, 
-                                      Matrix3d& eigVectors, 
+void eigenValuesAndEigenVectorsJacobi(const Matrix3& A, 
+                                      Vec3& eigValues, 
+                                      Matrix3& eigVectors, 
                                       const unsigned int maxIterations = 50 ) {
   //!NOTE: on return rows (not cols) of eigVectors contains eigenvalues
 
-	Matrix3d a = A;
-	Matrix3d v;
+	Matrix3 a = A;
+	Matrix3 v;
 	
 	unsigned int i, j, n, p, q;
-	H3DDouble prevoff, c, s;
-	Matrix3d J, b, t;
+	HAPIFloat prevoff, c, s;
+	Matrix3 J, b, t;
 
   // Repeat for some maximum number of iterations
 	for (n = 0; n < maxIterations; n++)	{
 		p = 0; q = 1;
 		for ( i = 0; i < 3; i++) for (j = 0; j < 3; j++ ) {
 			if (i == j) continue;
-			if (H3DAbs(a[i][j]) > H3DAbs(a[p][q])) {p = i; q = j;}
+			if (H3DUtil::H3DAbs(a[i][j]) > H3DUtil::H3DAbs(a[p][q])) {p = i; q = j;}
 		}
 
 		symmetricSchurDecomposition(a, p, q, c, s);
@@ -801,7 +801,7 @@ void eigenValuesAndEigenVectorsJacobi(const Matrix3d& A,
 		a = (J.transpose() * a) * J;
     
     //	eval norm
-		H3DDouble off = 0.0;
+		HAPIFloat off = 0.0;
 		for (i = 0; i < 3; i++) for (j = 0; j < 3; j++)	{
 			if (i == j) continue;
 			off += a[i][j] * a[i][j];
@@ -812,15 +812,15 @@ void eigenValuesAndEigenVectorsJacobi(const Matrix3d& A,
 		prevoff = off;
 	}
 	
-	eigValues = Vec3d(a[0][0],a[1][1],a[2][2]);
+	eigValues = Vec3(a[0][0],a[1][1],a[2][2]);
 	eigVectors = v.transpose();
 }
 
-void OrientedBoxBound::fitAroundPoints( const vector< Vec3d > &points ) {
-  Matrix3d covariance = covarianceMatrix( points );
+void OrientedBoxBound::fitAroundPoints( const vector< Vec3 > &points ) {
+  Matrix3 covariance = covarianceMatrix( points );
 	
-	Vec3d eig_values;
-	Matrix3d eig_vectors;
+	Vec3 eig_values;
+	Matrix3 eig_vectors;
 
 	eigenValuesAndEigenVectorsJacobi(covariance, eig_values, eig_vectors);
 	
@@ -842,19 +842,19 @@ void OrientedBoxBound::fitAroundPoints( const vector< Vec3d > &points ) {
     }
   }
 
-	Vec3d principal( eig_vectors[length_order[0]][0],
+	Vec3 principal( eig_vectors[length_order[0]][0],
                    eig_vectors[length_order[0]][1],
                    eig_vectors[length_order[0]][2] );
 
-	Vec3d secondary( eig_vectors[length_order[1]][0],
+	Vec3 secondary( eig_vectors[length_order[1]][0],
                    eig_vectors[length_order[1]][1],
                    eig_vectors[length_order[1]][2] );
 
   principal.normalize();
   secondary.normalize();
-  Vec3d v = principal % secondary;
+  Vec3 v = principal % secondary;
 
-	Matrix3d frame( principal.x, principal.y, principal.z,
+	Matrix3 frame( principal.x, principal.y, principal.z,
                   secondary.x, secondary.y, secondary.z, 
                   v.x, v.y, v.z );
 		
@@ -862,7 +862,7 @@ void OrientedBoxBound::fitAroundPoints( const vector< Vec3d > &points ) {
   min = frame * points[0];
 	max = min;
 	for(unsigned int i=1 ; i<points.size() ; i++)	{
-		Vec3d pt = frame * points[i];
+		Vec3 pt = frame * points[i];
 		
 		if (pt.x < min.x) min.x = pt.x;
 		if (pt.y < min.y) min.y = pt.y;
@@ -881,21 +881,21 @@ void OrientedBoxBound::fitAroundPoints( const vector< Vec3d > &points ) {
   halfsize = 0.5f*(max-min);
 }
 
-bool OrientedBoxBound::boundIntersect( const Vec3d &from, 
-                                       const Vec3d &to ) {
-  Vec3d rp = orientation * from;
-	Vec3d rq = orientation * to;
+bool OrientedBoxBound::boundIntersect( const Vec3 &from, 
+                                       const Vec3 &to ) {
+  Vec3 rp = orientation * from;
+	Vec3 rq = orientation * to;
 	
 	return AABoxBound::boundIntersect( rp, rq );
 }
 
-Vec3d OrientedBoxBound::closestPoint( const Vec3d &p ) {
+Vec3 OrientedBoxBound::closestPoint( const Vec3 &p ) {
   assert( false );
-  return Vec3d();
+  return Vec3();
 }
 
-bool OrientedBoxBound::insideBound( const Vec3d &p ) {
-  Vec3d rp = orientation * p; 
+bool OrientedBoxBound::insideBound( const Vec3 &p ) {
+  Vec3 rp = orientation * p; 
   return ( rp.x <= max.x &&
            rp.x >= min.x &&
            rp.y <= max.y &&
@@ -905,7 +905,7 @@ bool OrientedBoxBound::insideBound( const Vec3d &p ) {
 }
 
 void OrientedBoxBound::render( ) {
-  Vec3d center = -orientation * ((max + min)/2);
+  Vec3 center = -orientation * ((max + min)/2);
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glDisable( GL_LIGHTING );
@@ -914,10 +914,10 @@ void OrientedBoxBound::render( ) {
   else
     glColor3d( 1, 1, 0 );
   glTranslated( center.x, center.y, center.z );
-  glRotated( -orientation.angle *180 / H3D::Constants::pi, 
+  glRotated( -orientation.angle *180 / H3DUtil::Constants::pi, 
              orientation.axis.x, orientation.axis.y, orientation.axis.z );
-  Vec3d minf( - halfsize );
-  Vec3d maxf( halfsize );
+  Vec3 minf( - halfsize );
+  Vec3 maxf( halfsize );
   glBegin( GL_LINE_STRIP );
   glVertex3d( minf.x, minf.y, minf.z );
   glVertex3d( minf.x, maxf.y, minf.z );
@@ -948,26 +948,26 @@ void OrientedBoxBound::render( ) {
   glPopMatrix();
 }
 
-void Triangle::getConstraints( const Vec3d &point,
-                               H3DDouble radius,
+void Triangle::getConstraints( const Vec3 &point,
+                               HAPIFloat radius,
                                std::vector< PlaneConstraint > &constraints ) {
-  Vec3d closest_point = closestPoint( point );
+  Vec3 closest_point = closestPoint( point );
   //cerr << closest_point << endl;
-  Vec3d normal = point - closest_point;
-  H3DDouble n = normal.length();
+  Vec3 normal = point - closest_point;
+  HAPIFloat n = normal.length();
   //cerr << normal.length() << endl;
   normal.normalizeSafe();
   //cerr << closest_point << endl;
   constraints.push_back( PlaneConstraint( closest_point, normal ) );
 }
 
-void Triangle::getConstraints( const Vec3d &point,
-                               H3DDouble radius,
-                               const Matrix4d &matrix,
+void Triangle::getConstraints( const Vec3 &point,
+                               HAPIFloat radius,
+                               const Matrix4 &matrix,
                                std::vector< PlaneConstraint > &constraints ) {
-  Vec3d oa = a;
-  Vec3d ob = b;
-  Vec3d oc = c;
+  Vec3 oa = a;
+  Vec3 ob = b;
+  Vec3 oc = c;
   a = (matrix * a);
   b = (matrix * b);
   c = (matrix * c);
@@ -978,8 +978,8 @@ void Triangle::getConstraints( const Vec3d &point,
 }
 
 
-void BinaryBoundTree::getConstraints( const Vec3d &point,
-                                      H3DDouble radius,
+void BinaryBoundTree::getConstraints( const Vec3 &point,
+                                      HAPIFloat radius,
                                       std::vector< PlaneConstraint > &constraints ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
@@ -994,9 +994,9 @@ void BinaryBoundTree::getConstraints( const Vec3d &point,
   }
 }
 
-void BinaryBoundTree::getConstraints( const Vec3d &point,
-                                      H3DDouble radius,
-                                      const Matrix4d &matrix,
+void BinaryBoundTree::getConstraints( const Vec3 &point,
+                                      HAPIFloat radius,
+                                      const Matrix4 &matrix,
                                       std::vector< PlaneConstraint > &constraints ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
@@ -1012,21 +1012,21 @@ void BinaryBoundTree::getConstraints( const Vec3d &point,
 }
 
 
-void BinaryBoundTree::getTrianglesWithinRadius( const Vec3d &p,
-                                                H3DDouble radius,
+void BinaryBoundTree::getTrianglesWithinRadius( const Vec3 &p,
+                                                HAPIFloat radius,
                                                 vector< Triangle > &result ) {
-  H3DDouble r2 = radius * radius;
+  HAPIFloat r2 = radius * radius;
   if ( isLeaf() )	{
     for( vector< Triangle >::iterator i = triangles.begin();
          i != triangles.end(); i++ ) {
-      Vec3d cp = (*i).closestPoint( p );
+      Vec3 cp = (*i).closestPoint( p );
       if( (cp - p).lengthSqr() <= r2 )
         result.push_back( *i );
     }
     //cerr << "!: " << triangles.size() << endl;
            //result.insert( result.end(), triangles.begin(), triangles.end() );
 	}	else 	{
-    Vec3d cp = bound->boundClosestPoint( p );
+    Vec3 cp = bound->boundClosestPoint( p );
     if( (cp - p).lengthSqr() > r2 && !bound->insideBound(p) ) return;
 
     if (left.get()) left->getTrianglesWithinRadius( p, radius, result );

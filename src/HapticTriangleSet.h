@@ -31,7 +31,7 @@
 
 #include <HAPIHapticShape.h>
 
-namespace H3D {
+namespace HAPI {
 
   /// A shape defined by a set of triangles.
   class HAPI_API HapticTriangleSet: public HAPIHapticShape {
@@ -40,7 +40,7 @@ namespace H3D {
     HapticTriangleSet( const vector< Bounds::Triangle > &_triangles,
                        void *_userdata,
                        HAPISurfaceObject *_surface,
-                       const H3D::ArithmeticTypes::Matrix4d & _transform ):
+                       const Matrix4 & _transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       triangles( _triangles ) {}
 
@@ -49,16 +49,16 @@ namespace H3D {
                        Iterator end,
                        void *_userdata,
                        HAPISurfaceObject *_surface,
-                       const H3D::ArithmeticTypes::Matrix4d & _transform ):
+                       const Matrix4 & _transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       triangles( begin, end ) {}
 
-    virtual bool lineIntersect( const Vec3d &from, 
-                                const Vec3d &to,
+    virtual bool lineIntersect( const Vec3 &from, 
+                                const Vec3 &to,
                                 Bounds::IntersectionInfo &result );
 
-    virtual void getConstraints( const Vec3d &point,
-                                 H3DDouble radius,
+    virtual void getConstraints( const Vec3 &point,
+                                 HAPIFloat radius,
                                  std::vector< PlaneConstraint > &constraints );
 
     /// The triangles.

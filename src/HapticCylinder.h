@@ -32,17 +32,17 @@
 #include <HAPISurfaceObject.h>
 #include <HAPIHapticShape.h>
 
-namespace H3D {
+namespace HAPI {
 
   /// Class for rendering a haptic cylinder.
   class HAPI_API HapticCylinder: public HAPIHapticShape {
   public:
     /// Constructor.
-    HapticCylinder( H3DFloat _height,
-                    H3DFloat _radius,
+    HapticCylinder( HAPIFloat _height,
+                    HAPIFloat _radius,
                     void *_userdata,
                     HAPISurfaceObject *_surface,
-                    const Matrix4d &_transform ):
+                    const Matrix4 &_transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       height( _height ),
       radius( _radius ) {}
@@ -61,10 +61,10 @@ namespace H3D {
     /// is touched. 
     /// \returns true if there is an intersection, false otherwise.
     ///
-    virtual bool intersectSurface( const Vec3f &start_point, 
-                                   const Vec3f &end_point,
-                                   Vec3f &intersection_point, 
-                                   Vec3f &intersection_normal,
+    virtual bool intersectSurface( const Vec3 &start_point, 
+                                   const Vec3 &end_point,
+                                   Vec3 &intersection_point, 
+                                   Vec3 &intersection_normal,
                                    HLenum &face );
 
     /// Find the closest point to query_point on the surface of the
@@ -76,15 +76,15 @@ namespace H3D {
     /// point to the surface to query_point.
     /// the surface at the closest point.
     /// 
-    virtual bool closestFeature( const Vec3f &query_point, 
-                                 const Vec3f &target_point,
+    virtual bool closestFeature( const Vec3 &query_point, 
+                                 const Vec3 &target_point,
                                  HLgeom *geom,
-                                 Vec3f &closest_point );    
+                                 Vec3 &closest_point );    
 
     /// hlRender uses glutCylinder for now to render the cylinder.
     virtual void hlRender( HLHapticsDevice *hd );
 #endif
-    H3DFloat height, radius;
+    HAPIFloat height, radius;
 
   };
 }

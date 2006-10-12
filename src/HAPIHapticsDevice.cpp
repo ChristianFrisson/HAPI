@@ -29,8 +29,7 @@
 
 #include <HAPIHapticsDevice.h>
 
-using namespace H3D;
-
+using namespace HAPI;
 
 // Callback function for rendering force effects on the 
 // HLHapticsDevice.  
@@ -46,9 +45,9 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
   DeviceValues dv = hd->getDeviceValues();
   
   Rotation rot = dv.orientation;
-  Vec3d pos = dv.position;
-  Vec3d vel = dv.velocity;
-  H3DInt32 b = dv.button_status;
+  Vec3 pos = dv.position;
+  Vec3 vel = dv.velocity;
+  HAPIInt32 b = dv.button_status;
   
   TimeStamp now = TimeStamp();
   TimeStamp dt = now - hd->last_loop_time;

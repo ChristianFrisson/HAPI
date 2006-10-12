@@ -29,4 +29,4 @@
 
 #include "HapticTriangle.h" 
 
-using namespace H3D;
+using namespace HAPI;

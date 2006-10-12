@@ -31,7 +31,7 @@
 
 #include <HAPIHapticShape.h>
 
-namespace H3D {
+namespace HAPI {
 
   /// Base class for haptic shapes, i.e. geometrical objects that are rendered
   /// by letting their surfaces constrain the proxy. A HapticShape has a Surface
@@ -44,14 +44,18 @@ namespace H3D {
     HapticTriangleTree( Bounds::BinaryBoundTree *triangle_tree,
                         void *_userdata,
                         HAPISurfaceObject *_surface,
-                        const H3D::ArithmeticTypes::Matrix4d & _transform ):
+                        const Matrix4 & _transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       tree( triangle_tree ) {}
+
+    ~HapticTriangleTree() {
+      delete tree;
+    }
     
-    virtual bool lineIntersect( const Vec3d &from, 
-                                const Vec3d &to,
+    virtual bool lineIntersect( const Vec3 &from, 
+                                const Vec3 &to,
                                 Bounds::IntersectionInfo &result ) { 
-      Matrix4d inv = transform.inverse();
+      Matrix4 inv = transform.inverse();
       bool intersect = tree->lineIntersect( inv * from, inv * to, result );
       if( intersect ) {
         result.point = transform * result.point;
@@ -60,8 +64,8 @@ namespace H3D {
       return intersect;
     }
 
-    virtual void getConstraints( const Vec3d &point,
-                                 H3DDouble radius,
+    virtual void getConstraints( const Vec3 &point,
+                                 HAPIFloat radius,
                                  std::vector< PlaneConstraint > &constraints );
 
     /// The Surface object describing the properties of the surface of the 

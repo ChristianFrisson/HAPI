@@ -31,7 +31,7 @@
 
 #include <HapticForceEffect.h> 
 
-namespace H3D {
+namespace HAPI {
 
   /// Generates a spring force, 
   /// i.e. force = ( position - device_position ) * spring_constant.
@@ -39,62 +39,62 @@ namespace H3D {
   class HAPI_API HapticSpring: public HapticForceEffect {
   public:
     /// Constructor
-    HapticSpring ( const H3D::ArithmeticTypes::Matrix4d & _transform,
+    HapticSpring ( const Matrix4 & _transform,
                    bool _interpolate ):
       HapticForceEffect( _transform, _interpolate ),
-      position( Vec3f( 0, 0, 0 ) ),
+      position( Vec3( 0, 0, 0 ) ),
       spring_constant( 0 ) { }
     
     /// Constructor
-    HapticSpring( const H3D::ArithmeticTypes::Matrix4d & _transform,
-                  const Vec3f &_position,
-                  H3DFloat _spring_constant,
+    HapticSpring( const Matrix4 & _transform,
+                  const Vec3 &_position,
+                  HAPIFloat _spring_constant,
                   bool _interpolate );
     
     /// The force of the EffectOutput will be the force of the force field. 
     EffectOutput virtual calculateForces( const EffectInput &input ) {
       //lock.lock();
-      Vec3d local_pos = transform.inverse() * input.position;
-      Vec3d local_force = ( position - local_pos ) * spring_constant;
+      Vec3 local_pos = transform.inverse() * input.position;
+      Vec3 local_force = ( position - local_pos ) * spring_constant;
       force = local_force;
       //lock.unlock();
       return EffectOutput( transform.getRotationPart() * local_force );
     }
 
     // set position
-    inline void setPosition( const Vec3f &_position ) { 
+    inline void setPosition( const Vec3 &_position ) { 
       //lock.lock();
       position = _position;
       //lock.unlock();
     }
 
     // set velocity
-    inline void setVelocity( const Vec3f &_velocity ) {
+    inline void setVelocity( const Vec3 &_velocity ) {
       //lock.lock();
       velocity = _velocity;
       //lock.unlock();
     }
 
     // set velocity
-    inline void setSpringConstant( const H3DFloat &_sc ) { 
+    inline void setSpringConstant( const HAPIFloat &_sc ) { 
       //lock.lock();
       spring_constant = _sc;
       //lock.unlock();
     }
     
     // get and reset force
-    inline Vec3f getLatestForce() {
+    inline Vec3 getLatestForce() {
       //lock.lock();
-      Vec3f f(force);
+      Vec3 f(force);
       //lock.unlock();
       return f;
     }
     
   protected:
-    Vec3f position;
-    Vec3f velocity;
-    Vec3d force;
-    H3DFloat spring_constant;
+    Vec3 position;
+    Vec3 velocity;
+    Vec3 force;
+    HAPIFloat spring_constant;
     //MutexLock lock;
   };
 }

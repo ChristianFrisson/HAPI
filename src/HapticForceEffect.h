@@ -33,7 +33,7 @@
 #include <RefCountedClass.h>
 #include <TimeStamp.h>
 
-namespace H3D {
+namespace HAPI {
 
   /// The base class for force effects. A HapticForceEffect is a class that 
   /// generates force and torque based on the position and orientation 
@@ -47,13 +47,13 @@ namespace H3D {
   /// artifacts.
   ///
   class HAPI_API HapticForceEffect: public HAPIHapticObject, 
-                                      public RefCountedClass {
+                                    public H3DUtil::RefCountedClass {
   public:
     /// The input to a HapticForceEffect. 
     struct HAPI_API EffectInput {
       /// Constructor.
-      EffectInput( const Vec3d &pos = Vec3d( 0,0,0 ),
-                   const Vec3d &vel = Vec3d( 0,0,0 ),
+      EffectInput( const Vec3 &pos = Vec3( 0,0,0 ),
+                   const Vec3 &vel = Vec3( 0,0,0 ),
                    const Rotation &orn = Rotation(),
                    const TimeStamp &dt = 0 ) :
         position( pos ),
@@ -62,9 +62,9 @@ namespace H3D {
         deltaT( dt ) {}
       
       /// The position of the finger.
-      Vec3d position;
+      Vec3 position;
       /// The velocity of the finger.
-      Vec3d velocity;
+      Vec3 velocity;
       /// The orientation of the stylus.
       Rotation orientation;
       /// The change in time since the last call
@@ -74,15 +74,15 @@ namespace H3D {
     /// The output from a HapticForceEffect.
     struct HAPI_API EffectOutput {
       /// Constructor.
-      EffectOutput( const Vec3d _force = Vec3d( 0,0,0 ),
-                    const Vec3d _torque = Vec3d( 0,0,0 ) ) :
+      EffectOutput( const Vec3 _force = Vec3( 0,0,0 ),
+                    const Vec3 _torque = Vec3( 0,0,0 ) ) :
         force( _force ),
         torque( _torque ) {}
       
       /// The force to render.
-      Vec3d force;
+      Vec3 force;
       /// The torque to render.
-      Vec3d torque;
+      Vec3 torque;
       
       /// Addition operator. Adds the forces and torques of the
       /// two EffectOutput instances.
@@ -107,7 +107,7 @@ namespace H3D {
     };
     
     /// Constructor.
-    HapticForceEffect( const H3D::ArithmeticTypes::Matrix4d & _transform,
+    HapticForceEffect( const Matrix4 & _transform,
                        bool _interpolate ):
       HAPIHapticObject( _transform ),
       interpolate( _interpolate ){}

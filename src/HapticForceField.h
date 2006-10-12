@@ -31,13 +31,13 @@
 
 #include <HapticForceEffect.h> 
 
-namespace H3D {
+namespace HAPI {
   /// This is a HapticForceEffect that generates a constant force.
   class HAPI_API HapticForceField: public HapticForceEffect {
   public:
     /// Constructor
-    HapticForceField( const H3D::ArithmeticTypes::Matrix4d & _transform,
-                      const Vec3f &_force,
+    HapticForceField( const Matrix4 & _transform,
+                      const Vec3 &_force,
                       bool _interpolate );
     
     /// The force of the EffectOutput will be the force of the force field. 
@@ -46,7 +46,7 @@ namespace H3D {
     }
     
   protected:
-    Vec3f force;
+    Vec3 force;
   };
 }
 
