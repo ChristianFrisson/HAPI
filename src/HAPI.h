@@ -33,6 +33,8 @@
 #ifndef __HAPI_H__
 #define __HAPI_H__
 
+#define USE_DOUBLE_PRECISION
+
 /// Undef if you do not have OpenHaptics(www.sensable.com) installed. 
 /// Haptics will then be disabled.
 #define HAVE_OPENHAPTICS
@@ -77,7 +79,7 @@
 #endif
 
 
-namespace H3D {
+/*namespace H3D {
   /// Function for determining if the machine we are running on is uses
   /// little endian byte order or not.
   inline bool isLittleEndian() {
@@ -91,7 +93,7 @@ namespace H3D {
     bool little_endian = (p.bytes[0] == 1U); 
     return little_endian;
   }
-}
+}*/
 
 #endif
 

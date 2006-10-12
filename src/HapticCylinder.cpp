@@ -36,10 +36,10 @@ using namespace H3D;
 /// Intersect the line segment from start_point to end_point with
 /// the object.  
 ///
-bool HapticCylinder::intersectSurface( const Vec3f &start_point, 
-                                       const Vec3f &end_point,
-                                       Vec3f &intersection_point, 
-                                       Vec3f &intersection_normal,
+bool HapticCylinder::intersectSurface( const Vec3 &start_point, 
+                                       const Vec3 &end_point,
+                                       Vec3 &intersection_point, 
+                                       Vec3 &intersection_normal,
                                        HLenum &face ) { 
   return false;
 }
@@ -47,10 +47,10 @@ bool HapticCylinder::intersectSurface( const Vec3f &start_point,
 /// Find the closest point to query_point on the surface of the
 /// object. 
 /// 
-bool HapticCylinder::closestFeature( const Vec3f &query_point, 
-                                     const Vec3f &target_point,
+bool HapticCylinder::closestFeature( const Vec3 &query_point, 
+                                     const Vec3 &target_point,
                                      HLgeom *geom,
-                                     Vec3f &closest_point ) {
+                                     Vec3 &closest_point ) {
   return false;
 }
 
@@ -63,7 +63,7 @@ void HapticCylinder::hlRender( HLHapticsDevice *hd ) {
 #if HL_VERSION_MAJOR_NUMBER >= 2
     hlPushAttrib( HL_MATERIAL_BIT | HL_TOUCH_BIT );
 #endif
-    const Matrix4d &m = transform;
+    const Matrix4 &m = transform;
     HLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
                       m[0][1], m[1][1], m[2][1], 0,
                       m[0][2], m[1][2], m[2][2], 0,

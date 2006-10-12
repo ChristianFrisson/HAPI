@@ -36,7 +36,7 @@
 #include <HD/hd.h>
 #endif
 
-namespace H3D {
+namespace HAPI {
 
   /// \class PhantomHapticsDevice
   class HAPI_API PhantomHapticsDevice: public HAPIHapticsDevice {
@@ -61,9 +61,9 @@ namespace H3D {
 
   protected:
 
-    virtual void updateDeviceValues( DeviceValues &dv, H3DTime dt );
+    virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt );
     virtual void sendOutput( DeviceOutput &dv,
-                             H3DTime dt );
+                             HAPITime dt );
 
     virtual bool initHapticsDevice();
     virtual bool releaseHapticsDevice();

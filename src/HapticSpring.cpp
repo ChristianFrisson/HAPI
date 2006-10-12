@@ -29,11 +29,11 @@
 
 #include "HapticSpring.h"
 
-using namespace H3D;
+using namespace HAPI;
 
-HapticSpring::HapticSpring( const H3D::ArithmeticTypes::Matrix4d & _transform,
-                            const Vec3f &_position,
-                            H3DFloat _spring_constant,
+HapticSpring::HapticSpring( const Matrix4 & _transform,
+                            const Vec3 &_position,
+                            HAPIFloat _spring_constant,
                             bool _interpolate ):
       HapticForceEffect( _transform, _interpolate ),
       position( _position ),

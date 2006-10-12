@@ -21,34 +21,45 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file H3DBasicTypes.h
-/// \brief Contains type definitions for the simple types in H3DAPI.
-///
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef __H3DBASICTYPES_H__
-#define __H3DBASICTYPES_H__
-#include <limits>
+#ifndef __HAPITYPES_H__
+#define __HAPITYPES_H__
 
-namespace H3D {
-  /// The floating point type.
-  typedef float H3DFloat;
-  /// Used for floating point values when specified as high-precision
-  /// in the X3D specification.
-  typedef double H3DDouble;
-  /// The 32 bit integer type.
-  typedef int H3DInt32;
-  /// The type for time values.
-  typedef double H3DTime;
+#include <LinAlgTypes.h>
+#include <HAPI.h>
+#include <TimeStamp.h>
+
+namespace HAPI {
+  // TODO: double versions of Rotation and Quaternion
+  typedef H3DUtil::Rotation Rotation;
+  typedef H3DUtil::Quaternion Quaternion;
 
   namespace Constants {
-    /// The epsilon value to use for H3DFloat values.
-    static const H3DFloat f_epsilon =  
-    std::numeric_limits< H3DFloat >::epsilon();
-    /// The epsilon value to use for H3DDouble values.
-    static const H3DDouble d_epsilon = 
-    std::numeric_limits< H3DDouble >::epsilon();
+    const double epsilon = 1e-13;
   }
+  
+  typedef H3DUtil::TimeStamp TimeStamp;
+  typedef int HAPIInt32;
+  typedef double HAPITime;
+
+#ifdef USE_DOUBLE_PRECISION
+  typedef H3DUtil::Vec2d Vec2;
+  typedef H3DUtil::Vec3d Vec3;
+  typedef H3DUtil::Vec4d Vec4;
+  typedef H3DUtil::Matrix3d Matrix3;
+  typedef H3DUtil::Matrix4d Matrix4;
+  typedef double HAPIFloat ;
+#else
+  typedef H3DUtil::Vec2f Vec2;
+  typedef H3DUtil::Vec3f Vec3;
+  typedef H3DUtil::Vec4f Vec4;
+  typedef H3DUtil::Matrix3f Matrix3;
+  typedef H3DUtil::Matrix4f Matrix4;
+  typedef float HAPIFloat ;
+#endif
+
 }
+
 #endif

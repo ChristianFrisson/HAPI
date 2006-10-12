@@ -29,7 +29,7 @@
 
 #include "HAPISurfaceObject.h"
 
-using namespace H3D;
+using namespace HAPI;
 
 HAPISurfaceObject::~HAPISurfaceObject() {
 };

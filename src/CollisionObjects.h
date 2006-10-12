@@ -31,14 +31,14 @@
 #ifndef __COLLISIONSTRUCTURES_H__
 #define __COLLISIONSTRUCTURES_H__
 
-#include <H3DTypes.h>
+#include <HAPITypes.h>
 #include <GL/glew.h>
 #include <vector>
 #include <assert.h>
 #include <RefCountedClass.h>
 #include <AutoRef.h>
 
-namespace H3D {
+namespace HAPI {
 
   class HAPIHapticShape;    
 
@@ -47,18 +47,18 @@ namespace H3D {
     /// \brief The IntersectionInfo struct contains information about an 
     /// intersection.
     struct IntersectionInfo {
-      IntersectionInfo( const Vec3d &_point = Vec3d(), 
-                        const Vec3d &_normal = Vec3d(), 
+      IntersectionInfo( const Vec3 &_point = Vec3(), 
+                        const Vec3 &_normal = Vec3(), 
                         int _id = -1 ) :
       point( _point ),
       normal( _normal ),
       id( _id ) {}
 
       /// The intersection point.
-      Vec3d point;
+      Vec3 point;
 
       /// The normal at the intersection point.
-      Vec3d normal;
+      Vec3 normal;
 
       /// The id of the primitive that was intersected if applicable, e.g. 
       /// triangle index. -1 if no id exists.
@@ -67,31 +67,31 @@ namespace H3D {
 
   class HAPI_API PlaneConstraint {
   public:
-    PlaneConstraint( const Vec3d &p, const Vec3d &n, HAPIHapticShape *shape = NULL ):
+    PlaneConstraint( const Vec3 &p, const Vec3 &n, HAPIHapticShape *shape = NULL ):
       point( p ), normal( n ), haptic_shape( shape ) {}
     
-    inline bool lineIntersect( const Vec3d &from, 
-                               const Vec3d &to,    
+    inline bool lineIntersect( const Vec3 &from, 
+                               const Vec3 &to,    
                                Bounds::IntersectionInfo &result );
-    Vec3d point, normal;
+    Vec3 point, normal;
     HAPIHapticShape * haptic_shape;
   };
     
     /// \brief The CollisionObject class is the base class for objects that 
     /// can be used  in collision detection.
-    class HAPI_API CollisionObject : public RefCountedClass {
+  class HAPI_API CollisionObject : public H3DUtil::RefCountedClass {
     public:
-      virtual void getConstraints( const Vec3d &point,
-                                   H3DDouble radius,
+      virtual void getConstraints( const Vec3 &point,
+                                   HAPIFloat radius,
                                    std::vector< PlaneConstraint > &constraints ) {}
 
-      virtual void getConstraints( const Vec3d &point,
-                                   H3DDouble radius,
-                                   const Matrix4d &matrix,
+      virtual void getConstraints( const Vec3 &point,
+                                   HAPIFloat radius,
+                                   const Matrix4 &matrix,
                                    std::vector< PlaneConstraint > &constraints ) {}
 
       /// Returns the closest point on the object to the given point p.
-      virtual Vec3d closestPoint( const Vec3d &p ) = 0;
+      virtual Vec3 closestPoint( const Vec3 &p ) = 0;
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -99,8 +99,8 @@ namespace H3D {
       /// \param result Contains info about closest intersection, if line intersects 
       /// object
       /// \returns true if intersected, false otherwise.
-      virtual bool lineIntersect( const Vec3d &from, 
-                                  const Vec3d &to,
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
                                   IntersectionInfo &result ) = 0;
 
       /// Render the outlines of the object for debugging purposes.
@@ -112,12 +112,12 @@ namespace H3D {
     public:
       /// Returns true if the given point is inside the bound, and
       /// false otherwise.
-      virtual bool insideBound( const Vec3d &p ) = 0;
+      virtual bool insideBound( const Vec3 &p ) = 0;
 
       /// The boundIntersect returns true if the line segment intersects the
       /// bound or if the line segment is totally inside the bound.
-      virtual bool boundIntersect( const Vec3d &from, 
-                                   const Vec3d &to ) {
+      virtual bool boundIntersect( const Vec3 &from, 
+                                   const Vec3 &to ) {
         IntersectionInfo info;
         return( insideBound( from ) || 
                 insideBound( to ) || 
@@ -125,7 +125,7 @@ namespace H3D {
                 
       }
 
-      virtual Vec3d boundClosestPoint( const Vec3d &p ) { return Vec3d(); }
+      virtual Vec3 boundClosestPoint( const Vec3 &p ) { return Vec3(); }
 
     };
 
@@ -137,11 +137,11 @@ namespace H3D {
       BoundPrimitive() : collided( false ) {}
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3d >&points ) = 0;
+      virtual void fitAroundPoints( const vector< Vec3 >&points ) = 0;
 
-      /// Returns a Vec3d specifying the longest axis of the bound primitive.
+      /// Returns a Vec3 specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
-      virtual Vec3d longestAxis() const = 0;
+      virtual Vec3 longestAxis() const = 0;
       
       bool collided;
     };
@@ -152,7 +152,7 @@ namespace H3D {
     public:
       /// Returns a point representing the primitive. Is used e.g. when
       /// building BinaryTreeBound.
-      virtual Vec3d pointRepresentation() const { return Vec3d(); }
+      virtual Vec3 pointRepresentation() const { return Vec3(); }
       bool collided;
     };
     
@@ -163,20 +163,20 @@ namespace H3D {
       Triangle() {}
 
       /// Constructor.
-      Triangle( const Vec3d& a_, const Vec3d& b_, const Vec3d& c_) : 
+      Triangle( const Vec3& a_, const Vec3& b_, const Vec3& c_) : 
         a(a_),b(b_),c(c_) {}
 
-      virtual void getConstraints( const Vec3d &point,
-                                   H3DDouble radius,
+      virtual void getConstraints( const Vec3 &point,
+                                   HAPIFloat radius,
                                    std::vector< PlaneConstraint > &constraints );
 
-      virtual void getConstraints( const Vec3d &point,
-                                   H3DDouble radius,
-                                   const Matrix4d &matrix,
+      virtual void getConstraints( const Vec3 &point,
+                                   HAPIFloat radius,
+                                   const Matrix4 &matrix,
                                    std::vector< PlaneConstraint > &constraints );
       
       /// Returns the closest point on the object to the given point p.
-      virtual Vec3d closestPoint( const Vec3d &p );
+      virtual Vec3 closestPoint( const Vec3 &p );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -184,12 +184,12 @@ namespace H3D {
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
       /// \returns true if intersected, false otherwise.
-      virtual bool lineIntersect( const Vec3d &from, 
-                                  const Vec3d &to,
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
                                   IntersectionInfo &result );
       /// Returns a point representing the primitive. In this case it is the 
       /// center of the triangle.
-      inline virtual Vec3d pointRepresentation() const {
+      inline virtual Vec3 pointRepresentation() const {
         return ( a + b + c ) / 3;
       }
 
@@ -197,7 +197,7 @@ namespace H3D {
       virtual void render();
       
       /// The corners of the triangle.
-      Vec3d a,b,c;
+      Vec3 a,b,c;
     };
     
     /// \brief The AABoxBound class represents an axis-aligned bounding box.
@@ -208,20 +208,20 @@ namespace H3D {
 
       /// Returns true if the given point is inside the bound, and
       /// false otherwise.
-      virtual bool insideBound( const Vec3d &p );
+      virtual bool insideBound( const Vec3 &p );
 
-      /// Returns a Vec3d specifying the longest axis of the bound primitive.
+      /// Returns a Vec3 specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
-      inline virtual Vec3d longestAxis() const {
-        Vec3d dims = max - min;
+      inline virtual Vec3 longestAxis() const {
+        Vec3 dims = max - min;
         
-        if (dims.x >= dims.y && dims.x >= dims.z) return Vec3d(1,0,0);
-        if (dims.y >= dims.x && dims.y >= dims.z) return Vec3d(0,1,0);
-        else													return Vec3d(0,0,1);
+        if (dims.x >= dims.y && dims.x >= dims.z) return Vec3(1,0,0);
+        if (dims.y >= dims.x && dims.y >= dims.z) return Vec3(0,1,0);
+        else													return Vec3(0,0,1);
       }
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3d > &points );
+      virtual void fitAroundPoints( const vector< Vec3 > &points );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -229,26 +229,26 @@ namespace H3D {
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
       /// \returns true if intersected, false otherwise.
-      virtual bool lineIntersect( const Vec3d &from, 
-                                  const Vec3d &to,
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
                                   IntersectionInfo &result ) {
         return boundIntersect( from, to );
       }
 
       /// The boundIntersect returns true if the line segment intersects the
       /// bound or if the line segment is totally inside the bound.
-      virtual bool boundIntersect( const Vec3d &from, 
-                                   const Vec3d &to );
+      virtual bool boundIntersect( const Vec3 &from, 
+                                   const Vec3 &to );
       
       /// Returns the closest point on the object to the given point p.
-      virtual Vec3d closestPoint( const Vec3d &p );
+      virtual Vec3 closestPoint( const Vec3 &p );
 
-      virtual Vec3d boundClosestPoint( const Vec3d &p ) {
-        Vec3d result;
+      virtual Vec3 boundClosestPoint( const Vec3 &p ) {
+        Vec3 result;
         // for each coordinate axis, if the point coordinate value
         // is outside box, clamp it to the box, e;se keep it as it is
         for( int i = 0; i < 3; i++ ) {
-          H3DDouble v = p[i];
+          HAPIFloat v = p[i];
           if( v < min[i] ) v = min[i];
           if( v > max[i] ) v = max[i];
           result[i] = v;
@@ -257,8 +257,8 @@ namespace H3D {
       }
 
       /// The max and min corners of the bounding box,
-      Vec3d min;
-      Vec3d max;
+      Vec3 min;
+      Vec3 max;
      
     };
 
@@ -270,16 +270,16 @@ namespace H3D {
 
       /// Returns true if the given point is inside the bound, and
       /// false otherwise.
-      virtual bool insideBound( const Vec3d &p );
+      virtual bool insideBound( const Vec3 &p );
 
-      /// Returns a Vec3d specifying the longest axis of the bound primitive.
+      /// Returns a Vec3 specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
-      inline virtual Vec3d longestAxis() const {
-        return Vec3d(0,0,1);
+      inline virtual Vec3 longestAxis() const {
+        return Vec3(0,0,1);
       }
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3d > &points );
+      virtual void fitAroundPoints( const vector< Vec3 > &points );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -287,23 +287,23 @@ namespace H3D {
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
       /// \returns true if intersected, false otherwise.
-      virtual bool lineIntersect( const Vec3d &from, 
-                                  const Vec3d &to,
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
                                   IntersectionInfo &result ) {
         return boundIntersect( from, to );
       }
 
       /// The boundIntersect returns true if the line segment intersects the
       /// bound or if the line segment is totally inside the bound.
-      virtual bool boundIntersect( const Vec3d &from, 
-                                   const Vec3d &to );
+      virtual bool boundIntersect( const Vec3 &from, 
+                                   const Vec3 &to );
       
       /// Returns the closest point on the object to the given point p.
-      virtual Vec3d closestPoint( const Vec3d &p );
+      virtual Vec3 closestPoint( const Vec3 &p );
 
-      Vec3d center;
+      Vec3 center;
       Rotation orientation;
-      Vec3d halfsize;
+      Vec3 halfsize;
       
     };
 
@@ -315,7 +315,7 @@ namespace H3D {
       SphereBound(): gl_quadric( NULL ) {}
 
       /// Constructor.
-      SphereBound(const Vec3d& c, H3DDouble r): 
+      SphereBound(const Vec3& c, HAPIFloat r): 
         center (c), radius(r), 
         gl_quadric( NULL ) {}
       
@@ -324,10 +324,10 @@ namespace H3D {
 
       /// Returns true if the given point is inside the bound, and
       /// false otherwise.
-      virtual bool insideBound( const Vec3d &p );
+      virtual bool insideBound( const Vec3 &p );
 
       /// Returns the closest point on the object to the given point p.
-      virtual Vec3d closestPoint( const Vec3d &p );
+      virtual Vec3 closestPoint( const Vec3 &p );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -335,26 +335,26 @@ namespace H3D {
       /// \param result Contains info about the closest intersection, if
       /// line intersects object
       /// \returns true if intersected, false otherwise.
-      virtual bool lineIntersect( const Vec3d &from, 
-                                  const Vec3d &to,
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
                                   IntersectionInfo &result );
 
       /// The boundIntersect returns true if the line segment intersects the
       /// bound or if the line segment is totally inside the bound.
-      virtual bool boundIntersect( const Vec3d &from, const Vec3d &to );
+      virtual bool boundIntersect( const Vec3 &from, const Vec3 &to );
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3d > &points );
+      virtual void fitAroundPoints( const vector< Vec3 > &points );
 
-      /// Returns a Vec3d specifying the longest axis of the bound primitive.
+      /// Returns a Vec3 specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
-      virtual Vec3d longestAxis() const { return Vec3d( 1, 0, 0 ); }
+      virtual Vec3 longestAxis() const { return Vec3( 1, 0, 0 ); }
 
       /// The center of the sphere
-      Vec3d center;
+      Vec3 center;
 
       /// The radius of the sphere.
-      H3DDouble radius;
+      HAPIFloat radius;
 
       GLUquadricObj* gl_quadric;
     };
@@ -384,17 +384,17 @@ namespace H3D {
         return left.get() == NULL && right.get() == NULL; 
       }
 
-      virtual void getConstraints( const Vec3d &point,
-                                   H3DDouble radius,
+      virtual void getConstraints( const Vec3 &point,
+                                   HAPIFloat radius,
                                    std::vector< PlaneConstraint > &constraints );
 
-      virtual void getConstraints( const Vec3d &point,
-                                   H3DDouble radius,
-                                   const Matrix4d &matrix,
+      virtual void getConstraints( const Vec3 &point,
+                                   HAPIFloat radius,
+                                   const Matrix4 &matrix,
                                    std::vector< PlaneConstraint > &constraints );
 
-      virtual void getTrianglesWithinRadius( const Vec3d &p,
-                                             H3DDouble radius,
+      virtual void getTrianglesWithinRadius( const Vec3 &p,
+                                             HAPIFloat radius,
                                              vector< Triangle > &triangles);
 
       /// Render the outlines of the object for debugging purposes.
@@ -406,13 +406,13 @@ namespace H3D {
 
       /// Returns true if the given point is inside the bound, and
       /// false otherwise.
-      virtual bool insideBound( const Vec3d &p ) {
+      virtual bool insideBound( const Vec3 &p ) {
         return bound->insideBound( p );
       }
 
       /// The boundIntersect returns true if the line segment intersects the
       /// bound or if the line segment is totally inside the bound.
-      virtual bool boundIntersect( const Vec3d &from, const Vec3d &to ) {
+      virtual bool boundIntersect( const Vec3 &from, const Vec3 &to ) {
         return bound->boundIntersect( from, to );
       }
 
@@ -424,12 +424,12 @@ namespace H3D {
       /// \param result Contains info about the closest intersection, if line
       /// intersects object
       /// \returns true if intersected, false otherwise.
-      virtual bool lineIntersect( const Vec3d &from, 
-                                  const Vec3d &to,
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
                                   IntersectionInfo &result );
 
       /// Returns the closest point on the object to the given point p.
-      virtual Vec3d closestPoint( const Vec3d &p ) { return Vec3d(); }
+      virtual Vec3 closestPoint( const Vec3 &p ) { return Vec3(); }
 
       void clearCollidedFlag();
 
@@ -438,13 +438,13 @@ namespace H3D {
         struct { vector< Triangle > triangles; };
         };*/
 
-      AutoRef< BoundPrimitive > bound;
+      H3DUtil::AutoRef< BoundPrimitive > bound;
       vector< Triangle > triangles;
 
       /// The left subtree.
-      AutoRef< BinaryBoundTree > left;
+      H3DUtil::AutoRef< BinaryBoundTree > left;
       /// The right subtree.
-      AutoRef< BinaryBoundTree > right;
+      H3DUtil::AutoRef< BinaryBoundTree > right;
       /// The function to create new bounding primitives in for a tree node.
       BoundNewFunc new_func;
     };

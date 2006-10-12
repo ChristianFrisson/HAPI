@@ -35,7 +35,7 @@
 #ifdef HAVE_HAPTIK_LIBRARY
 #include <RSLib/Haptik.hpp>
 
-namespace H3D {
+namespace HAPI {
 
   /// \class HaptikDevice
   /// Base class for all haptic devices. 
@@ -67,11 +67,11 @@ namespace H3D {
     /// the device until the initDevice() function has been called again.
     virtual void releaseDevice();
 
-    virtual Vec3d getPosition();
+    virtual Vec3 getPosition();
 
     /// Get the velocity of the haptics device. Only to be called in the 
     /// haptics loop.
-    virtual Vec3d getVelocity();
+    virtual Vec3 getVelocity();
 
     /// Get the orientation of the haptics device. Only to be called in the 
     /// haptics loop.
@@ -81,7 +81,7 @@ namespace H3D {
     /// haptics loop.
     inline bool getButtonStatus( unsigned int button_nr );
 
-    virtual H3DInt32 getButtonStatus();
+    virtual HAPIInt32 getButtonStatus();
 
     void changeHaptikDevice( UINT32 device_id );
 
@@ -89,11 +89,11 @@ namespace H3D {
 
     /// Send the force to render on the haptics device. Only to be called in the 
     /// haptics loop.
-    virtual void sendForceToDevice( const Vec3d &f );
+    virtual void sendForceToDevice( const Vec3 &f );
 
     /// Send the torque to render on the haptics device. Only to be called in the 
     /// haptics loop.
-    virtual void sendTorqueToDevice( const Vec3d &f );
+    virtual void sendTorqueToDevice( const Vec3 &f );
 
     RSLib::Haptik haptik;
     /// The device currently in use.

@@ -33,7 +33,7 @@
 #include <HAPISurfaceObject.h>
 #include <HAPIHapticShape.h>
 
-namespace H3D {
+namespace HAPI {
 
   /// Class for rendering a haptic Sphere.
   class HAPI_API HapticSphere: public HAPIHapticShape {
@@ -43,11 +43,11 @@ namespace H3D {
     /// \param _solid   If false, both the inside and outside of the sphere is 
     /// rendered. If true, only the outside is rendered.
     /// \param _surface The Surface of the sphere.
-    HapticSphere( H3DFloat _radius,
+    HapticSphere( HAPIFloat _radius,
                   bool _solid,
                   void *_userdata,
                   HAPISurfaceObject *_surface,
-                  const Matrix4d &_transform ):
+                  const Matrix4 &_transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       radius( _radius ),
       solid( _solid ) {}
@@ -67,10 +67,10 @@ fdas
     /// is touched. 
     /// \returns true if there is an intersection, false otherwise.
     ///
-    virtual bool intersectSurface( const Vec3f &start_point, 
-                                   const Vec3f &end_point,
-                                   Vec3f &intersection_point, 
-                                   Vec3f &intersection_normal,
+    virtual bool intersectSurface( const Vec3 &start_point, 
+                                   const Vec3 &end_point,
+                                   Vec3 &intersection_point, 
+                                   Vec3 &intersection_normal,
                                    HLenum &face );
 
     /// Find the closest point to query_point on the surface of the
@@ -82,24 +82,24 @@ fdas
     /// point to the surface to query_point.
     /// the surface at the closest point.
     /// 
-    virtual bool closestFeature( const Vec3f &query_point, 
-                                 const Vec3f &target_point,
+    virtual bool closestFeature( const Vec3 &query_point, 
+                                 const Vec3 &target_point,
                                  HLgeom *geom,
-                                 Vec3f &closest_point );    
+                                 Vec3 &closest_point );    
 
     /// hlRender is overriden to set up which sides of the sphere is touchable. 
     virtual void hlRender( HLHapticsDevice *hd );
 #endif
-    virtual bool lineIntersect( const Vec3d &from, 
-                                const Vec3d &to,
+    virtual bool lineIntersect( const Vec3 &from, 
+                                const Vec3 &to,
                                 Bounds::IntersectionInfo &result ); 
 
-    virtual void getConstraints( const Vec3d &point,
-                                 H3DDouble radius,
+    virtual void getConstraints( const Vec3 &point,
+                                 HAPIFloat radius,
                                  std::vector< PlaneConstraint > &constraints );
 
     /// The radius of the sphere in metres. 
-    H3DFloat radius;
+    HAPIFloat radius;
 
     /// If false, both the inside and outside of the sphere is rendered.
     /// If true, only the outside is rendered.

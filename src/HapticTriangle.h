@@ -31,7 +31,7 @@
 
 #include <HAPIHapticShape.h>
 
-namespace H3D {
+namespace HAPI {
 
   /// Base class for haptic shapes, i.e. geometrical objects that are rendered
   /// by letting their surfaces constrain the proxy. A HapticShape has a Surface
@@ -44,12 +44,12 @@ namespace H3D {
     HapticTriangle( const Bounds::Triangle &_triangle,
                     void *_userdata,
                     HAPISurfaceObject *_surface,
-                    const H3D::ArithmeticTypes::Matrix4d & _transform ):
+                    const Matrix4 & _transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
       triangle( _triangle ) {}
     
       /// Returns the closest point on the object to the given point p.
-    inline virtual Vec3d closestPoint( const Vec3d &p ) {
+    inline virtual Vec3 closestPoint( const Vec3 &p ) {
       return triangle.closestPoint( p );
     }
 
@@ -59,16 +59,16 @@ namespace H3D {
     /// \param result Contains info about the closest intersection, if 
     /// line intersects object
     /// \returns true if intersected, false otherwise.
-    inline virtual bool lineIntersect( const Vec3d &from, 
-                                       const Vec3d &to,
+    inline virtual bool lineIntersect( const Vec3 &from, 
+                                       const Vec3 &to,
                                        Bounds::IntersectionInfo &result ) {
       return triangle.lineIntersect( from, to, result );
     }
 
-    inline virtual void getConstraints( const Vec3d &point,
-                                        H3DDouble radius,
+    inline virtual void getConstraints( const Vec3 &point,
+                                        HAPIFloat radius,
                                         std::vector< PlaneConstraint > &constraints ) {
-      Vec3d p = transform.inverse() * point;
+      Vec3 p = transform.inverse() * point;
       unsigned int size = constraints.size();
       triangle.getConstraints( p, radius, constraints);
       for( unsigned int i = size; i < constraints.size(); i ++ ) {

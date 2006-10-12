@@ -30,14 +30,14 @@
 #ifndef __HAPIHAPTICSDEVICE_H__
 #define __HAPIHAPTICSDEVICE_H__
 
-#include <HApi.h>
+#include <HAPI.h>
 #include <HAPIHapticShape.h>
 #include <RuspiniRenderer.h>
 #include <HapticForceEffect.h>
 #include <Threads.h>
 #include <AutoRefVector.h>
 
-namespace H3D {
+namespace HAPI {
 
   /// \class HAPIHapticsDevice
   /// Base class for all haptic devices. 
@@ -63,18 +63,18 @@ namespace H3D {
         button_status( 0 ),
         user_data( NULL ) {}
 
-      Vec3d force;      /// The force currently being rendered
-      Vec3d torque;     /// The torque currently being rendered
-      Vec3d position;   /// The position of the haptics device
-      Vec3d velocity;   /// The velocity of the haptics device.
+      Vec3 force;      /// The force currently being rendered
+      Vec3 torque;     /// The torque currently being rendered
+      Vec3 position;   /// The position of the haptics device
+      Vec3 velocity;   /// The velocity of the haptics device.
       Rotation orientation; /// The orientation of the haptics device.
-      H3DInt32 button_status; /// The status of the buttons.
+      HAPIInt32 button_status; /// The status of the buttons.
       void *user_data;   /// Extra data that can be used be developers when
       /// supporting new device types.
     };
 
-    typedef AutoRefVector< HAPIHapticShape > HapticShapeVector;
-    typedef AutoRefVector< HapticForceEffect > HapticEffectVector;
+    typedef H3DUtil::AutoRefVector< HAPIHapticShape > HapticShapeVector;
+    typedef H3DUtil::AutoRefVector< HapticForceEffect > HapticEffectVector;
 
     /// Constructor.
     HAPIHapticsDevice() :
@@ -122,8 +122,8 @@ namespace H3D {
         return ErrorCode::NOT_INITIALIZED;
       }
 
-      sendForce( Vec3d( 0, 0, 0 ) );
-      sendTorque( Vec3d( 0, 0, 0 ) );
+      sendForce( Vec3( 0, 0, 0 ) );
+      sendTorque( Vec3( 0, 0, 0 ) );
                  
       device_state = DeviceState::INITIALIZED;
       return SUCCESS;
@@ -238,8 +238,8 @@ namespace H3D {
     
     /// Set the position calibraion matrix, i.e. the transform matrix
     /// from the local device coordinate space to HAPI coordinate space.
-    inline void setPositionCalibration( const Matrix4d &m,
-                                        const Matrix4d &m_inv ) {
+    inline void setPositionCalibration( const Matrix4 &m,
+                                        const Matrix4 &m_inv ) {
       device_values_lock.lock();
       position_calibration = m;
       position_calibration_inverse = m_inv;
@@ -248,7 +248,7 @@ namespace H3D {
 
     /// Set the position calibration matrix, i.e. the transform matrix
     /// from the local device coordinate space to HAPI coordinate space.
-    inline void setPositionCalibration( const Matrix4d &m ) {
+    inline void setPositionCalibration( const Matrix4 &m ) {
       device_values_lock.lock();
       position_calibration = m;
       position_calibration_inverse = m.inverse();
@@ -256,12 +256,12 @@ namespace H3D {
     }
 
     /// Get the current position calibration matrix    
-    inline const Matrix4d &getPositionCalibration() { 
+    inline const Matrix4 &getPositionCalibration() { 
       return position_calibration;
     }
 
     /// Get the inverse of the current position calibration matrix    
-    inline const Matrix4d &getPositionCalibrationInverse() { 
+    inline const Matrix4 &getPositionCalibrationInverse() { 
       return position_calibration_inverse;
     }
 
@@ -317,13 +317,13 @@ namespace H3D {
 
     /// Get the position of the haptics device without the calibration
     /// matrix applied, i.e. coordinates in metres.
-    inline Vec3d getRawPosition() {
+    inline Vec3 getRawPosition() {
       return getRawDeviceValues().position;
     }
 
     /// Get the velocity of the haptics device without the calibration
     /// matrix applied. 
-    inline Vec3d getRawVelocity() {
+    inline Vec3 getRawVelocity() {
       return getRawDeviceValues().velocity;
     }
 
@@ -335,13 +335,13 @@ namespace H3D {
 
     /// Get the position of the haptics device with the calibration matrix 
     /// applied. 
-    inline Vec3d getPosition() {
+    inline Vec3 getPosition() {
       return getDeviceValues().position;
     }
 
     /// Get the velocity of the haptics device with the calibration matrix 
     /// applied. 
-    inline Vec3d getVelocity() {
+    inline Vec3 getVelocity() {
       return getDeviceValues().velocity;
     }
 
@@ -353,7 +353,7 @@ namespace H3D {
 
     /// Get the button status. Bit 0 is button 0, bit 1 is button 1,..
     /// A 1 in the bit position indicates that the button is pressed.
-    inline H3DInt32 getButtonStatus() {
+    inline HAPIInt32 getButtonStatus() {
       return getDeviceValues().button_status;
     }
 
@@ -365,37 +365,37 @@ namespace H3D {
 
     /// Get the force currently rendered by the haptics device in device
     /// coordinates.
-    inline Vec3d getRawForce() {
+    inline Vec3 getRawForce() {
       return getRawDeviceValues().force;
     }
 
     /// Get the torque currently rendered by the haptics device in device 
     /// coordinates.
-    inline Vec3d getRawTorque() {
+    inline Vec3 getRawTorque() {
       return getRawDeviceValues().torque;
     }
 
     /// Get the force currently rendered by the haptics device in world
     /// coordinates.
-    inline Vec3d getForce() {
+    inline Vec3 getForce() {
       return getDeviceValues().force;
     }
 
     /// Get the torque currently rendered by the haptics device in world 
     /// coordinates.
-    inline Vec3d getTorque() {
+    inline Vec3 getTorque() {
       return getDeviceValues().torque;
     }
 
     /// Get the position of the haptics device from the last loop in device
     /// coordinates. 
-    inline Vec3d getLastRawPosition() {
+    inline Vec3 getLastRawPosition() {
       return getLastRawDeviceValues().position;
     }
 
     /// Get the velocity of the haptics device from the last loop in device
     /// coordinates. 
-    inline Vec3d getLastRawVelocity() {
+    inline Vec3 getLastRawVelocity() {
       return getLastRawDeviceValues().velocity;
     }
 
@@ -407,25 +407,25 @@ namespace H3D {
 
     /// Get the force rendered by the haptics device in the last loop in device
     /// coordinates.
-    inline Vec3d getLastRawForce() {
+    inline Vec3 getLastRawForce() {
       return getLastRawDeviceValues().force;
     }
 
     /// Get the torque rendered by the haptics device in the last loop in 
     /// device coordinates.
-    inline Vec3d getLastRawTorque() {
+    inline Vec3 getLastRawTorque() {
       return getLastRawDeviceValues().torque;
     }
 
     /// Get the position of the haptics device from the last loop in world
     /// coordinates. 
-    inline Vec3d getLastPosition() {
+    inline Vec3 getLastPosition() {
       return getLastDeviceValues().position;
     }
     
     /// Get the velocity of the haptics device from the last loop in world
     /// coordinates. 
-    inline Vec3d getLastVelocity() {
+    inline Vec3 getLastVelocity() {
       return getLastDeviceValues().velocity;
     }
 
@@ -437,18 +437,18 @@ namespace H3D {
 
     /// Get the force rendered by the haptics device in the last loop in world
     /// coordinates.
-    inline Vec3d getLastForce() {
+    inline Vec3 getLastForce() {
       return getLastDeviceValues().force;
     }
 
     /// Get the torque rendered by the haptics device in the last loop in world
     /// coordinates.
-    inline Vec3d getLastTorque() {
+    inline Vec3 getLastTorque() {
       return getLastDeviceValues().torque;
     }
 
     /// Get the button status from the last loop.
-    inline H3DInt32 getLastButtonStatus() {
+    inline HAPIInt32 getLastButtonStatus() {
       return getLastDeviceValues().button_status;
     }
     
@@ -476,7 +476,7 @@ namespace H3D {
   protected:
 
     /// Send the force to render on the haptics device in device coordinates. 
-    inline void sendRawForce( const Vec3d &f ) {
+    inline void sendRawForce( const Vec3 &f ) {
       if( DeviceState::ENABLED ) {
         device_values_lock.lock();
         output.force = f;
@@ -485,7 +485,7 @@ namespace H3D {
     }
 
     /// Send the torque to render on the haptics device in device coordinates. 
-    inline void sendRawTorque( const Vec3d &t ) {
+    inline void sendRawTorque( const Vec3 &t ) {
       if( DeviceState::ENABLED ) {
         device_values_lock.lock();
         output.torque = t;
@@ -494,7 +494,7 @@ namespace H3D {
     }
 
     /// Send the force to render on the haptics device  in world coordinates. 
-    inline void sendForce( const Vec3d &f ) {
+    inline void sendForce( const Vec3 &f ) {
       if( DeviceState::ENABLED ) {
         device_values_lock.lock();
         output.force = position_calibration_inverse * f;
@@ -503,7 +503,7 @@ namespace H3D {
     }
 
     /// Send the torque to render on the haptics device in world coordinates. 
-    inline void sendTorque( const Vec3d &t ) {
+    inline void sendTorque( const Vec3 &t ) {
       if( DeviceState::ENABLED ) {
         device_values_lock.lock();
         output.torque = position_calibration_inverse.getRotationPart() * t;
@@ -513,9 +513,9 @@ namespace H3D {
 
     /// Output that is sent to the haptics device to render.
     struct HAPI_API DeviceOutput {
-      Vec3d force;  /// The force in Newtons
-      Vec3d torque; /// The torque in Newtons/mm
-      Matrix4d position_force_jacobian;
+      Vec3 force;  /// The force in Newtons
+      Vec3 torque; /// The torque in Newtons/mm
+      Matrix4 position_force_jacobian;
     };
 
     /// Updates the current_device_values member to contain
@@ -569,7 +569,7 @@ namespace H3D {
     /// HAPIHapticsDevice in order to fill in the given DeviceValues
     /// structure with current values of the devie.
     virtual void updateDeviceValues( DeviceValues &dv,
-                                     H3DTime dt ) {
+                                     HAPITime dt ) {
       dv.force = output.force;
       dv.torque = output.torque;
     }
@@ -578,7 +578,7 @@ namespace H3D {
     /// HAPIHapticsDevice in order to send the values in the
     /// given DeviceOutput structure to the haptics device.
     virtual void sendOutput( DeviceOutput &dv,
-                             H3DTime dt ) = 0;
+                             HAPITime dt ) = 0;
 
     /// Initialize the haptics device.
     virtual bool initHapticsDevice() = 0;
@@ -623,8 +623,8 @@ namespace H3D {
     DeviceValues current_raw_device_values;
     DeviceValues last_raw_device_values;
 
-    Matrix4d position_calibration;
-    Matrix4d position_calibration_inverse;
+    Matrix4 position_calibration;
+    Matrix4 position_calibration_inverse;
     Rotation orientation_calibration;
     auto_ptr< HAPIHapticsRenderer > haptics_renderer;
     string last_error_message;

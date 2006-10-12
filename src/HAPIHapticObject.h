@@ -30,9 +30,9 @@
 #define __HAPIHAPTICOBJECT_H__
 
 #include <HAPI.h>
-#include <H3DTypes.h>
+#include <HAPITypes.h>
 
-namespace H3D {
+namespace HAPI {
 
   /// The base class for all haptic objects. A haptic object performs
   /// any kind of haptic rendering e.g. rendering of shapes or
@@ -41,14 +41,14 @@ namespace H3D {
   class HAPI_API HAPIHapticObject {
   public:
     /// Constructor
-    HAPIHapticObject( const H3D::ArithmeticTypes::Matrix4d & _transform ):
+    HAPIHapticObject( const Matrix4 & _transform ):
       transform( _transform ) {}
 
     /// Destructor. Virtual to make HapticObject a polymorphic type.
     virtual ~HAPIHapticObject() {}
 
     /// Matrix transforming from local space to global space.
-    Matrix4d transform;
+    Matrix4 transform;
   };
 }
 

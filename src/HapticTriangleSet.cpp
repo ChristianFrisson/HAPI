@@ -29,12 +29,12 @@
 
 #include "HapticTriangleSet.h" 
 
-using namespace H3D;
+using namespace HAPI;
 
-bool HapticTriangleSet::lineIntersect( const Vec3d &from, 
-                                       const Vec3d &to,
+bool HapticTriangleSet::lineIntersect( const Vec3 &from, 
+                                       const Vec3 &to,
                                        Bounds::IntersectionInfo &result ) { 
-  Matrix4d inv = transform.inverse();
+  Matrix4 inv = transform.inverse();
   // TODO: find closest?
   bool have_intersection = false;
   for( unsigned int i = 0; i < triangles.size(); i++ ) {
@@ -49,15 +49,15 @@ bool HapticTriangleSet::lineIntersect( const Vec3d &from,
   return have_intersection;
 }
 
-void HapticTriangleSet::getConstraints( const Vec3d &point,
-                                         H3DDouble radius,
+void HapticTriangleSet::getConstraints( const Vec3 &point,
+                                         HAPIFloat radius,
                                          std::vector< PlaneConstraint > &constraints ) {
   if( triangles.size() > 0 ) {
     // TODO: check if transform has uniform scale
     bool uniform_scale = true;
 
     if( uniform_scale ) {
-      Vec3d p = transform.inverse() * point;
+      Vec3 p = transform.inverse() * point;
       unsigned int size = constraints.size();
       for( unsigned int i = 0; i < triangles.size(); i++ ) {
         Bounds::Triangle &t = triangles[i];

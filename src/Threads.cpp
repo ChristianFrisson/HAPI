@@ -49,10 +49,10 @@ using namespace std;
 #include <mach/thread_act.h>
 #endif
 
-#include "Console.h"
+#include <Console.h>
 
 
-using namespace H3D;
+using namespace HAPI;
 using namespace std;
 
 /// Constructor.
@@ -173,14 +173,14 @@ void *PeriodicThread::thread_func( void * _data ) {
     // Create a waitable timer.
     hTimer = CreateWaitableTimer(NULL, TRUE, "WaitableTimer");
     if (!hTimer) {
-      Console(4) << "CreateWaitableTimer failed (%d)" << endl 
-                 << GetLastError() << endl;
+      H3DUtil::Console(4) << "CreateWaitableTimer failed (%d)" << endl 
+                         << GetLastError() << endl;
       timeEndPeriod(1); 
       return NULL;
     }
   
     if (!SetWaitableTimer(hTimer, &liDueTime, 0, NULL, NULL, 0)) {
-      Console(4) << "SetWaitableTimer failed (%d)\n" << GetLastError() << endl;
+      H3DUtil::Console(4) << "SetWaitableTimer failed (%d)\n" << GetLastError() << endl;
       timeEndPeriod(1); 
       return NULL;
     }
@@ -196,7 +196,7 @@ void *PeriodicThread::thread_func( void * _data ) {
 
       // Set a timer to wait for.
       if (!SetWaitableTimer(hTimer, &liDueTime, 0, NULL, NULL, 0)) {
-        Console(4) << "SetWaitableTimer failed (%d)\n" << GetLastError() << endl;
+        H3DUtil::Console(4) << "SetWaitableTimer failed (%d)\n" << GetLastError() << endl;
         return NULL;
       }
 #endif
