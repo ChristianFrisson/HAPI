@@ -38,6 +38,26 @@ using namespace HAPI;
 #endif
 #endif
 
+namespace PhantomDeviceInternal {
+  // Callback function that starts a new hd frame. It is used in order to 
+  // encapsulate all HD API callback function within a hdBeginFrame/hdEndFrame
+  // pair in order to only get one frame per loop.
+  HDCallbackCode HDCALLBACK beginFrameCallback( void *data ) {
+    PhantomHapticsDevice *hd = static_cast< PhantomHapticsDevice * >( data );
+    hdBeginFrame( hd->getDeviceHandle() );
+    return HD_CALLBACK_CONTINUE;
+  }
+
+  // Callback function that ends a hd frame. It is used in order to 
+  // encapsulate all HD API callback function within a hdBeginFrame/hdEndFrame
+  // pair in order to only get one frame per loop.
+  HDCallbackCode HDCALLBACK endFrameCallback( void *data ) {
+    PhantomHapticsDevice *hd = static_cast< PhantomHapticsDevice * >( data );
+    hdEndFrame( hd->getDeviceHandle() );
+    return HD_CALLBACK_CONTINUE;
+  }
+}
+
 bool PhantomHapticsDevice::initHapticsDevice() {
   device_handle = hdInitDevice( device_name == "" ? 
                                 HD_DEFAULT_DEVICE : device_name.c_str() );
@@ -50,30 +70,41 @@ bool PhantomHapticsDevice::initHapticsDevice() {
     setErrorMsg( s.str() );
     return false;
   }   
-    
-  hdEnable(HD_FORCE_OUTPUT);
-    
+  hdMakeCurrentDevice( device_handle );
 
-  hdStartScheduler();
+  hdEnable(HD_FORCE_OUTPUT);
+
+  // Add callbacks in order to do hdBeginFrame/hdEndFrame in order to only get
+  // one pair of them per loop. Must be done in order to use hd api and hl api
+  // together.
+  HDCallbackCode handle = 
+    hdScheduleAsynchronous( PhantomDeviceInternal::beginFrameCallback,
+                            this,
+                            HD_MAX_SCHEDULER_PRIORITY );
+  hd_handles.push_back( handle );
+  handle = hdScheduleAsynchronous( PhantomDeviceInternal::endFrameCallback,
+                                   this,
+                                   HD_MIN_SCHEDULER_PRIORITY );
+  hd_handles.push_back( handle );
 
   HLThread *hl_thread = HLThread::getInstance();
-
   thread = hl_thread;
   hl_thread->setActive( true );
   
-  /*
-    HLint tmp_int;
-    hdGetIntegerv( HD_INPUT_DOF, &tmp_int );
-    inputDOF->setValue( tmp_int, id );
-    
-    hdGetIntegerv( HD_OUTPUT_DOF, &tmp_int );
-    outputDOF->setValue( tmp_int, id );
-  */
   return true;
 }
 
 bool PhantomHapticsDevice::releaseHapticsDevice() {
   HAPIHapticsDevice::disableDevice();
+
+  hdMakeCurrentDevice( device_handle );
+
+  for( vector< HDCallbackCode >::iterator i = hd_handles.begin();
+       i != hd_handles.end();
+       i++ ) {
+    hdUnschedule(*i);
+  }
+
   // TODO: should not stop scheduler unless it is the last device
   hdStopScheduler();
   hdDisableDevice( device_handle );
@@ -89,10 +120,10 @@ void PhantomHapticsDevice::updateDeviceValues( DeviceValues &dv,
   HDErrorInfo error;
   error = hdGetError();
   if (HD_DEVICE_ERROR(error))
-    // do error handling
+    // TODO: do error handling
     cerr << hdGetErrorString(error.errorCode) << endl;
-  hdBeginFrame( device_handle );
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
+  hdMakeCurrentDevice( device_handle );
   HDdouble v[16];
   hdGetDoublev( HD_CURRENT_POSITION, v ); 
   dv.position = Vec3( v[0], v[1], v[2] );
@@ -117,11 +148,10 @@ void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
   v[1] = dv.torque.y;
   v[2] = dv.torque.z;
   hdSetDoublev( HD_CURRENT_TORQUE, v ); 
-  hdEndFrame( device_handle );
   HDErrorInfo error;
   error = hdGetError();
   if (HD_DEVICE_ERROR(error))
-    // do error handling
+    // TODO: do error handling
     cerr << hdGetErrorString(error.errorCode) << endl;
   HDdouble force[3];
   hdGetDoublev( HD_CURRENT_FORCE, force );

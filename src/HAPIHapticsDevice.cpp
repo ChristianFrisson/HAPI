@@ -31,14 +31,19 @@
 
 using namespace HAPI;
 
+PeriodicThread::CallbackCode HAPIHapticsDevice::transferObjectsCallback( 
+  void *data ) {
+  HAPIHapticsDevice *hd = 
+    static_cast< HAPIHapticsDevice * >( data );
+  hd->current_shapes = hd->tmp_shapes;
+  return PeriodicThread::CALLBACK_DONE;
+}
+
 // Callback function for rendering force effects on the 
 // HLHapticsDevice.  
 PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *data ) {
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
-  hd->shape_lock.lock();
-  hd->current_shapes = hd->tmp_shapes;
-  hd->shape_lock.unlock();
 
   hd->updateDeviceValues();
   
@@ -80,7 +85,8 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
   }
 
   if( hd->haptics_renderer.get() )
-    output = output + hd->haptics_renderer->renderHapticsOneStep( input, hd->current_shapes );
+    output = output + 
+      hd->haptics_renderer->renderHapticsOneStep( hd, hd->current_shapes );
 
   // add the resulting force and torque to the rendered force.
   hd->sendForce( output.force );
@@ -90,3 +96,13 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
   return PeriodicThread::CALLBACK_CONTINUE;
 }
 
+void HAPIHapticsDevice::transferObjects() {
+  if( thread ) {
+    if( haptics_renderer.get() ) {
+      haptics_renderer->preProcessShapes( this, tmp_shapes );
+    }
+    thread->synchronousCallback( transferObjectsCallback,
+                                 this );
+
+  }
+}

@@ -29,8 +29,15 @@
 
 #include "RuspiniRenderer.h"
 #include "H3DMath.h"
+#include "HAPIHapticsDevice.h"
 
 using namespace HAPI;
+
+HAPIHapticsRenderer::HapticsRendererRegistration 
+RuspiniRenderer::renderer_registration(
+                            "Ruspini",
+                            &(newInstance< RuspiniRenderer >)
+                            );
 
 // epsilon value for deciding if a point is the same
 const HAPIFloat length_sqr_point_epsilon = 1e-12; //12
@@ -235,8 +242,11 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
 
 
 
-HapticForceEffect::EffectOutput RuspiniRenderer::renderHapticsOneStep( HapticForceEffect::EffectInput input,
-                                                                       const HapticShapeVector &shapes ) {
+HapticForceEffect::EffectOutput 
+RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
+                                       const HapticShapeVector &shapes ) {
+  HAPIHapticsDevice::DeviceValues input = hd->getDeviceValues();
+
   // clear all previous contacts
   tmp_contacts.clear();
   Vec3 proxy_pos = proxy_position;

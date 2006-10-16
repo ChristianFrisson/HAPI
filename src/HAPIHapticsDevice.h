@@ -40,15 +40,32 @@
 namespace HAPI {
 
   /// \class HAPIHapticsDevice
-  /// Base class for all haptic devices. 
+  /// \brief Base class for all haptics devices.
+  /// 
+  /// The functions that should be implemented by all subclasses are:
+  /// - bool initHapticsDevice()
+  /// - bool releaseHapticsDevice()
+  /// - void updateDeviceValues( DeviceValues &dv, HAPITime dt )
+  /// - void sendOutput( DeviceOutput &dv, HAPITime dt )
+  ///
+  /// In order to use a haptics device two things have to be done.
+  /// 1. Initialize the device (initDevice()). 
+  /// 2. Enable the device (enableDevice())
+  ///
+  /// When a device has been initialized it will be ready to start receiving
+  /// forces and updating position values, but it will not start doing these 
+  /// things until it is enabled.
   class HAPI_API HAPIHapticsDevice {
   public:
+    /// Type for the possible states a haptics device can be in. In order for 
+    /// a haptics device to be able to send forces it has to be ENABLED.
     typedef enum {
       UNINITIALIZED, /// the device has not been intialized 
       INITIALIZED,   /// the device has been initialized but not enabled
       ENABLED        /// the device has been initialized and enabled
     } DeviceState;
     
+    /// Type for different kinds of errors.
     typedef enum {
       SUCCESS = 0,   
       NOT_INITIALIZED, /// the device has not been initialized
@@ -57,7 +74,8 @@ namespace HAPI {
       /// use getLastErrorMsg() to get info about the error.
     } ErrorCode;
 
-    /// Values that are
+    /// Class for holding a snapshot of current values of different properties
+    /// of the haptics device.
     struct HAPI_API DeviceValues {
       DeviceValues():
         button_status( 0 ),
@@ -98,6 +116,10 @@ namespace HAPI {
         if( !initHapticsDevice() ) {
           return FAIL;
         }
+        device_state = DeviceState::INITIALIZED;
+        if( haptics_renderer.get() ) {
+          haptics_renderer->initRenderer( this );
+        }
       } 
       device_state = DeviceState::INITIALIZED;
       thread->asynchronousCallback( hapticRenderingCallback,
@@ -106,7 +128,7 @@ namespace HAPI {
     }
 
     /// Enable the device. Positions can be read and force can be sent.
-    inline ErrorCode enableDevice() {
+    inline virtual ErrorCode enableDevice() {
       if( device_state == DeviceState::UNINITIALIZED ) {
         return ErrorCode::NOT_INITIALIZED;
       }
@@ -117,7 +139,7 @@ namespace HAPI {
 
     /// Temporarily disable the device. Forces sent will be ignored and
     /// positions and orientation will stay the same as previous values.
-    inline ErrorCode disableDevice() {
+    inline virtual ErrorCode disableDevice() {
       if( device_state == DeviceState::UNINITIALIZED ) {
         return ErrorCode::NOT_INITIALIZED;
       }
@@ -137,10 +159,14 @@ namespace HAPI {
         return ErrorCode::NOT_INITIALIZED;
       }
       
-      //if( device_state != DeviceState::INITIALIZED ) 
-        if( !releaseHapticsDevice() ) {
-          return FAIL;
-        }
+      if( haptics_renderer.get() ) {
+        haptics_renderer->releaseRenderer( this );
+      }
+
+      if( !releaseHapticsDevice() ) {
+        return FAIL;
+      }
+
       device_state = DeviceState::UNINITIALIZED;
       return SUCCESS;
     }      
@@ -149,8 +175,6 @@ namespace HAPI {
     // Functions for adding and removing shapes to be rendered by the
     // haptics renderer
     //
-
-    /// TODO: permanent shapes??
 
     /// Add a HAPIHapticShape to be rendered haptically.
     /// \param objects The haptic shapes to render.
@@ -164,7 +188,10 @@ namespace HAPI {
     /// Set the HapticForceEffects to be rendered.
     /// \param objects The haptic shapes to render.
     inline void setShapes( const HapticShapeVector &shapes ) {
-      tmp_shapes = shapes;
+      HapticShapeVector v = shapes;
+      shape_lock.lock();
+      v.swap( tmp_shapes );
+      shape_lock.unlock();
     }
 
     /// Remove a HAPIHapticShape from the shapes being rendered.
@@ -231,6 +258,9 @@ namespace HAPI {
       current_force_effects.clear();
     }
     
+    /// Transfer all current haptic objects to be rendered by the haptics
+    /// renderer.
+    virtual void transferObjects();
 
     //////////////////////////////////////////////////////////////
     // Functions for getting/settings device values
@@ -460,6 +490,12 @@ namespace HAPI {
     /// Set the HAPIHapticsRenderer to use to render the HAPIHapticShapes
     /// specified.
     inline void setHapticsRenderer( HAPIHapticsRenderer *r ) {
+      if( device_state != DeviceState::UNINITIALIZED ) {
+        if( haptics_renderer.get() ) {
+          haptics_renderer->releaseRenderer( this );
+        }
+        haptics_renderer->initRenderer( this );
+      }
       haptics_renderer.reset( r );
     }
 
@@ -477,7 +513,7 @@ namespace HAPI {
 
     /// Send the force to render on the haptics device in device coordinates. 
     inline void sendRawForce( const Vec3 &f ) {
-      if( DeviceState::ENABLED ) {
+      if( device_state == DeviceState::ENABLED ) {
         device_values_lock.lock();
         output.force = f;
         device_values_lock.unlock();
@@ -486,7 +522,7 @@ namespace HAPI {
 
     /// Send the torque to render on the haptics device in device coordinates. 
     inline void sendRawTorque( const Vec3 &t ) {
-      if( DeviceState::ENABLED ) {
+      if( device_state == DeviceState::ENABLED ) {
         device_values_lock.lock();
         output.torque = t;
         device_values_lock.unlock();
@@ -495,7 +531,7 @@ namespace HAPI {
 
     /// Send the force to render on the haptics device  in world coordinates. 
     inline void sendForce( const Vec3 &f ) {
-      if( DeviceState::ENABLED ) {
+      if( device_state == DeviceState::ENABLED ) {
         device_values_lock.lock();
         output.force = position_calibration_inverse * f;
         device_values_lock.unlock();
@@ -504,7 +540,7 @@ namespace HAPI {
 
     /// Send the torque to render on the haptics device in world coordinates. 
     inline void sendTorque( const Vec3 &t ) {
-      if( DeviceState::ENABLED ) {
+      if( device_state == DeviceState::ENABLED ) {
         device_values_lock.lock();
         output.torque = position_calibration_inverse.getRotationPart() * t;
         device_values_lock.unlock();
@@ -632,6 +668,11 @@ namespace HAPI {
 
     /// Callback function to render force effects.
     static PeriodicThread::CallbackCode hapticRenderingCallback( void *data );
+
+    /// Callback function to transfer haptic objects to render to the 
+    /// haptics loop.
+    static PeriodicThread::CallbackCode transferObjectsCallback( void *data );
+
   };
 }
 
