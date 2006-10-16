@@ -34,21 +34,117 @@
 #include <HAPIHapticShape.h>
 #include <HapticForceEffect.h>
 #include <AutoRefVector.h>
+#include <list>
 
 namespace HAPI {
 
+  // forward declaration
+  class HAPIHapticsDevice;
+
   /// \class HAPIHapticsRenderer
-  /// Base class for all haptic devices. 
+  /// \brief Base class for all haptics renderers in HAPI.
+  /// The job of a haptics renderer is to given a set of geometries and the
+  /// current values of a haptics device generate a force and a torque to send
+  /// to the haptics device to render. Subclasses must define the following function
+  /// that does just that:
+  /// -   HapticForceEffect::EffectOutput 
+  ///     renderHapticsOneStep( HAPIHapticsDevice *hd, 
+  ///                           const HapticShapeVector &shapes )
+  ///
+  /// Other functions that can be optionally overridden and does not do anything 
+  /// by default are:
+  /// - void initRenderer( HAPIHapticsDevice *hd ) - initialize the renderer for use
+  /// with a haptics device. Allocate resources needed for doing the rendering.
+  /// - void releaseRenderer( HAPIHapticsDevice *hd ) - release all resources allocated
+  /// in initRenderer.
+  /// - void preProcessShapes( HAPIHapticsDevice *hd,
+  ///                          const HapticShapeVector &shapes ) - will be called
+  /// in the main loop when new shapes are transferred to be rendered in the 
+  /// haptics loop. It can be used to make some last changes to the shapes before
+  /// moving them over to the haptics loop.
+  ///
+  /// There exists a database over all available haptics renderers. All subclasses 
+  /// should contain a database entry as:
+  /// static HapticsRendererRegistration renderer_registration;
+  /// See for example RuspiniRenderer.h/cpp for an example. 
   class HAPI_API HAPIHapticsRenderer {
   public:
+
     typedef H3DUtil::AutoRefVector< HAPIHapticShape > HapticShapeVector;
+
+    /// Initialize the renderer to be used with the given haptics device.
+    virtual void initRenderer( HAPIHapticsDevice *hd ) {}
+
+    /// Release all resources that has been used in the renderer for
+    /// the given haptics device.
+    virtual void releaseRenderer( HAPIHapticsDevice *hd ) {}
+
+
+    /// This function will be called in the main loop when new shapes are
+    /// transferred to be rendered in the haptics loop. It can be used
+    /// to make some last changes to the shapes before moving them over
+    /// to the haptics loop.
+    virtual void preProcessShapes( HAPIHapticsDevice *hd,
+                                   const HapticShapeVector &shapes ) {} 
 
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~HAPIHapticsRenderer() {}
 
+    /// The main function in any haptics renderer. Given a haptics device and 
+    /// a group of shapes generate the force and torque to send to the device.
     virtual HapticForceEffect::EffectOutput 
-    renderHapticsOneStep( HapticForceEffect::EffectInput input,
+    renderHapticsOneStep( HAPIHapticsDevice *hd,
                           const HapticShapeVector &shapes ) = 0;
+
+    // The following is part of the database of available haptics renderers.
+    typedef HAPIHapticsRenderer*( *CreateInstanceFunc)(); 
+
+    template< class N >
+    static HAPIHapticsRenderer *newInstance() { return new N; };
+
+    /// Class used to register a class to the registered file readers.
+    struct HAPI_API HapticsRendererRegistration{
+    public:
+      /// Constructor.
+      HapticsRendererRegistration( const string &_name,
+                                   CreateInstanceFunc _create ):
+      name( _name ),
+      create_func( _create ) {
+        
+        if( !HAPIHapticsRenderer::initialized ) {
+          HAPIHapticsRenderer::registered_renderers = 
+            new list< HapticsRendererRegistration >;
+          initialized = true;
+        }
+        HAPIHapticsRenderer::registerRenderer( *this );
+      }
+
+      string name;
+      CreateInstanceFunc create_func;
+    };
+#ifdef __BORLANDC__
+    friend struct HapticsRendererRegistration;
+#endif
+
+    /// Register a haptics renderer to the database.
+    /// \param name The name of the renderer
+    /// \param create A function for creating an instance of that class.
+    /// \param supports A function to determine if the class supports a
+    /// given file type.
+    static void registerRenderer( const string &name,
+                                  CreateInstanceFunc create ) {
+      registerRenderer( HapticsRendererRegistration( name, create ) );
+    }
+
+    /// Register a haptics renderer that can then be returned by 
+    /// getSupportedFileReader().
+    static void registerRenderer( const HapticsRendererRegistration &fr ) {
+      registered_renderers->push_back( fr );
+    }
+
+  protected:
+    static list< HapticsRendererRegistration > *registered_renderers;
+    static bool initialized;
   };
 }
 

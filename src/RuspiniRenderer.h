@@ -37,39 +37,38 @@
 namespace HAPI {
 
   /// \class RuspiniRenderer
-  /// Base class for all haptic devices. 
+  /// \brief Haptics renderer that uses a variant of the algorithm presented
+  /// by Ruspini. 
+  /// It allows for variable proxy radius.
   class HAPI_API RuspiniRenderer: public HAPIHapticsRenderer {
   public:
-
+    
+    /// Destructor.
     virtual ~RuspiniRenderer() {}
 
+   /// The main function in any haptics renderer. Given a haptics device and 
+    /// a group of shapes generate the force and torque to send to the device.
     virtual HapticForceEffect::EffectOutput 
-    renderHapticsOneStep( HapticForceEffect::EffectInput input,
+    renderHapticsOneStep(  HAPIHapticsDevice *hd,
                           const HapticShapeVector &shapes );
 
+    /// Get the current position of the proxy.
     inline const Vec3 &getProxyPosition() {
       return proxy_position;
     }
 
+    /// Get the current radius of the proxy.
     inline HAPIFloat getProxyRadius() {
       return proxy_radius;
     }
 
+    /// Set the radius of the proxy(in millimetres)
     inline void setProxyRadius( HAPIFloat r ) {
       proxy_radius = r;
     }
     
- /*   struct lt {
-      bool operator()(HAPIHapticShape *s1, HAPIHapticShape *s2) const {
-        if( s1 == s2 ) {
-          return s1->id < s2->id;
-        } else {
-          return s1 < s2;
-        }
-      }
-    };*/
-
-    typedef std::vector< pair< H3DUtil::AutoRef< HAPIHapticShape >, HAPISurfaceObject::ContactInfo> > Contacts; 
+    typedef std::vector< pair< H3DUtil::AutoRef< HAPIHapticShape >, 
+                               HAPISurfaceObject::ContactInfo> > Contacts; 
 
     inline Contacts getContacts() {
       contacts_lock.lock();
@@ -77,6 +76,9 @@ namespace HAPI {
       contacts_lock.unlock();
       return c;
     }
+
+    /// Register this renderer to the haptics renderer database.
+    static HapticsRendererRegistration renderer_registration;
 
   protected:
     void onOnePlaneContact( const PlaneConstraint &c, 
@@ -94,6 +96,8 @@ namespace HAPI {
     MutexLock contacts_lock;
     Contacts contacts;
     Contacts tmp_contacts;
+
+    
 
   };
 }
