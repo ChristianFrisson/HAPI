@@ -44,8 +44,9 @@ namespace HAPI {
     HapticTriangle( const Bounds::Triangle &_triangle,
                     void *_userdata,
                     HAPISurfaceObject *_surface,
-                    const Matrix4 & _transform ):
-      HAPIHapticShape( _userdata, _surface, _transform ),
+                    const Matrix4 & _transform,
+                    int _shape_id = -1 ):
+      HAPIHapticShape( _userdata, _surface, _transform, _shape_id  ),
       triangle( _triangle ) {}
     
       /// Returns the closest point on the object to the given point p.
@@ -78,6 +79,26 @@ namespace HAPI {
       }
     }
 
+    inline virtual void glRender() {
+      glMatrixMode( GL_MODELVIEW );
+      glPushMatrix();
+      const Matrix4 &m = transform;
+      GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
+                        m[0][1], m[1][1], m[2][1], 0,
+                        m[0][2], m[1][2], m[2][2], 0,
+                        m[0][3], m[1][3], m[2][3], 1 };
+      glMultMatrixd( vt );
+      glBegin( GL_TRIANGLES );
+      glVertex3d( triangle.a.x, triangle.a.y, triangle.a.z );
+      glVertex3d( triangle.b.x, triangle.b.y, triangle.b.z );
+      glVertex3d( triangle.c.x, triangle.c.y, triangle.c.z );
+      glEnd();
+      glPopMatrix();
+    }
+
+    inline virtual int nrTriangles() {
+      return 1;
+    }
   protected:
     Bounds::Triangle triangle; 
   };

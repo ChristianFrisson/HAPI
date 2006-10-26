@@ -30,7 +30,6 @@
 #include "OpenHapticsRenderer.h"
 #include "H3DMath.h"
 #include <HD/hd.h>
-#include "HLShape.h"
 #include "PhantomHapticsDevice.h"
 #include "DeviceInfo.h"
 
@@ -42,6 +41,20 @@ OpenHapticsRenderer::renderer_registration(
                             "OpenHaptics",
                             &(newInstance< OpenHapticsRenderer >)
                             );
+namespace OpenHapticsRendererInternals {
+  string getHLErrorString( HLerror error ) {
+    if( error.errorCode == HL_DEVICE_ERROR ) {
+      stringstream s;
+      s << "HL_DEVICE_ERROR( " 
+        << hdGetErrorString( error.errorInfo.errorCode )
+        << " )";
+      return s.str();
+    } else {
+      return error.errorCode;
+    }
+  }
+}
+
 
 /// Initialize the renderer to be used with the given haptics device.
 void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
@@ -87,8 +100,6 @@ OpenHapticsRenderer::renderHapticsOneStep(
 
 void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
                                             const HapticShapeVector &shapes ) {
-  // todo: Move to where it can be used
-  //HLShape::resetShapeIdDB();
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glLoadIdentity();
@@ -121,28 +132,106 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   }
 
   if( haptic_context ) {
-
     hlMakeCurrent( haptic_context );  
     hlBeginFrame();
     hlCheckEvents();
+
     for( HapticShapeVector::const_iterator i = shapes.begin();
          i != shapes.end();
          i++ ) {
+      HLuint hl_shape_id = getHLShapeId( *i, hd );
+
       HLShape *hl = dynamic_cast< HLShape * >( *i );
       if( hl ) {    
-        // TODO: Fix
-        DeviceInfo *di = DeviceInfo::getActive();
-        if( di ) {
-          const NodeVector &devices = di->device->getValue();
-          if( devices.size() > 0 )
-            hl->hlRender( (HLHapticsDevice *) devices[0] );
+        hl->hlRender( hd, hl_shape_id );
+      } else {
+        HLSurface *s = dynamic_cast< HLSurface * >( (*i)->surface );
+        if( s ) {
+          OpenHapticsOptions::ShapeType shape_type = default_gl_shape;
+          bool camera_view = default_haptic_camera_view;
+          bool adaptive_viewport = default_adaptive_viewport;
+
+          OpenHapticsRenderer::OpenHapticsOptions *options;
+          (*i)->getRenderOption( options );
+          if( options ) {
+            shape_type = options->shape_type;
+            camera_view = options->use_haptic_camera_view;
+            adaptive_viewport = options->use_adaptive_viewport;
+          }
+
+          glMatrixMode( GL_MODELVIEW );
+          glPushMatrix();
+#if HL_VERSION_MAJOR_NUMBER >= 2
+          hlPushAttrib( HL_MATERIAL_BIT | HL_TOUCH_BIT );
+#endif
+
+          HLdouble pos[3];
+
+          hlGetDoublev( HL_PROXY_POSITION, pos );
+          //cerr <<  HAPI::Vec3( pos[0], pos[1], pos[2] ) << endl;
+          
+          glLoadIdentity();
+          glScaled( 1e-3, 1e-3, 1e-3 );
+          s->hlRender();
+
+          // TODO: touchable face
+          /*hlTouchableFace( touchable_face );
+          if( camera_view )
+            hlEnable( HL_HAPTIC_CAMERA_VIEW );
+          else
+            hlDisable( HL_HAPTIC_CAMERA_VIEW );
+          */
+
+          if( adaptive_viewport )
+            hlEnable( HL_ADAPTIVE_VIEWPORT );
+          else
+            hlDisable( HL_ADAPTIVE_VIEWPORT );
+
+          if( camera_view )
+            hlEnable( HL_HAPTIC_CAMERA_VIEW );
+          else
+            hlDisable( HL_HAPTIC_CAMERA_VIEW );
+          
+          Matrix3 m3 = (*i)->transform.getScaleRotationPart();
+          GLint front_face;
+          
+          bool negative_scaling = 
+            ( ( m3.getRow( 0 ) % m3.getRow( 1 ) ) * m3.getRow(2) ) < 0;
+          glGetIntegerv( GL_FRONT_FACE, &front_face );
+          // if front_face == GL_CW then the GLWindow we render to is mirrored.
+          // front_face has to be flipped each time a negative scaling is applied
+          // in order for normals to be correct. 
+          if( front_face == GL_CW ) {
+            if( !negative_scaling )
+              glFrontFace( GL_CCW );
+          } else if( negative_scaling )
+            glFrontFace( GL_CW );
+          
+          
+          cerr << (*i)->nrTriangles() << " " << hl_shape_id << endl;
+          
+          if( shape_type == OpenHapticsOptions::DEPTH_BUFFER ) {
+            hlBeginShape( HL_SHAPE_DEPTH_BUFFER, hl_shape_id );
+            glClear( GL_DEPTH_BUFFER_BIT );
+          } else if( shape_type == OpenHapticsOptions::FEEDBACK_BUFFER ) {
+            hlHinti( HL_SHAPE_FEEDBACK_BUFFER_VERTICES, (*i)->nrTriangles() * 3 );
+            hlBeginShape( HL_SHAPE_FEEDBACK_BUFFER, hl_shape_id );
+          } else {
+            cerr << "FDASFDASFDASFDAS" << endl;
+          }
+          (*i)->glRender();
+          hlEndShape();
+#if HL_VERSION_MAJOR_NUMBER >= 2
+          hlPopAttrib();
+#endif
+          glPopMatrix();
         }
       }
     }
-    
+
     glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
-    
+
     hlEndFrame(); 
     //hlMatrixMode( HL_VIEWTOUCH );
     //hlPopMatrix();
@@ -152,9 +241,8 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     // check for any errors
     HLerror error;
     while ( HL_ERROR(error = hlGetError()) ) {
-        cerr << "ERRRRRROR" << endl;
-      //Console(4) << HLHapticsDeviceInternal::getHLErrorString( error )
-      //<< endl;
+      H3DUtil::Console(4) << OpenHapticsRendererInternals::getHLErrorString( error )
+                          << endl;
     }   
   }
 }
@@ -179,4 +267,116 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
     }
   }
   return NULL;
+}
+
+HAPI::Vec3 OpenHapticsRenderer::getProxyPosition() {
+  HLdouble pos[3];
+  hlGetDoublev( HL_PROXY_POSITION, pos );
+  return HAPI::Vec3( pos[0], pos[1], pos[2] );
+}
+
+void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
+                                                     HLuint object,
+                                                     HLenum thread,
+                                                     HLcache *cache,
+                                                     void *userdata ) {
+  CallbackData *cb_data = static_cast< CallbackData * >( userdata ); 
+
+  OpenHapticsRenderer *renderer = cb_data->renderer;
+  HAPIHapticShape *shape = cb_data->shape.get();
+  
+  HLdouble n[3], p[3];
+  hlCacheGetDoublev( cache, 
+                     HL_PROXY_POSITION,
+                     p );
+  hlCacheGetDoublev( cache, 
+                     HL_PROXY_TOUCH_NORMAL,
+                     n );
+  HLdouble hlforce[3];
+  hlGetShapeDoublev( object, HL_REACTION_FORCE, hlforce );
+
+  HAPI::Vec3 cp = HAPI::Vec3( p[0], p[1], p[2] );
+  HAPI::Vec3 cn = HAPI::Vec3( n[0], n[1], n[2] );
+  HAPI::Vec3 f  = HAPI::Vec3( hlforce[0], hlforce[1], hlforce[2] );
+  for( Contacts::iterator i = renderer->contacts.begin();
+       i != renderer->contacts.end(); i++ ) {
+    if( (*i).first.get()->shape_id == shape->shape_id ) {
+      HAPISurfaceObject::ContactInfo &ci = (*i).second;
+      ci.contact_point_global = cp;
+      ci.y_axis = cn;
+      ci.force_global = f;
+      return;
+    }
+  }
+  // should always have a contact with the shape
+  assert( 0 );
+}
+
+void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
+                                                HLuint object,
+                                                HLenum thread,
+                                                HLcache *cache,
+                                                void *userdata ) {
+  CallbackData *cb_data = static_cast< CallbackData * >( userdata ); 
+
+  OpenHapticsRenderer *renderer = cb_data->renderer;
+  HAPIHapticShape *shape = cb_data->shape.get();
+
+  renderer->contacts.push_back( make_pair( shape, HAPISurfaceObject::ContactInfo()) );
+  OpenHapticsRenderer::motionCallback( event, object, thread, cache, userdata );
+}
+
+void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
+                                                  HLuint object,
+                                                  HLenum thread,
+                                                  HLcache *cache,
+                                                  void *userdata ) {
+  CallbackData *cb_data = static_cast< CallbackData * >( userdata ); 
+  OpenHapticsRenderer *renderer = cb_data->renderer;
+  HAPIHapticShape *shape = cb_data->shape.get();
+  Contacts::iterator to_remove = renderer->contacts.end();
+
+  for( Contacts::iterator i = renderer->contacts.begin();
+       i != renderer->contacts.end(); i++ ) {
+    if( (*i).first.get()->shape_id == shape->shape_id ) {
+      to_remove = i;
+      break;
+    }
+  }
+
+  assert( i != renderer->contacts.end() );
+  renderer->contacts.erase( i );
+}
+
+
+HLuint OpenHapticsRenderer::getHLShapeId( HAPIHapticShape *hs,
+                                          HAPIHapticsDevice *hd ) {
+  pair< int, HAPIHapticsDevice * > key = make_pair( hs->shape_id, hd );
+
+  if( id_map.find( key ) == id_map.end() ) {
+    HLuint hl_shape_id = hlGenShapes(1);
+    id_map[ key ] = hl_shape_id;
+  
+    CallbackData *cb_data = new CallbackData( this, hs );
+    callback_data.push_back( cb_data );
+    hlEventd(  HL_EVENT_MOTION_LINEAR_TOLERANCE, 0 );
+    
+    
+    hlAddEventCallback( HL_EVENT_MOTION, 
+                        hl_shape_id,
+                        HL_CLIENT_THREAD,
+                        &motionCallback,
+                        cb_data );
+    hlAddEventCallback( HL_EVENT_TOUCH, 
+                        hl_shape_id,
+                        HL_CLIENT_THREAD,
+                        &touchCallback,
+                        cb_data );
+    hlAddEventCallback( HL_EVENT_UNTOUCH, 
+                        hl_shape_id,
+                        HL_CLIENT_THREAD,
+                        &untouchCallback,
+                        cb_data );
+  }
+  return id_map[ key ];
 }

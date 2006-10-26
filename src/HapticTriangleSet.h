@@ -40,8 +40,9 @@ namespace HAPI {
     HapticTriangleSet( const vector< Bounds::Triangle > &_triangles,
                        void *_userdata,
                        HAPISurfaceObject *_surface,
-                       const Matrix4 & _transform ):
-      HAPIHapticShape( _userdata, _surface, _transform ),
+                       const Matrix4 & _transform,
+                       int _shape_id = -1 ):
+      HAPIHapticShape( _userdata, _surface, _transform, _shape_id ),
       triangles( _triangles ) {}
 
     template< class Iterator >
@@ -60,6 +61,12 @@ namespace HAPI {
     virtual void getConstraints( const Vec3 &point,
                                  HAPIFloat radius,
                                  std::vector< PlaneConstraint > &constraints );
+
+    virtual void glRender();
+
+    inline virtual int nrTriangles() {
+      return triangles.size();
+    }
 
     /// The triangles.
     vector< Bounds::Triangle > triangles;
