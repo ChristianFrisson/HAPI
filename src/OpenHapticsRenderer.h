@@ -30,7 +30,7 @@
 #ifndef __OPENHAPTICSRENDERER_H__
 #define __OPENHAPTICSRENDERER_H__
 
-#include <HAPIHapticsRenderer.h>
+#include <HAPIProxyBasedRenderer.h>
 #include <HAPIHapticShape.h>
 #include <AutoPtrVector.h>
 #include <Threads.h>
@@ -52,7 +52,7 @@ namespace HAPI {
   /// \class OpenHapticsRenderer
   /// \brief Haptics renderer using the HL API part of OpenHaptics for the 
   /// haptics rendering.
-  class H3DAPI_API OpenHapticsRenderer: public HAPI::HAPIHapticsRenderer {
+  class H3DAPI_API OpenHapticsRenderer: public HAPI::HAPIProxyBasedRenderer {
   public:
     class H3DAPI_API HLShape {
     public:
@@ -129,7 +129,7 @@ namespace HAPI {
                           const HapticShapeVector &shapes );
 
     /// Get the current proxy position.
-    inline HAPI::Vec3 getProxyPosition();
+    virtual HAPI::Vec3 getProxyPosition();
 
     /// Get the current default shape type for the renderer. 
     inline ShapeType getDefaultShapeType() {

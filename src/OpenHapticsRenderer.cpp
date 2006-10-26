@@ -118,8 +118,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
                      pcal[0][2], pcal[1][2], pcal[2][2], pcal[3][2], 
                      pcal[0][3], pcal[1][3], pcal[2][3], pcal[3][3] }; 
   hlLoadIdentity();
-  // scale to convert to metres
-  hlScalef( 1000, 1000, 1000 );
+
   // apply calibration matrix
   hlMultMatrixd( m );
   
@@ -165,22 +164,11 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           hlPushAttrib( HL_MATERIAL_BIT | HL_TOUCH_BIT );
 #endif
 
-          HLdouble pos[3];
-
-          hlGetDoublev( HL_PROXY_POSITION, pos );
-          //cerr <<  HAPI::Vec3( pos[0], pos[1], pos[2] ) << endl;
-          
           glLoadIdentity();
-          glScaled( 1e-3, 1e-3, 1e-3 );
           s->hlRender();
 
           // TODO: touchable face
-          /*hlTouchableFace( touchable_face );
-          if( camera_view )
-            hlEnable( HL_HAPTIC_CAMERA_VIEW );
-          else
-            hlDisable( HL_HAPTIC_CAMERA_VIEW );
-          */
+          //hlTouchableFace( touchable_face );
 
           if( adaptive_viewport )
             hlEnable( HL_ADAPTIVE_VIEWPORT );
