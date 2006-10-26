@@ -31,18 +31,72 @@
 #define __OPENHAPTICSRENDERER_H__
 
 #include <HAPIHapticsRenderer.h>
+#include <HAPIHapticShape.h>
+#include <AutoPtrVector.h>
 #include <Threads.h>
 #include <HL/hl.h>
 #include <map>
 #include <H3DApi.h>
 
-namespace H3D {
+#ifdef HAVE_OPENHAPTICS
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#pragma comment( lib, "hd.lib" )
+#pragma comment( lib, "hl.lib" )
+#pragma comment( lib, "hdu.lib" )
+#pragma comment( lib, "hlu.lib" )
+#endif
+#endif
+
+namespace HAPI {
 
   /// \class OpenHapticsRenderer
   /// \brief Haptics renderer using the HL API part of OpenHaptics for the 
   /// haptics rendering.
   class H3DAPI_API OpenHapticsRenderer: public HAPI::HAPIHapticsRenderer {
   public:
+    class H3DAPI_API HLShape {
+    public:
+      virtual ~HLShape() {}
+      /// This function performs all the HLAPI calls that are needed to render
+      /// the surface. 
+      virtual void hlRender( HAPI::HAPIHapticsDevice *hd,
+                             HLuint shape_id ) = 0;
+    };
+
+    class H3DAPI_API HLSurface {
+    public:
+      /// Destructor.
+      virtual ~HLSurface() {}
+      
+      /// This function performs all the HLAPI calls that are needed to render
+      /// the surface. 
+      virtual void hlRender() = 0;
+    };
+
+    class H3DAPI_API OpenHapticsOptions: public HAPI::HAPIShapeRenderOptions {
+    public:
+      typedef enum {
+        FEEDBACK_BUFFER,
+        DEPTH_BUFFER,
+        CUSTOM 
+      } ShapeType;
+
+      OpenHapticsOptions( ShapeType _shape_type = FEEDBACK_BUFFER,
+                          bool _use_adaptive_viewport = true,
+                          bool _use_haptic_camera_view = true ):
+        shape_type( _shape_type ),
+        use_adaptive_viewport( _use_adaptive_viewport ),
+        use_haptic_camera_view( _use_haptic_camera_view ) {
+        
+      }
+
+      ShapeType shape_type;
+      bool use_adaptive_viewport;
+      bool use_haptic_camera_view;
+      
+    };
+
+    typedef OpenHapticsOptions::ShapeType ShapeType;
 
     /// Initialize the renderer to be used with the given haptics device.
     virtual void initRenderer( HAPI::HAPIHapticsDevice *hd );
@@ -54,7 +108,16 @@ namespace H3D {
     /// Use HL API in OpenHaptics to render the shapes.
     virtual void preProcessShapes( HAPI::HAPIHapticsDevice *hd,
                                    const HapticShapeVector &shapes );
-
+    /// Constructor.
+    OpenHapticsRenderer( ShapeType _default_shape_type = OpenHapticsOptions::FEEDBACK_BUFFER,
+                         bool _default_adaptive_viewport = true,
+                         bool _default_haptic_camera_view = true ) :
+      default_gl_shape( _default_shape_type ),
+      default_adaptive_viewport( _default_adaptive_viewport ),
+      default_haptic_camera_view( _default_haptic_camera_view ) {
+    }
+                         
+    
     /// Destructor.
     virtual ~OpenHapticsRenderer() {}
     
@@ -66,16 +129,90 @@ namespace H3D {
                           const HapticShapeVector &shapes );
 
     /// Get the current proxy position.
-    inline HAPI::Vec3 getProxyPosition() {
-        HLdouble pos[3];
-        hlGetDoublev( HL_PROXY_POSITION, pos );
-        return HAPI::Vec3( pos[0], pos[1], pos[2] );
+    inline HAPI::Vec3 getProxyPosition();
+
+    /// Get the current default shape type for the renderer. 
+    inline ShapeType getDefaultShapeType() {
+      return default_gl_shape;
+    }
+
+    /// Set the current default shape type for the renderer.
+    /// The default shape type is the shape type used if a shape
+    /// has not defined a OpenHapticsOptions node.
+    inline void setDefaultShapeType( ShapeType t ) {
+      default_gl_shape = t;
+    }
+
+    /// Get the current default value for using adaptive viewport or not. 
+    inline bool getDefaultAdaptiveViewport() {
+      return default_adaptive_viewport;
+    }
+
+    /// Set the default value of if adaptive viewport should be used or
+    /// not. The default value is used if a shape
+    /// has not defined a OpenHapticsOptions node.
+    inline void setDefaultAdaptiveViewport( bool t ) {
+      default_adaptive_viewport = t;
+    }
+
+    /// Get the current default value for using haptic camera view
+    /// or not. 
+    inline bool getDefaultHapticCameraView() {
+      return default_haptic_camera_view;
+    }
+
+    /// Set the default value of if haptic camera view should be used or
+    /// not. The default value is used if a shape
+    /// has not defined a OpenHapticsOptions node.
+    inline void setDefaultHapticCameraView( bool t ) {
+      default_haptic_camera_view = t;
     }
 
     /// Register this renderer to the haptics renderer database.
     static HapticsRendererRegistration renderer_registration;
 
   protected:
+
+    ShapeType default_gl_shape;
+    bool default_adaptive_viewport;
+    bool default_haptic_camera_view;
+
+    /// HL event callback function for when the geometry is touched.
+    static void HLCALLBACK touchCallback( HLenum event,
+                                          HLuint object,
+                                          HLenum thread,
+                                          HLcache *cache,
+                                          void *userdata );
+
+    /// HL event callback function for when the geometry is not touched
+    /// any longer. 
+    static void HLCALLBACK untouchCallback( HLenum event,
+                                            HLuint object,
+                                            HLenum thread,
+                                            HLcache *cache,
+                                            void *userdata );
+
+    /// HL event callback function for when the proxy moves while in
+    /// contact with the geometry.
+    static void HLCALLBACK motionCallback( HLenum event,
+                                           HLuint object,
+                                           HLenum thread,
+                                           HLcache *cache,
+                                           void *userdata );
+
+    struct CallbackData {
+      CallbackData( OpenHapticsRenderer *r, 
+                    HAPI::HAPIHapticShape *s ): renderer( r ), shape( s ) {}
+      OpenHapticsRenderer *renderer;
+      H3DUtil::AutoRef< HAPI::HAPIHapticShape > shape;
+    };
+    
+    
+    HLuint getHLShapeId( HAPI::HAPIHapticShape *hs,
+                         HAPI::HAPIHapticsDevice *hd );
+
+    H3DUtil::AutoPtrVector< CallbackData > callback_data; 
+
     /// Generate a new HL context for the given haptics device.
     HHLRC initHLLayer( HAPI::HAPIHapticsDevice *pd );
 
@@ -83,6 +220,10 @@ namespace H3D {
 
     /// A map from haptics device to HL API context
     ContextMap context_map;
+
+    /// A map from HAPI shape_id to HL API shape id
+    typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, HLuint > IdMap;
+    IdMap id_map;
   };
 }
 

@@ -34,6 +34,7 @@
 #include <HAPIHapticShape.h>
 #include <HapticForceEffect.h>
 #include <AutoRefVector.h>
+#include <Threads.h>
 #include <list>
 
 namespace HAPI {
@@ -96,6 +97,16 @@ namespace HAPI {
     renderHapticsOneStep( HAPIHapticsDevice *hd,
                           const HapticShapeVector &shapes ) = 0;
 
+    typedef std::vector< pair< H3DUtil::AutoRef< HAPI::HAPIHapticShape >,
+                               HAPISurfaceObject::ContactInfo> > Contacts; 
+
+    inline Contacts getContacts() {
+      contacts_lock.lock();
+      Contacts c = contacts;
+      contacts_lock.unlock();
+      return c;
+    }
+
     // The following is part of the database of available haptics renderers.
     typedef HAPIHapticsRenderer*( *CreateInstanceFunc)(); 
 
@@ -144,6 +155,8 @@ namespace HAPI {
 
   protected:
     static list< HapticsRendererRegistration > *registered_renderers;
+    MutexLock contacts_lock;
+    Contacts contacts;
     static bool initialized;
   };
 }

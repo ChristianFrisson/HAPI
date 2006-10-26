@@ -84,9 +84,11 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
       output = output + (*i)->calculateForces( input );
   }
 
+  hd->renderer_change_lock.lock();
   if( hd->haptics_renderer.get() )
     output = output + 
       hd->haptics_renderer->renderHapticsOneStep( hd, hd->current_shapes );
+  hd->renderer_change_lock.unlock();
 
   // add the resulting force and torque to the rendered force.
   hd->sendForce( output.force );

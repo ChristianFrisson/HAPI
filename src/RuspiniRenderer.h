@@ -42,7 +42,11 @@ namespace HAPI {
   /// It allows for variable proxy radius.
   class HAPI_API RuspiniRenderer: public HAPIHapticsRenderer {
   public:
-    
+    /// Constructor.
+    RuspiniRenderer( HAPIFloat _proxy_radius = 2.5 ):
+      proxy_radius( _proxy_radius ) {
+    }
+
     /// Destructor.
     virtual ~RuspiniRenderer() {}
 
@@ -67,16 +71,6 @@ namespace HAPI {
       proxy_radius = r;
     }
     
-    typedef std::vector< pair< H3DUtil::AutoRef< HAPIHapticShape >, 
-                               HAPISurfaceObject::ContactInfo> > Contacts; 
-
-    inline Contacts getContacts() {
-      contacts_lock.lock();
-      Contacts c = contacts;
-      contacts_lock.unlock();
-      return c;
-    }
-
     /// Register this renderer to the haptics renderer database.
     static HapticsRendererRegistration renderer_registration;
 
@@ -93,8 +87,6 @@ namespace HAPI {
     
     HAPIFloat proxy_radius;
     Vec3 proxy_position;
-    MutexLock contacts_lock;
-    Contacts contacts;
     Contacts tmp_contacts;
 
     

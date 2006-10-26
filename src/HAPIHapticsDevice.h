@@ -32,7 +32,7 @@
 
 #include <HAPI.h>
 #include <HAPIHapticShape.h>
-#include <RuspiniRenderer.h>
+#include <HAPIHapticsRenderer.h>
 #include <HapticForceEffect.h>
 #include <Threads.h>
 #include <AutoRefVector.h>
@@ -96,8 +96,10 @@ namespace HAPI {
 
     /// Constructor.
     HAPIHapticsDevice() :
-      device_state( UNINITIALIZED ) {
-      setHapticsRenderer( new RuspiniRenderer );
+      device_state( UNINITIALIZED ),
+      thread( NULL ),
+      delete_thread( false ) {
+      setHapticsRenderer( NULL );
     }
     
     /// Destructor. Stops haptics rendering and remove callback functions.
@@ -122,6 +124,15 @@ namespace HAPI {
         }
       } 
       device_state = DeviceState::INITIALIZED;
+      if( !thread ) {
+        // create a new thread to run the haptics in
+#ifdef WIN32
+        thread = new HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+#else
+        thread = new HapticThread( 0, 1000 );
+#endif
+        delete_thread = true;
+      }
       thread->asynchronousCallback( hapticRenderingCallback,
                                     this );
       return SUCCESS;
@@ -161,6 +172,12 @@ namespace HAPI {
       
       if( haptics_renderer.get() ) {
         haptics_renderer->releaseRenderer( this );
+      }
+
+      if( thread && delete_thread ) {
+        delete thread;
+        thread = NULL;
+        delete_thread = false;
       }
 
       if( !releaseHapticsDevice() ) {
@@ -490,6 +507,7 @@ namespace HAPI {
     /// Set the HAPIHapticsRenderer to use to render the HAPIHapticShapes
     /// specified.
     inline void setHapticsRenderer( HAPIHapticsRenderer *r ) {
+      renderer_change_lock.lock();
       if( device_state != DeviceState::UNINITIALIZED ) {
         if( haptics_renderer.get() ) {
           haptics_renderer->releaseRenderer( this );
@@ -497,6 +515,7 @@ namespace HAPI {
         haptics_renderer->initRenderer( this );
       }
       haptics_renderer.reset( r );
+      renderer_change_lock.unlock();
     }
 
     /// Get the currently used HAPIHapticsRenderer.
@@ -507,6 +526,11 @@ namespace HAPI {
     /// Get the error message from the latest error.
     inline const string &getLastErrorMsg() {
       return last_error_message;
+    }
+
+    /// Get the thread that is used to run this haptics device.
+    inline PeriodicThreadBase *getThread() {
+      return thread;
     }
 
   protected:
@@ -645,6 +669,9 @@ namespace HAPI {
     // lock for when updating device values/sending output
     MutexLock device_values_lock;
 
+    // lock for when changing haptics renderer
+    MutexLock renderer_change_lock;
+
     //
     HapticShapeVector tmp_shapes;
 
@@ -658,6 +685,8 @@ namespace HAPI {
     DeviceValues last_device_values;
     DeviceValues current_raw_device_values;
     DeviceValues last_raw_device_values;
+
+    bool delete_thread;
 
     Matrix4 position_calibration;
     Matrix4 position_calibration_inverse;

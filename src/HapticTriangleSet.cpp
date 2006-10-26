@@ -37,14 +37,32 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
   Matrix4 inv = transform.inverse();
   // TODO: find closest?
   bool have_intersection = false;
+  Bounds::IntersectionInfo closest_intersection;
+  HAPIFloat min_d2;
+  Vec3 from_local = inv * from;
+  Vec3 to_local = inv * to;
   for( unsigned int i = 0; i < triangles.size(); i++ ) {
     Bounds::Triangle &t = triangles[i];
-    if( t.lineIntersect( inv * from, inv * to, result ) )	have_intersection = true;
+    if( t.lineIntersect( from_local, to_local, result ) )	{
+      Vec3 v = result.point - from_local;
+      HAPIFloat distance_sqr = v * v;
+       
+      if( !have_intersection ) {
+        have_intersection = true;
+        closest_intersection = result;
+        min_d2 = distance_sqr;
+      } else {
+        if( distance_sqr < min_d2 ) {
+          closest_intersection = result;
+          min_d2 = distance_sqr;
+        }
+      }
+    }
   }
   
   if( have_intersection ) {
-    result.point = transform * result.point;
-    result.normal = transform.getRotationPart() * result.normal;
+    result.point = transform * closest_intersection.point;
+    result.normal = transform.getRotationPart() * closest_intersection.normal;
   }
   return have_intersection;
 }
@@ -87,5 +105,22 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
   }
 }
 
-
-
+void HapticTriangleSet::glRender() {
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  const Matrix4 &m = transform;
+  GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
+                    m[0][1], m[1][1], m[2][1], 0,
+                    m[0][2], m[1][2], m[2][2], 0,
+                    m[0][3], m[1][3], m[2][3], 1 };
+  glMultMatrixd( vt );
+  glBegin( GL_TRIANGLES );
+  for( unsigned int i = 0; i < triangles.size(); i++ ) {
+    HAPI::Bounds::Triangle &t = triangles[i];
+    glVertex3d( t.a.x, t.a.y, t.a.z );
+    glVertex3d( t.b.x, t.b.y, t.b.z );
+    glVertex3d( t.c.x, t.c.y, t.c.z );
+  }
+  glEnd();
+  glPopMatrix();
+}

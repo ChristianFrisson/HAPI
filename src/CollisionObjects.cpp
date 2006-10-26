@@ -605,6 +605,7 @@ Vec3 Triangle::closestPoint( const Vec3 &p ) {
   return closest;*/
 }
 
+#if 0
 bool Triangle::lineIntersect( const Vec3 &from, 
                               const Vec3 &to,
                               IntersectionInfo &result ) {
@@ -612,11 +613,11 @@ bool Triangle::lineIntersect( const Vec3 &from,
   Vec3 cb = b-c;
   Vec3 dir = to - from;
   Vec3 normal = ca % cb;
-  if( H3DUtil::H3DAbs( normal * normal ) < Constants::epsilon ||
+  /*if( H3DUtil::H3DAbs( normal * normal ) < Constants::epsilon ||
       H3DUtil::H3DAbs( dir * dir ) < Constants::epsilon ||
       H3DUtil::H3DAbs( normal * dir ) < Constants::epsilon ) {
     return false;
-  }
+  }*/
   normal.normalizeSafe();
 
   HAPIFloat dir_length = dir.length();
@@ -673,6 +674,101 @@ bool Triangle::lineIntersect( const Vec3 &from,
   
 }
 
+#if 0
+                              // line intersect, not segment 
+bool Triangle::lineIntersect( const Vec3 &p, 
+                              const Vec3 &q,
+                              IntersectionInfo &result ) {
+  Vec3 pq = q - p;
+  Vec3 pa = a - p;
+  Vec3 pb = b - p;
+  Vec3 pc = c - p;
+
+  Vec3 m = pq.crossProduct( pc );
+  HAPIFloat u = pb * m;
+  if( u < 0 ) return false;
+  HAPIFloat v = -(pa * m );
+  if( v < 0 ) return false;
+  HAPIFloat w = (pq % pb) * pa;
+  if( w < 0 ) return false;
+
+  // compute barycentric coordinates
+  HAPIFloat denom = 1.0 / ( u + v + w );
+  u *= denom;
+  v *= denom;
+  w *= denom;
+
+  result.point = u*a + v*b + w*c;
+  result.normal = (a - c) % (b - c);
+  result.normal.normalizeSafe();
+  if( pq * result.normal > 0 ) 
+    result.normal = -result.normal;
+  return true;
+}
+
+#endif
+
+#else
+bool Triangle::lineIntersect( const Vec3 &p, 
+                              const Vec3 &q,
+                              IntersectionInfo &result ) {
+  
+  if( q.z < 0 )
+    HAPIFloat a = 4;//cerr << "F" << endl;
+  
+  Vec3 v0 = a;
+  Vec3 v1 = b;
+  Vec3 v2 = c;
+ 
+  Vec3 ab = v1 - v0;
+  Vec3 ac = v2 - v0;
+  Vec3 qp = p - q;
+
+  // Compute normal.
+  Vec3 n = ab % ac;
+
+  HAPIFloat epsilon = 1e-5;
+
+  HAPIFloat d = qp * n;
+  if ( d < 0 ) {
+    d = -d;
+    n = -n;
+    Vec3 tmp = v1;
+    v1 = v2;
+    v2 = tmp;
+    tmp = ab;
+    ab = ac;
+    ac = tmp;
+  } else if( d == 0 ) {
+    return false;
+  }
+
+  Vec3 ap = p - v0;
+  HAPIFloat t = ap * n;
+
+  if( t < -epsilon || t > d + epsilon ) return false;
+
+  Vec3 e = qp % ap;
+  HAPIFloat v = ac * e;
+  if( v < -epsilon || v > d + epsilon ) return false;
+  HAPIFloat w = -(ab * e );
+  if( w < -epsilon || v + w > d + epsilon) return false;
+
+  HAPIFloat ood = 1 / d;
+  t *= ood; 
+  v *= ood;
+  w *= ood;
+  HAPIFloat u = 1 - v - w;
+
+  result.point = u*v0 + v*v1 + w*v2;
+  result.normal = n;
+  result.normal.normalizeSafe();
+  //if( (-qp) * result.normal > 0 ) 
+  //  result.normal = -result.normal;
+  return true;
+}
+
+#endif
 
 void BinaryBoundTree::clearCollidedFlag() {
   if( !isLeaf() ) {

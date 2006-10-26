@@ -58,6 +58,8 @@ namespace HAPI {
 
       HAPIFloat proxy_radius;
 
+      int shape_id;
+
       // local
       bool has_inverse;
       Matrix4 inverse;
