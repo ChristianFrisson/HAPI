@@ -30,7 +30,7 @@
 #ifndef __RUSPINIRENDERER_H__
 #define __RUSPINIRENDERER_H__
 
-#include <HAPIHapticsRenderer.h>
+#include <HAPIProxyBasedRenderer.h>
 #include <Threads.h>
 #include <map>
 
@@ -40,7 +40,7 @@ namespace HAPI {
   /// \brief Haptics renderer that uses a variant of the algorithm presented
   /// by Ruspini. 
   /// It allows for variable proxy radius.
-  class HAPI_API RuspiniRenderer: public HAPIHapticsRenderer {
+  class HAPI_API RuspiniRenderer: public HAPIProxyBasedRenderer {
   public:
     /// Constructor.
     RuspiniRenderer( HAPIFloat _proxy_radius = 2.5 ):
@@ -57,7 +57,7 @@ namespace HAPI {
                           const HapticShapeVector &shapes );
 
     /// Get the current position of the proxy.
-    inline const Vec3 &getProxyPosition() {
+    inline virtual Vec3 getProxyPosition() {
       return proxy_position;
     }
 
