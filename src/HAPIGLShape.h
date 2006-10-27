@@ -40,8 +40,30 @@ namespace HAPI {
     /// Render the shape using OpenGL.
     virtual void glRender() {}
 
+    /// A lower bound on how many triangles are renderered.
     virtual int nrTriangles() {
       return 0;
+    }
+
+    /// An upperr bound on how many lines are renderered.
+    virtual int nrLines() {
+      return 0;
+    }
+
+    /// An upper bound on how many lines are renderered.
+    virtual int nrPoints() {
+      return 0;
+    }
+
+    /// An upper bound on the number of vertices renderered.
+    inline int nrVertices() {
+      return nrTriangles() * 3 + nrLines() * 2 + nrPoints();
+    }
+
+    /// An upper bound on the number of values required in the 
+    /// feedbackbuffer in order to render it there.
+    virtual int nrFeedbackBufferValues() {
+      return nrTriangles() * 11 + nrLines() * 7 + nrPoints() * 4;  
     }
   };
 }
