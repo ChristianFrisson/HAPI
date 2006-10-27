@@ -59,7 +59,6 @@ namespace HAPI {
                                 Bounds::IntersectionInfo &result );
 
     virtual void getConstraints( const Vec3 &point,
-                                 HAPIFloat radius,
                                  std::vector< PlaneConstraint > &constraints );
 
     virtual void glRender();

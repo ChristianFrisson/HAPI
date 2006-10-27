@@ -67,11 +67,10 @@ namespace HAPI {
     }
 
     inline virtual void getConstraints( const Vec3 &point,
-                                        HAPIFloat radius,
                                         std::vector< PlaneConstraint > &constraints ) {
       Vec3 p = transform.inverse() * point;
       unsigned int size = constraints.size();
-      triangle.getConstraints( p, radius, constraints);
+      triangle.getConstraints( p, constraints);
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];
         pc.point = transform * pc.point;

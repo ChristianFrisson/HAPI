@@ -1044,9 +1044,8 @@ void OrientedBoxBound::render( ) {
   glPopMatrix();
 }
 
-void Triangle::getConstraints( const Vec3 &point,
-                               HAPIFloat radius,
-                               std::vector< PlaneConstraint > &constraints ) {
+void GeometryPrimitive::getConstraints( const Vec3 &point,
+                           std::vector< PlaneConstraint > &constraints ) {
   Vec3 closest_point = closestPoint( point );
   //cerr << closest_point << endl;
   Vec3 normal = point - closest_point;
@@ -1058,16 +1057,15 @@ void Triangle::getConstraints( const Vec3 &point,
 }
 
 void Triangle::getConstraints( const Vec3 &point,
-                               HAPIFloat radius,
-                               const Matrix4 &matrix,
-                               std::vector< PlaneConstraint > &constraints ) {
+                                        const Matrix4 &matrix,
+                                        std::vector< PlaneConstraint > &constraints ) {
   Vec3 oa = a;
   Vec3 ob = b;
   Vec3 oc = c;
   a = (matrix * a);
   b = (matrix * b);
   c = (matrix * c);
-  getConstraints( point, radius, constraints );
+  GeometryPrimitive::getConstraints( point, constraints );
   a = oa;
   b = ob;
   c = oc;
@@ -1075,34 +1073,32 @@ void Triangle::getConstraints( const Vec3 &point,
 
 
 void BinaryBoundTree::getConstraints( const Vec3 &point,
-                                      HAPIFloat radius,
                                       std::vector< PlaneConstraint > &constraints ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
       Triangle &t = triangles[i];
-      t.getConstraints( point, radius, constraints );
+      t.getConstraints( point, constraints );
 		}
 	}	else 	{
 		//if ( bound->boundIntersect( from, to ) )	{
-    if (left.get()) left->getConstraints( point, radius, constraints );
-    if (right.get()) right->getConstraints( point, radius, constraints );
+    if (left.get()) left->getConstraints( point, constraints );
+    if (right.get()) right->getConstraints( point, constraints );
     
   }
 }
 
 void BinaryBoundTree::getConstraints( const Vec3 &point,
-                                      HAPIFloat radius,
                                       const Matrix4 &matrix,
                                       std::vector< PlaneConstraint > &constraints ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
       Triangle &t = triangles[i];
-      t.getConstraints( point, radius, matrix, constraints );
+      t.getConstraints( point, matrix, constraints );
 		}
 	}	else 	{
 		//if ( bound->boundIntersect( from, to ) )	{
-    if (left.get()) left->getConstraints( point, radius, matrix, constraints );
-    if (right.get()) right->getConstraints( point, radius, matrix, constraints );
+    if (left.get()) left->getConstraints( point, matrix, constraints );
+    if (right.get()) right->getConstraints( point, matrix, constraints );
     
   }
 }
@@ -1128,4 +1124,89 @@ void BinaryBoundTree::getTrianglesWithinRadius( const Vec3 &p,
     if (left.get()) left->getTrianglesWithinRadius( p, radius, result );
     if (right.get()) right->getTrianglesWithinRadius( p, radius, result );
   }
+}
+
+void LineSegment::render() {
+  glDisable( GL_LIGHTING );
+  if( collided )
+    glColor3d( 1, 0, 0 );
+  else {
+    glColor3d( 0, 0, 1 );
+  }
+
+  glBegin( GL_LINES );
+  glVertex3d( start.x, start.y, start.z );
+  glVertex3d( end.x, end.y, end.z );
+  glEnd();
+  glEnable( GL_LIGHTING );
+}
+
+/// Returns the closest point on the object to the given point p.
+Vec3 LineSegment::closestPoint( const Vec3 &p ) {
+  Vec3 ab = end - start;
+  HAPIFloat ab2 = ab * ab;
+  if( ab2 < Constants::epsilon ) {
+    return start;
+  }
+    
+  HAPIFloat t = 
+    (p - start).dotProduct( ab ) / ab2;
+
+  if( t < 0 ) t = 0;
+  if( t > 1 ) t = 1;
+  Vec3 closest_point = start + t * ab;
+}
+
+/// Detect collision between a line segment and the object.
+bool LineSegment::lineIntersect( const Vec3 &from, 
+                                 const Vec3 &to,
+                                 IntersectionInfo &result ) {
+  // TODO: implement
+  return false;
+}
+
+void LineSegment::getConstraints( const Vec3 &point,
+                                  const Matrix4 &matrix,
+                                  std::vector< PlaneConstraint > &constraints ) {
+  Vec3 oa = start;
+  Vec3 ob = end;
+
+  start = (matrix * start);
+  end = (matrix * end);
+
+  getConstraints( point, constraints );
+  start = oa;
+  end = ob;
+}
+
+void Point::render() {
+  glDisable( GL_LIGHTING );
+  if( collided )
+    glColor3d( 1, 0, 0 );
+  else {
+    glColor3d( 0, 0, 1 );
+  }
+
+  glBegin( GL_POINTS );
+  glVertex3d( position.x, position.y, position.z );
+  glEnd();
+  glEnable( GL_LIGHTING );
+}
+
+/// Detect collision between a line segment and the object.
+bool Point::lineIntersect( const Vec3 &from, 
+                                 const Vec3 &to,
+                                 IntersectionInfo &result ) {
+  // TODO: implement
+  return false;
+}
+      
+
+void Point::getConstraints( const Vec3 &point,
+                            const Matrix4 &matrix,
+                            std::vector< PlaneConstraint > &constraints ) {
+  Vec3 oa = position;
+  position = (matrix * position);
+  getConstraints( point, constraints );
+  position = oa;
 }
