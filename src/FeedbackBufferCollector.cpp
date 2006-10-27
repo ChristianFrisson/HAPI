@@ -173,12 +173,10 @@ FeedbackBufferCollector::endCollecting(
   for( GLint i = 0; i < nr_values; ) {
     switch( (int)buffer[i++] ) {
     case( GL_POINT_TOKEN ): {
-      cerr << "Point: ";
       i+= parseVertex( buffer, i, p );
       break;
     }
     case( GL_LINE_TOKEN ): {
-      cerr << "Line: "; 
       i+= parseVertex( buffer, i, p );
       i+= parseVertex( buffer, i, p );
       break;
@@ -190,7 +188,6 @@ FeedbackBufferCollector::endCollecting(
       if( nr_vertices != 3 ) { 
         cerr << "Too Many vertices: " << nr_vertices << endl;
       }
-      //cerr << "Polygon: " << nr_vertices << endl;
       i+= parseVertex( buffer, i, p );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v0.x, &v0.y, &v0.z );
       i+= parseVertex( buffer, i, p );
@@ -198,14 +195,18 @@ FeedbackBufferCollector::endCollecting(
       i+= parseVertex( buffer, i, p );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
       triangles.push_back( HAPI::Bounds::Triangle( v0 *1e3, v1*1e3, v2*1e3 )) ;
-      //cerr << v0 << " " << v1 << " " << v2 << endl;
       break;
     }
-    case( GL_BITMAP_TOKEN ): cerr << "Bitmap: "; break;
-    case( GL_DRAW_PIXEL_TOKEN ): cerr << "Draw pixel: "; break;
-    case( GL_COPY_PIXEL_TOKEN ): cerr << "Copy pixel: "; break;
-    case( GL_PASS_THROUGH_TOKEN ): cerr << "Pass through: "; break;
-    default: cerr << "Default" << endl;
+    case( GL_BITMAP_TOKEN ): 
+    case( GL_DRAW_PIXEL_TOKEN ):
+    case( GL_COPY_PIXEL_TOKEN ): {
+      i+= parseVertex( buffer, i, Vec3() );
+      break;
+    }
+    case( GL_PASS_THROUGH_TOKEN ): {
+      i++;
+      break;
+    }
     };
   }
   glMatrixMode( GL_PROJECTION );
@@ -243,7 +244,6 @@ FeedbackBufferCollector::endCollecting(
   for( GLint i = 0; i < nr_values; ) {
     switch( (int)buffer[i++] ) {
     case( GL_POINT_TOKEN ): {
-      cerr << "Point: ";
       i+= parseVertex( buffer, i, p );
       Vec3 pos;
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &pos.x, &pos.y, &pos.z );
@@ -251,7 +251,6 @@ FeedbackBufferCollector::endCollecting(
       break;
     }
     case( GL_LINE_TOKEN ): {
-      cerr << "Line: "; 
       Vec3 v0, v1;
       i+= parseVertex( buffer, i, p );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v0.x, &v0.y, &v0.z );
@@ -267,7 +266,6 @@ FeedbackBufferCollector::endCollecting(
       if( nr_vertices != 3 ) { 
         cerr << "Too Many vertices: " << nr_vertices << endl;
       }
-      //cerr << "Polygon: " << nr_vertices << endl;
       i+= parseVertex( buffer, i, p );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v0.x, &v0.y, &v0.z );
       i+= parseVertex( buffer, i, p );
@@ -275,18 +273,22 @@ FeedbackBufferCollector::endCollecting(
       i+= parseVertex( buffer, i, p );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
       triangles.push_back( HAPI::Bounds::Triangle( v0 *1e3, v1*1e3, v2*1e3 )) ;
-      //cerr << v0 << " " << v1 << " " << v2 << endl;
       break;
     }
-    case( GL_BITMAP_TOKEN ): cerr << "Bitmap: "; break;
-    case( GL_DRAW_PIXEL_TOKEN ): cerr << "Draw pixel: "; break;
-    case( GL_COPY_PIXEL_TOKEN ): cerr << "Copy pixel: "; break;
-    case( GL_PASS_THROUGH_TOKEN ): cerr << "Pass through: "; break;
-    default: cerr << "Default" << endl;
+    case( GL_BITMAP_TOKEN ): 
+    case( GL_DRAW_PIXEL_TOKEN ):
+    case( GL_COPY_PIXEL_TOKEN ): {
+      i+= parseVertex( buffer, i, Vec3() );
+      break;
+    }
+    case( GL_PASS_THROUGH_TOKEN ): {
+      i++;
+      break;
+    }
     };
-  }
-  //glMatrixMode( GL_PROJECTION );
-  //  glPopMatrix();
+  } 
+  glMatrixMode( GL_PROJECTION );
+  glPopMatrix();
   delete buffer;
   collecting_triangles = false;
   return SUCCESS;
