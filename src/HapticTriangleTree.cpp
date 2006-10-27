@@ -41,7 +41,7 @@ void HapticTriangleTree::getConstraints( const Vec3 &point,
     if( uniform_scale ) {
       Vec3 p = transform.inverse() * point;
       unsigned int size = constraints.size();
-      tree->getConstraints( p, radius, constraints);
+      tree->getConstraints( p, constraints);
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];
         pc.normal = transform.getScaleRotationPart() * pc.normal;
@@ -51,7 +51,7 @@ void HapticTriangleTree::getConstraints( const Vec3 &point,
       }
     } else {
       unsigned int size = constraints.size();
-      tree->getConstraints( point, radius, transform, constraints);
+      tree->getConstraints( point, transform, constraints);
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];
         pc.point = pc.point;

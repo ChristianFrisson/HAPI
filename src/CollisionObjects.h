@@ -82,11 +82,9 @@ namespace HAPI {
   class HAPI_API CollisionObject : public H3DUtil::RefCountedClass {
     public:
       virtual void getConstraints( const Vec3 &point,
-                                   HAPIFloat radius,
                                    std::vector< PlaneConstraint > &constraints ) {}
 
       virtual void getConstraints( const Vec3 &point,
-                                   HAPIFloat radius,
                                    const Matrix4 &matrix,
                                    std::vector< PlaneConstraint > &constraints ) {}
 
@@ -150,6 +148,9 @@ namespace HAPI {
     /// primitives used in collision detection.
     class HAPI_API GeometryPrimitive: public CollisionObject {
     public:
+      virtual void getConstraints( const Vec3 &point,
+                                   std::vector< PlaneConstraint > &constraints );
+
       /// Returns a point representing the primitive. Is used e.g. when
       /// building BinaryTreeBound.
       virtual Vec3 pointRepresentation() const { return Vec3(); }
@@ -166,15 +167,6 @@ namespace HAPI {
       Triangle( const Vec3& a_, const Vec3& b_, const Vec3& c_) : 
         a(a_),b(b_),c(c_) {}
 
-      virtual void getConstraints( const Vec3 &point,
-                                   HAPIFloat radius,
-                                   std::vector< PlaneConstraint > &constraints );
-
-      virtual void getConstraints( const Vec3 &point,
-                                   HAPIFloat radius,
-                                   const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints );
-      
       /// Returns the closest point on the object to the given point p.
       virtual Vec3 closestPoint( const Vec3 &p );
 
@@ -196,8 +188,112 @@ namespace HAPI {
       /// Render the outlines of the object for debugging purposes.
       virtual void render();
       
+      
+    public:
+      /// WTF?? Why is this needed. VC complains if not present
+      virtual void getConstraints( const Vec3 &point,
+                                   std::vector< PlaneConstraint > &constraints ) {
+        GeometryPrimitive::getConstraints( point, constraints );
+      }
+
+      virtual void getConstraints( const Vec3 &point,
+                                   const Matrix4 &matrix,
+                                   std::vector< PlaneConstraint > &constraints );
+
       /// The corners of the triangle.
       Vec3 a,b,c;
+    };
+
+    /// \brief The LineSegment class represents a line segment primitive.
+    class HAPI_API LineSegment: public GeometryPrimitive  {
+    public:
+      /// Default constructor.
+      LineSegment() {}
+
+      /// Constructor.
+      LineSegment( const Vec3& _start, const Vec3& _end) : 
+        start( _start ), end( _end ) {}
+
+      /// WTF?? Why is this needed. VC complains if not present
+      virtual void getConstraints( const Vec3 &point,
+                                   std::vector< PlaneConstraint > &constraints ) {
+        GeometryPrimitive::getConstraints( point, constraints );
+      }
+
+      virtual void getConstraints( const Vec3 &point,
+                                   const Matrix4 &matrix,
+                                   std::vector< PlaneConstraint > &constraints );
+
+      /// Returns the closest point on the object to the given point p.
+      virtual Vec3 closestPoint( const Vec3 &p );
+
+      /// Detect collision between a line segment and the object.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param result Contains info about the closest intersection, if 
+      /// line intersects object
+      /// \returns true if intersected, false otherwise.
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
+                                  IntersectionInfo &result );
+      /// Returns a point representing the primitive. In this case it is the 
+      /// center of the line segment.
+      inline virtual Vec3 pointRepresentation() const {
+        return ( start + end ) / 2;
+      }
+
+      /// Render the outlines of the object for debugging purposes.
+      virtual void render();
+      
+      /// The start and end of the line segment.
+      Vec3 start,end;
+    };
+
+    /// \brief The Point class represents a point primitive.
+    class HAPI_API Point: public GeometryPrimitive  {
+    public:
+      /// Default constructor.
+      Point() {}
+
+      /// Constructor.
+      Point( const Vec3& _p ) : 
+        position( _p ) {}
+
+      /// WTF?? Why is this needed. VC complains if not present
+      virtual void getConstraints( const Vec3 &point,
+                                   std::vector< PlaneConstraint > &constraints ) {
+        GeometryPrimitive::getConstraints( point, constraints );
+      }
+
+      virtual void getConstraints( const Vec3 &point,
+                                   const Matrix4 &matrix,
+                                   std::vector< PlaneConstraint > &constraints );
+
+      /// Returns the closest point on the object to the given point p.
+      virtual Vec3 closestPoint( const Vec3 &p ) { 
+        return position;
+      }
+
+      /// Detect collision between a line segment and the object.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param result Contains info about the closest intersection, if 
+      /// line intersects object
+      /// \returns true if intersected, false otherwise.
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
+                                  IntersectionInfo &result );
+      /// Returns a point representing the primitive. In this case it is the 
+      /// center of the line segment.
+      inline virtual Vec3 pointRepresentation() const {
+        return position;
+      }
+
+      /// Render the outlines of the object for debugging purposes.
+      virtual void render();
+      
+      /// The position of the point
+      Vec3 position;
     };
     
     /// \brief The AABoxBound class represents an axis-aligned bounding box.
@@ -385,11 +481,9 @@ namespace HAPI {
       }
 
       virtual void getConstraints( const Vec3 &point,
-                                   HAPIFloat radius,
                                    std::vector< PlaneConstraint > &constraints );
 
       virtual void getConstraints( const Vec3 &point,
-                                   HAPIFloat radius,
                                    const Matrix4 &matrix,
                                    std::vector< PlaneConstraint > &constraints );
 

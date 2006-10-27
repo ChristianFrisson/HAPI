@@ -30,6 +30,7 @@
 #define __HAPIGLSHAPE_H__
 
 #include <HAPI.h>
+#include <HAPITypes.h>
 
 namespace HAPI {
 
@@ -55,15 +56,35 @@ namespace HAPI {
       return 0;
     }
 
+    /// An axis aligned bounding box containing all the primitives rendered by 
+    /// the glRender function. If no such bounding box is available, size
+    /// should be set to Vec3( -1, -1, -1 )
+    virtual void getBound( Vec3 &center, Vec3& size ) {
+      center = Vec3( 0, 0, 0 );
+      size = Vec3( -1, -1, -1 );
+    }
+
     /// An upper bound on the number of vertices renderered.
     inline int nrVertices() {
-      return nrTriangles() * 3 + nrLines() * 2 + nrPoints();
+      int nr_triangles = nrTriangles();
+      int nr_lines = nrLines();
+      int nr_points = nrPoints();
+      if( nr_triangles == -1 || nr_lines == -1 || nr_points == - 1 )
+        return -1;
+      else
+        return nr_triangles * 3 + nr_lines * 2 + nr_points;
     }
 
     /// An upper bound on the number of values required in the 
     /// feedbackbuffer in order to render it there.
     virtual int nrFeedbackBufferValues() {
-      return nrTriangles() * 11 + nrLines() * 7 + nrPoints() * 4;  
+      int nr_triangles = nrTriangles();
+      int nr_lines = nrLines();
+      int nr_points = nrPoints();
+      if( nr_triangles == -1 || nr_lines == -1 || nr_points == - 1 )
+        return -1;
+      else
+        return nr_triangles * 11 + nr_lines * 7 + nr_points * 4;  
     }
   };
 }
