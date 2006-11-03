@@ -150,6 +150,8 @@ bool AABoxBound::boundIntersect( const Vec3 &from,
 	return true;
 }
 
+
+
 Vec3 AABoxBound::closestPoint( const Vec3 &p ) {
   assert( false );
   return Vec3();
@@ -195,6 +197,13 @@ bool SphereBound::boundIntersect( const Vec3 &from,
 	if (e>=f) return bp*bp <= r2;
 	
 	return (ap*ap - e*e/f) <= r2;
+}
+
+bool SphereBound::movingSphereIntersect( HAPIFloat radius,
+                                              const Vec3 &from, 
+                                              const Vec3 &to ) {
+  Sphere sphere( center, radius );
+  return sphere.movingSphereIntersect( radius, from, to );
 }
 
 bool SphereBound::lineIntersect( const Vec3 &from, 
@@ -770,6 +779,49 @@ bool Triangle::lineIntersect( const Vec3 &p,
 
 #endif
 
+bool Triangle::movingSphereIntersect( HAPIFloat radius,
+                                      const Vec3 &from, 
+                                      const Vec3 &to ) {
+
+// TODO: Look in book if better way
+  Vec3 closest = closestPoint( from );
+  Vec3 ttt = from - closest;
+  HAPIFloat aba = ttt * ttt;
+  if( aba <= radius * radius ) return true; 
+                     
+  /*  if( from.z * to.z < 0 ) {
+cerr << "FD";
+                                        }
+  */               
+  Vec3 ca = a-c;
+  Vec3 cb = b-c;
+  Vec3 normal = ca % cb;
+
+  Vec3 t = from - a;
+  if( t * normal < 0 )
+    normal = -normal;
+
+  normal.normalizeSafe();
+
+  Plane plane( a, normal );
+  IntersectionInfo info;
+  Vec3 D = from - radius * normal;
+  Vec3 v = to - from;
+
+
+
+  bool res = plane.lineIntersect( D, D + v, info );
+  Vec3 P = info.point;
+
+  // TODO: check if P within triangle, then collision
+
+  Vec3 Q = closestPoint( P );
+
+  Sphere sphere( from, radius );
+  return sphere.lineIntersect( Q, Q - v, info );
+}
+
+
 void BinaryBoundTree::clearCollidedFlag() {
   if( !isLeaf() ) {
     bound->collided = false;
@@ -780,6 +832,8 @@ void BinaryBoundTree::clearCollidedFlag() {
       triangles[i].collided = false;
   }
 }
+
+
 
 bool BinaryBoundTree::lineIntersect( const Vec3 &from, 
                                      const Vec3 &to,
@@ -804,6 +858,35 @@ bool BinaryBoundTree::lineIntersect( const Vec3 &from,
 		else return false;
 	}
 }
+
+bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
+                                             const Vec3 &from, 
+                                             const Vec3 &to ) {
+  if ( isLeaf() )	{
+    // TODO: find closest?
+    for( unsigned int i = 0; i < triangles.size(); i++ ) {
+      Triangle &t = triangles[i];
+      if( t.movingSphereIntersect( radius, from, to ) )	return true;
+		}
+		return false;
+	}	else 	{
+		if ( bound->boundMovingSphereIntersect( radius, from, to ) )	{
+			bool overlap = false;
+      bound->collided = true;
+			
+			if (left.get()) {
+        overlap = left->movingSphereIntersect( radius, from, to );
+        if( overlap ) return overlap;
+      }
+			if (right.get()) 
+        overlap = right->movingSphereIntersect( radius,from, to );
+			
+			return overlap;
+		}
+		else return false;
+	}
+}
+
 
 Matrix3 covarianceMatrix( const vector< Vec3 >&points ) {
   // TODO: if no points?
@@ -1154,7 +1237,7 @@ Vec3 LineSegment::closestPoint( const Vec3 &p ) {
 
   if( t < 0 ) t = 0;
   if( t > 1 ) t = 1;
-  Vec3 closest_point = start + t * ab;
+  return start + t * ab;
 }
 
 /// Detect collision between a line segment and the object.
@@ -1165,6 +1248,91 @@ bool LineSegment::lineIntersect( const Vec3 &from,
   return false;
 }
 
+// Detect collision between a moving sphere and the object.
+bool LineSegment::movingSphereIntersect( HAPIFloat radius,
+                                         const Vec3 &from, 
+                                         const Vec3 &to ) {
+  HAPIFloat t;
+  HAPIFloat r2 = radius * radius;
+  HAPIFloat d2 = 
+    LineSegment( from, to ).closestPointOnLine( start, end, 
+                                                t, t, 
+                                                Vec3(), Vec3() );
+  return d2 <= r2;
+}
+
+HAPIFloat LineSegment::closestPointOnLine( const Vec3 &from, const Vec3 &to,
+                                           HAPIFloat &s, HAPIFloat &t,
+                                           Vec3 &c1, Vec3 &c2 ) {
+  Vec3 p1 = from;
+  Vec3 q1 = to;
+  Vec3 p2 = start;
+  Vec3 q2 = end;
+
+  Vec3 d1 = q1 - p1; // Direction vector of segment S1
+  Vec3 d2 = q2 - p2; // Direction vector of segment S2
+  Vec3 r = p1 - p2;
+
+  // Squared length of segment S1, always nonnegative
+  HAPIFloat a = d1 * d1; 
+  // Squared length of segment S2, always nonnegative
+  HAPIFloat e = d2 * d2; 
+  HAPIFloat f = d2 * r;
+
+  // Check if either or both segments degenerate into points
+  if (a <= Constants::epsilon && e <= Constants::epsilon) {
+    // Both segments degenerate into points
+    s = t = 0.0f;
+    c1 = p1;
+    c2 = p2;
+    Vec3 v = c1 - c2;
+    return v * v;
+  }
+  if (a <= Constants::epsilon) {
+    // First segment degenerates into a point
+    s = 0.0f;
+    t = f / e; // s = 0 => t = (b*s + f) / e = f / e
+    t = clamp(t, 0.0f, 1.0f);
+  } else {
+    HAPIFloat c = d1 *r;
+    if (e <= Constants::epsilon) {
+      // Second segment degenerates into a point
+      t = 0.0f;
+      s = clamp(-c / a, 0.0f, 1.0f); // t = 0 => s = (b*t - c) / a = -c / a
+    } else {
+      // The general nondegenerate case starts here
+      HAPIFloat b = d1 * d2;
+      HAPIFloat denom = a*e-b*b; // Always nonnegative
+
+      // If segments not parallel, compute closest point on L1 to L2, and
+      // clamp to segment S1. Else pick arbitrary s (here 0)
+      if (denom != 0.0f) {
+        s = clamp((b*f - c*e) / denom, 0.0f, 1.0f);
+      } else s = 0.0f;
+
+      // Compute point on L2 closest to S1(s) using
+      // t = Dot((P1+D1*s)-P2,D2) / Dot(D2,D2) = (b*s + f) / e
+      t = (b*s + f) / e;
+
+      // If t in [0,1] done. Else clamp t, recompute s for the new value
+      // of t using s = Dot((P2+D2*t)-P1,D1) / Dot(D1,D1)= (t*b - c) / a
+      // and clamp s to [0, 1]
+      if (t < 0.0f) {
+        t = 0.0f;
+        s = clamp(-c / a, 0.0f, 1.0f);
+      } else if (t > 1.0f) {
+        t = 1.0f;
+        s = clamp((b - c) / a, 0.0f, 1.0f);
+      }
+    }
+  }
+
+  c1 = p1 + d1 * s;
+  c2 = p2 + d2 * t;
+  Vec3 v = c1 - c2;
+  return v * v;
+}
+  
 void LineSegment::getConstraints( const Vec3 &point,
                                   const Matrix4 &matrix,
                                   std::vector< PlaneConstraint > &constraints ) {
@@ -1201,6 +1369,15 @@ bool Point::lineIntersect( const Vec3 &from,
   return false;
 }
       
+// Detect collision between a moving sphere and the object.
+bool Point::movingSphereIntersect( HAPIFloat radius,
+                                   const Vec3 &from, 
+                                   const Vec3 &to ) {
+  HAPIFloat r2 = radius * radius;
+  Vec3 closest_point = LineSegment( from, to ).closestPoint( position );
+  Vec3 v = position - closest_point;
+  return v * v <= r2;
+}
 
 void Point::getConstraints( const Vec3 &point,
                             const Matrix4 &matrix,
@@ -1209,4 +1386,114 @@ void Point::getConstraints( const Vec3 &point,
   position = (matrix * position);
   getConstraints( point, constraints );
   position = oa;
+}
+
+
+bool Plane::lineIntersect( const Vec3 &from, 
+                           const Vec3 &to,
+                           IntersectionInfo &result ) {
+  Vec3 from_to = to - from;
+  
+  HAPIFloat denom = normal * from_to;
+  if( denom * denom < Constants::epsilon ) {
+    return false;
+  }
+  
+  HAPIFloat u = ( normal * ( point - from ) ) / denom; 
+  if( u <= 1 + Constants::epsilon && u >= 0 - Constants::epsilon ) {
+    
+    if( u < 0 ) u = 0;
+    if( u > 1 ) u = 1;
+    result.point = from + u * from_to;
+    result.normal = normal;
+    return true;
+  }
+  return false;
+}
+
+bool Plane::movingSphereIntersect( HAPIFloat radius,
+                                   const Vec3 &from, 
+                                   const Vec3 &to ) {
+  HAPIFloat d = normal * point;
+
+  // Code from p222 in Realtime Collision detection book
+
+  // Get the distance for both a and b from plane p
+  HAPIFloat adist = from * normal - d;
+  HAPIFloat bdist = to * normal - d;
+  // Intersects if on different sides of plane (distances have different signs)
+  if ( adist * bdist < 0.0f ) return true;
+  // Intersects if start or end position within radius from plane
+  if ( H3DUtil::H3DAbs(adist) <= radius || 
+       H3DUtil::H3DAbs( bdist ) <= radius ) return true;
+  // No intersection
+  return false;
+}
+
+
+bool Sphere::lineIntersect( const Vec3 &from, 
+                            const Vec3 &to,
+                            IntersectionInfo &result ) {
+  Vec3 ab = to - from;
+	Vec3 ap = center-from;
+	Vec3 bp = center-to;
+	HAPIFloat r2 = radius * radius;
+
+	HAPIFloat e = ap * ab;
+	if (e<0)  return ap*ap <= r2;
+	
+	HAPIFloat f = ab * ab;
+	if (e>=f) return bp*bp <= r2;
+	
+	return (ap*ap - e*e/f) <= r2;
+}
+
+bool Sphere::movingSphereIntersect( HAPIFloat r,
+                                    const Vec3 &from, 
+                                    const Vec3 &to ) {
+  // Code from p224 in Realtime Collision detection book
+
+  // Vector between sphere centers
+  Vec3 s = from - center;    
+  // Motion of sphere
+  Vec3 v = to - from;         
+
+  // Sum of sphere radii
+  HAPIFloat radius_sum = radius + r;
+  
+  HAPIFloat c = s * s - radius_sum * radius_sum;
+  if (c < 0.0f) {
+    // Spheres initially overlapping so exit directly
+    return true;
+  }
+
+  HAPIFloat a = v * v;
+  // Spheres not moving relative each other
+  if (a < Constants::epsilon) return false; 
+  HAPIFloat b = v * s;
+  // Spheres not moving towards each other
+  if (b >= 0.0f) return false; 
+  HAPIFloat d = b * b - a * c;
+  // No real-valued root, spheres do not intersect
+  if (d < 0.0f) return false;    
+
+  return true;
+}
+
+void BinaryBoundTree::getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
+                                                             Vec3 from,
+                                                             Vec3 to,
+                                                             vector< Triangle > &result) {
+  if ( isLeaf() )	{
+    for( vector< Triangle >::iterator i = triangles.begin();
+         i != triangles.end(); i++ ) {
+      if( (*i).movingSphereIntersect( radius, from, to ) )
+        result.push_back( *i );
+    }
+	}	else 	{
+    if(  !bound->boundMovingSphereIntersect( radius, from, to ) ) return;
+
+    if (left.get()) left->getTrianglesIntersectedByMovingSphere( radius, from, to, result );
+    if (right.get()) right->getTrianglesIntersectedByMovingSphere( radius, from, to, result );
+  }
 }

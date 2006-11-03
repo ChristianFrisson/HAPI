@@ -77,6 +77,12 @@ namespace HAPI {
       return false;
     }
 
+    virtual bool movingSphereIntersect( HAPIFloat radius,
+                                        const Vec3 &from, 
+                                        const Vec3 &to ) { 
+      return false;
+    }
+
     static int genShapeId() {
       return 0;
     }

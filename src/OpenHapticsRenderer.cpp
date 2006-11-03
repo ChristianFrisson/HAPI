@@ -195,9 +195,6 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           } else if( negative_scaling )
             glFrontFace( GL_CW );
           
-          
-          cerr << (*i)->nrTriangles() << " " << hl_shape_id << endl;
-          
           if( shape_type == OpenHapticsOptions::DEPTH_BUFFER ) {
             hlBeginShape( HL_SHAPE_DEPTH_BUFFER, hl_shape_id );
             glClear( GL_DEPTH_BUFFER_BIT );
@@ -210,6 +207,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 
             hlBeginShape( HL_SHAPE_FEEDBACK_BUFFER, hl_shape_id );
           } else {
+            // TODO: fix
             cerr << "FDASFDASFDASFDAS" << endl;
           }
           (*i)->glRender();
