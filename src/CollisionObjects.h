@@ -65,32 +65,32 @@ namespace HAPI {
       int id;
     };
 
-  class HAPI_API PlaneConstraint {
-  public:
-    PlaneConstraint( const Vec3 &p, const Vec3 &n, HAPIHapticShape *shape = NULL ):
-      point( p ), normal( n ), haptic_shape( shape ) {}
-    
-    inline bool lineIntersect( const Vec3 &from, 
-                               const Vec3 &to,    
-                               Bounds::IntersectionInfo &result );
-    Vec3 point, normal;
-    HAPIHapticShape * haptic_shape;
-  };
+    class HAPI_API PlaneConstraint {
+    public:
+      PlaneConstraint( const Vec3 &p, const Vec3 &n, HAPIHapticShape *shape = NULL ):
+        point( p ), normal( n ), haptic_shape( shape ) {}
+      
+      inline bool lineIntersect( const Vec3 &from, 
+                                 const Vec3 &to,    
+                                 Bounds::IntersectionInfo &result );
+      Vec3 point, normal;
+      HAPIHapticShape * haptic_shape;
+    };
     
     /// \brief The CollisionObject class is the base class for objects that 
     /// can be used  in collision detection.
-  class HAPI_API CollisionObject : public H3DUtil::RefCountedClass {
+    class HAPI_API CollisionObject : public H3DUtil::RefCountedClass {
     public:
       virtual void getConstraints( const Vec3 &point,
                                    std::vector< PlaneConstraint > &constraints ) {}
-
+      
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    std::vector< PlaneConstraint > &constraints ) {}
-
+      
       /// Returns the closest point on the object to the given point p.
       virtual Vec3 closestPoint( const Vec3 &p ) = 0;
-
+      
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
       /// \param to The end of the line segment.
@@ -101,9 +101,18 @@ namespace HAPI {
                                   const Vec3 &to,
                                   IntersectionInfo &result ) = 0;
 
-      /// Render the outlines of the object for debugging purposes.
-      virtual void render() {}
-    };
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to ) = 0;
+    
+    /// Render the outlines of the object for debugging purposes.
+    virtual void render() {}
+  };
 
     /// \brief The BoundObject is the base class for bounding objects.
     class HAPI_API BoundObject: public CollisionObject {
@@ -121,6 +130,19 @@ namespace HAPI {
                 insideBound( to ) || 
                 lineIntersect( from, to, info ) );
                 
+      }
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool boundMovingSphereIntersect( HAPIFloat radius,
+                                               const Vec3 &from, 
+                                               const Vec3 &to ) {
+        return( insideBound( from ) || 
+                insideBound( to ) || 
+                movingSphereIntersect( radius, from, to ) );
       }
 
       virtual Vec3 boundClosestPoint( const Vec3 &p ) { return Vec3(); }
@@ -157,6 +179,97 @@ namespace HAPI {
       bool collided;
     };
     
+    
+    class HAPI_API Plane: public GeometryPrimitive {
+    public:
+      /// Constructor.
+      Plane( const Vec3 &p, const Vec3 &n ):
+        point( p ), normal( n ) {}
+      
+      /// Returns a point representing the primitive. In this case it is the 
+      /// center of the triangle.
+      inline virtual Vec3 pointRepresentation() const {
+        return point;
+      }
+      
+      /// Returns the closest point on the object to the given point p.
+      virtual Vec3 closestPoint( const Vec3 &p ) {
+        HAPIFloat t = normal * ( p - point );
+        return p - t * normal;
+      }
+
+      /// Detect collision between a line segment and the object.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param result Contains info about the closest intersection, if 
+      /// line intersects object
+      /// \returns true if intersected, false otherwise.
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
+                                  IntersectionInfo &result );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
+
+      Vec3 point, normal;
+    };
+
+
+    class HAPI_API Sphere: public GeometryPrimitive {
+    public:
+      /// Constructor.
+      Sphere( const Vec3 &_center, HAPIFloat _radius ):
+        center( _center ), radius( _radius ) {}
+      
+      /// Returns a point representing the primitive. In this case it is the 
+      /// center of the triangle.
+      inline virtual Vec3 pointRepresentation() const {
+        return center;
+      }
+      
+      /// Returns the closest point on the object to the given point p.
+      virtual Vec3 closestPoint( const Vec3 &p ) {
+        Vec3 dir = p - center;
+        if( dir * dir < Constants::epsilon )
+          return center + Vec3( radius, 0, 0 ); 
+        else {
+          dir.normalize();
+          return center + dir * radius;
+        }
+      }
+
+      /// Detect collision between a line segment and the object.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param result Contains info about the closest intersection, if 
+      /// line intersects object
+      /// \returns true if intersected, false otherwise.
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
+                                  IntersectionInfo &result );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
+
+      Vec3 center;
+      HAPIFloat radius;
+    };
+
+
     /// \brief The Triangle class represents a triangle primitive.
     class HAPI_API Triangle: public GeometryPrimitive  {
     public:
@@ -179,6 +292,18 @@ namespace HAPI {
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// object
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
+
       /// Returns a point representing the primitive. In this case it is the 
       /// center of the triangle.
       inline virtual Vec3 pointRepresentation() const {
@@ -227,6 +352,12 @@ namespace HAPI {
       /// Returns the closest point on the object to the given point p.
       virtual Vec3 closestPoint( const Vec3 &p );
 
+      /// Returns the closest point on the object to the line segment
+      /// from -> to
+      HAPIFloat closestPointOnLine( const Vec3 &from, const Vec3 &to,
+                                    HAPIFloat &s, HAPIFloat &t,
+                                    Vec3 &c0, Vec3 &c1 );
+
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
       /// \param to The end of the line segment.
@@ -236,6 +367,16 @@ namespace HAPI {
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
       /// Returns a point representing the primitive. In this case it is the 
       /// center of the line segment.
       inline virtual Vec3 pointRepresentation() const {
@@ -247,6 +388,13 @@ namespace HAPI {
       
       /// The start and end of the line segment.
       Vec3 start,end;
+
+    protected:
+      inline HAPIFloat clamp( HAPIFloat n, HAPIFloat min, HAPIFloat max) {
+        if (n < min) return min;
+        if (n > max) return max;
+        return n;
+      }
     };
 
     /// \brief The Point class represents a point primitive.
@@ -283,6 +431,16 @@ namespace HAPI {
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
       /// Returns a point representing the primitive. In this case it is the 
       /// center of the line segment.
       inline virtual Vec3 pointRepresentation() const {
@@ -329,6 +487,28 @@ namespace HAPI {
                                   const Vec3 &to,
                                   IntersectionInfo &result ) {
         return boundIntersect( from, to );
+      }
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to ) {
+        Vec3 old_min = min;
+        Vec3 old_max = max;
+
+        Vec3 r = Vec3( radius, radius, radius ); 
+        min -= r;
+        max += r;
+
+        bool res = boundIntersect( from, to );
+        
+        min = old_min;
+        max = old_max;
+        return res;
       }
 
       /// The boundIntersect returns true if the line segment intersects the
@@ -439,6 +619,15 @@ namespace HAPI {
       /// bound or if the line segment is totally inside the bound.
       virtual bool boundIntersect( const Vec3 &from, const Vec3 &to );
 
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
       /// Update the bound primitive to contain all the given points.
       virtual void fitAroundPoints( const vector< Vec3 > &points );
 
@@ -491,6 +680,11 @@ namespace HAPI {
                                              HAPIFloat radius,
                                              vector< Triangle > &triangles);
 
+      virtual void getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
+                                                          Vec3 from,
+                                                          Vec3 to,
+                                                          vector< Triangle > &triangles);
+
       /// Render the outlines of the object for debugging purposes.
       virtual void render();
 
@@ -501,13 +695,19 @@ namespace HAPI {
       /// Returns true if the given point is inside the bound, and
       /// false otherwise.
       virtual bool insideBound( const Vec3 &p ) {
-        return bound->insideBound( p );
+        if( bound.get() )
+          return bound->insideBound( p );
+        else
+          return false;
       }
 
       /// The boundIntersect returns true if the line segment intersects the
       /// bound or if the line segment is totally inside the bound.
       virtual bool boundIntersect( const Vec3 &from, const Vec3 &to ) {
-        return bound->boundIntersect( from, to );
+        if( bound.get() )
+          return bound->boundIntersect( from, to );
+        else
+          return false;
       }
 
       /// Detect collision between a line segment and the object. Will check for 
@@ -521,6 +721,29 @@ namespace HAPI {
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool boundMovingSphereIntersect( HAPIFloat radius,
+                                               const Vec3 &from, 
+                                               const Vec3 &to ) {
+        if( bound.get() )
+          return bound->boundMovingSphereIntersect( radius, from, to );
+        else 
+          return false;
+      }
 
       /// Returns the closest point on the object to the given point p.
       virtual Vec3 closestPoint( const Vec3 &p ) { return Vec3(); }
