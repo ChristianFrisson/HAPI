@@ -43,12 +43,21 @@ namespace HAPI {
   class HAPIHapticShape;    
 
   namespace Bounds {
+     typedef enum {
+        BACK,
+        FRONT,
+        FRONT_AND_BACK
+      } FaceType;
 
     /// \brief The IntersectionInfo struct contains information about an 
     /// intersection.
     struct IntersectionInfo {
+     
+
+      /// Constructor.
       IntersectionInfo( const Vec3 &_point = Vec3(), 
-                        const Vec3 &_normal = Vec3(), 
+                        const Vec3 &_normal = Vec3(),
+                        FaceType intersected_face = FRONT,
                         int _id = -1 ) :
       point( _point ),
       normal( _normal ),
@@ -60,6 +69,9 @@ namespace HAPI {
       /// The normal at the intersection point.
       Vec3 normal;
 
+      /// The face that was intersected. BACK or FRONT.
+      FaceType face;
+      
       /// The id of the primitive that was intersected if applicable, e.g. 
       /// triangle index. -1 if no id exists.
       int id;
@@ -81,6 +93,7 @@ namespace HAPI {
     /// can be used  in collision detection.
     class HAPI_API CollisionObject : public H3DUtil::RefCountedClass {
     public:
+         
       virtual void getConstraints( const Vec3 &point,
                                    std::vector< PlaneConstraint > &constraints ) {}
       
@@ -94,12 +107,16 @@ namespace HAPI {
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
       /// \param to The end of the line segment.
-      /// \param result Contains info about closest intersection, if line intersects 
-      /// object
+      /// \param result Contains info about closest intersection, if 
+      /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result ) = 0;
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK ) = 0;
 
       /// Detect collision between a moving sphere and the object.
       /// \param The radius of the sphere
@@ -203,10 +220,14 @@ namespace HAPI {
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result );
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param The radius of the sphere
@@ -250,10 +271,14 @@ namespace HAPI {
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result );
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param The radius of the sphere
@@ -288,10 +313,14 @@ namespace HAPI {
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result );
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param The radius of the sphere
@@ -363,10 +392,14 @@ namespace HAPI {
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result );
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param The radius of the sphere
@@ -427,10 +460,14 @@ namespace HAPI {
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result );
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param The radius of the sphere
@@ -482,10 +519,14 @@ namespace HAPI {
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result ) {
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK ) {
         return boundIntersect( from, to );
       }
 
@@ -562,10 +603,14 @@ namespace HAPI {
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result ) {
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK ) {
         return boundIntersect( from, to );
       }
 
@@ -610,10 +655,14 @@ namespace HAPI {
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if
       /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result );
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK );
 
       /// The boundIntersect returns true if the line segment intersects the
       /// bound or if the line segment is totally inside the bound.
@@ -717,10 +766,14 @@ namespace HAPI {
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if line
       /// intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
       /// \returns true if intersected, false otherwise.
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  IntersectionInfo &result );
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param The radius of the sphere

@@ -167,8 +167,13 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           glLoadIdentity();
           s->hlRender();
 
-          // TODO: touchable face
-          //hlTouchableFace( touchable_face );
+          HLenum touchable_face;
+          Bounds::FaceType face = (*i)->touchable_face;
+          if( face == Bounds::BACK ) touchable_face = HL_BACK;
+          else if( face == Bounds::FRONT ) touchable_face = HL_FRONT;
+          else touchable_face = HL_FRONT_AND_BACK;
+          
+          hlTouchableFace( touchable_face );
 
           if( adaptive_viewport )
             hlEnable( HL_ADAPTIVE_VIEWPORT );
@@ -198,6 +203,8 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           if( shape_type == OpenHapticsOptions::DEPTH_BUFFER ) {
             hlBeginShape( HL_SHAPE_DEPTH_BUFFER, hl_shape_id );
             glClear( GL_DEPTH_BUFFER_BIT );
+            (*i)->glRender();
+            hlEndShape();
           } else if( shape_type == OpenHapticsOptions::FEEDBACK_BUFFER ) {
             int nr_vertices = (*i)->nrVertices();
             if( nr_vertices == -1 )
@@ -206,12 +213,18 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
               hlHinti( HL_SHAPE_FEEDBACK_BUFFER_VERTICES, nr_vertices );
 
             hlBeginShape( HL_SHAPE_FEEDBACK_BUFFER, hl_shape_id );
+            (*i)->glRender();
+            hlEndShape();         
           } else {
-            // TODO: fix
-            cerr << "FDASFDASFDASFDAS" << endl;
+            // custom shape, use intersection functions
+            hlBeginShape(HL_SHAPE_CALLBACK, hl_shape_id );
+            hlCallback(HL_SHAPE_INTERSECT_LS, 
+                       (HLcallbackProc) intersectCallback, (*i) );
+            hlCallback(HL_SHAPE_CLOSEST_FEATURES, 
+                       (HLcallbackProc) closestFeaturesCallback, (*i) );
+            hlEndShape();
           }
-          (*i)->glRender();
-          hlEndShape();
+          
 #if HL_VERSION_MAJOR_NUMBER >= 2
           hlPopAttrib();
 #endif
@@ -370,4 +383,68 @@ HLuint OpenHapticsRenderer::getHLShapeId( HAPIHapticShape *hs,
                         cb_data );
   }
   return id_map[ key ];
+}
+
+HLboolean HLCALLBACK OpenHapticsRenderer::intersectCallback( 
+                                      const HLdouble *start_point, 
+                                      const HLdouble *end_point,
+                                      HLdouble *intersection_point, 
+                                      HLdouble *intersection_normal,
+                                      HLenum* hl_face,
+                                      void *user_data ) {
+  
+  HAPIHapticShape* object = 
+    static_cast<HAPIHapticShape*>( user_data );
+  Bounds::IntersectionInfo i;
+
+  HLboolean b = object->lineIntersect( Vec3((HAPIFloat)start_point[0], 
+                                            (HAPIFloat)start_point[1], 
+                                            (HAPIFloat)start_point[2] ), 
+                                       Vec3f((HAPIFloat)end_point[0],
+                                             (HAPIFloat)end_point[1],
+                                             (HAPIFloat)end_point[2] ),
+                                       i, 
+                                       Bounds::FRONT_AND_BACK );
+  intersection_point[0] = i.point.x;
+  intersection_point[1] = i.point.y;
+  intersection_point[2] = i.point.z;
+  
+  intersection_normal[0] = i.normal.x;
+  intersection_normal[1] = i.normal.y;
+  intersection_normal[2] = i.normal.z;
+
+  *hl_face = (i.face == Bounds::FRONT ? HL_FRONT: HL_BACK );
+  
+  return b;
+}
+
+
+HLboolean HLCALLBACK OpenHapticsRenderer::closestFeaturesCallback( 
+                                       const HLdouble *query_point, 
+                                       const HLdouble *target_point, 
+                                       HLgeom *geom,
+                                       HLdouble *closest_point,
+                                       void* user_data ) {
+  HAPIHapticShape* object = 
+    static_cast<HAPIHapticShape*>( user_data );
+
+  Vec3 qp( (HAPIFloat)query_point[0],
+           (HAPIFloat)query_point[1],
+           (HAPIFloat)query_point[2] );
+
+  Vec3 closest = object->closestPoint( qp );
+  Vec3 normal = qp - closest;
+  normal.normalizeSafe();
+
+  HLdouble cn[] = { normal.x, 
+                    normal.y,
+                    normal.z };
+  closest_point[0] = closest.x;
+  closest_point[1] = closest.y;
+  closest_point[2] = closest.z;
+
+  hlLocalFeature2dv( geom, HL_LOCAL_FEATURE_PLANE, 
+                     cn, closest_point );
+
+  return true;
 }

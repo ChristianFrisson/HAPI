@@ -41,8 +41,11 @@ namespace HAPI {
                        void *_userdata,
                        HAPISurfaceObject *_surface,
                        const Matrix4 & _transform,
-                       int _shape_id = -1 ):
-      HAPIHapticShape( _userdata, _surface, _transform, _shape_id ),
+                       int _shape_id = -1,
+                       Bounds::FaceType _touchable_face = 
+                       Bounds::FRONT_AND_BACK):
+      HAPIHapticShape( _userdata, _surface, _transform, 
+                       _shape_id, _touchable_face ),
       triangles( _triangles ) {}
 
     template< class Iterator >
@@ -50,13 +53,18 @@ namespace HAPI {
                        Iterator end,
                        void *_userdata,
                        HAPISurfaceObject *_surface,
-                       const Matrix4 & _transform ):
-      HAPIHapticShape( _userdata, _surface, _transform ),
+                       const Matrix4 & _transform,
+                       int _shape_id = -1,
+                       Bounds::FaceType _touchable_face = 
+                       Bounds::FRONT_AND_BACK ):
+      HAPIHapticShape( _userdata, _surface, _transform, 
+                       _shape_id, _touchable_face ),
       triangles( begin, end ) {}
 
     virtual bool lineIntersect( const Vec3 &from, 
                                 const Vec3 &to,
-                                Bounds::IntersectionInfo &result );
+                                Bounds::IntersectionInfo &result,
+                                Bounds::FaceType face = Bounds::FRONT_AND_BACK  );
 
     virtual void getConstraints( const Vec3 &point,
                                  std::vector< PlaneConstraint > &constraints );

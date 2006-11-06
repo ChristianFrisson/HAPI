@@ -177,6 +177,25 @@ namespace HAPI {
     bool default_adaptive_viewport;
     bool default_haptic_camera_view;
 
+    /// Callback function for finding the intersection between a line segment
+    /// and the object. Used for custom shapes. 
+    static HLboolean HLCALLBACK intersectCallback( 
+                                      const HLdouble *start_point, 
+                                      const HLdouble *end_point,
+                                      HLdouble *intersection_point, 
+                                      HLdouble *intersection_normal,
+                                      HLenum* face,
+                                      void *user_data );
+
+    /// Callback function for finding the closest point on the object. Used
+    /// in hlRender. Used for custom shapes.
+    static HLboolean HLCALLBACK closestFeaturesCallback( 
+                                       const HLdouble *query_point, 
+                                       const HLdouble *target_point, 
+                                       HLgeom *geom,
+                                       HLdouble *closest_point,
+                                       void* user_data );
+
     /// HL event callback function for when the geometry is touched.
     static void HLCALLBACK touchCallback( HLenum event,
                                           HLuint object,

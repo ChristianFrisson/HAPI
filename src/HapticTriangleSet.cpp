@@ -33,7 +33,8 @@ using namespace HAPI;
 
 bool HapticTriangleSet::lineIntersect( const Vec3 &from, 
                                        const Vec3 &to,
-                                       Bounds::IntersectionInfo &result ) { 
+                                       Bounds::IntersectionInfo &result,
+                                       Bounds::FaceType face ) { 
   Matrix4 inv = transform.inverse();
   // TODO: find closest?
   bool have_intersection = false;
@@ -43,7 +44,7 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
   Vec3 to_local = inv * to;
   for( unsigned int i = 0; i < triangles.size(); i++ ) {
     Bounds::Triangle &t = triangles[i];
-    if( t.lineIntersect( from_local, to_local, result ) )	{
+    if( t.lineIntersect( from_local, to_local, result, face ) )	{
       Vec3 v = result.point - from_local;
       HAPIFloat distance_sqr = v * v;
        
@@ -63,6 +64,7 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
   if( have_intersection ) {
     result.point = transform * closest_intersection.point;
     result.normal = transform.getRotationPart() * closest_intersection.normal;
+    result.face = closest_intersection.face;
   }
   return have_intersection;
 }

@@ -267,7 +267,8 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
        i != shapes.end();
        i++ ) {
     Bounds::IntersectionInfo intersection;
-    if( (*i)->lineIntersect( proxy_pos, input.position, intersection ) ) {
+    if( (*i)->lineIntersect( proxy_pos, input.position, intersection,
+                             (*i)->touchable_face) ){
       //cerr << "!";
       if( !has_intersection ) {
         closest_intersection = intersection;
@@ -324,7 +325,8 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
          i != shapes.end();
          i++ ) {
       Bounds::IntersectionInfo intersection;
-      if( (*i)->lineIntersect( proxy_pos, input.position, intersection ) ) {
+      if( (*i)->lineIntersect( proxy_pos, input.position, intersection, 
+                               (*i)->touchable_face ) ) {
 
       }
     }

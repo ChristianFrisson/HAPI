@@ -45,8 +45,11 @@ namespace HAPI {
                     void *_userdata,
                     HAPISurfaceObject *_surface,
                     const Matrix4 & _transform,
-                    int _shape_id = -1 ):
-      HAPIHapticShape( _userdata, _surface, _transform, _shape_id  ),
+                    int _shape_id = -1,
+                    Bounds::FaceType _touchable_face = 
+                    Bounds::FRONT_AND_BACK ):
+      HAPIHapticShape( _userdata, _surface, _transform, 
+                       _shape_id, _touchable_face  ),
       triangle( _triangle ) {}
     
       /// Returns the closest point on the object to the given point p.
