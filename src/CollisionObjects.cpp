@@ -208,76 +208,10 @@ bool SphereBound::movingSphereIntersect( HAPIFloat radius,
 
 bool SphereBound::lineIntersect( const Vec3 &from, 
                                  const Vec3 &to,
-                                 IntersectionInfo &result ) {
-  Vec3 start_point = from - center;
-  Vec3 end_point = to - center;
-  bool flip_normal = false;
-
-  // p is the starting point of the ray used for determinining intersection
-  // v is the vector between this starting point and the end point.
-  // the starting point must be outside the sphere.
-  Vec3 p, v;
-  HAPIFloat r2 = radius * radius;
-
-  HAPIFloat a0  = start_point * start_point - r2;
-  if (a0 <= 0) {
-    // start_point is inside sphere
-    a0 = end_point * end_point - r2;
-    if( a0 <= 0 ) {
-      // both start_point and end_point are inside sphere so no intersection
-      return false;
-    } else {
-      // start_point is inside and end_point is outside. We will have an 
-      // intersection.
-      p = end_point;
-      v = start_point - end_point;
-      flip_normal = true;
-    }
-  } else {
-    // start_point is outside sphere
-    p = start_point;
-    v = end_point - start_point;
-    
-    // check that the line will intersect 
-    HAPIFloat a1 = v * p;
-    if (a1 >= 0) {
-      // v is pointing away from the sphere so no intersection
-      return false;
-    }
-  }
-  // use implicit quadratic formula to find the roots
-  HAPIFloat a = v.x*v.x + v.y*v.y + v.z*v.z;
-  HAPIFloat b = 2 * (p.x*v.x + p.y*v.y + p.z*v.z);
-  HAPIFloat c = p.x*p.x + p.y*p.y + p.z*p.z - r2;
-
-  HAPIFloat s = b*b - 4*a*c;
-
-  HAPIFloat u;
-  if( s == 0.0 ) {
-    // line is a tangent to the sphere
-    u = -b/(2*a);
-  } else if( s > 0.0 ) {
-    // line intersects sphere in two points
-    HAPIFloat u0 = (-b + sqrt(s))/(2*a);
-    HAPIFloat u1 = (-b - sqrt(s))/(2*a);
-    u = u0 < u1 ? u0 : u1;
-  }  else {
-    // line does not intersect
-    return false;
-  }
-
-  // check that the intersection point is within the line segment
-  if( u > 1.0 || u < 0.0) {
-    return false;
-  }
-  
-  // calculate the intersection point and normal
-  result.normal =  p + u*v;
-  result.point = result.normal + center;
-  result.normal.normalize();
-  if( flip_normal ) 
-    result.normal = -result.normal;
-  return true;
+                                 IntersectionInfo &result,
+                                 FaceType face ) {
+  Sphere sphere( center, radius );
+  return sphere.lineIntersect( from, to, result, face );
 }
 
 void SphereBound::render( ) {
@@ -720,7 +654,8 @@ bool Triangle::lineIntersect( const Vec3 &p,
 #else
 bool Triangle::lineIntersect( const Vec3 &p, 
                               const Vec3 &q,
-                              IntersectionInfo &result ) {
+                              IntersectionInfo &result,
+                              FaceType face  ) {
   
   if( q.z < 0 )
     HAPIFloat a = 4;//cerr << "F" << endl;
@@ -739,7 +674,14 @@ bool Triangle::lineIntersect( const Vec3 &p,
   HAPIFloat epsilon = 1e-5;
 
   HAPIFloat d = qp * n;
+
+  result.face = Bounds::FRONT;
   if ( d < 0 ) {
+    // line segment pointing away from triangle
+    if( face == Bounds::FRONT ) return false;
+
+    // flip normal in calculations since they assume starting point is
+    // in the direction of the normal
     d = -d;
     n = -n;
     Vec3 tmp = v1;
@@ -748,7 +690,8 @@ bool Triangle::lineIntersect( const Vec3 &p,
     tmp = ab;
     ab = ac;
     ac = tmp;
-  } else if( d == 0 ) {
+    result.face = Bounds::BACK;
+  } else if( d == 0 || face == Bounds::BACK ) {
     return false;
   }
 
@@ -770,6 +713,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   HAPIFloat u = 1 - v - w;
 
   result.point = u*v0 + v*v1 + w*v2;
+  // TODO: should normal be original normal
   result.normal = n;
   result.normal.normalizeSafe();
   //if( (-qp) * result.normal > 0 ) 
@@ -837,12 +781,13 @@ void BinaryBoundTree::clearCollidedFlag() {
 
 bool BinaryBoundTree::lineIntersect( const Vec3 &from, 
                                      const Vec3 &to,
-                                     IntersectionInfo &result ) {
+                                     IntersectionInfo &result,
+                                     FaceType face ) {
   if ( isLeaf() )	{
     // TODO: find closest?
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
       Triangle &t = triangles[i];
-      if( t.lineIntersect( from, to, result ) )	return true;
+      if( t.lineIntersect( from, to, result, face ) )	return true;
 		}
 		return false;
 	}	else 	{
@@ -850,8 +795,8 @@ bool BinaryBoundTree::lineIntersect( const Vec3 &from,
 			bool overlap = false;
       bound->collided = true;
 			
-			if (left.get()) overlap |= left->lineIntersect( from, to, result );
-			if (right.get()) overlap |= right->lineIntersect( from, to, result );
+			if (left.get()) overlap |= left->lineIntersect( from, to, result, face );
+			if (right.get()) overlap |= right->lineIntersect( from, to, result, face );
 			
 			return overlap;
 		}
@@ -1243,7 +1188,8 @@ Vec3 LineSegment::closestPoint( const Vec3 &p ) {
 /// Detect collision between a line segment and the object.
 bool LineSegment::lineIntersect( const Vec3 &from, 
                                  const Vec3 &to,
-                                 IntersectionInfo &result ) {
+                                 IntersectionInfo &result,
+                                 FaceType face ) {
   // TODO: implement
   return false;
 }
@@ -1364,7 +1310,8 @@ void Point::render() {
 /// Detect collision between a line segment and the object.
 bool Point::lineIntersect( const Vec3 &from, 
                                  const Vec3 &to,
-                                 IntersectionInfo &result ) {
+                                 IntersectionInfo &result,
+                                  FaceType face ) {
   // TODO: implement
   return false;
 }
@@ -1391,10 +1338,21 @@ void Point::getConstraints( const Vec3 &point,
 
 bool Plane::lineIntersect( const Vec3 &from, 
                            const Vec3 &to,
-                           IntersectionInfo &result ) {
+                           IntersectionInfo &result,
+                           FaceType face ) {
   Vec3 from_to = to - from;
-  
+
   HAPIFloat denom = normal * from_to;
+
+  if( denom > Constants::epsilon ) { 
+    // line pointing away from normal
+    if( face == Bounds::FRONT ) return false;
+    result.face = Bounds::BACK;
+  } else {
+    if( face == Bounds::BACK ) return false;
+    result.face = Bounds::FRONT;
+  }
+   
   if( denom * denom < Constants::epsilon ) {
     return false;
   }
@@ -1433,19 +1391,77 @@ bool Plane::movingSphereIntersect( HAPIFloat radius,
 
 bool Sphere::lineIntersect( const Vec3 &from, 
                             const Vec3 &to,
-                            IntersectionInfo &result ) {
-  Vec3 ab = to - from;
-	Vec3 ap = center-from;
-	Vec3 bp = center-to;
-	HAPIFloat r2 = radius * radius;
+                            IntersectionInfo &result,
+                            FaceType face ) {
+  Vec3 start_point = from - center;
+  Vec3 end_point = to - center;
+ 
+  // p is the starting point of the ray used for determinining intersection
+  // v is the vector between this starting point and the end point.
+  // the starting point must be outside the sphere.
+  Vec3 p, v;
+  HAPIFloat r2 = radius * radius;
 
-	HAPIFloat e = ap * ab;
-	if (e<0)  return ap*ap <= r2;
-	
-	HAPIFloat f = ab * ab;
-	if (e>=f) return bp*bp <= r2;
-	
-	return (ap*ap - e*e/f) <= r2;
+  HAPIFloat a0  = start_point * start_point - r2;
+  if (a0 <= 0) {
+    // start_point is inside sphere
+    a0 = end_point * end_point - r2;
+    if( a0 <= 0 || face == Bounds::FRONT ) {
+      // both start_point and end_point are inside sphere so no intersection
+      return false;
+    } else {
+      // start_point is inside and end_point is outside. We will have an 
+      // intersection.
+      p = end_point;
+      v = start_point - end_point;
+      result.face = Bounds::BACK;
+    }
+  } else {
+    // start_point is outside sphere
+    if( face == Bounds::BACK ) return false;
+
+    p = start_point;
+    v = end_point - start_point;
+    
+    // check that the line will intersect 
+    HAPIFloat a1 = v * p;
+    if (a1 >= 0) {
+      // v is pointing away from the sphere so no intersection
+      return false;
+    }
+    result.face = Bounds::FRONT;
+  }
+  // use implicit quadratic formula to find the roots
+  HAPIFloat a = v.x*v.x + v.y*v.y + v.z*v.z;
+  HAPIFloat b = 2 * (p.x*v.x + p.y*v.y + p.z*v.z);
+  HAPIFloat c = p.x*p.x + p.y*p.y + p.z*p.z - r2;
+
+  HAPIFloat s = b*b - 4*a*c;
+
+  HAPIFloat u;
+  if( s == 0.0 ) {
+    // line is a tangent to the sphere
+    u = -b/(2*a);
+  } else if( s > 0.0 ) {
+    // line intersects sphere in two points
+    HAPIFloat u0 = (-b + sqrt(s))/(2*a);
+    HAPIFloat u1 = (-b - sqrt(s))/(2*a);
+    u = u0 < u1 ? u0 : u1;
+  }  else {
+    // line does not intersect
+    return false;
+  }
+
+  // check that the intersection point is within the line segment
+  if( u > 1.0 || u < 0.0) {
+    return false;
+  }
+  
+  // calculate the intersection point and normal
+  result.normal =  p + u*v;
+  result.point = result.normal + center;
+  result.normal.normalize();
+  return true;
 }
 
 bool Sphere::movingSphereIntersect( HAPIFloat r,

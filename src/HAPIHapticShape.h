@@ -55,15 +55,20 @@ namespace HAPI {
                                   public Bounds::CollisionObject,
                                   public HAPIGLShape {
   public:
+
+
     /// Constructor.
     HAPIHapticShape( void *_userdata,
                      HAPISurfaceObject *_surface,
                      const Matrix4 & _transform,
-                     int _shape_id = -1 ):
+                     int _shape_id = -1,
+                     Bounds::FaceType _touchable_face = 
+                     Bounds::FRONT_AND_BACK  ):
       HAPIHapticObject( _transform ),
       surface( _surface ),
       userdata( _userdata ),
-      shape_id( _shape_id ) {
+      shape_id( _shape_id ),
+      touchable_face( _touchable_face ) {
       
     }
 
@@ -73,7 +78,8 @@ namespace HAPI {
 
     virtual bool lineIntersect( const Vec3 &from, 
                                 const Vec3 &to,
-                                Bounds::IntersectionInfo &result ) { 
+                                Bounds::IntersectionInfo &result,
+                                Bounds::FaceType face ) { 
       return false;
     }
 
@@ -127,6 +133,7 @@ namespace HAPI {
     void *userdata;
 
     int shape_id;
+    Bounds::FaceType touchable_face;
       
   };
 }
