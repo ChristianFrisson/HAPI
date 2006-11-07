@@ -70,7 +70,8 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
 }
 
 void HapticTriangleSet::getConstraints( const Vec3 &point,
-                                         std::vector< PlaneConstraint > &constraints ) {
+                                        std::vector< PlaneConstraint > &constraints,
+                                        Bounds::FaceType face ) {
   if( triangles.size() > 0 ) {
     // TODO: check if transform has uniform scale
     bool uniform_scale = true;
@@ -80,7 +81,7 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
       unsigned int size = constraints.size();
       for( unsigned int i = 0; i < triangles.size(); i++ ) {
         Bounds::Triangle &t = triangles[i];
-        t.getConstraints( p, constraints );
+        t.getConstraints( p, constraints, face );
       }
 
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
@@ -95,7 +96,7 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
       unsigned int size = constraints.size();
       for( unsigned int i = 0; i < triangles.size(); i++ ) {
         Bounds::Triangle &t = triangles[i];
-        t.getConstraints( point, constraints );
+        t.getConstraints( point, constraints, face );
       }
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];

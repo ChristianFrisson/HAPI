@@ -95,15 +95,22 @@ namespace HAPI {
     public:
          
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints ) {}
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK ) {}
       
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints ) {}
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK ) {}
       
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p ) = 0;
-      
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal ) = 0;
+
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
       /// \param to The end of the line segment.
@@ -162,7 +169,9 @@ namespace HAPI {
                 movingSphereIntersect( radius, from, to ) );
       }
 
-      virtual Vec3 boundClosestPoint( const Vec3 &p ) { return Vec3(); }
+      /// The closest point on the bound to the point. To know the closest
+      /// point to the primitives in the bound, use closestPoint
+      virtual Vec3 boundClosestPoint( const Vec3 &p ) = 0;
 
     };
 
@@ -188,7 +197,8 @@ namespace HAPI {
     class HAPI_API GeometryPrimitive: public CollisionObject {
     public:
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints );
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Returns a point representing the primitive. Is used e.g. when
       /// building BinaryTreeBound.
@@ -209,10 +219,16 @@ namespace HAPI {
         return point;
       }
       
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p ) {
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &n ) {
         HAPIFloat t = normal * ( p - point );
-        return p - t * normal;
+        closest_point = p - t * normal;
+        n = normal;
       }
 
       /// Detect collision between a line segment and the object.
@@ -255,14 +271,22 @@ namespace HAPI {
         return center;
       }
       
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p ) {
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal ) {
         Vec3 dir = p - center;
-        if( dir * dir < Constants::epsilon )
-          return center + Vec3( radius, 0, 0 ); 
+        if( dir * dir < Constants::epsilon ) {
+          closest_point = center + Vec3( radius, 0, 0 ); 
+          normal = Vec3( 1, 0, 0 );
+        }
         else {
           dir.normalize();
-          return center + dir * radius;
+          closest_point = center + dir * radius;
+          normal = dir;
         }
       }
 
@@ -305,8 +329,13 @@ namespace HAPI {
       Triangle( const Vec3& a_, const Vec3& b_, const Vec3& c_) : 
         a(a_),b(b_),c(c_) {}
 
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p );
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -346,13 +375,15 @@ namespace HAPI {
     public:
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints ) {
-        GeometryPrimitive::getConstraints( point, constraints );
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK ) {
+        GeometryPrimitive::getConstraints( point, constraints, face );
       }
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints );
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       /// The corners of the triangle.
       Vec3 a,b,c;
@@ -370,16 +401,23 @@ namespace HAPI {
 
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints ) {
-        GeometryPrimitive::getConstraints( point, constraints );
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK ) {
+        GeometryPrimitive::getConstraints( point, constraints, face );
       }
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints );
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK );
 
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p );
+     /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal );
 
       /// Returns the closest point on the object to the line segment
       /// from -> to
@@ -442,17 +480,26 @@ namespace HAPI {
 
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints ) {
-        GeometryPrimitive::getConstraints( point, constraints );
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK ) {
+        GeometryPrimitive::getConstraints( point, constraints, face );
       }
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints );
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK );
 
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p ) { 
-        return position;
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal ) {
+        closest_point = position;
+        normal = p - closest_point;
+        normal.normalizeSafe();
       }
 
       /// Detect collision between a line segment and the object.
@@ -557,9 +604,15 @@ namespace HAPI {
       virtual bool boundIntersect( const Vec3 &from, 
                                    const Vec3 &to );
       
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p );
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal );
 
+      /// The closest point on the bound to the point. 
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
         Vec3 result;
         // for each coordinate axis, if the point coordinate value
@@ -619,8 +672,13 @@ namespace HAPI {
       virtual bool boundIntersect( const Vec3 &from, 
                                    const Vec3 &to );
       
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p );
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal );
 
       Vec3 center;
       Rotation orientation;
@@ -647,8 +705,20 @@ namespace HAPI {
       /// false otherwise.
       virtual bool insideBound( const Vec3 &p );
 
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p );
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal );
+
+      /// The closest point on the bound to the point. 
+      virtual Vec3 boundClosestPoint( const Vec3 &p ) {
+        Vec3 cp;
+        closestPoint( p, cp, Vec3() );
+        return cp;
+      }
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -719,11 +789,13 @@ namespace HAPI {
       }
 
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints );
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints );
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       virtual void getTrianglesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
@@ -798,8 +870,26 @@ namespace HAPI {
           return false;
       }
 
-      /// Returns the closest point on the object to the given point p.
-      virtual Vec3 closestPoint( const Vec3 &p ) { return Vec3(); }
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal );
+
+      /// The closest point on the bound to the point. If tree is a leaf,
+      /// the closest point to the triangles in the leaf is returned.
+      /// To know the closest point to the primitives in the bound, use closestPoint
+      virtual Vec3 boundClosestPoint( const Vec3 &p ) {
+        if( !isLeaf() && bound.get() )
+          return bound->boundClosestPoint( p );
+        else {
+          Vec3 cp;
+          closestPoint( p, cp, Vec3() );
+          return cp;
+        }
+      }
 
       void clearCollidedFlag();
 

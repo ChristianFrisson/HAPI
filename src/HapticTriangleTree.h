@@ -61,7 +61,8 @@ namespace HAPI {
                                 Bounds::IntersectionInfo &result,
                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK  ) { 
       Matrix4 inv = transform.inverse();
-      bool intersect = tree->lineIntersect( inv * from, inv * to, result );
+      bool intersect = tree->lineIntersect( inv * from, inv * to, 
+                                            result, face );
       if( intersect ) {
         result.point = transform * result.point;
         result.normal = transform.getRotationPart() * result.normal;
@@ -71,8 +72,9 @@ namespace HAPI {
 
     virtual void getConstraints( const Vec3 &point,
                                  HAPIFloat radius,
-                                 std::vector< PlaneConstraint > &constraints );
-
+                                 std::vector< PlaneConstraint > &constraints,
+                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK   );
+    
     /// The Surface object describing the properties of the surface of the 
     /// HapticShape.
     Bounds::BinaryBoundTree *tree;

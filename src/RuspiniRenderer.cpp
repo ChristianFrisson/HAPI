@@ -262,7 +262,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
        i++ ) {
-    (*i)->getConstraints( proxy_pos, constraints );
+    (*i)->getConstraints( proxy_pos, constraints, (*i)->touchable_face );
   }
   
   for( vector< Bounds::PlaneConstraint >::iterator i = constraints.begin();

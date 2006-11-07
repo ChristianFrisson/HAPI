@@ -67,7 +67,8 @@ namespace HAPI {
                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK  );
 
     virtual void getConstraints( const Vec3 &point,
-                                 std::vector< PlaneConstraint > &constraints );
+                                 std::vector< PlaneConstraint > &constraints,
+                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK );
 
     virtual void glRender();
 
