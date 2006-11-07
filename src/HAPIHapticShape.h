@@ -72,8 +72,8 @@ namespace HAPI {
       
     }
 
-    virtual Vec3 closestPoint( const Vec3 &p ) {
-      return Vec3();
+    virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n ) {
+      // todo: fix
     }
 
     virtual bool lineIntersect( const Vec3 &from, 

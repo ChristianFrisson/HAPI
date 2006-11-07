@@ -33,7 +33,8 @@ using namespace HAPI;
 
 void HapticTriangleTree::getConstraints( const Vec3 &point,
                                          HAPIFloat radius,
-                                         std::vector< PlaneConstraint > &constraints ) {
+                                         std::vector< PlaneConstraint > &constraints,
+                                         Bounds::FaceType face ) {
   if( tree ) {
     // TODO: check if transform has uniform scale
     bool uniform_scale = true;
@@ -41,7 +42,7 @@ void HapticTriangleTree::getConstraints( const Vec3 &point,
     if( uniform_scale ) {
       Vec3 p = transform.inverse() * point;
       unsigned int size = constraints.size();
-      tree->getConstraints( p, constraints);
+      tree->getConstraints( p, constraints, face );
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];
         pc.normal = transform.getScaleRotationPart() * pc.normal;
@@ -51,7 +52,7 @@ void HapticTriangleTree::getConstraints( const Vec3 &point,
       }
     } else {
       unsigned int size = constraints.size();
-      tree->getConstraints( point, transform, constraints);
+      tree->getConstraints( point, transform, constraints, face );
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];
         pc.point = pc.point;

@@ -52,9 +52,14 @@ namespace HAPI {
                        _shape_id, _touchable_face  ),
       triangle( _triangle ) {}
     
-      /// Returns the closest point on the object to the given point p.
-    inline virtual Vec3 closestPoint( const Vec3 &p ) {
-      return triangle.closestPoint( p );
+    /// Get the closest point and normal on the object to the given point p.
+    /// \param p The point to find the closest point to.
+    /// \param closest_point Return parameter for closest point
+    /// \param normal Return parameter for normal at closest point.
+    virtual void closestPoint( const Vec3 &p,
+                               Vec3 &closest_point,
+                               Vec3 &normal ) {
+       return triangle.closestPoint( p, closest_point, normal );
     }
 
     /// Detect collision between a line segment and the object.
@@ -65,15 +70,19 @@ namespace HAPI {
     /// \returns true if intersected, false otherwise.
     inline virtual bool lineIntersect( const Vec3 &from, 
                                        const Vec3 &to,
-                                       Bounds::IntersectionInfo &result ) {
-      return triangle.lineIntersect( from, to, result );
+                                       Bounds::IntersectionInfo &result,
+                                       Bounds::FaceType face = 
+                                       Bounds::FRONT_AND_BACK ) {
+      return triangle.lineIntersect( from, to, result, face );
     }
 
     inline virtual void getConstraints( const Vec3 &point,
-                                        std::vector< PlaneConstraint > &constraints ) {
+                                        std::vector< PlaneConstraint > &constraints,
+                                        Bounds::FaceType face = 
+                                        Bounds::FRONT_AND_BACK ) {
       Vec3 p = transform.inverse() * point;
       unsigned int size = constraints.size();
-      triangle.getConstraints( p, constraints);
+      triangle.getConstraints( p, constraints, face );
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];
         pc.point = transform * pc.point;
