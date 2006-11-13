@@ -38,8 +38,9 @@ namespace HAPI {
 
   /// \class GodObjectRenderer
   /// \brief Haptics renderer that uses a variant of the algorithm presented
-  /// by GodObject. 
-  /// It allows for variable proxy radius.
+  /// in "God object paper". 
+  /// The god object is a point that stays on the geometry's surface when the
+  /// probe penetrates the surface. 
   class HAPI_API GodObjectRenderer: public HAPIProxyBasedRenderer {
   public:
     
@@ -73,8 +74,6 @@ namespace HAPI {
     
     Vec3 proxy_position;
     Contacts tmp_contacts;
-
-    
 
   };
 }
