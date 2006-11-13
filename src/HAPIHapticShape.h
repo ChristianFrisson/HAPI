@@ -43,6 +43,7 @@
 // stl includes
 #include <vector>
 #include <algorithm>
+#include <list>
 
 namespace HAPI {
 
@@ -89,11 +90,9 @@ namespace HAPI {
       return false;
     }
 
-    static int genShapeId() {
-      return 0;
-    }
+    static int genShapeId();
     
-    static void delShapeId() { }
+    static void delShapeId( int id );
 
     /// The Surface object describing the properties of the surface.
     HAPISurfaceObject *surface;
@@ -134,7 +133,9 @@ namespace HAPI {
 
     int shape_id;
     Bounds::FaceType touchable_face;
-      
+
+    static int current_max_id;
+    static list< int > free_ids;
   };
 }
 
