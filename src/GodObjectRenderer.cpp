@@ -274,20 +274,55 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
 }
 
 
-	inline Vec3 projectOnto( const Vec3 &p, 
-                            Vec3 q1,
-                            Vec3 n1,
-                            Vec3 q2,
-                            Vec3 n2 ) {
+inline bool planeIntersect( Vec3 p1, Vec3 n1, Vec3 p2, Vec3 n2,
+                            Vec3 &p, Vec3 &dir ) {
+  HAPIFloat d1 = n1 * p1;
+  HAPIFloat d2 = n2 * p2;
+  
+  // Direction of intersection line
+  dir = n1 % n2;
 
-	  HAPIFloat b = n1 * n2;
-	  // handle the degenerate case.
-	  HAPIFloat denom = 1 - b*b;
-    if( H3DUtil::H3DAbs( denom ) < Constants::epsilon ) return p;//projectOnto( p, ep1 );
-	  HAPIFloat e = ( q2 - p ) * n2;
-	  HAPIFloat x = ( ( q1 - p ) * n1 - b*e ) / denom;
-	  return p + x * n1 + ( e - b*x ) * n2;
-	}
+  // Check if planes are parallell
+  HAPIFloat denom = dir * dir;
+  if( denom < Constants::epsilon ) return false;
+  
+  // Compute point on intersection line.
+  p = ( (d1 * n2 - d2 * n1 ) % dir ) / denom;
+  return true;
+}
+  
+inline Vec3 projectOntoLine( Vec3 p, Vec3 point1, Vec3 point2, bool segment = false ) {
+  Vec3 ab = point2 - point1;
+
+  // Project c onto ab.
+  HAPIFloat t = (p - point1) * ab / (ab * ab );
+
+  if( segment ) {
+    if( t < 0 ) t = 0;
+    if( t > 1 ) t = 1;
+  }
+  
+  return  point1 + t * ab;
+} 
+
+inline Vec3 projectOntoPlane( Vec3 p, Vec3 point_on_plane, Vec3 normal ) {
+  HAPIFloat t = normal * ( p - point_on_plane );
+  return p - t * normal;
+}                         
+
+
+inline Vec3 projectOntoPlaneIntersection( const Vec3 &p, 
+                            Vec3 p1,
+                            Vec3 n1,
+                            Vec3 p2,
+                            Vec3 n2 ) {
+  Vec3 lp, ld;
+  if( !planeIntersect( p1, n1, p2, n2, lp, ld ) ) {
+     return projectOntoPlane( p, p1, n1 ); 
+  }
+
+  return projectOntoLine( p, lp, lp + ld );
+}
 
 
 
@@ -479,7 +514,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
             // project onto plane intersection between intersection plane and
             // closest constraint
             from_point = 
-              projectOnto( from_point, 
+              projectOntoPlaneIntersection( from_point, 
                            closest_intersection.point + 
                            normal * min_distance,
                            normal,
@@ -488,7 +523,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                            closest_constraints[0].normal );
             
             new_proxy_pos = 
-              projectOnto( new_proxy_pos, 
+              projectOntoPlaneIntersection( new_proxy_pos, 
                            closest_intersection.point + normal * min_distance,
                            normal,
                            closest_constraints[0].point + 
@@ -498,9 +533,11 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
           } else {
             Vec3 move = closest_intersection.point - from_point;
             HAPIFloat l = move.length();
-            if( l >= min_distance ) {
+            if( l >= min_distance + 1e-8) {
               move = move * ( (l-min_distance) / l );
               new_proxy_pos = from_point + move;
+            } else {
+              new_proxy_pos = from_point;
             }
           }
         }
