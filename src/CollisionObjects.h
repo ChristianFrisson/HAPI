@@ -40,9 +40,10 @@
 
 namespace HAPI {
 
-  class HAPIHapticShape;    
+  class HAPIHapticShape;   
 
   namespace Bounds {
+    class GeometryPrimitive;
      typedef enum {
         BACK,
         FRONT,
@@ -79,14 +80,17 @@ namespace HAPI {
 
     class HAPI_API PlaneConstraint {
     public:
-      PlaneConstraint( const Vec3 &p, const Vec3 &n, HAPIHapticShape *shape = NULL ):
-        point( p ), normal( n ), haptic_shape( shape ) {}
+      PlaneConstraint( const Vec3 &p, const Vec3 &n, 
+                       HAPIHapticShape *shape = NULL,
+                       GeometryPrimitive *_primitive = NULL ):
+        point( p ), normal( n ), haptic_shape( shape ), primitive( _primitive )  {}
       
       inline bool lineIntersect( const Vec3 &from, 
                                  const Vec3 &to,    
                                  Bounds::IntersectionInfo &result );
       Vec3 point, normal;
       HAPIHapticShape * haptic_shape;
+      GeometryPrimitive * primitive;
     };
     
     /// \brief The CollisionObject class is the base class for objects that 
