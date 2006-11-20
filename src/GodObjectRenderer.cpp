@@ -179,7 +179,7 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
   Vec3 contact_global = contact.globalContactPoint();
   Vec3 probe_local_pos;
 
-  while( i != constraints.end() ) {
+    if( i == constraints.end() ) {
     // transformation matrix from local coordinate system with the normals
     // of the constraint planes as axis to global space
     Matrix4 m( p0.normal.x, p1.normal.x, p2.normal.x, contact_global.x, 
@@ -188,18 +188,29 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
                0, 0, 0, 1 );
     Matrix4 m_inv = m.inverse();
     probe_local_pos = m_inv * contact.globalProbePosition();
-    
-    if( probe_local_pos.x > Constants::epsilon ) {
-      // discard p0
-      std::swap( p0, *i++ ); 
-    } else if( probe_local_pos.y > Constants::epsilon ) {
-      // discard p1
-      std::swap( p1, *i++ ); 
-    } else if( probe_local_pos.z > Constants::epsilon ) {
-      // discard p2
-      std::swap( p2, *i++ );
-    } else {
-      break;
+  } else {
+    while( i != constraints.end() ) {
+      // transformation matrix from local coordinate system with the normals
+      // of the constraint planes as axis to global space
+      Matrix4 m( p0.normal.x, p1.normal.x, p2.normal.x, contact_global.x, 
+                 p0.normal.y, p1.normal.y, p2.normal.y, contact_global.y, 
+                 p0.normal.z, p1.normal.z, p2.normal.z, contact_global.z,
+                 0, 0, 0, 1 );
+      Matrix4 m_inv = m.inverse();
+      probe_local_pos = m_inv * contact.globalProbePosition();
+      
+      if( probe_local_pos.x > Constants::epsilon ) {
+        // discard p0
+        std::swap( p0, *i++ ); 
+      } else if( probe_local_pos.y > Constants::epsilon ) {
+        // discard p1
+        std::swap( p1, *i++ ); 
+      } else if( probe_local_pos.z > Constants::epsilon ) {
+        // discard p2
+        std::swap( p2, *i++ );
+      } else {
+        break;
+      }
     }
   }
 
@@ -231,7 +242,6 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
     contact.z_axis = contact.x_axis % contact.y_axis;
 
     contact.x_axis.normalizeSafe();
-    contact.y_axis.normalizeSafe();
     contact.z_axis.normalizeSafe();
 
     // calculate the force and proxy movement for the first plane

@@ -1109,7 +1109,7 @@ void GeometryPrimitive::getConstraints( const Vec3 &point,
   }
   normal.normalizeSafe();
   //cerr << closest_point << endl;
-  constraints.push_back( PlaneConstraint( closest_point, normal ) );
+  constraints.push_back( PlaneConstraint( closest_point, normal, NULL, this ) );
 }
 
 void Triangle::getConstraints( const Vec3 &point,
@@ -1122,7 +1122,7 @@ void Triangle::getConstraints( const Vec3 &point,
   a = (matrix * a);
   b = (matrix * b);
   c = (matrix * c);
-  GeometryPrimitive::getConstraints( point, constraints, face );
+  Triangle::getConstraints( point, constraints, face );
   a = oa;
   b = ob;
   c = oc;
