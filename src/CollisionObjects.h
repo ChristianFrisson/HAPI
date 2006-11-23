@@ -895,6 +895,9 @@ namespace HAPI {
         }
       }
 
+      /// Add all triangles in the tree to the given vector.
+      virtual void getAllTriangles( vector< Triangle > &triangles );
+
       void clearCollidedFlag();
 
       /*union {

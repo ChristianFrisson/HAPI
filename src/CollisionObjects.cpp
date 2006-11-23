@@ -1603,3 +1603,12 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
     }
   }
 }
+
+void BinaryBoundTree::getAllTriangles( vector< Triangle > &tris ) {
+  if ( isLeaf() )	{
+    tris.insert( tris.end(), triangles.begin(), triangles.end() );
+	}	else 	{
+    if (left.get()) left->getAllTriangles( tris );
+    if (right.get()) right->getAllTriangles( tris );
+  }
+}
