@@ -41,26 +41,32 @@ FeedbackBufferCollector::collectTriangles( HAPIGLShape *shape,
                                            vector< HAPI::Bounds::Triangle > &triangles ) {
   Vec3 center, size;
   shape->getBound( center, size );
+  center = transform * center;
+  size = transform.getScaleRotationPart() * size;
   int nr_values = shape->nrFeedbackBufferValues();
   bool done = false;
   bool not_enough_memory =false;
 
   if( nr_values < 0 ) nr_values = 200000;
 
-  while( !done ) {
-    startCollecting( nr_values, center, size );
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
-    const Matrix4 &m = transform;
-    GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
-                      m[0][1], m[1][1], m[2][1], 0,
-                      m[0][2], m[1][2], m[2][2], 0,
-                      m[0][3], m[1][3], m[2][3], 1 };
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  const Matrix4 &m = transform;
+  GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
+                    m[0][1], m[1][1], m[2][1], 0,
+                    m[0][2], m[1][2], m[2][2], 0,
+                    m[0][3], m[1][3], m[2][3], 1 };
     
-    glLoadMatrixd( vt ); 
+  glLoadMatrixd( vt ); 
+
+  GLdouble mv[16];
+  glGetDoublev( GL_MODELVIEW_MATRIX, mv );
+
+  while( !done ) {
+    
+    startCollecting( nr_values, center, size );
+
     shape->glRender();
-    glMatrixMode( GL_MODELVIEW );
-    glPopMatrix();
     ErrorType e = endCollecting( triangles );
     if( e != NOT_ENOUGH_MEMORY_ALLOCATED  ) done = true;  
     else {
@@ -69,39 +75,40 @@ FeedbackBufferCollector::collectTriangles( HAPIGLShape *shape,
       else nr_values *= 2;
     }
   }
+  glMatrixMode( GL_MODELVIEW );
+  glPopMatrix();
   if( not_enough_memory ) return NOT_ENOUGH_MEMORY_ALLOCATED;
   else return SUCCESS;
 }
 
 FeedbackBufferCollector::ErrorType 
 FeedbackBufferCollector::collectPrimitives( HAPIGLShape * shape,
-                                            const Matrix4 &_transform,
+                                            const Matrix4 &transform,
                                             vector< HAPI::Bounds::Triangle > &triangles,
                                             vector< HAPI::Bounds::LineSegment > &lines,
                                             vector< HAPI::Bounds::Point > &points ) {
   Vec3 center, size;
   shape->getBound( center, size );
+  center = transform * center;
+  size = transform.getScaleRotationPart() * size;
 
   int nr_values = shape->nrFeedbackBufferValues();
   bool done = false;
   bool not_enough_memory =false;
   
   if( nr_values < 0 ) nr_values = 200000;
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  const Matrix4 &m = transform;
+  GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
+                    m[0][1], m[1][1], m[2][1], 0,
+                    m[0][2], m[1][2], m[2][2], 0,
+                    m[0][3], m[1][3], m[2][3], 1 };
   
+  glLoadMatrixd( vt ); 
   while( !done ) {
     startCollecting( nr_values, center, size );
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
-    const Matrix4 &m = _transform;
-    GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
-                      m[0][1], m[1][1], m[2][1], 0,
-                      m[0][2], m[1][2], m[2][2], 0,
-                      m[0][3], m[1][3], m[2][3], 1 };
-    
-    glLoadMatrixd( vt ); 
     shape->glRender();
-    glMatrixMode( GL_MODELVIEW );
-    glPopMatrix();
     ErrorType e = endCollecting( triangles, lines, points );
     if( e != NOT_ENOUGH_MEMORY_ALLOCATED  ) done = true;
     else {
@@ -110,6 +117,8 @@ FeedbackBufferCollector::collectPrimitives( HAPIGLShape * shape,
       else nr_values *= 2;
     }
   }
+  glMatrixMode( GL_MODELVIEW );
+  glPopMatrix();
   if( not_enough_memory ) return NOT_ENOUGH_MEMORY_ALLOCATED;
   else return SUCCESS;
 }
@@ -154,12 +163,14 @@ FeedbackBufferCollector::endCollecting(
   GLint nr_values = glRenderMode( GL_RENDER );
 
   if( nr_values == -1 ) {
+    glMatrixMode( GL_PROJECTION );
+    glPopMatrix();
     collecting_triangles = false;
     return NOT_ENOUGH_MEMORY_ALLOCATED;
   }
 
-  GLdouble mv[16];
-  glGetDoublev( GL_MODELVIEW_MATRIX, mv );
+  GLdouble mv[] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+  //glGetDoublev( GL_MODELVIEW_MATRIX, mv );
   
   GLdouble pm[16];
   glGetDoublev( GL_PROJECTION_MATRIX, pm );
@@ -194,7 +205,7 @@ FeedbackBufferCollector::endCollecting(
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v1.x, &v1.y, &v1.z );
       i+= parseVertex( buffer, i, p );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
-      triangles.push_back( HAPI::Bounds::Triangle( v0 *1e3, v1*1e3, v2*1e3 )) ;
+      triangles.push_back( HAPI::Bounds::Triangle( v0, v1, v2 )) ;
       break;
     }
     case( GL_BITMAP_TOKEN ): 
@@ -225,12 +236,14 @@ FeedbackBufferCollector::endCollecting(
 
   GLint nr_values = glRenderMode( GL_RENDER );
   if( nr_values == -1 ) {
+    glMatrixMode( GL_PROJECTION );
+    glPopMatrix();
     collecting_triangles = false;
     return NOT_ENOUGH_MEMORY_ALLOCATED;
   }
 
-  GLdouble mv[16];
-  glGetDoublev( GL_MODELVIEW_MATRIX, mv );
+  GLdouble mv[] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+  //glGetDoublev( GL_MODELVIEW_MATRIX, mv );
   
   GLdouble pm[16];
   glGetDoublev( GL_PROJECTION_MATRIX, pm );
@@ -272,7 +285,7 @@ FeedbackBufferCollector::endCollecting(
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v1.x, &v1.y, &v1.z );
       i+= parseVertex( buffer, i, p );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
-      triangles.push_back( HAPI::Bounds::Triangle( v0 *1e3, v1*1e3, v2*1e3 )) ;
+      triangles.push_back( HAPI::Bounds::Triangle( v0, v1, v2 )) ;
       break;
     }
     case( GL_BITMAP_TOKEN ): 
