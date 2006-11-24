@@ -113,7 +113,8 @@ namespace HAPI {
                                     vector< HAPI::Bounds::Point > &points );
     
   protected:
-    static int parseVertex( GLfloat *buffer, int index, Vec3 &p );
+    static int parseVertex( GLfloat *buffer, int index, 
+                            Vec3 &p, H3DUtil::RGBA &color, Vec3 &tc );
     static bool collecting_triangles;
     static GLfloat *buffer;
   };

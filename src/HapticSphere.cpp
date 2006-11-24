@@ -235,7 +235,8 @@ void HapticSphere::getConstraints(  const Vec3 &point,
   if(  //v2 <= r * r && 
        v2 > Constants::epsilon ) {
          v = v / H3DUtil::H3DSqrt( v2 );
-    result.push_back( PlaneConstraint( (radius+0.0025) * v, v ) );
+         // TODO: tex coord
+    result.push_back( PlaneConstraint( (radius+0.0025) * v, v, Vec3() ) );
   } else {
     cerr << point << endl;
   }

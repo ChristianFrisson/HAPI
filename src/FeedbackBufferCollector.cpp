@@ -137,7 +137,7 @@ FeedbackBufferCollector::startCollecting( int max_feedback_values,
 
   if( max_feedback_values == -1 ) max_feedback_values = 3000000;
   buffer = new GLfloat[ max_feedback_values ];
-  glFeedbackBuffer( max_feedback_values, GL_3D, buffer );
+  glFeedbackBuffer( max_feedback_values, GL_3D_COLOR_TEXTURE, buffer );
 
   glRenderMode( GL_FEEDBACK );
   if( viewbox_size.x != -1 && viewbox_size.y != -1 && viewbox_size.z != -1 ) {
@@ -178,40 +178,42 @@ FeedbackBufferCollector::endCollecting(
   GLint vp[4];
   glGetIntegerv( GL_VIEWPORT, vp );
 
-  Vec3 p;
+  Vec3 p, tc;
+  H3DUtil::RGBA col;
   unsigned int vertex_index = 0;
   
   for( GLint i = 0; i < nr_values; ) {
     switch( (int)buffer[i++] ) {
     case( GL_POINT_TOKEN ): {
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc );
       break;
     }
     case( GL_LINE_TOKEN ): {
-      i+= parseVertex( buffer, i, p );
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc );
+      i+= parseVertex( buffer, i, p, col, tc );
       break;
     }
     case( GL_POLYGON_TOKEN ): {
       int nr_vertices =  (int)buffer[i];
       i++;
       Vec3 v0, v1, v2; 
+      Vec3 tc0, tc1, tc2; 
       if( nr_vertices != 3 ) { 
         cerr << "Too Many vertices: " << nr_vertices << endl;
       }
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc0 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v0.x, &v0.y, &v0.z );
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc1 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v1.x, &v1.y, &v1.z );
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc2 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
-      triangles.push_back( HAPI::Bounds::Triangle( v0, v1, v2 )) ;
+      triangles.push_back( HAPI::Bounds::Triangle( v0, v1, v2, tc0, tc1, tc2 )) ;
       break;
     }
     case( GL_BITMAP_TOKEN ): 
     case( GL_DRAW_PIXEL_TOKEN ):
     case( GL_COPY_PIXEL_TOKEN ): {
-      i+= parseVertex( buffer, i, Vec3() );
+      i+= parseVertex( buffer, i, Vec3(), col, tc );
       break;
     }
     case( GL_PASS_THROUGH_TOKEN ): {
@@ -251,13 +253,14 @@ FeedbackBufferCollector::endCollecting(
   GLint vp[4];
   glGetIntegerv( GL_VIEWPORT, vp );
 
-  Vec3 p;
+  Vec3 p, tc;
+  H3DUtil::RGBA col;
   unsigned int vertex_index = 0;
   
   for( GLint i = 0; i < nr_values; ) {
     switch( (int)buffer[i++] ) {
     case( GL_POINT_TOKEN ): {
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc );
       Vec3 pos;
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &pos.x, &pos.y, &pos.z );
       points.push_back( HAPI::Bounds::Point( pos ) );
@@ -265,9 +268,9 @@ FeedbackBufferCollector::endCollecting(
     }
     case( GL_LINE_TOKEN ): {
       Vec3 v0, v1;
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v0.x, &v0.y, &v0.z );
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v1.x, &v1.y, &v1.z );
       lines.push_back( HAPI::Bounds::LineSegment( v0, v1 ) );
       break;
@@ -276,22 +279,23 @@ FeedbackBufferCollector::endCollecting(
       int nr_vertices =  (int)buffer[i];
       i++;
       Vec3 v0, v1, v2; 
+      Vec3 tc0, tc1, tc2; 
       if( nr_vertices != 3 ) { 
         cerr << "Too Many vertices: " << nr_vertices << endl;
       }
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc0 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v0.x, &v0.y, &v0.z );
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc1 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v1.x, &v1.y, &v1.z );
-      i+= parseVertex( buffer, i, p );
+      i+= parseVertex( buffer, i, p, col, tc2 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
-      triangles.push_back( HAPI::Bounds::Triangle( v0, v1, v2 )) ;
+      triangles.push_back( HAPI::Bounds::Triangle( v0, v1, v2, tc0, tc1, tc2 )) ;
       break;
     }
     case( GL_BITMAP_TOKEN ): 
     case( GL_DRAW_PIXEL_TOKEN ):
     case( GL_COPY_PIXEL_TOKEN ): {
-      i+= parseVertex( buffer, i, Vec3() );
+      i+= parseVertex( buffer, i, Vec3(), col, tc );
       break;
     }
     case( GL_PASS_THROUGH_TOKEN ): {
@@ -309,9 +313,13 @@ FeedbackBufferCollector::endCollecting(
 
 
    
-int FeedbackBufferCollector::parseVertex( GLfloat *buffer, int index, Vec3 &p ) {
+int FeedbackBufferCollector::parseVertex( GLfloat *buffer, int index, 
+                                         Vec3 &p, H3DUtil::RGBA &color, Vec3 &tc ) {
   p = Vec3( buffer[index], buffer[index+1], buffer[index+2] );
-  return 3;
+  color = H3DUtil::RGBA( buffer[index + 3], buffer[index+4], buffer[index+5], buffer[index+6] );
+  tc = Vec3( buffer[index + 7], buffer[index+8], buffer[index+9] ) / buffer[index+10];
+  
+  return 11;
 }
 
 

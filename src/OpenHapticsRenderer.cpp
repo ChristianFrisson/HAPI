@@ -433,7 +433,7 @@ HLboolean HLCALLBACK OpenHapticsRenderer::closestFeaturesCallback(
            (HAPIFloat)query_point[2] );
 
   Vec3 closest, normal;
-  object->closestPoint( qp, closest, normal );
+  object->closestPoint( qp, closest, normal, Vec3() );
   // TODO: do we want the normal of the geometry or the normal below
   //Vec3 normal = qp - closest;
   //normal.normalizeSafe();
