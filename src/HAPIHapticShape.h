@@ -73,7 +73,7 @@ namespace HAPI {
       
     }
 
-    virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n ) {
+    virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
       // todo: fix
     }
 

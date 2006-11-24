@@ -409,6 +409,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   contact.contact_point_global = closest_intersection.point;
   contact.probe_position_global = input.position;
   contact.proxy_radius = proxy_radius;
+  contact.tex_coord = closest_intersection.tex_coord;
 
   // calculate wanted new proxy position based on the constraint planes
   // and their surfaces

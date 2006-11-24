@@ -58,8 +58,9 @@ namespace HAPI {
     /// \param normal Return parameter for normal at closest point.
     virtual void closestPoint( const Vec3 &p,
                                Vec3 &closest_point,
-                               Vec3 &normal ) {
-       return triangle.closestPoint( p, closest_point, normal );
+                               Vec3 &normal,
+                               Vec3 &tex_coord ) {
+       return triangle.closestPoint( p, closest_point, normal, tex_coord );
     }
 
     /// Detect collision between a line segment and the object.

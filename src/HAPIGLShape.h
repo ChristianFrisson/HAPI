@@ -84,7 +84,8 @@ namespace HAPI {
       if( nr_triangles == -1 || nr_lines == -1 || nr_points == - 1 )
         return -1;
       else
-        return nr_triangles * 11 + nr_lines * 7 + nr_points * 4;  
+        //return nr_triangles * 11 + nr_lines * 7 + nr_points * 4;  
+        return nr_triangles * 19 + nr_lines * 15 + nr_points * 12;  
     }
   };
 }

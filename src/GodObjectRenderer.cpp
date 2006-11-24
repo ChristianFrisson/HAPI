@@ -368,6 +368,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
       PlaneConstraint pc( intersection.point, 
                           intersection.face == Bounds::FRONT ?
                           intersection.normal : -intersection.normal,
+                          intersection.tex_coord,
                           *i );
 
       if( !has_intersection ) {
@@ -433,6 +434,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   contact.contact_point_global = closest_intersection.point;
   contact.probe_position_global = input.position;
   contact.proxy_radius = 0;
+  contact.tex_coord = closest_intersection.tex_coord;
 
   if( nr_constraints == 0 ) {
     // TODO: 0.05??

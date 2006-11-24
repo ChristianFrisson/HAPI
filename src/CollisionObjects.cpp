@@ -62,6 +62,8 @@ bool PlaneConstraint::lineIntersect( const Vec3 &from,
                 //cerr << u << endl;
         result.point = from + u * from_to;
         result.normal = normal;
+        // TODO: temp. Mybe use derivatives to get correct tex coord
+        result.tex_coord = tex_coord;
         return true;
       }
       return false;
@@ -154,7 +156,8 @@ bool AABoxBound::boundIntersect( const Vec3 &from,
 
 void AABoxBound::closestPoint( const Vec3 &p,
                                Vec3 &closest_point,
-                               Vec3 &normal ) {
+                               Vec3 &normal,
+                               Vec3 &tex_coord ) {
   // TODO: implement
   assert( false );
 }
@@ -169,8 +172,9 @@ bool AABoxBound::insideBound( const Vec3 &p ) {
 }
 
 void SphereBound::closestPoint( const Vec3 &p,
-                                 Vec3 &closest_point,
-                                 Vec3 &normal ) {
+                                Vec3 &closest_point,
+                                Vec3 &normal,
+                                Vec3 &tex_coord ) {
   Vec3 dir = p - center;
   if( dir * dir < Constants::epsilon ) {
     closest_point = center + Vec3( radius, 0, 0 ); 
@@ -180,6 +184,8 @@ void SphereBound::closestPoint( const Vec3 &p,
     closest_point = center + dir * radius;
     normal = dir;
   }
+  // Todo
+  tex_coord = Vec3();
 }
 
 bool SphereBound::insideBound( const Vec3 &p ) {
@@ -395,7 +401,8 @@ void BinaryBoundTree::render( int depth) {
 
  void Triangle::closestPoint( const Vec3 &p,
                               Vec3 &closest_point,
-                              Vec3 &normal ) {
+                              Vec3 &normal,
+                              Vec3 &tex_coord ) {
 
   Vec3 ab = b-a;
   Vec3 ac = c-a;
@@ -408,6 +415,7 @@ void BinaryBoundTree::render( int depth) {
   HAPIFloat d2 = ac * ap;
   if( d1 <= Constants::epsilon && d2 <= Constants::epsilon ) {
     //cerr << "1" << endl;
+    tex_coord = ta;
     closest_point = a;
     return;
   }
@@ -418,6 +426,7 @@ void BinaryBoundTree::render( int depth) {
 
   if( d3 >= -Constants::epsilon && d4 <= d3 ) {
     //    cerr << "2" << endl;
+    tex_coord = tb;
     closest_point = b;
     return;
   }
@@ -429,6 +438,7 @@ void BinaryBoundTree::render( int depth) {
     // cerr << "3" << endl;
     HAPIFloat v = d1 / ( d1 - d3 );
     closest_point = a + v * ab;
+    tex_coord = ta + v * (tb - ta);
     return;
   }
 
@@ -437,6 +447,7 @@ void BinaryBoundTree::render( int depth) {
   HAPIFloat d6 = ac * cp;
   if( d6 >= -Constants::epsilon && d5 <= d6 ) {
     //cerr << "4" << endl;
+    tex_coord = tc;
     closest_point = c;
     return;
   }
@@ -448,6 +459,7 @@ void BinaryBoundTree::render( int depth) {
     //cerr << "5" << endl;
     HAPIFloat w = d2 / ( d2 - d6 );
     closest_point = a + w * ac;
+    tex_coord = ta + w * (tc - ta );
     return;
   }
   
@@ -458,6 +470,7 @@ void BinaryBoundTree::render( int depth) {
     //cerr << "6" << endl;
     HAPIFloat w = (d4-d3) /((d4 -d3) + (d5 - d6 ) );
     closest_point = b + w * (c-b);
+    tex_coord = tb + w * (tc - tb );
     return;
   }
 
@@ -466,6 +479,7 @@ void BinaryBoundTree::render( int depth) {
   HAPIFloat v = vb * denom;
   HAPIFloat w = vc * denom;
   closest_point = a + ab * v + ac * w;
+  tex_coord = ta + (tb - ta) * v + (tc - ta ) * w;
   /*
   Vec3 normal = ca % cb;
   if( H3DUtil::H3DAbs( normal * normal ) > Constants::epsilon ) {
@@ -680,6 +694,10 @@ bool Triangle::lineIntersect( const Vec3 &p,
   Vec3 v0 = a;
   Vec3 v1 = b;
   Vec3 v2 = c;
+
+  Vec3 tc0 = ta;
+  Vec3 tc1 = tb;
+  Vec3 tc2 = tc;
  
   Vec3 ab = v1 - v0;
   Vec3 ac = v2 - v0;
@@ -706,6 +724,11 @@ bool Triangle::lineIntersect( const Vec3 &p,
     Vec3 tmp = v1;
     v1 = v2;
     v2 = tmp;
+    
+    tmp = tc1;
+    tc1 = tc2;
+    tc2 = tmp;
+
     tmp = ab;
     ab = ac;
     ac = tmp;
@@ -733,6 +756,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
 
   result.point = u*v0 + v*v1 + w*v2;
   result.normal.normalizeSafe();
+  result.tex_coord =  u*tc0 + v*tc1 + w*tc2;
   //if( (-qp) * result.normal > 0 ) 
   //  result.normal = -result.normal;
   return true;
@@ -746,7 +770,7 @@ bool Triangle::movingSphereIntersect( HAPIFloat radius,
 
 // TODO: Look in book if better way
   Vec3 closest;
-  closestPoint( from, closest, Vec3() );
+  closestPoint( from, closest, Vec3(), Vec3() );
   Vec3 ttt = from - closest;
   HAPIFloat aba = ttt * ttt;
   if( aba <= radius * radius ) return true; 
@@ -779,7 +803,7 @@ cerr << "FD";
 
 
   Vec3 Q;
-  closestPoint( P, Q, Vec3() );
+  closestPoint( P, Q, Vec3(), Vec3() );
 
   Sphere sphere( from, radius );
   return sphere.lineIntersect( Q, Q - v, info );
@@ -1035,7 +1059,8 @@ bool OrientedBoxBound::boundIntersect( const Vec3 &from,
 
 void OrientedBoxBound::closestPoint( const Vec3 &p,
                                      Vec3 &closest_point,
-                                     Vec3 &normal ) {
+                                     Vec3 &normal,
+                                     Vec3 &tex_coord ) {
   // TODO: implement
   assert( false );
 }
@@ -1097,8 +1122,8 @@ void OrientedBoxBound::render( ) {
 void GeometryPrimitive::getConstraints( const Vec3 &point,
                            std::vector< PlaneConstraint > &constraints,
                                   FaceType face ) {
-  Vec3 closest_point, cp_normal;
-  closestPoint( point, closest_point, cp_normal );
+  Vec3 closest_point, cp_normal, cp_tex_coord;
+  closestPoint( point, closest_point, cp_normal, cp_tex_coord );
   //cerr << closest_point << endl;
   Vec3 normal = point - closest_point;
 
@@ -1109,7 +1134,8 @@ void GeometryPrimitive::getConstraints( const Vec3 &point,
   }
   normal.normalizeSafe();
   //cerr << closest_point << endl;
-  constraints.push_back( PlaneConstraint( closest_point, normal, NULL, this ) );
+  constraints.push_back( PlaneConstraint( closest_point, normal, 
+                                          cp_tex_coord, NULL, this ) );
 }
 
 void Triangle::getConstraints( const Vec3 &point,
@@ -1170,7 +1196,7 @@ void BinaryBoundTree::getTrianglesWithinRadius( const Vec3 &p,
     for( vector< Triangle >::iterator i = triangles.begin();
          i != triangles.end(); i++ ) {
       Vec3 cp;
-      (*i).closestPoint( p, cp, Vec3() );
+      (*i).closestPoint( p, cp, Vec3(), Vec3() );
       if( (cp - p).lengthSqr() <= r2 )
         result.push_back( *i );
     }
@@ -1203,7 +1229,8 @@ void LineSegment::render() {
 /// Returns the closest point on the object to the given point p.
 void LineSegment::closestPoint( const Vec3 &p,
                                 Vec3 &closest_point,
-                                Vec3 &normal ) {
+                                Vec3 &normal,
+                                Vec3 &tex_coord ) {
   Vec3 ab = end - start;
   HAPIFloat ab2 = ab * ab;
   if( ab2 < Constants::epsilon ) {
@@ -1217,6 +1244,8 @@ void LineSegment::closestPoint( const Vec3 &p,
   }
   normal = closest_point - p;
   normal.normalizeSafe();
+  // TODO:
+  tex_coord = Vec3();
 }
 
 /// Detect collision between a line segment and the object.
@@ -1359,7 +1388,8 @@ bool Point::movingSphereIntersect( HAPIFloat radius,
                                    const Vec3 &to ) {
   HAPIFloat r2 = radius * radius;
   Vec3 closest_point; 
-  LineSegment( from, to ).closestPoint( position, closest_point, Vec3() );
+  LineSegment( from, to ).closestPoint( position, closest_point, 
+                                        Vec3(), Vec3() );
   Vec3 v = position - closest_point;
   return v * v <= r2;
 }
@@ -1555,7 +1585,8 @@ void BinaryBoundTree::getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
 
 void BinaryBoundTree::closestPoint( const Vec3 &p,
                                     Vec3 &closest_point,
-                                    Vec3 &closest_normal ) {
+                                    Vec3 &closest_normal,
+                                    Vec3 &tex_coord ) {
   if ( isLeaf() )	{
     Vec3 cp, cn;
     HAPIFloat d2;
@@ -1563,7 +1594,7 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
     for( vector< Triangle >::iterator i = triangles.begin();
          i != triangles.end(); i++ ) {
       Vec3 point, normal;
-      (*i).closestPoint( p, point, normal );
+      (*i).closestPoint( p, point, normal, tex_coord );
       Vec3 v = p - cp;
       if( i == triangles.begin() ) {
         cp = point;
@@ -1583,22 +1614,23 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
 	}	else 	{
    
     if( left.get() && right.get() ) {
-      Vec3 cp, cn;
-      left->closestPoint( p, cp, cn  );
-      right->closestPoint( p, closest_point, closest_normal );
+      Vec3 cp, cn, tc;
+      left->closestPoint( p, cp, cn, tc  );
+      right->closestPoint( p, closest_point, closest_normal, tex_coord );
       Vec3 v = p - cp;
       HAPIFloat ld2 = v * v;
       v = p - closest_point;
       if( ld2 < v * v ) {
         closest_point = cp;
         closest_normal = cn;
+        tex_coord = tc;
       }
       
     } else {
       if (left.get()) {
-        left->closestPoint( p, closest_point, closest_normal  );
+        left->closestPoint( p, closest_point, closest_normal, tex_coord  );
       } else {
-        right->closestPoint( p, closest_point, closest_normal );
+        right->closestPoint( p, closest_point, closest_normal, tex_coord );
       }
     }
   }

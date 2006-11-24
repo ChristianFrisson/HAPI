@@ -58,10 +58,12 @@ namespace HAPI {
       /// Constructor.
       IntersectionInfo( const Vec3 &_point = Vec3(), 
                         const Vec3 &_normal = Vec3(),
+                        const Vec3 &_tex_coord = Vec3(),
                         FaceType intersected_face = FRONT,
                         int _id = -1 ) :
       point( _point ),
       normal( _normal ),
+      tex_coord( _tex_coord ),
       id( _id ) {}
 
       /// The intersection point.
@@ -69,6 +71,9 @@ namespace HAPI {
 
       /// The normal at the intersection point.
       Vec3 normal;
+
+      /// The texture coordinate at the intersection point.
+      Vec3 tex_coord;
 
       /// The face that was intersected. BACK or FRONT.
       FaceType face;
@@ -80,15 +85,17 @@ namespace HAPI {
 
     class HAPI_API PlaneConstraint {
     public:
-      PlaneConstraint( const Vec3 &p, const Vec3 &n, 
+      PlaneConstraint( const Vec3 &p, const Vec3 &n, const Vec3 &tc, 
                        HAPIHapticShape *shape = NULL,
                        GeometryPrimitive *_primitive = NULL ):
-        point( p ), normal( n ), haptic_shape( shape ), primitive( _primitive )  {}
+        point( p ), normal( n ), tex_coord( tc ), 
+        haptic_shape( shape ), primitive( _primitive )  {}
       
       inline bool lineIntersect( const Vec3 &from, 
                                  const Vec3 &to,    
                                  Bounds::IntersectionInfo &result );
       Vec3 point, normal;
+      Vec3 tex_coord;
       HAPIHapticShape * haptic_shape;
       GeometryPrimitive * primitive;
     };
@@ -111,9 +118,12 @@ namespace HAPI {
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &normal ) = 0;
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord ) = 0;
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -227,12 +237,16 @@ namespace HAPI {
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &n ) {
+                                 Vec3 &n,
+                                 Vec3 &tex_coord  ) {
         HAPIFloat t = normal * ( p - point );
         closest_point = p - t * normal;
         n = normal;
+        tex_coord = Vec3();
       }
 
       /// Detect collision between a line segment and the object.
@@ -279,9 +293,12 @@ namespace HAPI {
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &normal ) {
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord ) {
         Vec3 dir = p - center;
         if( dir * dir < Constants::epsilon ) {
           closest_point = center + Vec3( radius, 0, 0 ); 
@@ -292,6 +309,8 @@ namespace HAPI {
           closest_point = center + dir * radius;
           normal = dir;
         }
+        // todo: defualt tex coord
+        tex_coord = Vec3();
       }
 
       /// Detect collision between a line segment and the object.
@@ -330,16 +349,25 @@ namespace HAPI {
       Triangle() {}
 
       /// Constructor.
-      Triangle( const Vec3& a_, const Vec3& b_, const Vec3& c_) : 
-        a(a_),b(b_),c(c_) {}
+      /// a, b and are the coordinates for each vertex
+      /// ta, tb, and tc are the texture coordinates for each vertex.
+      Triangle( const Vec3& a_, const Vec3& b_, const Vec3& c_,
+                const Vec3& ta_ = Vec3(), 
+                const Vec3& tb_ = Vec3(), 
+                const Vec3& tc_ = Vec3()) : 
+        a(a_),b(b_),c(c_),
+        ta( ta_ ), tb( tb_ ), tc( tc_ ) {}
 
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &normal );
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -391,6 +419,9 @@ namespace HAPI {
 
       /// The corners of the triangle.
       Vec3 a,b,c;
+
+      /// The texture coordinates at the corners of the triangle.
+      Vec3 ta, tb, tc;
     };
 
     /// \brief The LineSegment class represents a line segment primitive.
@@ -415,13 +446,16 @@ namespace HAPI {
                                    std::vector< PlaneConstraint > &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
-     /// Get the closest point and normal on the object to the given point p.
+      /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &normal );
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord );
 
       /// Returns the closest point on the object to the line segment
       /// from -> to
@@ -498,12 +532,16 @@ namespace HAPI {
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &normal ) {
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord ) {
         closest_point = position;
         normal = p - closest_point;
         normal.normalizeSafe();
+        tex_coord = Vec3(); 
       }
 
       /// Detect collision between a line segment and the object.
@@ -612,9 +650,12 @@ namespace HAPI {
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &normal );
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord );
 
       /// The closest point on the bound to the point. 
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
@@ -680,9 +721,12 @@ namespace HAPI {
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &normal );
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord  );
 
       Vec3 center;
       Rotation orientation;
@@ -713,14 +757,17 @@ namespace HAPI {
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &normal );
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord );
 
       /// The closest point on the bound to the point. 
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
         Vec3 cp;
-        closestPoint( p, cp, Vec3() );
+        closestPoint( p, cp, Vec3(), Vec3() );
         return cp;
       }
 
@@ -878,9 +925,12 @@ namespace HAPI {
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
-                                 Vec3 &normal );
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord );
 
       /// The closest point on the bound to the point. If tree is a leaf,
       /// the closest point to the triangles in the leaf is returned.
@@ -890,7 +940,7 @@ namespace HAPI {
           return bound->boundClosestPoint( p );
         else {
           Vec3 cp;
-          closestPoint( p, cp, Vec3() );
+          closestPoint( p, cp, Vec3(), Vec3() );
           return cp;
         }
       }
