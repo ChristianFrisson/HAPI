@@ -85,9 +85,14 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
   }
 
   hd->renderer_change_lock.lock();
-  if( hd->haptics_renderer.get() )
-    output = output + 
-      hd->haptics_renderer->renderHapticsOneStep( hd, hd->current_shapes );
+
+  for( unsigned int s = 0; s < hd->haptics_renderers.size(); s++ ) {
+    if( hd->haptics_renderers[s] && s < hd->current_shapes.size() ) {
+      output = output + 
+        hd->haptics_renderers[s]->renderHapticsOneStep( hd, hd->current_shapes[s] );
+    }
+  }
+
   hd->renderer_change_lock.unlock();
 
   // add the resulting force and torque to the rendered force.
@@ -100,8 +105,10 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
 
 void HAPIHapticsDevice::transferObjects() {
   if( thread ) {
-    if( haptics_renderer.get() ) {
-      haptics_renderer->preProcessShapes( this, tmp_shapes );
+    for( unsigned int s = 0; s < haptics_renderers.size(); s++ ) {
+      if( haptics_renderers[s] && s < tmp_shapes.size() ) {
+         haptics_renderers[s]->preProcessShapes( this, tmp_shapes[s] );
+      }
     }
     thread->synchronousCallback( transferObjectsCallback,
                                  this );

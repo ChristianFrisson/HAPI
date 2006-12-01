@@ -119,8 +119,10 @@ namespace HAPI {
           return FAIL;
         }
         device_state = DeviceState::INITIALIZED;
-        if( haptics_renderer.get() ) {
-          haptics_renderer->initRenderer( this );
+        for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
+          if( haptics_renderers[i] ) {
+            haptics_renderers[i]->initRenderer( this );
+          }
         }
       } 
       device_state = DeviceState::INITIALIZED;
@@ -170,8 +172,10 @@ namespace HAPI {
         return ErrorCode::NOT_INITIALIZED;
       }
       
-      if( haptics_renderer.get() ) {
-        haptics_renderer->releaseRenderer( this );
+      for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
+        if( haptics_renderers[i] ) {
+          haptics_renderers[i]->releaseRenderer( this );
+        }
       }
 
       if( thread && delete_thread ) {
@@ -195,49 +199,66 @@ namespace HAPI {
 
     /// Add a HAPIHapticShape to be rendered haptically.
     /// \param objects The haptic shapes to render.
-    inline void addShape( HAPIHapticShape *shape ) {
+    /// \param layer The haptic layer to add the shape to.
+    inline void addShape( HAPIHapticShape *shape, 
+                          unsigned int layer = 0 ) {
+      assureSize( layer );
       shape_lock.lock();
-      tmp_shapes.push_back( shape );
+      tmp_shapes[layer].push_back( shape );
       shape_lock.unlock();
     }
     
     
     /// Set the HapticForceEffects to be rendered.
     /// \param objects The haptic shapes to render.
-    inline void setShapes( const HapticShapeVector &shapes ) {
+    /// \param layer The haptic layer to add the shape to.
+    inline void setShapes( const HapticShapeVector &shapes, 
+                           unsigned int layer = 0 ) {
+      assureSize( layer );
       HapticShapeVector v = shapes;
       shape_lock.lock();
-      v.swap( tmp_shapes );
+      v.swap( tmp_shapes[layer] );
       shape_lock.unlock();
     }
 
     /// Remove a HAPIHapticShape from the shapes being rendered.
-    inline void removeShape( HAPIHapticShape *shape ) {
+    /// \param layer The haptic layer to remove the shape from.
+    inline void removeShape( HAPIHapticShape *shape,
+                             unsigned int layer = 0 ) {
+      assureSize( layer );
       shape_lock.lock();
-      tmp_shapes.erase( shape );
+      tmp_shapes[layer].erase( shape );
       shape_lock.unlock();
     }
     
     /// Add all shapes between [begin, end)
+    /// \param layer The haptic layer to add shapes to
     template< class InputIterator > 
-    inline void addShapes( InputIterator begin, InputIterator end ) {
+    inline void addShapes( InputIterator begin, InputIterator end,
+                           unsigned int layer = 0 ) {
+      assureSize( layer );
       shape_lock.lock();
-      tmp_shapes.insert( tmp_shapes.end(), begin, end );
+      tmp_shapes[layer].insert( tmp_shapes[0].end(), begin, end );
       shape_lock.unlock();
     }
 
     /// Swap the vector of shapes currently being rendered with the
     /// given vector, replacing all shapes being rendered.
-    inline void swapShapes( HapticShapeVector &shapes ) {
+    /// \param layer The haptic layer to add shapes to
+    inline void swapShapes( HapticShapeVector &shapes, 
+                            unsigned int layer = 0 ) {
+      assureSize( layer );
       shape_lock.lock();
-      tmp_shapes.swap( shapes );
+      tmp_shapes[layer].swap( shapes );
       shape_lock.unlock();
     }
 
     /// Remove all HAPIHapticShape objects that are currently being rendered.
-    inline void clearShapes() {
+    /// \param layer The haptic layer to clear
+    inline void clearShapes( unsigned int layer ) {
+      assureSize( layer );
       shape_lock.lock();
-      tmp_shapes.clear();
+      tmp_shapes[layer].clear();
       shape_lock.unlock();
     }
 
@@ -505,22 +526,32 @@ namespace HAPI {
     }
 
     /// Set the HAPIHapticsRenderer to use to render the HAPIHapticShapes
-    /// specified.
-    inline void setHapticsRenderer( HAPIHapticsRenderer *r ) {
+    /// specified for a specified layer.
+    inline void setHapticsRenderer( HAPIHapticsRenderer *r, 
+                                    unsigned int layer = 0 ) {
       renderer_change_lock.lock();
+      if( haptics_renderers.size() < layer + 1 ) 
+        haptics_renderers.resize( layer + 1, NULL );
+
       if( device_state != DeviceState::UNINITIALIZED ) {
-        if( haptics_renderer.get() ) {
-          haptics_renderer->releaseRenderer( this );
+        if( haptics_renderers[layer] ) {
+          haptics_renderers[layer]->releaseRenderer( this );
         }
-        haptics_renderer->initRenderer( this );
+        r->initRenderer( this );
       }
-      haptics_renderer.reset( r );
+      haptics_renderers[ layer ] = r;
       renderer_change_lock.unlock();
     }
 
-    /// Get the currently used HAPIHapticsRenderer.
-    inline HAPIHapticsRenderer *getHapticsRenderer() {
-      return haptics_renderer.get();
+    /// Return the number of layers that have had shapes added to it.
+    inline unsigned int nrLayers() {
+      return haptics_renderers.size();
+    }
+
+    /// Get the currently used HAPIHapticsRenderer for a layer.
+    inline HAPIHapticsRenderer *getHapticsRenderer( unsigned int layer = 0 ) {
+      if( haptics_renderers.size() < layer + 1 ) return NULL;
+      else return haptics_renderers[ layer ];
     }
 
     /// Get the error message from the latest error.
@@ -534,6 +565,11 @@ namespace HAPI {
     }
 
   protected:
+    inline void assureSize( unsigned int i ) {
+      if( tmp_shapes.size() < i + 1 ) tmp_shapes.resize( i + 1 );
+      if( haptics_renderers.size() < i + 1 ) 
+        haptics_renderers.resize( i + 1, NULL );
+    }
 
     /// Send the force to render on the haptics device in device coordinates. 
     inline void sendRawForce( const Vec3 &f ) {
@@ -658,7 +694,8 @@ namespace HAPI {
     HapticEffectVector last_force_effects;
 
     // the shapes that are currently being rendered in the realtime loop.
-    HapticShapeVector current_shapes;
+    // One HapticEffectVector for each layer.
+    vector< HapticShapeVector > current_shapes;
 
     // the values to send to the haptics device.
     DeviceOutput output;
@@ -673,7 +710,7 @@ namespace HAPI {
     MutexLock renderer_change_lock;
 
     //
-    HapticShapeVector tmp_shapes;
+    vector< HapticShapeVector > tmp_shapes ;
 
     unsigned int nr_haptics_loops;
 
@@ -691,7 +728,7 @@ namespace HAPI {
     Matrix4 position_calibration;
     Matrix4 position_calibration_inverse;
     Rotation orientation_calibration;
-    auto_ptr< HAPIHapticsRenderer > haptics_renderer;
+    H3DUtil::AutoPtrVector< HAPIHapticsRenderer > haptics_renderers;
     string last_error_message;
     string device_name;
 
