@@ -106,7 +106,11 @@ void AABoxBound::render() {
 }
 
 void AABoxBound::fitAroundPoints( const vector< Vec3 > &points ) {
-  if( points.size() == 0 ) return;
+  if( points.size() == 0 ) {
+    max = Vec3( 0, 0, 0 );
+    min = Vec3( 0, 0, 0 );
+    return;
+  }
   min = points[0];
   max = points[0];
   
@@ -244,6 +248,12 @@ void SphereBound::render( ) {
 }
 
 void SphereBound::fitAroundPoints( const vector< Vec3 > &points ) {
+  if( points.size() == 0 ) {
+    center = Vec3( 0, 0, 0 );
+    radius = 0;
+    return;
+  }
+
 	AABoxBound box;
   box.fitAroundPoints( points );
 	Vec3 c = 0.5 * (box.min + box.max);
@@ -262,14 +272,15 @@ void SphereBound::fitAroundPoints( const vector< Vec3 > &points ) {
 
 struct StackElement {
   BinaryBoundTree *tree;
-  vector< Triangle > triangles;
+  vector< int > triangles;
 }; 
 
 BinaryBoundTree::BinaryBoundTree( BoundNewFunc func, 
                                   const vector< Triangle > &triangle_vector,
                                   unsigned int max_nr_triangles_in_leaf ):
   new_func( func ), left( NULL ), right( NULL ) {
-  
+
+  cerr << triangle_vector.size() << endl;
   std::stack< StackElement > stack;
 	
   if( triangle_vector.size() == 0 ) return;
@@ -277,28 +288,43 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
   //	add the starting subtree to stack...
 	StackElement start;
 	start.tree = this;
-	start.triangles = triangle_vector;
+
+  vector< Vec3 > point_reps;
+  point_reps.reserve( triangle_vector.size() );
+
+	start.triangles.reserve( triangle_vector.size() );
+  for( unsigned int i = 0; i < triangle_vector.size(); i++ ) {
+    start.triangles.push_back( i );
+    point_reps.push_back( triangle_vector[i].pointRepresentation() );
+  }
+
+
+
 	stack.push( start );
   //cerr << start.triangles.size() << endl;
   //	BUILD TREE
 	while( !stack.empty() ) {
-		const std::vector< Triangle > &stack_triangles = stack.top().triangles;
+		const std::vector< int > &stack_triangles = stack.top().triangles;
 		BinaryBoundTree* stack_tree = stack.top().tree;
 
 	  if (max_nr_triangles_in_leaf < 0 ||
         stack_triangles.size() <= max_nr_triangles_in_leaf ) {
       //	build a leaf
-			stack_tree->triangles = stack_triangles;
-      		stack.pop();
+			stack_tree->triangles.reserve( stack_triangles.size() );
+      for( unsigned int i = 0; i < stack_triangles.size(); i++ ) {
+        stack_tree->triangles.push_back( triangle_vector[stack_triangles[i]] );
+      }
+      stack.pop();
 			continue;
 		}
 
 		std::vector<Vec3 > points;
-		points.resize( stack_triangles.size() * 3 );
+		points.reserve( stack_triangles.size() * 3 );
 		for (unsigned int i=0 ; i<stack_triangles.size() ; i++ ) {
-      points[i*3]   = stack_triangles[i].a;
-      points[i*3+1] = stack_triangles[i].b;
-      points[i*3+2] = stack_triangles[i].c;
+      const Triangle &tri = triangle_vector[ stack_triangles[i ] ];
+      points.push_back( tri.a );
+      points.push_back( tri.b );
+      points.push_back( tri.c);
     }
     
     //	build bounding shape
@@ -313,17 +339,22 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 		Vec3 mid(0,0,0);
 
     for(unsigned int i = 0 ; i < stack_triangles.size() ; i++) {
-      mid = mid + stack_triangles[i].pointRepresentation();
+      mid = mid + point_reps[stack_triangles[i]];
     }
 
 		mid = (1.0f/stack_triangles.size()) * mid;	//divide by N
     
     //	build subsets based on axis/middle point
-		std::vector<Triangle> left;
-		std::vector<Triangle> right;
+		std::vector<int> left;
+		std::vector<int> right;
+    
+    left.reserve( stack_triangles.size() / 2 );
+    right.reserve( stack_triangles.size() / 2 );
+
     
 		for( unsigned int i = 0 ; i<stack_triangles.size() ; i++ ) {
-      Vec3 mid_to_point = stack_triangles[i].pointRepresentation() - mid;
+      Vec3 mid_to_point = 
+        point_reps[ stack_triangles[i] ] - mid;
       if ( mid_to_point * axis < 0 )
 				left.push_back(stack_triangles[i]);
 			else
@@ -349,7 +380,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 			
 			StackElement element;
 			element.tree = stack_tree->left.get();
-			element.triangles = left;
+			element.triangles.swap( left );
 			stack.push( element );
 		}
 		
@@ -358,7 +389,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 			
 			StackElement element;
 			element.tree = stack_tree->right.get();
-			element.triangles = right;
+			element.triangles.swap( right );
 			stack.push( element );
 		}
 	}
