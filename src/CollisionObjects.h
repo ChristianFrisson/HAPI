@@ -693,9 +693,7 @@ namespace HAPI {
 
       /// Returns a Vec3 specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
-      inline virtual Vec3 longestAxis() const {
-        return Vec3(0,0,1);
-      }
+      inline virtual Vec3 longestAxis() const;
 
       /// Update the bound primitive to contain all the given points.
       virtual void fitAroundPoints( const vector< Vec3 > &points );
