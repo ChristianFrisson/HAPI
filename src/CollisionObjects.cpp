@@ -280,7 +280,6 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
                                   unsigned int max_nr_triangles_in_leaf ):
   new_func( func ), left( NULL ), right( NULL ) {
 
-  cerr << triangle_vector.size() << endl;
   std::stack< StackElement > stack;
 	
   if( triangle_vector.size() == 0 ) return;
@@ -1676,4 +1675,9 @@ void BinaryBoundTree::getAllTriangles( vector< Triangle > &tris ) {
     if (left.get()) left->getAllTriangles( tris );
     if (right.get()) right->getAllTriangles( tris );
   }
+}
+
+Vec3 OrientedBoxBound::longestAxis() const {
+  Vec3 a = AABoxBound::longestAxis();
+  return orientation * a;
 }
