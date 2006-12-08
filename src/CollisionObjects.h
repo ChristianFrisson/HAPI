@@ -77,6 +77,10 @@ namespace HAPI {
 
       /// The face that was intersected. BACK or FRONT.
       FaceType face;
+
+      /// Gradient describing the change of tex coord depending on
+      /// change in pos at the intersection point.
+      Matrix3 pos_to_tex_coord_gradient;
       
       /// The id of the primitive that was intersected if applicable, e.g. 
       /// triangle index. -1 if no id exists.
@@ -832,7 +836,11 @@ namespace HAPI {
       /// Constructor.
       /// Builds a binary tree from a vector of triangles. The func argument specifies
       /// a function for creating  bound of the wanted type in each tree node.
-      BinaryBoundTree( BoundNewFunc func, const vector< Triangle > &triangles );
+      /// max_nr_triangles_in_leaf specifies the maximum number of triangles 
+      /// that are allowed to be in a bound of a leaf in the tree. 
+      BinaryBoundTree( BoundNewFunc func, 
+                       const vector< Triangle > &triangles,
+                       unsigned int max_nr_triangles_in_leaf = 1 );
       /// Returns true if the tree is a leaf, i.e. has no sub-tress and hence just
       /// contains triangles. false otherwise.
       inline bool isLeaf() { 
@@ -976,13 +984,17 @@ namespace HAPI {
 
       /// Constructor.
       /// Builds a binary tree from a vector of triangles. 
-      AABBTree( const vector< Triangle > &triangles ):
-        BinaryBoundTree( &(newInstance< AABoxBound >), triangles ) {}
+      /// max_nr_triangles_in_leaf specifies the maximum number of triangles 
+      /// that are allowed to be in a bound of a leaf in the tree. 
+      AABBTree( const vector< Triangle > &triangles,
+                unsigned int max_nr_triangles_in_leaf = 1 ):
+        BinaryBoundTree( &(newInstance< AABoxBound >), triangles, max_nr_triangles_in_leaf ) {}
     };
 
 
     /// \brief The OBBTree is a BinaryBoundTree where the bounding primitive 
     /// for each node is a OrientedBoxBound.
+
     class HAPI_API OBBTree: public BinaryBoundTree {
     public:
       /// Default constructor.
@@ -990,12 +1002,17 @@ namespace HAPI {
 
       /// Constructor.
       /// Builds a binary tree from a vector of triangles. 
-      OBBTree( const vector< Triangle > &triangles ):
-        BinaryBoundTree( &(newInstance< OrientedBoxBound >), triangles ) {}
+      /// max_nr_triangles_in_leaf specifies the maximum number of triangles 
+      /// that are allowed to be in a bound of a leaf in the tree. 
+      OBBTree( const vector< Triangle > &triangles,
+               unsigned int max_nr_triangles_in_leaf = 1 ):
+        BinaryBoundTree( &(newInstance< OrientedBoxBound >), triangles, 
+                         max_nr_triangles_in_leaf ) {}
     };
 
     /// \brief The SphereBoundTree is a BinaryBoundTree where the bounding 
     /// primitive for each node is a SphereBound object.
+
     class HAPI_API SphereBoundTree: public BinaryBoundTree {
     public:
       /// Default constructor.
@@ -1003,8 +1020,11 @@ namespace HAPI {
 
       /// Constructor.
       /// Builds a binary tree from a vector of triangles. 
-      SphereBoundTree( const vector< Triangle > &triangles ): 
-        BinaryBoundTree( &(newInstance< SphereBound > ), triangles ) {}
+      /// max_nr_triangles_in_leaf specifies the maximum number of triangles 
+      /// that are allowed to be in a bound of a leaf in the tree. 
+      SphereBoundTree( const vector< Triangle > &triangles,
+                       unsigned int max_nr_triangles_in_leaf = 1): 
+        BinaryBoundTree( &(newInstance< SphereBound > ), triangles, max_nr_triangles_in_leaf ) {}
     };
 
 }

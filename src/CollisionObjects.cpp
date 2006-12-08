@@ -266,7 +266,8 @@ struct StackElement {
 }; 
 
 BinaryBoundTree::BinaryBoundTree( BoundNewFunc func, 
-                                  const vector< Triangle > &triangle_vector ):
+                                  const vector< Triangle > &triangle_vector,
+                                  unsigned int max_nr_triangles_in_leaf ):
   new_func( func ), left( NULL ), right( NULL ) {
   
   std::stack< StackElement > stack;
@@ -284,7 +285,8 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 		const std::vector< Triangle > &stack_triangles = stack.top().triangles;
 		BinaryBoundTree* stack_tree = stack.top().tree;
 
-	  if (stack_triangles.size() == 1 ) {
+	  if (max_nr_triangles_in_leaf < 0 ||
+        stack_triangles.size() <= max_nr_triangles_in_leaf ) {
       //	build a leaf
 			stack_tree->triangles = stack_triangles;
       		stack.pop();
@@ -1044,7 +1046,7 @@ void OrientedBoxBound::fitAroundPoints( const vector< Vec3 > &points ) {
   //	fill oriented box
   orientation = Rotation( frame );
   
-  cerr << frame * (0.5f*(min+max)) << endl;
+  //cerr << frame * (0.5f*(min+max)) << endl;
 	center = frame.transpose() * (0.5f*(min+max)) ;
   halfsize = 0.5f*(max-min);
 }
