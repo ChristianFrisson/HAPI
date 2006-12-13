@@ -53,6 +53,9 @@ void Chai3DRenderer::initRenderer( HAPIHapticsDevice *hd ) {
   chai3d_tool->computeGlobalPositions();
   chai3d_tool->start();
   chai3d_tool->setForcesON();
+  cProxyPointForceAlgo *p = chai3d_tool->getProxy();
+  if( p )
+    p->setProxyRadius( 0.5 );
 }
 
 /// Release all resources that has been used in the renderer for
@@ -74,7 +77,7 @@ Chai3DRenderer::renderHapticsOneStep(
   chai3d_tool->updatePose();
   chai3d_tool->computeForces();
   cVector3d f = chai3d_tool->m_lastComputedGlobalForce;
-  return HapticForceEffect::EffectOutput( Vec3( f.y, f.z, f.z ) );
+  return HapticForceEffect::EffectOutput( Vec3( f.y, f.z, f.x ) );
 }
 
 
@@ -94,26 +97,44 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
         int index = 0;
         for( vector< Bounds::Triangle >::iterator i = tri_set->triangles.begin();
              i != tri_set->triangles.end(); i++ ) {
-          mesh->newVertex( (*i).a.z, (*i).a.x, (*i).a.y );
-          mesh->newVertex( (*i).b.z, (*i).b.x, (*i).b.y );
-          mesh->newVertex( (*i).c.z, (*i).c.x, (*i).c.y );
+          //Vec3 a = (*i).a;
+          //          Vec3 b =(*i).b;
+          //Vec3 c =  (*i).c;
+          Vec3 a = tri_set->transform * (*i).a;
+          Vec3 b = tri_set->transform * (*i).b;
+          Vec3 c = tri_set->transform * (*i).c;
+          mesh->newVertex( a.z, a.x, a.y );
+          mesh->newVertex( b.z, b.x, b.y );
+          mesh->newVertex( c.z, c.x, c.y );
           mesh->newTriangle(index,index+1,index+2);
           index += 3;
         }
         cMaterial material;
-        material.setStiffness(50.0);
+        material.setStiffness(0.050);
         mesh->m_material = material;
       }
     } else {
       mesh = meshes[0];
       const Matrix4 &m = s->transform;
-        
+      Rotation r = (Rotation) m.getRotationPart();
+      Matrix3 mm( m[2][2], m[2][0], m[2][1],
+                  m[0][2], m[0][0], m[0][1],
+                  m[1][2], m[1][0], m[1][1] );
+      //cerr << mm << endl << endl;
+      //cerr << mm.inverse() << endl << endl;
+      Rotation r2( Matrix3( m[2][2], m[2][0], m[2][1],
+              m[0][2], m[0][0], m[0][1],
+              m[1][2], m[1][0], m[1][1] ) );
       cMatrix3d rm;
       rm.set( m[2][2], m[2][0], m[2][1],
               m[0][2], m[0][0], m[0][1],
               m[1][2], m[1][0], m[1][1] );
-      mesh->setPos( m[2][3], m[0][3], m[1][3] );
-      mesh->setRot( rm );
+      //cerr << r * Vec3( 1,2,3) << endl;
+      //cerr << r2 * Vec3( 3,1,2) << endl;
+      cVector3d v( 3, 1, 2 );
+      rm.mul( v );
+      //mesh->setPos( m[2][3], m[0][3], m[1][3] );
+      //mesh->setRot( rm );
     }
   }
 }
@@ -122,8 +143,8 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 HAPI::Vec3 Chai3DRenderer::getProxyPosition() {
   assert( chai3d_tool->getProxy() != NULL );
   cVector3d p = chai3d_tool->getProxy()->getProxyGlobalPosition();
-  cerr << Vec3( p.y, p.z, p.z ) << endl;
-  return Vec3( p.y, p.z, p.z );
+ // cerr << Vec3( p.y, p.z, p.x ) << endl;
+  return Vec3( p.y, p.z, p.x );
 }
 
 
@@ -180,7 +201,7 @@ int Chai3DRenderer::H3DDevice::command(int a_command, void* a_data)
                           m[2][0], m[2][1], m[2][2] );
            }
            break;
-
+/*
            // set force to phantom device
            case CHAI_CMD_SET_FORCE_3D:
            {
@@ -202,7 +223,7 @@ int Chai3DRenderer::H3DDevice::command(int a_command, void* a_data)
               //               genforce[1].y, genforce[1].z, genforce[1].x);
            }
            break;
-
+*/
            // read user switch from phantom stylus
            case CHAI_CMD_GET_SWITCH_0: {
              int* switchstate = (int *) a_data;
