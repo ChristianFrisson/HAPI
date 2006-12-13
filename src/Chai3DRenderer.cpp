@@ -53,9 +53,7 @@ void Chai3DRenderer::initRenderer( HAPIHapticsDevice *hd ) {
   chai3d_tool->computeGlobalPositions();
   chai3d_tool->start();
   chai3d_tool->setForcesON();
-  cProxyPointForceAlgo *p = chai3d_tool->getProxy();
-  if( p )
-    p->setProxyRadius( 0.5 );
+  setProxyRadius( 0.5 );
 }
 
 /// Release all resources that has been used in the renderer for
@@ -69,13 +67,16 @@ HapticForceEffect::EffectOutput
 Chai3DRenderer::renderHapticsOneStep( 
                      HAPIHapticsDevice *hd,
                      const HapticShapeVector &shapes ) {
+
   H3DDevice *dev = static_cast< H3DDevice * >( chai3d_tool->getDevice() );
   dev->setNewValues( hd->getPosition(),
                      hd->getVelocity(),
                      hd->getOrientation(),
                      hd->getButtonStatus() );
   chai3d_tool->updatePose();
+  mesh_change_lock.lock();
   chai3d_tool->computeForces();
+  mesh_change_lock.unlock();
   cVector3d f = chai3d_tool->m_lastComputedGlobalForce;
   return HapticForceEffect::EffectOutput( Vec3( f.y, f.z, f.x ) );
 }
@@ -83,23 +84,32 @@ Chai3DRenderer::renderHapticsOneStep(
 
 void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
                                        const HapticShapeVector &shapes ) {
-  if( shapes.size() > 0 ) {
-    HAPIHapticShape *s = shapes[0];
-    cMesh *mesh = NULL;
-    if( meshes.size() == 0  ) {
-      mesh = new cMesh(world);
-      world->addChild(mesh);
-      meshes.push_back( mesh );
+  
+  vector< cMesh * > new_meshes( shapes.size() );
+  new_meshes.clear();
+
+  for( HapticShapeVector::const_iterator s = shapes.begin();
+       s != shapes.end(); s++ ) {
+    
+    HAPIHapticShape *shape = (*s);
+    Chai3DSurface *chai3d_surface = 
+      dynamic_cast< Chai3DSurface * >( shape->surface );
+
+    if( chai3d_surface ) {
+      cMesh *mesh = new cMesh(world);
       
-      HapticTriangleSet *tri_set = dynamic_cast< HapticTriangleSet * >( s );
+      new_meshes.push_back( mesh );
+      
+      // TODO: fix for other shape types
+      HapticTriangleSet *tri_set = 
+        dynamic_cast< HapticTriangleSet * >( shape );
       
       if( tri_set ) {
+        
         int index = 0;
-        for( vector< Bounds::Triangle >::iterator i = tri_set->triangles.begin();
+        for( vector< Bounds::Triangle >::iterator i = 
+               tri_set->triangles.begin();
              i != tri_set->triangles.end(); i++ ) {
-          //Vec3 a = (*i).a;
-          //          Vec3 b =(*i).b;
-          //Vec3 c =  (*i).c;
           Vec3 a = tri_set->transform * (*i).a;
           Vec3 b = tri_set->transform * (*i).b;
           Vec3 c = tri_set->transform * (*i).c;
@@ -109,41 +119,28 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           mesh->newTriangle(index,index+1,index+2);
           index += 3;
         }
-        cMaterial material;
-        material.setStiffness(0.050);
-        mesh->m_material = material;
+        cMaterial mat;
+        chai3d_surface->chai3dMaterial( mat );
+        mesh->setMaterial( mat );
       }
-    } else {
-      mesh = meshes[0];
-      const Matrix4 &m = s->transform;
-      Rotation r = (Rotation) m.getRotationPart();
-      Matrix3 mm( m[2][2], m[2][0], m[2][1],
-                  m[0][2], m[0][0], m[0][1],
-                  m[1][2], m[1][0], m[1][1] );
-      //cerr << mm << endl << endl;
-      //cerr << mm.inverse() << endl << endl;
-      Rotation r2( Matrix3( m[2][2], m[2][0], m[2][1],
-              m[0][2], m[0][0], m[0][1],
-              m[1][2], m[1][0], m[1][1] ) );
-      cMatrix3d rm;
-      rm.set( m[2][2], m[2][0], m[2][1],
-              m[0][2], m[0][0], m[0][1],
-              m[1][2], m[1][0], m[1][1] );
-      //cerr << r * Vec3( 1,2,3) << endl;
-      //cerr << r2 * Vec3( 3,1,2) << endl;
-      cVector3d v( 3, 1, 2 );
-      rm.mul( v );
-      //mesh->setPos( m[2][3], m[0][3], m[1][3] );
-      //mesh->setRot( rm );
     }
+  } 
+
+  mesh_change_lock.lock();
+  world->clearAllChildren();
+  meshes.clear();
+
+  for( unsigned int i = 0; i < new_meshes.size(); i++ ) {
+    world->addChild(new_meshes[i]);
   }
+  meshes.swap( new_meshes );
+  mesh_change_lock.unlock();
 }
 
 
 HAPI::Vec3 Chai3DRenderer::getProxyPosition() {
   assert( chai3d_tool->getProxy() != NULL );
   cVector3d p = chai3d_tool->getProxy()->getProxyGlobalPosition();
- // cerr << Vec3( p.y, p.z, p.x ) << endl;
   return Vec3( p.y, p.z, p.x );
 }
 

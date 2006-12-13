@@ -57,6 +57,25 @@ namespace HAPI {
   /// haptics rendering.
   class H3DAPI_API Chai3DRenderer: public HAPI::HAPIProxyBasedRenderer {
   public:
+    class H3DAPI_API Chai3DShape {
+    public:
+      virtual ~Chai3DShape() {}
+      /// This function performs all the Chai3DAPI calls that are needed
+      /// to render the surface. 
+      virtual void chai3dRender( HAPI::HAPIHapticsDevice *hd ) = 0;
+    };
+
+    class H3DAPI_API Chai3DSurface {
+    public:
+      /// Destructor.
+      virtual ~Chai3DSurface() {}
+      
+      /// Sets a Chai3D cMaterial describing the haptic properties for the 
+      /// surface.
+      virtual void chai3dMaterial( cMaterial &m ) = 0;
+    };
+
+
     class H3DDevice: public cGenericDevice {
     public:
       // CONSTRUCTOR & DESTRUCTOR:
@@ -127,6 +146,20 @@ namespace HAPI {
       }
     };
 
+
+    /// Get the current radius of the proxy.
+    inline HAPIFloat getProxyRadius() {
+      cProxyPointForceAlgo *p = chai3d_tool->getProxy();
+      if( p ) return p->getProxyRadius();
+      else return 0;
+    }
+
+    /// Set the radius of the proxy(in millimetres)
+    inline void setProxyRadius( HAPIFloat r ) {
+      cProxyPointForceAlgo *p = chai3d_tool->getProxy();
+      if( p ) p->setProxyRadius( r );
+    }
+
     /// Initialize the renderer to be used with the given haptics device.
     virtual void initRenderer( HAPI::HAPIHapticsDevice *hd );
 
@@ -165,6 +198,7 @@ namespace HAPI {
     auto_ptr< H3DTool > chai3d_tool;
     cWorld *world;
     H3DUtil::AutoPtrVector< cMesh > meshes; 
+    MutexLock mesh_change_lock;
   };
 }
 
