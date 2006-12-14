@@ -738,7 +738,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   // Compute normal.
   Vec3 n = ab % ac;
 
-  result.normal = n;
+  Vec3 original_normal = n;
 
   HAPIFloat epsilon = 1e-5;
 
@@ -787,6 +787,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   HAPIFloat u = 1 - v - w;
 
   result.point = u*v0 + v*v1 + w*v2;
+  result.normal = original_normal;
   result.normal.normalizeSafe();
   result.tex_coord =  u*tc0 + v*tc1 + w*tc2;
   //if( (-qp) * result.normal > 0 ) 
