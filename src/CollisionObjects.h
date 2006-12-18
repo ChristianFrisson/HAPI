@@ -64,7 +64,7 @@ namespace HAPI {
       point( _point ),
       normal( _normal ),
       tex_coord( _tex_coord ),
-      id( _id ) {}
+      id( _id ) { intersection = false; }
 
       /// The intersection point.
       Vec3 point;
@@ -77,6 +77,8 @@ namespace HAPI {
 
       /// The face that was intersected. BACK or FRONT.
       FaceType face;
+
+      bool intersection;
 
       /// Gradient describing the change of tex coord depending on
       /// change in pos at the intersection point.
