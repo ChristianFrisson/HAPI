@@ -790,6 +790,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   result.normal = original_normal;
   result.normal.normalizeSafe();
   result.tex_coord =  u*tc0 + v*tc1 + w*tc2;
+  result.intersection = true;
   //if( (-qp) * result.normal > 0 ) 
   //  result.normal = -result.normal;
   return true;
@@ -862,9 +863,19 @@ bool BinaryBoundTree::lineIntersect( const Vec3 &from,
                                      FaceType face ) {
   if ( isLeaf() )	{
     // TODO: find closest?
+    IntersectionInfo tempResult;
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
       Triangle &t = triangles[i];
-      if( t.lineIntersect( from, to, result, face ) )	return true;
+      if( t.lineIntersect( from, to, tempResult, face ) ) {
+        if( result.intersection) {
+          if( (tempResult.point - from).lengthSqr() < 
+              (result.point - from).lengthSqr() )
+            result = tempResult;
+        }
+        else
+          result = tempResult;
+        return true;
+      }
 		}
 		return false;
 	}	else 	{
