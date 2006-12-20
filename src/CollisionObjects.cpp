@@ -744,7 +744,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
 
   HAPIFloat d = qp * n;
 
-  result.face = Bounds::FRONT;
+  FaceType intersection_face = Bounds::FRONT;
   if ( d < 0 ) {
     // line segment pointing away from triangle
     if( face == Bounds::FRONT ) return false;
@@ -764,7 +764,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
     tmp = ab;
     ab = ac;
     ac = tmp;
-    result.face = Bounds::BACK;
+    intersection_face = Bounds::BACK;
   } else if( d == 0 || face == Bounds::BACK ) {
     return false;
   }
@@ -790,6 +790,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   result.normal = original_normal;
   result.normal.normalizeSafe();
   result.tex_coord =  u*tc0 + v*tc1 + w*tc2;
+  result.face = intersection_face;
   result.intersection = true;
   //if( (-qp) * result.normal > 0 ) 
   //  result.normal = -result.normal;
