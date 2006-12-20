@@ -96,6 +96,9 @@ namespace HAPI {
     /// falling too hard onto if forces are disabled abruptly, either by
     /// pressing the force button or by action of a safety feature.
     void useBrakes( bool enable );
+
+    /// Register this renderer to the haptics renderer database.
+    static HapticsDeviceRegistration device_registration;
   protected:
     /// Implementation of updateDeviceValues using HD API to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt );

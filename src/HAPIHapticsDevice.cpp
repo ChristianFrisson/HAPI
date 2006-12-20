@@ -31,6 +31,9 @@
 
 using namespace HAPI;
 
+list< HAPIHapticsDevice::HapticsDeviceRegistration > 
+*HAPIHapticsDevice::registered_devices = NULL;
+
 PeriodicThread::CallbackCode HAPIHapticsDevice::transferObjectsCallback( 
   void *data ) {
   HAPIHapticsDevice *hd = 
