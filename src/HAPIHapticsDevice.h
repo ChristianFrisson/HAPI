@@ -134,9 +134,10 @@ namespace HAPI {
         thread = new HapticThread( 0, 1000 );
 #endif
         delete_thread = true;
+        thread->asynchronousCallback( hapticRenderingCallback,
+                                      this );
       }
-      thread->asynchronousCallback( hapticRenderingCallback,
-                                    this );
+
       return SUCCESS;
     }
 
@@ -564,7 +565,55 @@ namespace HAPI {
       return thread;
     }
 
+    // The following is part of the database of available haptics renderers.
+    typedef HAPIHapticsDevice*( *CreateInstanceFunc)(); 
+
+    template< class N >
+    static HAPIHapticsDevice *newInstance() { return new N; };
+
+    /// Class used to register a class to the registered file readers.
+    struct HAPI_API HapticsDeviceRegistration{
+    public:
+      /// Constructor.
+      HapticsDeviceRegistration( const string &_name,
+                                   CreateInstanceFunc _create ):
+      name( _name ),
+      create_func( _create ) {
+        
+        if( !HAPIHapticsDevice::registered_devices ) {
+          HAPIHapticsDevice::registered_devices = 
+            new list< HapticsDeviceRegistration >;
+        }
+        HAPIHapticsDevice::registerDevice( *this );
+      }
+
+      string name;
+      CreateInstanceFunc create_func;
+    };
+#ifdef __BORLANDC__
+    friend struct HapticsDeviceRegistration;
+#endif
+
+    /// Register a haptics renderer to the database.
+    /// \param name The name of the renderer
+    /// \param create A function for creating an instance of that class.
+    /// \param supports A function to determine if the class supports a
+    /// given file type.
+    static void registerDevice( const string &name,
+                                  CreateInstanceFunc create ) {
+      registerDevice( HapticsDeviceRegistration( name, create ) );
+    }
+
+    /// Register a haptics renderer that can then be returned by 
+    /// getSupportedFileReader().
+    static void registerDevice( const HapticsDeviceRegistration &fr ) {
+      registered_devices->push_back( fr );
+    }
+
+    static list< HapticsDeviceRegistration > *registered_devices;
+
   protected:
+
     inline void assureSize( unsigned int i ) {
       if( tmp_shapes.size() < i + 1 ) tmp_shapes.resize( i + 1 );
       if( haptics_renderers.size() < i + 1 ) 
@@ -739,6 +788,7 @@ namespace HAPI {
     /// haptics loop.
     static PeriodicThread::CallbackCode transferObjectsCallback( void *data );
 
+    friend class AnyHapticsDevice;
   };
 }
 

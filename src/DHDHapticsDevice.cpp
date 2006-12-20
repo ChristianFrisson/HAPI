@@ -37,6 +37,12 @@
 
 using namespace HAPI;
 
+HAPIHapticsDevice::HapticsDeviceRegistration 
+DHDHapticsDevice::device_registration(
+                            "DHD",
+                            &(newInstance< DHDHapticsDevice >)
+                            );
+
 bool DHDHapticsDevice::initHapticsDevice() {
   device_id = dhdOpen();
   if( device_id == -1 ) {

@@ -51,6 +51,7 @@ namespace HAPI {
     PhantomHapticsDevice( string _device_name = "" ):
       device_name( _device_name ),
       device_handle( -1 ) {
+      hdapi_version = hdGetString( HD_VERSION ); 
     }
 
     /// Destructor.
@@ -67,7 +68,107 @@ namespace HAPI {
       return device_name;
     }
 
+    /// Register this renderer to the haptics renderer database.
+    static HapticsDeviceRegistration device_registration;
+
+    /// Get the firmware version for the device. Undefined behavior
+    /// if device not initialized.
+    inline double getDeviceFirmwareVersion() { 
+      return device_firmware_version; 
+    }
+
+    /// Get the HDAPI software version, in the form major.minor.build
+    inline string getHDAPIVersion() { return hdapi_version; }
+
+    /// Get the device model of the device. Undefined if device not
+    /// initialized.
+    inline string getDeviceModelType() { return device_model_type; }
+
+    /// Get the device driver version of the device. Undefined if device not
+    /// initialized.
+    inline string getDeviceDriverVersion() { return device_driver_version; }
+
+    /// Get the vendor of the device. Undefined if device not
+    /// initialized.
+    inline string getDeviceVendor() { return device_vendor; }
+
+    /// Get the serial number of the device. Undefined if device not
+    /// initialized.
+    inline string getDeviceSerialNumber() { return device_serial_number; }
+   
+    /// Get the maximum workspace dimensions of the device, i.e. the
+    /// mechanical limits of the device. Undefined if
+    /// device not initialized.
+    inline void getMaxWorkspaceDimensions( Vec3 &min, Vec3&max ) {
+      min = max_workspace_min;
+      max = max_workspace_max;
+    }
+      
+    /// Get the usable workspace dimensions of the device, i.e. the 
+    /// workspace in which forces are guaranteed to be reliably render.
+    /// Undefined if device not initialized.
+    inline void getUsableWorkspaceDimensions( Vec3 &min, Vec3&max ) {
+      min = usable_workspace_min;
+      max = usable_workspace_max;
+    }
+
+    /// Get the mechanical offest of the device end-effector in y from
+    /// the table top. Undefined if device not initialized.
+    inline HAPIFloat getTabletopOffset() { return tabletop_offset; }
+    
+    /// Get the maximum force, i.e. the amount of force that the
+    /// device can sustain when the motors are at room temperature
+    /// Undefined if device not initialized.
+    inline HAPIFloat getMaxForce() { return max_force; }
+
+    /// Get the maximum continuous force, i.e. the amount of force that the
+    /// device can sustain through a period of time.
+    inline HAPIFloat getMaxContinuousForce() { return max_cont_force; }
+
+    /// Get the number of input degrees of freedom.
+    /// Undefined if device not initialized.
+    inline int getInputDOF() { return input_dof; }
+
+    /// Get the number of output degrees of freedom.
+    /// Undefined if device not initialized.
+    inline int getOutputDOF() { return output_dof; }
+
+    /// Get current joint angles for the device (in radians).
+    /// x - turret, + = left
+    /// y - thigh,  + = up
+    /// z - shin,   + = up
+    inline Vec3 getJointAngles() { return joint_angles; }
+
+    /// Get current gimbal angles for the device (in radians).
+    /// From neutral position:
+    /// x - Right     = +
+    /// y - Up        = -
+    /// z - Clockwise = +
+    inline Vec3 getGimbalAngles() { return gimbal_angles; }
+    
+    /// Returns true if the device needs to be calibrated.
+    inline bool needsCalibration();
+
+    /// Calibrate the device. The calibration procedure depends on
+    /// the device type.
+    inline bool calibrateDevice();
+
+
   protected:
+    double device_firmware_version;
+    string hdapi_version;
+    string device_model_type;
+    string device_driver_version;
+    string device_vendor;
+    string device_serial_number;
+    Vec3 usable_workspace_max;
+    Vec3 usable_workspace_min;
+    Vec3 max_workspace_max;
+    Vec3 max_workspace_min;
+    HAPIFloat max_force, max_cont_force, tabletop_offset;
+    int input_dof, output_dof;
+    Vec3 joint_angles, gimbal_angles;
+    
     /// Implementation of updateDeviceValues using HD API to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt );
 
@@ -81,7 +182,7 @@ namespace HAPI {
     /// Releases all resources allocated in initHapticsDevice. 
     virtual bool releaseHapticsDevice();
 
-    /// Enable the device. Positions can be read and force can be sent.
+     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {
       ErrorCode e = HAPIHapticsDevice::enableDevice();
       // Starting scheduler here instead of in initHapticsDevice since because
