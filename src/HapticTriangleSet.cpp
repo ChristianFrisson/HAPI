@@ -110,6 +110,8 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
 void HapticTriangleSet::glRender() {
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
+  glPushAttrib( GL_POLYGON_BIT );
+  glDisable( GL_CULL_FACE );
   const Matrix4 &m = transform;
   GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
                     m[0][1], m[1][1], m[2][1], 0,
@@ -124,5 +126,6 @@ void HapticTriangleSet::glRender() {
     glVertex3d( t.c.x, t.c.y, t.c.z );
   }
   glEnd();
+  glPopAttrib();
   glPopMatrix();
 }
