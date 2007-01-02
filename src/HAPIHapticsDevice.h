@@ -538,7 +538,8 @@ namespace HAPI {
         if( haptics_renderers[layer] ) {
           haptics_renderers[layer]->releaseRenderer( this );
         }
-        r->initRenderer( this );
+        if( r )
+          r->initRenderer( this );
       }
       haptics_renderers[ layer ] = r;
       renderer_change_lock.unlock();
