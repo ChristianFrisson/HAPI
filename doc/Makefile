@@ -11,7 +11,8 @@ TARGET    = main
 INCLUDES += introduction.tex
 
 # Examples:
-#INCLUDES += examples/example.tex
+INCLUDES += examples/constant_force.tex
+INCLUDES += examples/transfer_objects.tex
 
 
 # Compile once
