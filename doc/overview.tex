@@ -1,0 +1,78 @@
+
+\chapter {HAPI}
+
+
+\section{Overview}
+
+HAPI consists of the following parts:
+
+\begin{itemize}
+\item Device handling
+\item Haptics rendering algorithm
+\item Collision geometries
+\item Surface handling
+\item Force effects
+\item Thread handling
+\end{itemize}
+
+
+\subsection{Device handling}
+The device handling layer provides a device independent
+interface for various haptics devices. It covers the following
+areas:
+
+\begin{itemize}
+\item Device initialisation/cleanup
+\item Get position / orientation 
+\item Set force / torque
+\end{itemize}
+
+HAPI can easily be extended for new devices by implementing abstract
+functions for performing those task. See \ref{aa} ??
+
+\subsection{Haptics rendering algorithm}
+A haptics rendering algorithm is need in order to calculate forces and
+torques from the position and orientation of the device. An interface
+is provided to give a user the opportunity to implement their own
+algorithm. There are four algorithms already implemented. They are:
+
+\begin{itemize}
+\item God object algorithm - point proxy based
+\item Ruspini algorithm - sphere proxy based
+\item Chai3D - use Chai3D rendering library
+\item OpenHaptics - use OpenHaptics rendering library
+\end{itemize}
+
+Some of them have restrictions on what features of HAPI can be used,
+e.g. some does not support user defined surfaces. Check out the
+details of each algorithm to find out what is supported.
+
+\subsection{Collision classes}
+HAPI contains a some classes for collision handling used in the
+haptics rendering algorithms. A user have to create instances of these
+classes and feed them to the haptics device that they are to be
+rendered at. It also contains classes for building binary bound trees
+such as axis-aligned and oriented bounding box trees from triangles,
+that can be used in order to do faster collision detection. 
+
+\subsection{Surface handling}
+When touching the surface of a geometry, the haptics rendering
+algorithm has to know to what forces to generate depending on the
+penetration of the surface. This is handled by the surface classes. A
+user can define an arbitrary function for the force and proxy
+movement(does not work for all haptics rendering algorithms though as
+mentioned earlier).
+
+\subsection{Force effects}
+Many times a user wants to generate forces that are not based on
+touching geometries, but instead is only depending on the position and
+orientation of the haptics device. These are e.g. force fields,
+springs, viscosity, etc. In these cases a force effect can be used.
+
+\subsection{Thread handling}
+HAPI manages high-priority threads running at 1000 Hz for the haptics
+rendering and provides mechanisms to communicate between different
+threads. The thread handling functions can also be used to create new
+user defined threads.      
+
+
