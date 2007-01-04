@@ -31,6 +31,7 @@
 #include "H3DMath.h"
 #include <HD/hd.h>
 #include "PhantomHapticsDevice.h"
+#include "AnyHapticsDevice.h"
 #include "DeviceInfo.h"
 
 using namespace H3D;
@@ -100,6 +101,16 @@ OpenHapticsRenderer::renderHapticsOneStep(
 
 void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
                                             const HapticShapeVector &shapes ) {
+  HHLRC haptic_context = NULL;
+
+  if( context_map.find( hd ) == context_map.end() ) {
+    haptic_context = initHLLayer( hd );
+  } else {
+    haptic_context = context_map[ hd ];
+  }
+
+  if( !haptic_context ) return;
+
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glLoadIdentity();
@@ -122,42 +133,33 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   // apply calibration matrix
   hlMultMatrixd( m );
   
-  HHLRC haptic_context = NULL;
+  hlMakeCurrent( haptic_context );  
+  hlBeginFrame();
+  hlCheckEvents();
   
-  if( context_map.find( hd ) == context_map.end() ) {
-    haptic_context = initHLLayer( hd );
-  } else {
-    haptic_context = context_map[ hd ];
-  }
-
-  if( haptic_context ) {
-    hlMakeCurrent( haptic_context );  
-    hlBeginFrame();
-    hlCheckEvents();
-
-    for( HapticShapeVector::const_iterator i = shapes.begin();
-         i != shapes.end();
+  for( HapticShapeVector::const_iterator i = shapes.begin();
+       i != shapes.end();
          i++ ) {
-      HLuint hl_shape_id = getHLShapeId( *i, hd );
-
-      HLShape *hl = dynamic_cast< HLShape * >( *i );
-      if( hl ) {    
-        hl->hlRender( hd, hl_shape_id );
-      } else {
-        HLSurface *s = dynamic_cast< HLSurface * >( (*i)->surface );
-        if( s ) {
-          OpenHapticsOptions::ShapeType shape_type = default_gl_shape;
-          bool camera_view = default_haptic_camera_view;
-          bool adaptive_viewport = default_adaptive_viewport;
-
-          OpenHapticsRenderer::OpenHapticsOptions *options;
-          (*i)->getRenderOption( options );
+    HLuint hl_shape_id = getHLShapeId( *i, hd );
+    
+    HLShape *hl = dynamic_cast< HLShape * >( *i );
+    if( hl ) {    
+      hl->hlRender( hd, hl_shape_id );
+    } else {
+      HLSurface *s = dynamic_cast< HLSurface * >( (*i)->surface );
+      if( s ) {
+        OpenHapticsOptions::ShapeType shape_type = default_gl_shape;
+        bool camera_view = default_haptic_camera_view;
+        bool adaptive_viewport = default_adaptive_viewport;
+        
+        OpenHapticsRenderer::OpenHapticsOptions *options;
+        (*i)->getRenderOption( options );
           if( options ) {
             shape_type = options->shape_type;
             camera_view = options->use_haptic_camera_view;
             adaptive_viewport = options->use_adaptive_viewport;
           }
-
+          
           glMatrixMode( GL_MODELVIEW );
           glPushMatrix();
 #if HL_VERSION_MAJOR_NUMBER >= 2
@@ -229,32 +231,36 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           hlPopAttrib();
 #endif
           glPopMatrix();
-        }
       }
     }
-
-    glMatrixMode( GL_MODELVIEW );
-    glPopMatrix();
-
-    hlEndFrame(); 
-    //hlMatrixMode( HL_VIEWTOUCH );
-    //hlPopMatrix();
-    //hlMatrixMode( HL_TOUCHWORKSPACE );
-    //hlPopMatrix();
-    
-    // check for any errors
-    HLerror error;
-    while ( HL_ERROR(error = hlGetError()) ) {
-      H3DUtil::Console(4) << OpenHapticsRendererInternals::getHLErrorString( error )
-                          << endl;
-    }   
   }
+  glMatrixMode( GL_MODELVIEW );
+  glPopMatrix();
+
+  hlEndFrame(); 
+  //hlMatrixMode( HL_VIEWTOUCH );
+  //hlPopMatrix();
+  //hlMatrixMode( HL_TOUCHWORKSPACE );
+  //hlPopMatrix();
+    
+  // check for any errors
+  HLerror error;
+  while ( HL_ERROR(error = hlGetError()) ) {
+    H3DUtil::Console(4) << OpenHapticsRendererInternals::getHLErrorString( error )
+                        << endl;
+    }   
 }
 
 
 HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
   PhantomHapticsDevice *pd = dynamic_cast< PhantomHapticsDevice * >( hd );
-  if( !pd ) return NULL;
+  if( !pd ) {
+    AnyHapticsDevice *d = dynamic_cast< AnyHapticsDevice *>( hd );
+    if( d ) {
+      pd = dynamic_cast< PhantomHapticsDevice * >( d->getActualHapticsDevice() );
+    }
+    if( !pd ) return NULL;
+  }
 
   if( pd->getDeviceState() != HAPIHapticsDevice::UNINITIALIZED ) {
     if( context_map.find( pd ) == context_map.end() ) {
