@@ -111,7 +111,7 @@ namespace HAPI {
 
     /// Does all the initialization needed for the device before starting to
     /// use it.
-    inline ErrorCode initDevice() {
+    inline virtual ErrorCode initDevice() {
       if( device_state == DeviceState::UNINITIALIZED ) {
         last_device_values = current_device_values = DeviceValues();
         last_raw_device_values = current_raw_device_values = DeviceValues();
@@ -124,18 +124,20 @@ namespace HAPI {
             haptics_renderers[i]->initRenderer( this );
           }
         }
-      } 
-      device_state = DeviceState::INITIALIZED;
-      if( !thread ) {
-        // create a new thread to run the haptics in
+      
+        device_state = DeviceState::INITIALIZED;
+        if( !thread ) {
+          // create a new thread to run the haptics in
 #ifdef WIN32
-        thread = new HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+          thread = new HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
 #else
-        thread = new HapticThread( 0, 1000 );
+          thread = new HapticThread( 0, 1000 );
 #endif
-        delete_thread = true;
+          delete_thread = true;
+        }
         thread->asynchronousCallback( hapticRenderingCallback,
                                       this );
+       
       }
 
       return SUCCESS;
@@ -168,7 +170,7 @@ namespace HAPI {
     /// Perform cleanup and let go of all device resources that are allocated.
     /// After a call to this function no haptic rendering can be performed on
     /// the device until the initDevice() function has been called again.
-    inline ErrorCode releaseDevice() {
+    inline virtual ErrorCode releaseDevice() {
       if( device_state == DeviceState::UNINITIALIZED ) {
         return ErrorCode::NOT_INITIALIZED;
       }
@@ -222,6 +224,12 @@ namespace HAPI {
       shape_lock.unlock();
     }
 
+    /// Get the shapes currently used
+    inline const HapticShapeVector &getShapes( unsigned int layer = 0 ) {
+      assureSize( layer );
+      return tmp_shapes[layer];
+    }
+
     /// Remove a HAPIHapticShape from the shapes being rendered.
     /// \param layer The haptic layer to remove the shape from.
     inline void removeShape( HAPIHapticShape *shape,
@@ -256,7 +264,7 @@ namespace HAPI {
 
     /// Remove all HAPIHapticShape objects that are currently being rendered.
     /// \param layer The haptic layer to clear
-    inline void clearShapes( unsigned int layer ) {
+    inline void clearShapes( unsigned int layer = 0 ) {
       assureSize( layer );
       shape_lock.lock();
       tmp_shapes[layer].clear();
@@ -273,6 +281,11 @@ namespace HAPI {
     /// \param objects The haptic shapes to render.
     inline void setEffects( const HapticEffectVector &effects ) {
       current_force_effects = effects;
+    }
+
+    /// Get the shapes currently used
+    inline const HapticEffectVector &getEffects() {
+      return current_force_effects;
     }
 
     /// Remove a force effect so that it is not rendered any longer.

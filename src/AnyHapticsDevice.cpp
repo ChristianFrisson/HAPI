@@ -45,7 +45,7 @@ bool AnyHapticsDevice::initHapticsDevice() {
        i != registered_devices->end(); i++ ) {
     if( (*i).name != "Any" ) {
       HAPIHapticsDevice *device = ((*i).create_func)();
-      if( device->initHapticsDevice() ) {
+      if( device->initDevice() == HAPIHapticsDevice::SUCCESS ) {
         hd.reset( device );
         thread = hd->thread;
         break;
