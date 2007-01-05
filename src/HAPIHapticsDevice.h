@@ -33,7 +33,7 @@
 #include <HAPI.h>
 #include <HAPIHapticShape.h>
 #include <HAPIHapticsRenderer.h>
-#include <HapticForceEffect.h>
+#include <HAPIForceEffect.h>
 #include <Threads.h>
 #include <AutoRefVector.h>
 
@@ -92,7 +92,7 @@ namespace HAPI {
     };
 
     typedef H3DUtil::AutoRefVector< HAPIHapticShape > HapticShapeVector;
-    typedef H3DUtil::AutoRefVector< HapticForceEffect > HapticEffectVector;
+    typedef H3DUtil::AutoRefVector< HAPIForceEffect > HapticEffectVector;
 
     /// Constructor.
     HAPIHapticsDevice() :
@@ -273,7 +273,7 @@ namespace HAPI {
 
     /// Add a HapticForceEffect to be rendered.
     /// \param objects The haptic shapes to render.
-    inline void addEffect( HapticForceEffect *effect ) {
+    inline void addEffect( HAPIForceEffect *effect ) {
       current_force_effects.push_back( effect );
     }
 
@@ -289,7 +289,7 @@ namespace HAPI {
     }
 
     /// Remove a force effect so that it is not rendered any longer.
-    inline void removeEffect( HapticForceEffect *effect ) {
+    inline void removeEffect( HAPIForceEffect *effect ) {
       current_force_effects.erase( effect );
     }
 

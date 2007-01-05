@@ -63,7 +63,7 @@ void Chai3DRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   chai3d_tool->stop();
 }
 
-HapticForceEffect::EffectOutput 
+HAPIForceEffect::EffectOutput 
 Chai3DRenderer::renderHapticsOneStep( 
                      HAPIHapticsDevice *hd,
                      const HapticShapeVector &shapes ) {
@@ -78,7 +78,7 @@ Chai3DRenderer::renderHapticsOneStep(
   chai3d_tool->computeForces();
   mesh_change_lock.unlock();
   cVector3d f = chai3d_tool->m_lastComputedGlobalForce;
-  return HapticForceEffect::EffectOutput( Vec3( f.y, f.z, f.x ) );
+  return HAPIForceEffect::EffectOutput( Vec3( f.y, f.z, f.x ) );
 }
 
 

@@ -35,7 +35,7 @@ HapticSpring::HapticSpring( const Matrix4 & _transform,
                             const Vec3 &_position,
                             HAPIFloat _spring_constant,
                             bool _interpolate ):
-      HapticForceEffect( _transform, _interpolate ),
+      HAPIForceEffect( _transform, _interpolate ),
       position( _position ),
       spring_constant( _spring_constant ) {}
 

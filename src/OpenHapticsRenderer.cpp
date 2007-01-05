@@ -76,12 +76,12 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   }
 }
 
-HapticForceEffect::EffectOutput 
+HAPIForceEffect::EffectOutput 
 OpenHapticsRenderer::renderHapticsOneStep( 
                      HAPIHapticsDevice *hd,
                      const HapticShapeVector &shapes ) {
   PhantomHapticsDevice *pd = dynamic_cast< PhantomHapticsDevice * >( hd );
-  if( !pd ) return HapticForceEffect::EffectOutput();
+  if( !pd ) return HAPIForceEffect::EffectOutput();
 
   hdMakeCurrentDevice( pd->getDeviceHandle() );
 
@@ -94,8 +94,8 @@ OpenHapticsRenderer::renderHapticsOneStep(
 
   // add the resulting force and torque to the rendered force.
     
-  return HapticForceEffect::EffectOutput( Vec3( force[0], force[1], force[2] ), 
-                                          Vec3( torque[0], torque[1], torque[2] ) );
+  return HAPIForceEffect::EffectOutput( Vec3( force[0], force[1], force[2] ), 
+                                        Vec3( torque[0], torque[1], torque[2] ) );
 }
 
 

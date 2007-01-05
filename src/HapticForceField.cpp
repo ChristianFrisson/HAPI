@@ -34,5 +34,5 @@ using namespace HAPI;
 HapticForceField::HapticForceField( const Matrix4 & _transform,
                                     const Vec3 &_force,
                                     bool _interpolate ):
-  HapticForceEffect( _transform, _interpolate ),
+  HAPIForceEffect( _transform, _interpolate ),
   force( _force ) {}
