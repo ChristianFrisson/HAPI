@@ -282,7 +282,7 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
 
 
 
-HapticForceEffect::EffectOutput 
+HAPIForceEffect::EffectOutput 
 RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                                        const HapticShapeVector &shapes ) {
   HAPIHapticsDevice::DeviceValues input = hd->getDeviceValues();
@@ -290,7 +290,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   // clear all previous contacts
   tmp_contacts.clear();
   Vec3 proxy_pos = proxy_position;
-  HapticForceEffect::EffectOutput output;
+  HAPIForceEffect::EffectOutput output;
   bool has_intersection = false;
   HAPIFloat d2;
   Bounds::IntersectionInfo closest_intersection;

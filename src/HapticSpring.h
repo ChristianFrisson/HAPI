@@ -29,19 +29,20 @@
 #ifndef __HAPTICSPRING_H__
 #define __HAPTICSPRING_H__
 
-#include <HapticForceEffect.h> 
+#include <HAPIForceEffect.h> 
+#include <HAPIHapticsDevice.h>
 
 namespace HAPI {
 
   /// Generates a spring force, 
   /// i.e. force = ( position - device_position ) * spring_constant.
   /// 
-  class HAPI_API HapticSpring: public HapticForceEffect {
+  class HAPI_API HapticSpring: public HAPIForceEffect {
   public:
     /// Constructor
     HapticSpring ( const Matrix4 & _transform,
                    bool _interpolate ):
-      HapticForceEffect( _transform, _interpolate ),
+      HAPIForceEffect( _transform, _interpolate ),
       position( Vec3( 0, 0, 0 ) ),
       spring_constant( 0 ) { }
     
@@ -52,9 +53,10 @@ namespace HAPI {
                   bool _interpolate );
     
     /// The force of the EffectOutput will be the force of the force field. 
-    EffectOutput virtual calculateForces( const EffectInput &input ) {
+    EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
+                                          HAPITime dt ) {
       //lock.lock();
-      Vec3 local_pos = transform.inverse() * input.position;
+      Vec3 local_pos = transform.inverse() * hd->getPosition();
       Vec3 local_force = ( position - local_pos ) * spring_constant;
       force = local_force;
       //lock.unlock();

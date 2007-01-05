@@ -21,57 +21,37 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticForceEffect.h
-/// \brief Header file for HapticForceEffect
+/// \file HAPIForceEffect.h
+/// \brief Header file for HAPIForceEffect
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __HAPTICFORCEEFFECT_H__
-#define __HAPTICFORCEEFFECT_H__
+#ifndef __HAPIFORCEEFFECT_H__
+#define __HAPIFORCEEFFECT_H__
 
 #include <HAPIHapticObject.h> 
 #include <RefCountedClass.h>
 #include <TimeStamp.h>
 
 namespace HAPI {
+  // forward declaration
+  class HAPIHapticsDevice;
 
-  /// The base class for force effects. A HapticForceEffect is a class that 
+  /// The base class for force effects. A HAPIForceEffect is a class that 
   /// generates force and torque based on the position and orientation 
   /// of the haptics device (and possibly velocity). It is good to use
   /// to create global effects such as force fields. This class works in
   /// the realtime loop and has to be added in the traversal of the 
   /// scenegraph (traverseSG()) to the TraverseInfo structure in order
-  /// to be rendered. By setting the HapticForceEffect to be interpolated
-  /// the HapticForceEffect will be interpolated with the HapticForceEffect
+  /// to be rendered. By setting the HAPIForceEffect to be interpolated
+  /// the HAPIForceEffect will be interpolated with the HAPIForceEffect
   /// added in the last scenegraph loop in order to avoid haptic rendering 
   /// artifacts.
   ///
-  class HAPI_API HapticForceEffect: public HAPIHapticObject, 
+  class HAPI_API HAPIForceEffect: public HAPIHapticObject, 
                                     public H3DUtil::RefCountedClass {
   public:
-    /// The input to a HapticForceEffect. 
-    struct HAPI_API EffectInput {
-      /// Constructor.
-      EffectInput( const Vec3 &pos = Vec3( 0,0,0 ),
-                   const Vec3 &vel = Vec3( 0,0,0 ),
-                   const Rotation &orn = Rotation(),
-                   const TimeStamp &dt = 0 ) :
-        position( pos ),
-        velocity( vel ),
-        orientation( orn ),
-        deltaT( dt ) {}
-      
-      /// The position of the finger.
-      Vec3 position;
-      /// The velocity of the finger.
-      Vec3 velocity;
-      /// The orientation of the stylus.
-      Rotation orientation;
-      /// The change in time since the last call
-      TimeStamp deltaT;
-    };
-
-    /// The output from a HapticForceEffect.
+    /// The output from a HAPIForceEffect.
     struct HAPI_API EffectOutput {
       /// Constructor.
       EffectOutput( const Vec3 _force = Vec3( 0,0,0 ),
@@ -107,21 +87,20 @@ namespace HAPI {
     };
     
     /// Constructor.
-    HapticForceEffect( const Matrix4 & _transform,
-                       bool _interpolate ):
+    HAPIForceEffect( const Matrix4 & _transform,
+                     bool _interpolate ):
       HAPIHapticObject( _transform ),
       interpolate( _interpolate ){}
     
     /// The function that calculates the forces given by this 
-    /// HapticForceEffect.
-    EffectOutput virtual calculateForces( const EffectInput &input ) {
-      return EffectOutput();
-    }
+    /// HAPIForceEffect.
+    EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
+                                          HAPITime dt ) = 0;
     
-    /// Destructor. Virtual to make HapticForceEffect a polymorphic type.
-    virtual ~HapticForceEffect() {}
+    /// Destructor. Virtual to make HAPIForceEffect a polymorphic type.
+    virtual ~HAPIForceEffect() {}
 
-    /// Returns if the HapticForceEffect should be interpolated or not.
+    /// Returns if the HAPIForceEffect should be interpolated or not.
     bool isInterpolated() {
       return interpolate;
     }

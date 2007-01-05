@@ -29,11 +29,11 @@
 #ifndef __HAPTICFORCEFIELD_H__
 #define __HAPTICFORCEFIELD_H__
 
-#include <HapticForceEffect.h> 
+#include <HAPIForceEffect.h> 
 
 namespace HAPI {
   /// This is a HapticForceEffect that generates a constant force.
-  class HAPI_API HapticForceField: public HapticForceEffect {
+  class HAPI_API HapticForceField: public HAPIForceEffect {
   public:
     /// Constructor
     HapticForceField( const Matrix4 & _transform,
@@ -41,7 +41,8 @@ namespace HAPI {
                       bool _interpolate );
     
     /// The force of the EffectOutput will be the force of the force field. 
-    EffectOutput virtual calculateForces( const EffectInput &input ) {
+    EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
+                                          HAPITime dt ) {
       return EffectOutput( transform.getRotationPart() * force );
     }
     

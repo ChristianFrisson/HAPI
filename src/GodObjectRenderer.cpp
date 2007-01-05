@@ -336,7 +336,7 @@ inline Vec3 projectOntoPlaneIntersection( const Vec3 &p,
 
 
 
-HapticForceEffect::EffectOutput 
+HAPIForceEffect::EffectOutput 
 GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                                          const HapticShapeVector &shapes ) {
   // get the current device values
@@ -346,7 +346,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   tmp_contacts.clear();
 
   Vec3 proxy_pos = proxy_position;
-  HapticForceEffect::EffectOutput output;
+  HAPIForceEffect::EffectOutput output;
   bool has_intersection = false;
     
   HAPIFloat d2;
