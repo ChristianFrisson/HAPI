@@ -27,6 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef HAVE_DHDAPI
+
 #ifndef __DHDHAPTICSDEVICE_H__
 #define __DHDHAPTICSDEVICE_H__
 
@@ -117,5 +119,7 @@ namespace HAPI {
     int device_id;
   };
 }
+
+#endif
 
 #endif

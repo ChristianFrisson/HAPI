@@ -27,15 +27,18 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+
 #ifndef __CHAI3DRENDERER_H__
 #define __CHAI3DRENDERER_H__
 
-// H3DApi includes
-#include <H3DApi.h>
+#ifdef HAVE_CHAI3D
 
 // HAPI includes
 #include <HAPIProxyBasedRenderer.h>
 #include <HAPIHapticShape.h>
+
+// H3DApi includes
+#include <H3DApi.h>
 
 // H3DUtil includes
 #include <AutoPtrVector.h>
@@ -201,5 +204,7 @@ namespace HAPI {
     MutexLock mesh_change_lock;
   };
 }
+
+#endif
 
 #endif

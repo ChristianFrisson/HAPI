@@ -27,14 +27,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef HAVE_OPENHAPTICS
+
 #ifndef __PHANTOMHAPTICSDEVICE_H__
 #define __PHANTOMHAPTICSDEVICE_H__
 
 #include <HAPIHapticsDevice.h>
-#define HAVE_OPENHAPTICS
-#ifdef HAVE_OPENHAPTICS
 #include <HD/hd.h>
-#endif
 
 namespace HAPI {
 
@@ -50,7 +49,6 @@ namespace HAPI {
     /// device.
     PhantomHapticsDevice( string _device_name = "" ):
       device_name( _device_name ),
-      device_handle( -1 ) {
       hdapi_version = hdGetString( HD_VERSION ); 
     }
 
@@ -202,5 +200,7 @@ namespace HAPI {
     vector< HDCallbackCode > hd_handles; 
   };
 }
+
+#endif
 
 #endif

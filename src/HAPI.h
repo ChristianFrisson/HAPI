@@ -36,12 +36,16 @@
 #define USE_DOUBLE_PRECISION
 
 /// Undef if you do not have OpenHaptics(www.sensable.com) installed. 
-/// Haptics will then be disabled.
+/// Required for the Sensable Phantom haptics devices.
 #define HAVE_OPENHAPTICS
+
+/// Undef if you do not have DHD API(www.forcedimension,com) installed.
+/// Required for the Omega and Delta haptics devices.
+//#define HAVE_DHDAPI
 
 /// Undef if you do not have Haptik(www.haptiklibrary.org) installed. 
 /// HaptikDevice will not be usable.
-#define HAVE_HAPTIK_LIBRARY 
+//#define HAVE_HAPTIK_LIBRARY 
 
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL

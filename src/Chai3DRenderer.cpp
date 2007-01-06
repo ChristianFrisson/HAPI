@@ -28,6 +28,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Chai3DRenderer.h"
+#ifdef HAVE_CHAI3D
+
 #include "H3DMath.h"
 #include "DeviceInfo.h"
 
@@ -265,3 +267,5 @@ int Chai3DRenderer::H3DDevice::command(int a_command, void* a_data)
 
     return result;
 }
+
+#endif

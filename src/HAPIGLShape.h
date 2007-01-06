@@ -38,6 +38,9 @@ namespace HAPI {
   /// getFeedbackBufferTriangles functions.
   class HAPI_API HAPIGLShape {
   public:
+    /// Virtual destructor.
+    virtual ~HAPIGLShape() {}
+
     /// Render the shape using OpenGL.
     virtual void glRender() {}
 

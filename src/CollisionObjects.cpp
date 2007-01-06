@@ -278,7 +278,7 @@ struct StackElement {
 BinaryBoundTree::BinaryBoundTree( BoundNewFunc func, 
                                   const vector< Triangle > &triangle_vector,
                                   unsigned int max_nr_triangles_in_leaf ):
-  new_func( func ), left( NULL ), right( NULL ) {
+  left( NULL ), right( NULL ), new_func( func ) {
 
   std::stack< StackElement > stack;
 	
@@ -720,9 +720,6 @@ bool Triangle::lineIntersect( const Vec3 &p,
                               IntersectionInfo &result,
                               FaceType face  ) {
   
-  if( q.z < 0 )
-    HAPIFloat a = 4;//cerr << "F" << endl;
-  
   Vec3 v0 = a;
   Vec3 v1 = b;
   Vec3 v2 = c;
@@ -804,8 +801,8 @@ bool Triangle::movingSphereIntersect( HAPIFloat radius,
                                       const Vec3 &to ) {
 
 // TODO: Look in book if better way
-  Vec3 closest;
-  closestPoint( from, closest, Vec3(), Vec3() );
+  Vec3 closest, tmp;
+  closestPoint( from, closest, tmp, tmp );
   Vec3 ttt = from - closest;
   HAPIFloat aba = ttt * ttt;
   if( aba <= radius * radius ) return true; 
@@ -838,7 +835,7 @@ cerr << "FD";
 
 
   Vec3 Q;
-  closestPoint( P, Q, Vec3(), Vec3() );
+  closestPoint( P, Q, tmp, tmp );
 
   Sphere sphere( from, radius );
   return sphere.lineIntersect( Q, Q - v, info );
@@ -1240,8 +1237,8 @@ void BinaryBoundTree::getTrianglesWithinRadius( const Vec3 &p,
   if ( isLeaf() )	{
     for( vector< Triangle >::iterator i = triangles.begin();
          i != triangles.end(); i++ ) {
-      Vec3 cp;
-      (*i).closestPoint( p, cp, Vec3(), Vec3() );
+      Vec3 cp, tmp;
+      (*i).closestPoint( p, cp, tmp, tmp );
       if( (cp - p).lengthSqr() <= r2 )
         result.push_back( *i );
     }
@@ -1306,12 +1303,13 @@ bool LineSegment::lineIntersect( const Vec3 &from,
 bool LineSegment::movingSphereIntersect( HAPIFloat radius,
                                          const Vec3 &from, 
                                          const Vec3 &to ) {
+  Vec3 tmp;
   HAPIFloat t;
   HAPIFloat r2 = radius * radius;
   HAPIFloat d2 = 
     LineSegment( from, to ).closestPointOnLine( start, end, 
                                                 t, t, 
-                                                Vec3(), Vec3() );
+                                                tmp, tmp );
   return d2 <= r2;
 }
 
@@ -1432,9 +1430,9 @@ bool Point::movingSphereIntersect( HAPIFloat radius,
                                    const Vec3 &from, 
                                    const Vec3 &to ) {
   HAPIFloat r2 = radius * radius;
-  Vec3 closest_point; 
+  Vec3 closest_point, tmp; 
   LineSegment( from, to ).closestPoint( position, closest_point, 
-                                        Vec3(), Vec3() );
+                                        tmp, tmp );
   Vec3 v = position - closest_point;
   return v * v <= r2;
 }

@@ -27,15 +27,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef HAVE_OPENHAPTICS
+
 #include <PhantomHapticsDevice.h>
 #include <sstream>
 
 using namespace HAPI;
 
-#ifdef HAVE_OPENHAPTICS
 #ifdef _MSC_VER
 #pragma comment( lib, "hd.lib" )
-#endif
 #endif
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
@@ -239,3 +239,5 @@ bool PhantomHapticsDevice::calibrateDevice() {
     return false;
   }
 }
+
+#endif
