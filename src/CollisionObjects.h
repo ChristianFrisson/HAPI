@@ -97,9 +97,9 @@ namespace HAPI {
         point( p ), normal( n ), tex_coord( tc ), 
         haptic_shape( shape ), primitive( _primitive )  {}
       
-      inline bool lineIntersect( const Vec3 &from, 
-                                 const Vec3 &to,    
-                                 Bounds::IntersectionInfo &result );
+      bool lineIntersect( const Vec3 &from, 
+			  const Vec3 &to,    
+			  Bounds::IntersectionInfo &result );
       Vec3 point, normal;
       Vec3 tex_coord;
       HAPIHapticShape * haptic_shape;
@@ -770,8 +770,8 @@ namespace HAPI {
 
       /// The closest point on the bound to the point. 
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
-        Vec3 cp;
-        closestPoint( p, cp, Vec3(), Vec3() );
+        Vec3 cp, tmp;
+        closestPoint( p, cp, tmp, tmp );
         return cp;
       }
 
@@ -947,8 +947,8 @@ namespace HAPI {
         if( !isLeaf() && bound.get() )
           return bound->boundClosestPoint( p );
         else {
-          Vec3 cp;
-          closestPoint( p, cp, Vec3(), Vec3() );
+          Vec3 cp, tmp;
+          closestPoint( p, cp, tmp, tmp );
           return cp;
         }
       }

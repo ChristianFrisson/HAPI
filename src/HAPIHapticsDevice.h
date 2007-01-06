@@ -96,8 +96,8 @@ namespace HAPI {
 
     /// Constructor.
     HAPIHapticsDevice() :
-      device_state( UNINITIALIZED ),
       thread( NULL ),
+      device_state( UNINITIALIZED ),
       delete_thread( false ) {
       setHapticsRenderer( NULL );
     }
@@ -112,20 +112,20 @@ namespace HAPI {
     /// Does all the initialization needed for the device before starting to
     /// use it.
     inline virtual ErrorCode initDevice() {
-      if( device_state == DeviceState::UNINITIALIZED ) {
+      if( device_state == UNINITIALIZED ) {
         last_device_values = current_device_values = DeviceValues();
         last_raw_device_values = current_raw_device_values = DeviceValues();
         if( !initHapticsDevice() ) {
           return FAIL;
         }
-        device_state = DeviceState::INITIALIZED;
+        device_state = INITIALIZED;
         for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
           if( haptics_renderers[i] ) {
             haptics_renderers[i]->initRenderer( this );
           }
         }
       
-        device_state = DeviceState::INITIALIZED;
+        device_state = INITIALIZED;
         if( !thread ) {
           // create a new thread to run the haptics in
 #ifdef WIN32
@@ -145,25 +145,25 @@ namespace HAPI {
 
     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {
-      if( device_state == DeviceState::UNINITIALIZED ) {
-        return ErrorCode::NOT_INITIALIZED;
+      if( device_state == UNINITIALIZED ) {
+        return NOT_INITIALIZED;
       }
 
-      device_state = DeviceState::ENABLED;
+      device_state = ENABLED;
       return SUCCESS;
     }
 
     /// Temporarily disable the device. Forces sent will be ignored and
     /// positions and orientation will stay the same as previous values.
     inline virtual ErrorCode disableDevice() {
-      if( device_state == DeviceState::UNINITIALIZED ) {
-        return ErrorCode::NOT_INITIALIZED;
+      if( device_state == UNINITIALIZED ) {
+        return NOT_INITIALIZED;
       }
 
       sendForce( Vec3( 0, 0, 0 ) );
       sendTorque( Vec3( 0, 0, 0 ) );
                  
-      device_state = DeviceState::INITIALIZED;
+      device_state = INITIALIZED;
       return SUCCESS;
     }
 
@@ -171,8 +171,8 @@ namespace HAPI {
     /// After a call to this function no haptic rendering can be performed on
     /// the device until the initDevice() function has been called again.
     inline virtual ErrorCode releaseDevice() {
-      if( device_state == DeviceState::UNINITIALIZED ) {
-        return ErrorCode::NOT_INITIALIZED;
+      if( device_state == UNINITIALIZED ) {
+        return NOT_INITIALIZED;
       }
       
       for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
@@ -191,7 +191,7 @@ namespace HAPI {
         return FAIL;
       }
 
-      device_state = DeviceState::UNINITIALIZED;
+      device_state = UNINITIALIZED;
       return SUCCESS;
     }      
 
@@ -547,7 +547,7 @@ namespace HAPI {
       if( haptics_renderers.size() < layer + 1 ) 
         haptics_renderers.resize( layer + 1, NULL );
 
-      if( device_state != DeviceState::UNINITIALIZED ) {
+      if( device_state != UNINITIALIZED ) {
         if( haptics_renderers[layer] ) {
           haptics_renderers[layer]->releaseRenderer( this );
         }
@@ -636,7 +636,7 @@ namespace HAPI {
 
     /// Send the force to render on the haptics device in device coordinates. 
     inline void sendRawForce( const Vec3 &f ) {
-      if( device_state == DeviceState::ENABLED ) {
+      if( device_state == ENABLED ) {
         device_values_lock.lock();
         output.force = f;
         device_values_lock.unlock();
@@ -645,7 +645,7 @@ namespace HAPI {
 
     /// Send the torque to render on the haptics device in device coordinates. 
     inline void sendRawTorque( const Vec3 &t ) {
-      if( device_state == DeviceState::ENABLED ) {
+      if( device_state == ENABLED ) {
         device_values_lock.lock();
         output.torque = t;
         device_values_lock.unlock();
@@ -654,7 +654,7 @@ namespace HAPI {
 
     /// Send the force to render on the haptics device  in world coordinates. 
     inline void sendForce( const Vec3 &f ) {
-      if( device_state == DeviceState::ENABLED ) {
+      if( device_state == ENABLED ) {
         device_values_lock.lock();
         output.force = position_calibration_inverse * f;
         device_values_lock.unlock();
@@ -663,7 +663,7 @@ namespace HAPI {
 
     /// Send the torque to render on the haptics device in world coordinates. 
     inline void sendTorque( const Vec3 &t ) {
-      if( device_state == DeviceState::ENABLED ) {
+      if( device_state == ENABLED ) {
         device_values_lock.lock();
         output.torque = position_calibration_inverse.getRotationPart() * t;
         device_values_lock.unlock();
@@ -680,7 +680,7 @@ namespace HAPI {
     /// Updates the current_device_values member to contain
     /// current values.
     inline void updateDeviceValues() {
-      if( device_state == DeviceState::ENABLED ) {
+      if( device_state == ENABLED ) {
         DeviceValues dv;
         updateDeviceValues( dv, 0 );
         
@@ -699,7 +699,7 @@ namespace HAPI {
           position_calibration.getScaleRotationPart() * dv.torque;
         device_values_lock.unlock();
       } else {
-        if( device_state == DeviceState::INITIALIZED ) {
+        if( device_state == INITIALIZED ) {
           device_values_lock.lock();
           last_device_values = current_device_values;
           last_raw_device_values = current_raw_device_values;
@@ -711,7 +711,7 @@ namespace HAPI {
     /// Sends the data in the output member to be rendered at
     /// the haptics device.
     inline void sendOutput() {
-      if( device_state == DeviceState::ENABLED ) {
+      if( device_state == ENABLED ) {
         device_values_lock.lock();
         sendOutput( output, 0 );
         device_values_lock.unlock();

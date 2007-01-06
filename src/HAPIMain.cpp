@@ -1,12 +1,12 @@
-#include <PhantomHapticsDevice.h>
+#include <AnyHapticsDevice.h>
 #include <HapticForceField.h>
 
-using namespace H3D;
+using namespace HAPI;
 
 int main(int argc, char* argv[]) {
-  PhantomHapticsDevice hd;
-  HapticForceField *force_field = new HapticForceField( Matrix4d(),
-                                                        Vec3f( 1, 0, 0 ),
+  AnyHapticsDevice hd;
+  HapticForceField *force_field = new HapticForceField( Matrix4(),
+                                                        Vec3( 1, 0, 0 ),
                                                         false );
   if( hd.initDevice() != HAPIHapticsDevice::SUCCESS ) {
     cerr << hd.getLastErrorMsg() << endl;

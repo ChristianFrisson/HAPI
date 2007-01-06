@@ -32,7 +32,11 @@
 #include <HD/hd.h>
 #include "PhantomHapticsDevice.h"
 #include "AnyHapticsDevice.h"
+
+#ifdef HAVE_OPENHAPTICS
 #include "DeviceInfo.h"
+
+
 
 using namespace H3D;
 using namespace HAPI;
@@ -456,3 +460,6 @@ HLboolean HLCALLBACK OpenHapticsRenderer::closestFeaturesCallback(
 
   return true;
 }
+
+
+#endif

@@ -50,13 +50,6 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
 
   hd->updateDeviceValues();
   
-  DeviceValues dv = hd->getDeviceValues();
-  
-  Rotation rot = dv.orientation;
-  Vec3 pos = dv.position;
-  Vec3 vel = dv.velocity;
-  HAPIInt32 b = dv.button_status;
-  
   TimeStamp now = TimeStamp();
   TimeStamp dt = now - hd->last_loop_time;
   hd->last_loop_time = now;

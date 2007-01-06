@@ -27,6 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+
 #ifndef __OPENHAPTICSRENDERER_H__
 #define __OPENHAPTICSRENDERER_H__
 
@@ -36,15 +37,18 @@
 #include <Threads.h>
 #include <HL/hl.h>
 #include <map>
-#include <H3DApi.h>
 
 #ifdef HAVE_OPENHAPTICS
+#include <H3DApi.h>
+
+
+
+
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "hd.lib" )
 #pragma comment( lib, "hl.lib" )
 #pragma comment( lib, "hdu.lib" )
 #pragma comment( lib, "hlu.lib" )
-#endif
 #endif
 
 namespace HAPI {
@@ -245,5 +249,7 @@ namespace HAPI {
     IdMap id_map;
   };
 }
+
+#endif
 
 #endif

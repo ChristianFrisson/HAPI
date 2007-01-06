@@ -178,9 +178,8 @@ FeedbackBufferCollector::endCollecting(
   GLint vp[4];
   glGetIntegerv( GL_VIEWPORT, vp );
 
-  Vec3 p, tc;
+  Vec3 p, tc, tmp;
   H3DUtil::RGBA col;
-  unsigned int vertex_index = 0;
   
   for( GLint i = 0; i < nr_values; ) {
     switch( (int)buffer[i++] ) {
@@ -213,7 +212,7 @@ FeedbackBufferCollector::endCollecting(
     case( GL_BITMAP_TOKEN ): 
     case( GL_DRAW_PIXEL_TOKEN ):
     case( GL_COPY_PIXEL_TOKEN ): {
-      i+= parseVertex( buffer, i, Vec3(), col, tc );
+      i+= parseVertex( buffer, i, tmp, col, tc );
       break;
     }
     case( GL_PASS_THROUGH_TOKEN ): {
@@ -253,9 +252,8 @@ FeedbackBufferCollector::endCollecting(
   GLint vp[4];
   glGetIntegerv( GL_VIEWPORT, vp );
 
-  Vec3 p, tc;
+  Vec3 p, tc, tmp;
   H3DUtil::RGBA col;
-  unsigned int vertex_index = 0;
   
   for( GLint i = 0; i < nr_values; ) {
     switch( (int)buffer[i++] ) {
@@ -295,7 +293,7 @@ FeedbackBufferCollector::endCollecting(
     case( GL_BITMAP_TOKEN ): 
     case( GL_DRAW_PIXEL_TOKEN ):
     case( GL_COPY_PIXEL_TOKEN ): {
-      i+= parseVertex( buffer, i, Vec3(), col, tc );
+      i+= parseVertex( buffer, i, tmp, col, tc );
       break;
     }
     case( GL_PASS_THROUGH_TOKEN ): {

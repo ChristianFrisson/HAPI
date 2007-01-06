@@ -27,6 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef HAVE_DHDAPI
+
 #include "DHDHapticsDevice.h"
 #include <sstream>
 #include <dhdc.h>
@@ -150,3 +152,6 @@ void DHDHapticsDevice::useBrakes( bool enable ) {
                    device_id );
   }
 }
+
+
+#endif

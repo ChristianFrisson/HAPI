@@ -54,6 +54,20 @@ namespace HAPI {
       return hd.get();
     }
 
+    /// Enable the device. Positions can be read and force can be sent.
+    inline virtual ErrorCode enableDevice() {
+      ErrorCode e = HAPIHapticsDevice::enableDevice();
+      if(hd.get() ) hd->enableDevice();
+      return e;
+    }
+
+    /// Enable the device. Positions can be read and force can be sent.
+    inline virtual ErrorCode disableDevice() {
+      ErrorCode e = HAPIHapticsDevice::disableDevice();
+      if(hd.get() ) hd->disableDevice();
+      return e;
+    }
+
     /// Register this renderer to the haptics renderer database.
     static HapticsDeviceRegistration device_registration;
   protected:
@@ -82,19 +96,6 @@ namespace HAPI {
       return true;
     }
 
-    /// Enable the device. Positions can be read and force can be sent.
-    inline virtual ErrorCode enableDevice() {
-      ErrorCode e = HAPIHapticsDevice::enableDevice();
-      if(hd.get() ) hd->enableDevice();
-      return e;
-    }
-
-    /// Enable the device. Positions can be read and force can be sent.
-    inline virtual ErrorCode disableDevice() {
-      ErrorCode e = HAPIHapticsDevice::disableDevice();
-      if(hd.get() ) hd->disableDevice();
-      return e;
-    }
 
     /// The haptics device actually used.
     auto_ptr< HAPIHapticsDevice > hd;
