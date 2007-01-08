@@ -27,9 +27,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef HAVE_OPENHAPTICS
 
 #include <PhantomHapticsDevice.h>
+
+#ifdef HAVE_OPENHAPTICS
 #include <sstream>
 
 using namespace HAPI;

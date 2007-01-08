@@ -27,12 +27,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef HAVE_OPENHAPTICS
-
 #ifndef __PHANTOMHAPTICSDEVICE_H__
 #define __PHANTOMHAPTICSDEVICE_H__
 
 #include <HAPIHapticsDevice.h>
+#ifdef HAVE_OPENHAPTICS
+
 #include <HD/hd.h>
 
 namespace HAPI {
@@ -48,7 +48,7 @@ namespace HAPI {
     /// "Phantom Configuration" tool. A device_name of "" will use the first available
     /// device.
     PhantomHapticsDevice( string _device_name = "" ):
-      device_name( _device_name ),
+        device_name( _device_name ) {
       hdapi_version = hdGetString( HD_VERSION ); 
     }
 
