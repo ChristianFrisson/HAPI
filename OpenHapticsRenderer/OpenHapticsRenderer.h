@@ -169,6 +169,39 @@ namespace HAPI {
       default_haptic_camera_view = t;
     }
 
+
+    /// Returns true if the given HAPISurfaceObject is supported to be 
+    /// rendered by the OpenHapticsRenderer
+    static bool surfaceSupported( HAPISurfaceObject *s );
+
+    /// Renders a HAPISurface object with OpenHaptics. Returns true if it 
+    /// succeeded, false otherwise. Not all surface types are valid.
+    static bool hlRenderHAPISurface( HAPISurfaceObject *s );
+
+    /// Sets up the surface parameters for HL API. All values are given in
+    /// values between 0 and 1(except snapDistance which is in mm) just
+    /// as normally done in OpenHaptics. If you want to specify absolute
+    /// values instead use hlRenderAbsolute instead.
+    static void hlRenderRelative( HAPIFloat stiffness,
+                                  HAPIFloat damping,
+                                  HAPIFloat static_friction,
+                                  HAPIFloat dynamic_friction,
+                                  bool magnetic = false,
+                                  HAPIFloat snap_distance = 0 );
+
+    /// Sets up the surface parameters for HL API. 
+    /// TODO: Fix comment
+    /// stiffness is given as N/mm
+    /// damping as ...
+    /// ..
+    static void hlRenderAbsolute( HAPIFloat stiffness,
+                                  HAPIFloat damping,
+                                  HAPIFloat static_friction,
+                                  HAPIFloat dynamic_friction,
+                                  bool magnetic = false,
+                                  HAPIFloat snap_distance = 0 );
+    
+
     /// Register this renderer to the haptics renderer database.
     static HapticsRendererRegistration renderer_registration;
 

@@ -151,8 +151,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     if( hl ) {    
       hl->hlRender( hd, hl_shape_id );
     } else {
-      HLSurface *s = dynamic_cast< HLSurface * >( (*i)->surface );
-      if( s ) {
+      if( surfaceSupported( (*i)->surface ) ) {
         OpenHapticsOptions::ShapeType shape_type = default_gl_shape;
         bool camera_view = default_haptic_camera_view;
         bool adaptive_viewport = default_adaptive_viewport;
@@ -172,7 +171,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 #endif
 
           glLoadIdentity();
-          s->hlRender();
+          hlRenderHAPISurface( (*i)->surface );
 
           HLenum touchable_face;
           Bounds::FaceType face = (*i)->touchable_face;
@@ -236,8 +235,11 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           hlPopAttrib();
 #endif
           glPopMatrix();
+      } else {
+        H3DUtil::Console(2) 
+          <<  "Surface type not supported by OpenHapticsRenderer." << endl;
       }
-    }
+    } 
   }
   glMatrixMode( GL_MODELVIEW );
   glPopMatrix();
@@ -462,5 +464,59 @@ HLboolean HLCALLBACK OpenHapticsRenderer::closestFeaturesCallback(
   return true;
 }
 
+
+/// Renders a HAPISurface object with OpenHaptics. Returns true if it 
+/// succeeded, false otherwise. Not all surface types are valid.
+bool OpenHapticsRenderer::hlRenderHAPISurface( HAPISurfaceObject *s ) {
+  if( HLSurface *hl_surface = dynamic_cast< HLSurface * >( s ) ) {
+    hl_surface->hlRender();
+    return true;
+  }
+  return false;
+}
+
+bool OpenHapticsRenderer::surfaceSupported( HAPISurfaceObject *s ) {
+  return dynamic_cast< HLSurface * >( s ) != NULL;
+}
+
+/// Sets up the surface parameters for HL API. All values are given in
+/// values between 0 and 1(except snapDistance which is in mm) just
+/// as normally done in OpenHaptics. If you want to specify absolute
+/// values instead use hlRenderAbsolute instead.
+void OpenHapticsRenderer::hlRenderRelative( HAPIFloat stiffness,
+                                            HAPIFloat damping,
+                                            HAPIFloat static_friction,
+                                            HAPIFloat dynamic_friction,
+                                            bool magnetic,
+                                            HAPIFloat snap_distance ) {
+  if( magnetic ) hlTouchModel( HL_CONSTRAINT );
+  else hlTouchModel( HL_CONTACT );
+
+  hlMaterialf(HL_FRONT_AND_BACK, HL_STIFFNESS, stiffness );
+  hlMaterialf(HL_FRONT_AND_BACK, HL_DAMPING, damping );
+  hlMaterialf(HL_FRONT_AND_BACK, HL_DYNAMIC_FRICTION, dynamic_friction );
+  hlMaterialf(HL_FRONT_AND_BACK, HL_STATIC_FRICTION, static_friction );
+  // convert to millimeters
+  hlTouchModelf( HL_SNAP_DISTANCE, snap_distance );
+}
+
+/// Sets up the surface parameters for HL API. 
+/// TODO: Fix comment
+/// stiffness is given as N/mm
+/// damping as ...
+/// ..
+void OpenHapticsRenderer::hlRenderAbsolute( HAPIFloat stiffness,
+                                            HAPIFloat damping,
+                                            HAPIFloat static_friction,
+                                            HAPIFloat dynamic_friction,
+                                            bool magnetic,
+                                            HAPIFloat snap_distance ) {
+  hlRenderRelative( stiffness / 700,
+                    damping / 700,
+                    static_friction,
+                    dynamic_friction,
+                    magnetic,
+                    snap_distance );
+}
 
 #endif

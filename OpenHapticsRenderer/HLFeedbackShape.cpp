@@ -19,9 +19,10 @@ using namespace HAPI;
 void HLFeedbackShape::hlRender( HAPI::HAPIHapticsDevice *hd,
                                 HLuint hl_shape_id ) {
   HAPIGLShape *gl_shape = static_cast< HAPIGLShape * >( userdata );
-  HAPI::OpenHapticsRenderer::HLSurface *s = 
-    dynamic_cast< HAPI::OpenHapticsRenderer::HLSurface * >( surface );
-  if( s ) { //&& closeEnoughToBound( hd->proxyPosition->getValue(), 
+
+  if( OpenHapticsRenderer::surfaceSupported( surface ) ) {
+
+    //&& closeEnoughToBound( hd->proxyPosition->getValue(), 
     //hd->getPreviousProxyPosition(), 
     //(Matrix4f) transform.inverse(), 
     //geometry ) ) {
@@ -38,7 +39,7 @@ void HLFeedbackShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     glLoadIdentity();
     glScalef( 1e3f, 1e3f, 1e3f ); 
     glMultMatrixd( vt );
-    s->hlRender();
+    OpenHapticsRenderer::hlRenderHAPISurface( surface );
     if( touchable_face == Bounds::BACK ) hlTouchableFace( HL_BACK );
     else if( touchable_face == Bounds::FRONT ) hlTouchableFace( HL_FRONT );
     else if( touchable_face == Bounds::FRONT_AND_BACK )
