@@ -30,6 +30,7 @@
 
 #include "HLCustomObject.h"
 #include "HAPIHapticShape.h"
+#include "OpenHapticsRenderer.h"
 
 #ifdef HAVE_OPENHAPTICS
 
@@ -37,22 +38,13 @@ using namespace HAPI;
 
 void HLCustomObject::hlRender( HAPI::HAPIHapticsDevice *hd,
                                HLuint hl_shape_id ) {
-#ifdef HAVE_OPENHAPTICS
-  HAPI::HAPIHapticShape *hs = dynamic_cast< HAPI::HAPIHapticShape * >( this );
-/*  if( hs && !closeEnoughToBound( hd->proxyPosition->getValue(), 
-                                 hd->getPreviousProxyPosition(),
-                                 (Matrix4f)hs->transform.inverse(), 
-                                 (X3DGeometryNode * )hs->userdata ) ) {
-    return;
-  }*/
-  
-  hlBeginShape(HL_SHAPE_CALLBACK, hl_shape_id );
-  hlCallback(HL_SHAPE_INTERSECT_LS, 
-             (HLcallbackProc) intersectCallback, this);
-  hlCallback(HL_SHAPE_CLOSEST_FEATURES, 
-             (HLcallbackProc) closestFeaturesCallback, this);
-  hlEndShape();
-
+  if( OpenHapticsRenderer::hlRenderHAPISurface( surface ) ) {
+    hlBeginShape(HL_SHAPE_CALLBACK, hl_shape_id );
+    hlCallback(HL_SHAPE_INTERSECT_LS, 
+               (HLcallbackProc) intersectCallback, this);
+    hlCallback(HL_SHAPE_CLOSEST_FEATURES, 
+               (HLcallbackProc) closestFeaturesCallback, this);
+    hlEndShape();
+  }
 };
-#endif
 #endif

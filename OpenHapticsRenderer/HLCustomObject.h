@@ -41,7 +41,9 @@ namespace HAPI {
   /// Base class for objects that use HLAPI custom shape callbacks to
   /// render itself.
   ///
-  class OPENHAPTICSRENDERER_API HLCustomObject: public HAPI::OpenHapticsRenderer::HLShape {
+  class OPENHAPTICSRENDERER_API HLCustomObject: 
+    public HAPIHapticShape, 
+    public HAPI::OpenHapticsRenderer::HLShape {
   public:
 
     /// Intersect the line segment from start_point to end_point with
