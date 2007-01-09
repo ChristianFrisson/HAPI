@@ -31,6 +31,8 @@
 #ifndef __OPENHAPTICSRENDERER_H__
 #define __OPENHAPTICSRENDERER_H__
 
+#include <Config.h>
+
 #include <HAPIProxyBasedRenderer.h>
 #include <HAPIHapticShape.h>
 #include <AutoPtrVector.h>
@@ -39,16 +41,10 @@
 #include <map>
 
 #ifdef HAVE_OPENHAPTICS
-#include <H3DApi.h>
-
-
-
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "hd.lib" )
-#pragma comment( lib, "hl.lib" )
 #pragma comment( lib, "hdu.lib" )
-#pragma comment( lib, "hlu.lib" )
 #endif
 
 namespace HAPI {
@@ -56,9 +52,9 @@ namespace HAPI {
   /// \class OpenHapticsRenderer
   /// \brief Haptics renderer using the HL API part of OpenHaptics for the 
   /// haptics rendering.
-  class H3DAPI_API OpenHapticsRenderer: public HAPI::HAPIProxyBasedRenderer {
+  class OPENHAPTICSRENDERER_API OpenHapticsRenderer: public HAPI::HAPIProxyBasedRenderer {
   public:
-    class H3DAPI_API HLShape {
+    class OPENHAPTICSRENDERER_API HLShape {
     public:
       virtual ~HLShape() {}
       /// This function performs all the HLAPI calls that are needed to render
@@ -67,7 +63,7 @@ namespace HAPI {
                              HLuint shape_id ) = 0;
     };
 
-    class H3DAPI_API HLSurface {
+    class OPENHAPTICSRENDERER_API HLSurface {
     public:
       /// Destructor.
       virtual ~HLSurface() {}
@@ -77,7 +73,7 @@ namespace HAPI {
       virtual void hlRender() = 0;
     };
 
-    class H3DAPI_API OpenHapticsOptions: public HAPI::HAPIShapeRenderOptions {
+    class OPENHAPTICSRENDERER_API OpenHapticsOptions: public HAPI::HAPIShapeRenderOptions {
     public:
       typedef enum {
         FEEDBACK_BUFFER,
@@ -113,7 +109,8 @@ namespace HAPI {
     virtual void preProcessShapes( HAPI::HAPIHapticsDevice *hd,
                                    const HapticShapeVector &shapes );
     /// Constructor.
-    OpenHapticsRenderer( ShapeType _default_shape_type = OpenHapticsOptions::FEEDBACK_BUFFER,
+    OpenHapticsRenderer( ShapeType _default_shape_type = 
+                         OpenHapticsOptions::FEEDBACK_BUFFER,
                          bool _default_adaptive_viewport = true,
                          bool _default_haptic_camera_view = true ) :
       default_gl_shape( _default_shape_type ),
