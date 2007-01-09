@@ -27,9 +27,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef HAVE_DHDAPI
+
 
 #include "DHDHapticsDevice.h"
+
+#ifdef HAVE_DHDAPI
 #include <sstream>
 #include <dhdc.h>
 

@@ -41,7 +41,7 @@
 
 /// Undef if you do not have DHD API(www.forcedimension,com) installed.
 /// Required for the Omega and Delta haptics devices.
-//#define HAVE_DHDAPI
+#define HAVE_DHDAPI
 
 /// Undef if you do not have Haptik(www.haptiklibrary.org) installed. 
 /// HaptikDevice will not be usable.

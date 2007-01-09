@@ -27,12 +27,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef HAVE_DHDAPI
-
 #ifndef __DHDHAPTICSDEVICE_H__
 #define __DHDHAPTICSDEVICE_H__
 
 #include <HAPIHapticsDevice.h>
+
+#ifdef HAVE_DHDAPI
 
 namespace HAPI {
 
