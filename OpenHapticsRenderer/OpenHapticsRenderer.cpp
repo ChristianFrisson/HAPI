@@ -34,11 +34,12 @@
 #include "AnyHapticsDevice.h"
 
 #ifdef HAVE_OPENHAPTICS
-#include "DeviceInfo.h"
 
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#pragma comment( lib, "hl.lib" )
+#pragma comment( lib, "hlu.lib" )
+#endif
 
-
-using namespace H3D;
 using namespace HAPI;
 
 HAPIHapticsRenderer::HapticsRendererRegistration 
@@ -127,7 +128,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   // TODO: fix matrices
   //hlPushMatrix();
 
-  const Matrix4d &pcal = hd->getPositionCalibrationInverse();
+  const Matrix4 &pcal = hd->getPositionCalibrationInverse();
   HLdouble m[16] = { pcal[0][0], pcal[1][0], pcal[2][0], pcal[3][0], 
                      pcal[0][1], pcal[1][1], pcal[2][1], pcal[3][1], 
                      pcal[0][2], pcal[1][2], pcal[2][2], pcal[3][2], 
@@ -407,12 +408,12 @@ HLboolean HLCALLBACK OpenHapticsRenderer::intersectCallback(
     static_cast<HAPIHapticShape*>( user_data );
   Bounds::IntersectionInfo i;
 
-  HLboolean b = object->lineIntersect( Vec3((HAPIFloat)start_point[0], 
-                                            (HAPIFloat)start_point[1], 
-                                            (HAPIFloat)start_point[2] ), 
-                                       Vec3f((HAPIFloat)end_point[0],
-                                             (HAPIFloat)end_point[1],
-                                             (HAPIFloat)end_point[2] ),
+  HLboolean b = object->lineIntersect( Vec3(start_point[0], 
+                                            start_point[1], 
+                                            start_point[2] ), 
+                                       Vec3(end_point[0],
+                                            end_point[1],
+                                            end_point[2] ),
                                        i, 
                                        Bounds::FRONT_AND_BACK );
   intersection_point[0] = i.point.x;
