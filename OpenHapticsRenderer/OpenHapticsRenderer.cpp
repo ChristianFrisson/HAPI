@@ -353,6 +353,7 @@ void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
   HAPIHapticShape *shape = cb_data->shape.get();
   Contacts::iterator to_remove = renderer->contacts.end();
 
+  Contacts::iterator i;
   for( Contacts::iterator i = renderer->contacts.begin();
        i != renderer->contacts.end(); i++ ) {
     if( (*i).first.get()->shape_id == shape->shape_id ) {
