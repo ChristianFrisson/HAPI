@@ -33,6 +33,52 @@
 using namespace HAPI;
 using namespace Bounds;
 
+bool Bounds::intersectSegmentCylinder( Vec3 sa, Vec3 sb,
+                                       Vec3 p, Vec3 q,
+                                       HAPIFloat r, 
+                                       HAPIFloat & t ) {
+  Vec3 d = q - p, m = sa - p, n = sb - sa;
+  HAPIFloat md = m * d;
+  HAPIFloat nd = n * d;
+  HAPIFloat dd = d * d;
+  //Test if segment fully outside either endcap of cylinder
+  if( md < 0.0f && md + nd < 0.0f )
+    return false; // Segment outside 'p' side of cylinder
+  if( md > dd && md + nd > dd )
+    return false; // Segment outside 'q' side of cylinder
+  HAPIFloat nn = n * n;
+  HAPIFloat mn = m * n;
+  HAPIFloat a = dd * nn - nd * nd;
+  HAPIFloat k = m * m - r * r;
+  HAPIFloat c = dd * k - md * md;
+  if( H3DUtil::H3DAbs(a) < Constants::epsilon ) {
+    // Segment runs parallel to cylinder axis
+    if( c > 0.0f )
+      return false; // 'a' and thus the segment lie outside cylinder.
+    // Now known that segment intersects cylinder; figure out how it intersects
+    if( md < 0.0f ) return false; // Intersect segment against 'p' endcap
+    else if( md > dd ) return false; // Intersect segment against 'q' endcap
+    else t = 0.0f; // 'a' lies inside cylinder
+    return true;
+  }
+  HAPIFloat b = dd * mn - nd * md;
+  HAPIFloat discr = b * b - a * c;
+  if( discr < 0.0f )
+    return false; // no real roots; no intersection
+  t = (-b - H3DUtil::H3DSqrt( discr ) ) / a;
+  if( t < 0.0f || t > 1.0f )
+    return false; // Intersection lies outside segment
+  if( md + t * nd < 0.0f ) {
+    // Do not care about detecting collision with endcaps
+    return false;
+  } else if( md + t * nd > dd ) {
+    // Do not care about detecting collision with endcaps
+    return false;
+  }
+  // Segment intersects cylinder between the endcaps; t is correct
+  return true;
+}
+
 bool PlaneConstraint::lineIntersect( const Vec3 &from, 
                                      const Vec3 &to,
                                      Bounds::IntersectionInfo &result ) {
@@ -828,8 +874,11 @@ cerr << "FD";
 
 
 
+  // if res is false the plane is parallell to the line and
+  // then we could have a hit, this can give problems.
   bool res = plane.lineIntersect( D, D + v, info );
   Vec3 P = info.point;
+  Sphere sphere( from, radius );
 
   // TODO: check if P within triangle, then collision
 
@@ -837,8 +886,139 @@ cerr << "FD";
   Vec3 Q;
   closestPoint( P, Q, tmp, tmp );
 
-  Sphere sphere( from, radius );
   return sphere.lineIntersect( Q, Q - v, info );
+}
+
+// at the moment this function does not return a IntersectionInfo
+bool Triangle::movingSphereIntersectRobust( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to ) {
+  // TODO: Look in book if better way
+  Vec3 closest, tmp;
+  closestPoint( from, closest, tmp, tmp );
+  Vec3 ttt = from - closest;
+  HAPIFloat aba = ttt * ttt;
+  if( aba <= radius * radius ) return true; 
+                     
+  /*  if( from.z * to.z < 0 ) {
+cerr << "FD";
+                                        }
+  */               
+  Vec3 ca = a-c;
+  Vec3 cb = b-c;
+  Vec3 normal = ca % cb;
+
+  Vec3 t = from - a;
+  if( t * normal < 0 )
+    normal = -normal;
+
+  normal.normalizeSafe();
+
+  Plane plane( a, normal );
+  IntersectionInfo info;
+  Vec3 D = from - radius * normal;
+  Vec3 v = to - from;
+
+
+  // if res is false the plane is parallell to the line and
+  // then we could have a hit, this can give problems.
+  bool res = plane.lineIntersect( D, D + v, info );
+  Vec3 P = info.point;
+
+  // p 204 to test triangle
+  if( res ) {
+    bool inside = true;
+    Vec3 a0 = a - P;
+    Vec3 b0 = b - P;
+    Vec3 c0 = c - P;
+    HAPIFloat ab = a * b;
+    HAPIFloat ac = a * c;
+    HAPIFloat bc = b * c;
+    // Make sure plane normals for pab and pbc point in the same direction
+    if( bc * ac - (c * c) * ab < 0.0f ) inside = false;
+    else if( ab * bc - ac * (b * b) ) inside = false;
+    
+    if( inside )
+      return true;
+  }
+
+  HAPIFloat cyl_t;
+  bool intersect = Bounds::intersectSegmentCylinder( from, to, a, b, radius, cyl_t );
+  HAPIFloat intersection_point_t;
+  if( intersect ) {
+    intersection_point_t = cyl_t;
+    return true;
+  }
+
+  if( Bounds::intersectSegmentCylinder( from, to, a, c, radius, cyl_t ) ) {
+    if( intersect ) {
+      if( cyl_t < intersection_point_t )
+        intersection_point_t = cyl_t;
+    }
+    else {
+      return true;
+      intersect = true;
+      intersection_point_t = cyl_t;
+    }
+  }
+
+  if( Bounds::intersectSegmentCylinder( from, to, b, c, radius, cyl_t ) ) {
+    if( intersect ) {
+      if( cyl_t < intersection_point_t )
+        intersection_point_t = cyl_t;
+    }
+    else {
+      return true;
+      intersect = true;
+      intersection_point_t = cyl_t;
+    }
+  }
+
+  if( intersect )
+    return true;
+
+  Sphere sphere( a, radius );
+  intersect = sphere.lineIntersect( from, to, info );
+  HAPIFloat square_dist;
+  if( intersect ) {
+    return true;
+    P = info.point;
+    square_dist = ( P - from ).lengthSqr();
+  }
+
+  sphere.center = b;
+  if( sphere.lineIntersect( from, to, info ) ) {
+    if( intersect ) {
+      HAPIFloat temp_dist = ( info.point - from ).lengthSqr();
+      if( temp_dist < square_dist ) {
+        square_dist = temp_dist;
+        P = info.point;
+      }
+    }
+    else {
+      return true;
+      intersect = true;
+      P = info.point;
+    }
+  }
+
+  sphere.center = c;
+  if( sphere.lineIntersect( from, to, info ) ) {
+    if( intersect ) {
+      HAPIFloat temp_dist = ( info.point - from ).lengthSqr();
+      if( temp_dist < square_dist ) {
+        square_dist = temp_dist;
+        P = info.point;
+      }
+    }
+    else {
+      return true;
+      intersect = true;
+      P = info.point;
+    }
+  }
+
+  return intersect;
 }
 
 

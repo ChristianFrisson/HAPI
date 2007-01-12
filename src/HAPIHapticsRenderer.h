@@ -95,7 +95,9 @@ namespace HAPI {
     /// a group of shapes generate the force and torque to send to the device.
     virtual HAPIForceEffect::EffectOutput 
     renderHapticsOneStep( HAPIHapticsDevice *hd,
-                          const HapticShapeVector &shapes ) = 0;
+                          const HapticShapeVector &shapes ) {
+      return HAPIForceEffect::EffectOutput();
+    };
 
     typedef std::vector< pair< H3DUtil::AutoRef< HAPI::HAPIHapticShape >,
                                HAPISurfaceObject::ContactInfo> > Contacts; 
