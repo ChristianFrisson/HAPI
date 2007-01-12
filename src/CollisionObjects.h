@@ -43,6 +43,13 @@ namespace HAPI {
   class HAPIHapticShape;   
 
   namespace Bounds {
+    /// Intersect segment S(t)=sa+t(sb-sa), 0<=t<=1 against cylinder 
+    /// specified by p, q and r. The segment finds the first along the segment.
+    bool intersectSegmentCylinder( Vec3 sa, Vec3 sb, 
+                                   Vec3 p, Vec3 q, 
+                                   HAPIFloat r, 
+                                   HAPIFloat & t );
+
     class GeometryPrimitive;
      typedef enum {
         BACK,
@@ -393,9 +400,18 @@ namespace HAPI {
       /// \param The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
-      /// object
       /// \returns true if intersected, false otherwise.
       virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// object
+      /// \returns true if intersected, false otherwise.
+      bool movingSphereIntersectRobust( HAPIFloat radius,
                                           const Vec3 &from, 
                                           const Vec3 &to );
 

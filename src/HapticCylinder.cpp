@@ -27,12 +27,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef USE_HAPTICS
 #include "HapticCylinder.h"
 
-using namespace H3D;
-
-#ifdef HAVE_OPEjNHAPTICS
+using namespace HAPI;
+#ifdef HAVE_OPENjHAPTICS
 /// Intersect the line segment from start_point to end_point with
 /// the object.  
 ///
@@ -84,5 +82,4 @@ void HapticCylinder::hlRender( HLHapticsDevice *hd ) {
     hlPopMatrix();
   }
 }
-#endif
 #endif

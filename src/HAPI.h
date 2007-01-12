@@ -39,6 +39,9 @@
 /// Required for the Sensable Phantom haptics devices.
 #define HAVE_OPENHAPTICS
 
+/// Undef if you do not have Chai3d installed
+#undef HAVE_CHAI3D
+
 /// Undef if you do not have DHD API(www.forcedimension,com) installed.
 /// Required for the Omega and Delta haptics devices.
 #define HAVE_DHDAPI
