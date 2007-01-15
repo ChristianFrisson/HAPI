@@ -882,6 +882,21 @@ cerr << "FD";
 
   // TODO: check if P within triangle, then collision
 
+  if( res ) {
+    bool inside = true;
+    Vec3 a0 = a - P;
+    Vec3 b0 = b - P;
+    Vec3 c0 = c - P;
+    HAPIFloat ab = a * b;
+    HAPIFloat ac = a * c;
+    HAPIFloat bc = b * c;
+    // Make sure plane normals for pab and pbc point in the same direction
+    if( bc * ac - (c * c) * ab < 0.0f ) inside = false;
+    else if( ab * bc - ac * (b * b) ) inside = false;
+
+    if( inside )
+      return true;
+  }
 
   Vec3 Q;
   closestPoint( P, Q, tmp, tmp );
@@ -1077,7 +1092,7 @@ bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
     // TODO: find closest?
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
       Triangle &t = triangles[i];
-      if( t.movingSphereIntersect( radius, from, to ) )	return true;
+      if( t.movingSphereIntersectRobust( radius, from, to ) )	return true;
 		}
 		return false;
 	}	else 	{
