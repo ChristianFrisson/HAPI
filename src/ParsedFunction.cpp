@@ -29,6 +29,7 @@
 
 #include "ParsedFunction.h" 
 
+#ifdef HAVE_FPARSER
 // H3DUtil include
 #include <Console.h>
 
@@ -60,3 +61,5 @@ HAPIFloat ParsedFunction::evaluate( HAPIFloat *input ) {
     return fparser.Eval( input );
   else return 0;
 }
+
+#endif
