@@ -31,6 +31,8 @@
 
 #include <HAPIFunctionObject.h>
 
+#ifdef HAVE_FPARSER
+
 // fparser includes
 #include <fparser.hh>
 
@@ -163,4 +165,5 @@ namespace HAPI {
   };
 }
 
+#endif
 #endif
