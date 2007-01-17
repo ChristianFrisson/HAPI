@@ -1,0 +1,39 @@
+{
+\tt
+{\hlstd }{\hlline \ \ \ \ 1\ }\leavevmode\par
+{\hlline \ \ \ \ 2\ }{\hldir \#include $\mathord{<}$AnyHapticsDevice.h$\mathord{>}$}\leavevmode\par
+{\hlline \ \ \ \ 3\ }{\hlstd }{\hldir \#include $\mathord{<}$HapticForceField.h$\mathord{>}$}\leavevmode\par
+{\hlline \ \ \ \ 4\ }{\hlstd }\leavevmode\par
+{\hlline \ \ \ \ 5\ }{\hlkwa using namespace }{\hlstd HAPI}{\hlsym ;}\leavevmode\par
+{\hlline \ \ \ \ 6\ }{\hlstd }\leavevmode\par
+{\hlline \ \ \ \ 7\ }{\hlkwb int }{\hlstd }{\hlkwd main}{\hlstd }{\hlsym (}{\hlstd }{\hlkwb int }{\hlstd argc}{\hlsym , }{\hlstd }{\hlkwb char}{\hlstd }{\hlsym * }{\hlstd argv}{\hlsym []) $\{$}\leavevmode\par
+{\hlline \ \ \ \ 8\ }{\hlstd }{\hlstd\ \ }{\hlstd }{\hlslc // The force to render}\leavevmode\par
+{\hlline \ \ \ \ 9\ }{\hlstd }{\hlstd\ \ }{\hlstd Vec3 force\_{}to\_{}render }{\hlsym $\mathord{=}$ }{\hlstd }{\hlkwd Vec3}{\hlstd }{\hlsym ( }{\hlstd }{\hlnum 1}{\hlstd }{\hlsym , }{\hlstd }{\hlnum 0}{\hlstd }{\hlsym , }{\hlstd }{\hlnum 0 }{\hlstd }{\hlsym );}\leavevmode\par
+{\hlline \ \ \ 10\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 11\ }}{\hlstd\ \ }{\hlstd }{\hlslc // Create a new haptics device, using any device connected.}\leavevmode\par
+{\hlline \ \ \ 12\ }{\hlstd }{\hlstd\ \ }{\hlstd auto\_{}ptr}{\hlsym $\mathord{<}$ }{\hlstd AnyHapticsDevice }{\hlsym $\mathord{>}$ }{\hlstd }{\hlkwd device}{\hlstd }{\hlsym ( }{\hlstd }{\hlkwa new }{\hlstd AnyHapticsDevice }{\hlsym );}\leavevmode\par
+{\hlline \ \ \ 13\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 14\ }}{\hlstd\ \ }{\hlstd }{\hlslc // initialize the device}\leavevmode\par
+{\hlline \ \ \ 15\ }{\hlstd }{\hlstd\ \ }{\hlstd }{\hlkwa if}{\hlstd }{\hlsym ( }{\hlstd device}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd initDevice}{\hlstd }{\hlsym () !$\mathord{=}$ }{\hlstd HAPIHapticsDevice}{\hlsym ::}{\hlstd SUCCESS }{\hlsym ) $\{$}\leavevmode\par
+{\hlline \ \ \ 16\ }{\hlstd }{\hlstd\ \ \ \ }{\hlstd }{\hlslc // initilization failed, print error message and quit}\leavevmode\par
+{\hlline \ \ \ 17\ }{\hlstd }{\hlstd\ \ \ \ }{\hlstd cerr }{\hlsym $\mathord{<}$$\mathord{<}$ }{\hlstd device}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd getLastErrorMsg}{\hlstd }{\hlsym () $\mathord{<}$$\mathord{<}$ }{\hlstd endl}{\hlsym ;}\leavevmode\par
+{\hlline \ \ \ 18\ }{\hlstd }{\hlstd\ \ \ \ }{\hlstd }{\hlkwa return }{\hlstd }{\hlnum 1}{\hlstd }{\hlsym ;}\leavevmode\par
+{\hlline \ \ \ 19\ }{\hlstd }{\hlstd\ \ }{\hlstd }{\hlsym $\}$}\leavevmode\par
+{\hlline \ \ \ 20\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 21\ }}{\hlstd\ \ }{\hlstd }{\hlslc // enable the device(forces and positions will be updated)}\leavevmode\par
+{\hlline \ \ \ 22\ }{\hlstd }{\hlstd\ \ }{\hlstd device}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd enableDevice}{\hlstd }{\hlsym ();}\leavevmode\par
+{\hlline \ \ \ 23\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 24\ }}{\hlstd\ \ }{\hlstd }{\hlslc // add the force effect to render}\leavevmode\par
+{\hlline \ \ \ 25\ }{\hlstd }{\hlstd\ \ }{\hlstd device}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd addEffect}{\hlstd }{\hlsym ( }{\hlstd }{\hlkwa new }{\hlstd }{\hlkwd HapticForceField}{\hlstd }{\hlsym ( }{\hlstd force\_{}to\_{}render }{\hlsym ) );}\leavevmode\par
+{\hlline \ \ \ 26\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 27\ }}{\hlstd\ \ }{\hlstd }{\hlslc // transfer the effect to the haptics loop.}\leavevmode\par
+{\hlline \ \ \ 28\ }{\hlstd }{\hlstd\ \ }{\hlstd device}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd transferObjects}{\hlstd }{\hlsym ();}\leavevmode\par
+{\hlline \ \ \ 29\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 30\ }}{\hlstd\ \ }{\hlstd }{\hlslc // wait for keyboard press, then finish program}\leavevmode\par
+{\hlline \ \ \ 31\ }{\hlstd }{\hlstd\ \ }{\hlstd }{\hlkwa while}{\hlstd }{\hlsym (}{\hlstd }{\hlkwa true}{\hlstd }{\hlsym ) $\{$}\leavevmode\par
+{\hlline \ \ \ 32\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 33\ }}{\hlstd\ \ }{\hlstd }{\hlsym $\}$}\leavevmode\par
+{\hlline \ \ \ 34\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 35\ }}{\hlstd\ \ }{\hlstd }{\hlkwa return }{\hlstd }{\hlnum 0}{\hlstd }{\hlsym ;}\leavevmode\par
+{\hlline \ \ \ 36\ }{\hlstd }{\hlsym $\}$}{\hlstd }\leavevmode\par
+}
