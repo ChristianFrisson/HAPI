@@ -1,1 +1,69 @@
 \chapter{Force effects}
+There are two ways to generate forces in HAPI. One is the one
+previously described, by specifying shapes and surfaces and letting
+a haptics rendering algorithm determine forces when colliding with the
+shapes. Another way to generate forces is by using force effects. A
+force effect is a global force function specifying what force to
+generate at any given moment depending on the current values of the
+haptics device. It can, among other things, be used to simulate
+viscosity and springs. 
+
+\section{Available force effects}
+The force effects available in HAPI are:
+
+\begin{itemize}
+\item Force field
+\item Spring
+\item Viscosity
+\item Vibration
+\item PlaneConstraint
+\item LineConstraint
+\item TimeFunctionEffect 
+\end{itemize}
+
+\section{Interpolation}
+When adding a force effect the user can choose if it should be
+interpolated or not. Interpolation of force effects means that newly
+added force effects will be ... should we have interpolation? how
+should it work??  
+
+\section{Creating new force effects}
+A user can easily create their own force effects by subclassing from
+HAPIForceEffect and implementing the calculateForces() method. The
+method gets the haptics device the force effect is to be rendered on
+as argument, allowing it to access all device values. It also get the
+time since the last call haptics loop. The output is an en
+EffectOutput structure. It contains:
+
+\begin{itemize}
+\item force
+\item torque
+\item position to force jacobian matrix
+\item velocity to force jabobian matrix
+\end{itemize}
+
+Global coordinates. Transform from local to global coordinates.
+
+E.g. a very simple class generating a constant force would look like.
+
+namespace HAPI {
+  /// This is a HAPIForceEffect that generates a constant force.
+  class ConstantForce: public HAPIForceEffect {
+  public:
+    /// Constructor
+    ConstantForce( const Vec3 &_force ): 
+      force( _force ) {}
+
+    /// The force of the EffectOutput will be the force of the force field. 
+    EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
+                                          HAPITime dt ) {
+      return EffectOutput( force );
+    }
+    
+  protected:
+    Vec3 force;
+  };
+}
+
+
+
