@@ -16,7 +16,7 @@ The other functions are for setting the haptics rendering algorithm
 to use and set the geometries and force effects that are to be
 rendered.
 
-\subsection{Calibration}
+\section{Calibration}
 By default the coordinates given by the haptics device classes are
 given in millimetres in the local coordinate space of the haptics
 device. Many times this is not the coordinate system a user wants
@@ -27,7 +27,7 @@ also possible to calibrate the orientation and the result will be in
 the same way, i.e. orn = orn_calib * orig_orn. In this case the
 calibration value will npt be a matrix, but a Rotation object.
 
-\subsection{Layering}
+\section{Layering}
 When adding shapes to be rendered at the haptics device, one can
 specify what ``layer'' in which it should be rendered. Each layer have
 its own haptics rendering algorithm, which makes it possible to render
@@ -43,19 +43,26 @@ geometry, since the proxy stays on the surface. Specifying the bone in
 a second layer will add a new separate proxy for all the shapes in
 that layer. 
 
-Picture showing proxy layering.
+\begin{figure} 
+  \centering 
+  \includegraphics{images/layering.pdf}
+  \caption{To the left all surface are part of layer 0. The proxy is then stopped at the first surface and the
+underlying surface will never be felt. To the right the two surfaces are put in two different layers which
+each has its own proxy, which means it will be felt.} 
+  \label{Layering_fig} 
+\end{figure}
 
 If no haptics rendering algorithm is specified for a layer, no forces
 will be generated from that layer.
  
 By default all operations use layer 0.
 
-\subsection{The HAPIHapticsDevice abstract base class}
+\section{The HAPIHapticsDevice abstract base class}
 The HAPIHapticsDevice abstract base class is the base class for all
 haptics device implementations. It contains the functions that are
 available for all haptics devices.  
 
-\subsubsection{Device handling functions}
+\subsection{Device handling functions}
 
 Most common device handling functions:
 
@@ -83,7 +90,7 @@ from being updated, but does not release te device.
 
 The error code returned is HAPI::HAPIHapticsDevice::SUCCESS on success.
 
-\subsubsection{Calibration functions}
+\subsection{Calibration functions}
 \begin{itemize}
 \item void setPositionCalibration( const Matrix4 &m ) - Set the
  position calibration matrix
@@ -96,7 +103,7 @@ The error code returned is HAPI::HAPIHapticsDevice::SUCCESS on success.
 \end{itemize}
 
 
-\subsubsection{Haptics rendering functions}
+\subsection{Haptics rendering functions}
 Following are the most commonly used functions for changing what and
 how to render objects with the haptics device. 
 
@@ -136,13 +143,13 @@ input{examples/transfer_objects}
 See the doxygen documentation for a full listing of the functions
 available. 
 
-\subsection{Example}
+\section{Example}
 Following is an example on a simple program that initialize a haptics
 device and sends a constant force of 1 N in the positive x-direction.
 
 input{examples/constant_force} 
 
-\subsection{Supported haptics devices}
+\section{Supported haptics devices}
 The haptics devices currently supported by HAPI are:
 
 \begin{itemize}
@@ -155,7 +162,7 @@ The haptics devices currently supported by HAPI are:
 Also there is the AnyHapticsDevice class which uses any supported
 device connected to the computer.
 
-\subsubsection{Adding support for new devices}
+\subsection{Adding support for new devices}
 
 Support for new devices can easily be added to HAPI by subclassing the
 HAPIHapticsDevice class and implement the abstract functions. The
