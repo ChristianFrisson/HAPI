@@ -1,0 +1,11 @@
+{
+\tt
+{\hlstd }{\hlline \ \ \ \ 1\ }{\hlslc // make changes to the objects you want to render}\leavevmode\par
+{\hlline \ \ \ \ 2\ }{\hlstd hd}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd clearEffects}{\hlstd }{\hlsym ();}\leavevmode\par
+{\hlline \ \ \ \ 3\ }{\hlstd hd}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd addEffect}{\hlstd }{\hlsym ( }{\hlstd }{\hlkwa new }{\hlstd HapticForceField }{\hlsym );}\leavevmode\par
+{\hlline \ \ \ \ 4\ }{\hlstd hd}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd addEffect}{\hlstd }{\hlsym ( }{\hlstd }{\hlkwa new }{\hlstd HapticSpring }{\hlsym );}\leavevmode\par
+{\hlline \ \ \ \ 5\ }{\hlstd }\leavevmode\par
+{\hlline \ \ \ \ 6\ }{\hlslc // nothing has changed on what is rendered yet, call transferObjects}\leavevmode\par
+{\hlline \ \ \ \ 7\ }{\hlstd }{\hlslc // to transfer the changes to the haptics rendering thread.}\leavevmode\par
+{\hlline \ \ \ \ 8\ }{\hlstd hd}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd transferObjects}{\hlstd }{\hlsym ();}{\hlstd }\leavevmode\par
+}
