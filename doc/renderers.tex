@@ -5,7 +5,7 @@ responsible for determining the forces and torque to render depending
 on position and other data from the haptics device and all the shapes
 the user has added to the scene. 
 
-\subsection{Proxy based rendering}
+\section{Proxy based rendering}
 All the algorithms supported by HAPI(both internally implemented and
 external libraries such as OpenHaptics and Chai3D) use some variant of
 proxy based haptics rendering. The proxy based rendering technique
@@ -25,42 +25,51 @@ but if the proxy is dragging behind you can get friction effects. In
 HAPI the user can control both the forces generated and the movement
 of the proxy.
 
- Picture showing proxy - position spring
+\begin{figure} 
+  \centering 
+  \includegraphics{images/proxyfinger.pdf}
+  \caption{The proxy stays on the surface when the haptics
+  device(probe) penetrates the surface. The resulting for is most
+  commonly a spring force pushing the probe back towards the proxy.} 
+  \label{Proxy-probe} 
+\end{figure}
+
+
 
 In the algorithms in HAPI the geometry of the proxy is either a point
 or a sphere. The problem with point proxies is that it can fall
 through small gaps in the geometry and makes it very hard to be able
 to touch small, thin objects. Sphere problems... 
 
-\subsection{Available algorithms}
+\section{Available algorithms}
 There are four algorithms available in HAPI, where two are internally
 implemented and two uses external haptics libraries. We will list them
 and point out their uses, advantages/disadvantages etc.
 
-\subsubsection{God-Object algorithm}
+\subsection{God-Object algorithm}
 The god-object algorithm is based on the God-object paper( reference)
 by .... It uses a point proxy .
 - Point proxy
 - User defined surfaces
 
-\subsubsection{Ruspini algorithm}
+\subsection{Ruspini algorithm}
 The ruspini renderer is based on the algorithm presented by Ruspini in
 (reference). It uses a sphere proxy.
 - Sphere proxy
 - User defined surfaces
 
 
-\subsubsection{Chai3D}
+\subsection{Chai3D}
 - Sphere proxy(but not good)
 - No user defined surfaces
 - No magnetic surfaces
 
-\subsubsection{OpenHaptics}
+\subsection{OpenHaptics}
 - Point based
 - Only devices from SensAble
 - No user defined surfaces
 
-\subsection{Surfaces}
+\section{Surfaces}
 The way to specify how an object should feel in HAPI is done by
 specifying an instancs of a HAPISurfaceObject class that implements
 the behavior. See ref specifying geometres. There are a couple of
@@ -93,9 +102,14 @@ those libraries directly. They are:
 \item Chai3DSurface?? Don't know yet if it has any special parameters.
 \end{itemize}
 
-\subsubsection{User defined surfaces}
+\subsection{User defined surfaces}
 
-Picture plane local coordinate sytem
+\begin{figure} 
+  \centering 
+  \includegraphics{images/surface.pdf}
+  \caption{The flow of execution in the haptics thread.}
+  \label{haptics thread} 
+\end{figure}
 
 Surfaces can be created for arbitrary force functions and proxy
 movements. This is done by subclassing the HAPISurfaceObject class and
