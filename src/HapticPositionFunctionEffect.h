@@ -21,37 +21,43 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticShapeConstraint.h
-/// \brief Header file for HapticShapeConstraint
+/// \file HapticPositionFunctionEffect.h
+/// \brief Header file for HapticPositionFunctionEffect
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __HAPTICSHAPECONSTRAINT_H__
-#define __HAPTICSHAPECONSTRAINT_H__
+#ifndef __HAPTICPOSITIONFUNCTIONEFFECT_H__
+#define __HAPTICPOSITIONFUNCTIONEFFECT_H__
 
 #include <HAPIForceEffect.h> 
 #include <HAPIHapticsDevice.h>
-#include <HAPIHapticShape.h>
+#include <HAPIFunctionObject.h>
 
 namespace HAPI {
-  /// Adds a force to constrain the haptic device position to the surface.
-  class HAPI_API HapticShapeConstraint: public HAPIForceEffect {
+  /// HapticPositionFunctionEffect creates a force by evaluating three
+  /// functions ( one for each dimension ) with the device position as input
+  /// ( parameters x, y, z ).
+  /// It is up to the user to make sure that the functions provided does not
+  /// create a force that the attached device can not handle.
+  class HAPI_API HapticPositionFunctionEffect: public HAPIForceEffect {
   public:
     /// Constructor
-    HapticShapeConstraint( const Matrix4 & _transform,
+    /// ownership of the pointer in the parameters x_function, y_function and
+    /// z_function are transferred to the HapticFunctionEffect.
+    HapticPositionFunctionEffect( const Matrix4 & _transform,
                           bool _interpolate,
-                          HAPIHapticShape *_shape,
-                          const HAPIFloat &_spring_constant);
+                          HAPIFunctionObject *_x_function,
+                          HAPIFunctionObject *_y_function,
+                          HAPIFunctionObject *_z_function );
     
-    /// The force of the EffectOutput is a spring force from the current
-    /// position of the haptics device towards the closest point on the
-    /// haptic shape.
+    /// The force of the EffectOutput is calculated from the provided functions
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
                                           HAPITime dt );
 
   protected:
-    H3DUtil::AutoRef< HAPIHapticShape > shape;
-    HAPIFloat spring_constant;
+    auto_ptr< HAPIFunctionObject > x_function;
+    auto_ptr< HAPIFunctionObject > y_function;
+    auto_ptr< HAPIFunctionObject > z_function;
   };
 }
 
