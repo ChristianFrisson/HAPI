@@ -21,32 +21,43 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticShapeConstraint.cpp
-/// \brief cpp file for HapticShapeConstraint
+/// \file HapticTimeFunctionEffect.cpp
+/// \brief cpp file for HapticTimeFunctionEffect
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "HapticShapeConstraint.h" 
+#include "HapticTimeFunctionEffect.h" 
 
 using namespace HAPI;
 
-HapticShapeConstraint::HapticShapeConstraint(
+HapticTimeFunctionEffect::HapticTimeFunctionEffect(
                           const Matrix4 & _transform,
                           bool _interpolate,
-                          HAPIHapticShape *_shape,
-                          const HAPIFloat &_spring_constant ):
+                          HAPIFunctionObject *_x_function,
+                          HAPIFunctionObject *_y_function,
+                          HAPIFunctionObject *_z_function,
+                          const HAPITime &_x_zero_time,
+                          const HAPITime &_y_zero_time,
+                          const HAPITime &_z_zero_time ):
   HAPIForceEffect( _transform, _interpolate ),
-  shape( _shape ),
-  spring_constant( _spring_constant ){
+  x_function( _x_function ),
+  y_function( _y_function ),
+  z_function( _z_function ),
+  x_zero_time( _x_zero_time ),
+  y_zero_time( _y_zero_time ),
+  z_zero_time( _z_zero_time ) {
 }
 
-HAPIForceEffect::EffectOutput HapticShapeConstraint::calculateForces(
+HAPIForceEffect::EffectOutput HapticTimeFunctionEffect::calculateForces(
                               HAPIHapticsDevice *hd,
                               HAPITime dt ) {
-  Vec3 closest_point = Vec3(), temp;
-  Vec3 hd_pos = transform.inverse() * hd->getPosition();
-  shape->closestPoint( hd_pos, closest_point, temp, temp );
-  Vec3 the_force = spring_constant * (closest_point - hd_pos);
-  return EffectOutput( transform.getRotationPart() * the_force );
+  HAPITime current_time = H3DUtil::TimeStamp();
+  HAPIFloat x_current_time = current_time - x_zero_time;
+  HAPIFloat y_current_time = current_time - y_zero_time;
+  HAPIFloat z_current_time = current_time - z_zero_time;
+  Vec3 force = Vec3( x_function->evaluate( &x_current_time ),
+                     y_function->evaluate( &y_current_time ),
+                     z_function->evaluate( &z_current_time ) );
+  return EffectOutput( force );
 }

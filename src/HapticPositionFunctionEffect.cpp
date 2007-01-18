@@ -21,32 +21,35 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticShapeConstraint.cpp
-/// \brief cpp file for HapticShapeConstraint
+/// \file HapticPositionFunctionEffect.cpp
+/// \brief cpp file for HapticPositionFunctionEffect
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "HapticShapeConstraint.h" 
+#include "HapticPositionFunctionEffect.h" 
 
 using namespace HAPI;
 
-HapticShapeConstraint::HapticShapeConstraint(
+HapticPositionFunctionEffect::HapticPositionFunctionEffect(
                           const Matrix4 & _transform,
                           bool _interpolate,
-                          HAPIHapticShape *_shape,
-                          const HAPIFloat &_spring_constant ):
+                          HAPIFunctionObject *_x_function,
+                          HAPIFunctionObject *_y_function,
+                          HAPIFunctionObject *_z_function ):
   HAPIForceEffect( _transform, _interpolate ),
-  shape( _shape ),
-  spring_constant( _spring_constant ){
+  x_function( _x_function ),
+  y_function( _y_function ),
+  z_function( _z_function ) {
 }
 
-HAPIForceEffect::EffectOutput HapticShapeConstraint::calculateForces(
+HAPIForceEffect::EffectOutput HapticPositionFunctionEffect::calculateForces(
                               HAPIHapticsDevice *hd,
                               HAPITime dt ) {
-  Vec3 closest_point = Vec3(), temp;
-  Vec3 hd_pos = transform.inverse() * hd->getPosition();
-  shape->closestPoint( hd_pos, closest_point, temp, temp );
-  Vec3 the_force = spring_constant * (closest_point - hd_pos);
-  return EffectOutput( transform.getRotationPart() * the_force );
+  Vec3 local_pos = transform.inverse() * hd->getPosition();
+  HAPIFloat pos [] = { local_pos.x, local_pos.y, local_pos.z };
+  Vec3 force = Vec3( x_function->evaluate( pos ),
+                     y_function->evaluate( pos ),
+                     z_function->evaluate( pos ) );
+  return EffectOutput( force );
 }
