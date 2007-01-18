@@ -70,6 +70,8 @@ namespace HAPI {
                                  std::vector< PlaneConstraint > &constraints,
                                  Bounds::FaceType face = Bounds::FRONT_AND_BACK );
 
+    virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );
+
     virtual void glRender();
 
     inline virtual int nrTriangles() {

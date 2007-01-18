@@ -274,40 +274,54 @@ namespace HAPI {
     /// Add a HapticForceEffect to be rendered.
     /// \param objects The haptic shapes to render.
     inline void addEffect( HAPIForceEffect *effect ) {
+      force_effect_lock.lock();
       current_force_effects.push_back( effect );
+      force_effect_lock.unlock();
     }
 
     /// Set the HapticForceEffects to be rendered.
     /// \param objects The haptic shapes to render.
     inline void setEffects( const HapticEffectVector &effects ) {
+      force_effect_lock.lock();
       current_force_effects = effects;
+      force_effect_lock.unlock();
     }
 
     /// Get the shapes currently used
     inline const HapticEffectVector &getEffects() {
+      force_effect_lock.lock();
       return current_force_effects;
+      force_effect_lock.unlock();
     }
 
     /// Remove a force effect so that it is not rendered any longer.
     inline void removeEffect( HAPIForceEffect *effect ) {
+      force_effect_lock.lock();
       current_force_effects.erase( effect );
+      force_effect_lock.unlock();
     }
 
     /// Add all effects between [begin, end)
     template< class InputIterator > 
     inline void addEffects( InputIterator begin, InputIterator end ) {
+      force_effect_lock.lock();
       current_force_effects.insert( current_force_effects.end(), begin, end );
+      force_effect_lock.unlock();
     }
 
     /// Swap the vector of effects currently being rendered with the
     /// given vector, replacing all effects being rendered.
     inline void swapEffects( HapticEffectVector &effects ) {
+      force_effect_lock.lock();
       current_force_effects.swap( effects );
+      force_effect_lock.unlock();
     }
 
     /// Remove all HAPIHapticShape objects that are currently being rendered.
     inline void clearEffects() {
+      force_effect_lock.lock();
       current_force_effects.clear();
+      force_effect_lock.unlock();
     }
     
     /// Transfer all current haptic objects to be rendered by the haptics
@@ -771,6 +785,9 @@ namespace HAPI {
 
     // lock for when changing haptics renderer
     MutexLock renderer_change_lock;
+
+    // lock for when using force effects
+    MutexLock force_effect_lock;
 
     //
     vector< HapticShapeVector > tmp_shapes ;

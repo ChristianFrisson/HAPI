@@ -241,3 +241,14 @@ void HapticSphere::getConstraints(  const Vec3 &point,
     cerr << point << endl;
   }
 }
+
+void HapticSphere::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
+  // the point p is assumed to not lie in the center of the sphere
+  // if that is the case the closest point is undefined.
+  // Maybe check this and return any point on the surface in this case.
+  n = transform.inverse() * p;
+  n.normalizeSafe();
+  cp = transform * ( radius * n );
+
+  // TODO: fix tc
+}
