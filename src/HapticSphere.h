@@ -98,6 +98,8 @@ fdas
                                  HAPIFloat radius,
                                  std::vector< PlaneConstraint > &constraints );
 
+    virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );
+
     /// The radius of the sphere in metres. 
     HAPIFloat radius;
 

@@ -129,3 +129,30 @@ void HapticTriangleSet::glRender() {
   glPopAttrib();
   glPopMatrix();
 }
+
+void HapticTriangleSet::closestPoint( const Vec3 &p,
+                                      Vec3 &cp,
+                                      Vec3 &n,
+                                      Vec3 &tc ) {
+  Vec3 temp_cp, temp_n, temp_tc;
+  Vec3 local_pos = transform.inverse() * p;
+  HAPIFloat distance, temp_distance;
+  for( unsigned int i = 0; i < triangles.size(); i++ ) {
+    triangles[i].closestPoint( local_pos, temp_cp, temp_n, temp_tc );
+    if( i == 0 ) {
+      cp = temp_cp;
+      distance = (cp - local_pos).lengthSqr();
+      n = temp_n;
+      tc = temp_tc;
+    }
+    else {
+      temp_distance = (temp_cp - local_pos).lengthSqr();
+      if( temp_distance < distance ) {
+        cp = temp_cp;
+        distance = temp_distance;
+        n = temp_n;
+        tc = temp_tc;
+      }
+    }
+  }
+}
