@@ -1616,7 +1616,29 @@ bool Point::lineIntersect( const Vec3 &from,
                                  const Vec3 &to,
                                  IntersectionInfo &result,
                                   FaceType face ) {
-  // TODO: implement
+  Vec3 ab = to - from;
+  // Project c onto ab, but deferring divide by Dot( ab, ab )
+  HAPIFloat t = ( position - from ) * ab;
+  if( t <= 0.0f ) {
+    // c project outside the [from, to] interval, on from side.
+    return false;
+  }
+  else {
+    HAPIFloat denom = ab * ab;
+    if( t >= denom ) {
+      // c projects outside the [from, to] interval, on to side.
+      return false;
+    }
+    else {
+      // c projects inside the [from, to] interval
+      t = t / denom;
+      Vec3 d = from + t * ab;
+      if( (position - d).lengthSqr() ) {
+        result.point = position;
+        return true;
+      }
+    }
+  }
   return false;
 }
       

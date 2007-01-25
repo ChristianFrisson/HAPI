@@ -21,19 +21,19 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticSphere.cpp
-/// \brief cpp file for HapticSphere
+/// \file HapticBox.cpp
+/// \brief cpp file for HapticBox
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "HapticSphere.h"
+#include "HapticBox.h"
 
 using namespace HAPI;
 #ifdef HjAVE_OPENHAPTICS
 /// Intersect the line segment from start_point to end_point with
 /// the object.  
 ///
-bool HapticSphere::intersectSurface( const Vec3 &start_point, 
+bool HapticBox::intersectSurface( const Vec3 &start_point, 
                                      const Vec3 &end_point,
                                      Vec3 &intersection_point, 
                                      Vec3 &intersection_normal,
@@ -108,7 +108,7 @@ bool HapticSphere::intersectSurface( const Vec3 &start_point,
 /// Find the closest point to query_point on the surface of the
 /// object. 
 /// 
-bool HapticSphere::closestFeature( const Vec3 &query_point, 
+bool HapticBox::closestFeature( const Vec3 &query_point, 
                                    const Vec3 &target_point,
                                    HLgeom *geom,
                                    Vec3 &closest_point ) {
@@ -129,7 +129,7 @@ bool HapticSphere::closestFeature( const Vec3 &query_point,
   return true;
 }
 
-void HapticSphere::hlRender( HLHapticsDevice *hd) {
+void HapticBox::hlRender( HLHapticsDevice *hd) {
   HLSurface *s = dynamic_cast< HLSurface * >( surface );
   if( s ) {
      glMatrixMode( GL_MODELVIEW );
@@ -157,99 +157,133 @@ void HapticSphere::hlRender( HLHapticsDevice *hd) {
 }
 #endif // HAVE_OPENHAPTICS
 
-bool HapticSphere::lineIntersect( const Vec3 &start_point, 
+bool HapticBox::lineIntersect( const Vec3 &start_point, 
                                   const Vec3 &end_point,
                                   Bounds::IntersectionInfo &result ) {
-  // p is the starting point of the ray used for determinining intersection
-  // v is the vector between this starting point and the end point.
-  // the starting point must be outside the sphere.
-  Vec3 p, v;
-  HAPIFloat r2 = radius * radius;
-
-  HAPIFloat a0  = start_point * start_point - r2;
-  if (a0 <= 0) {
-    // start_point is inside sphere
-    a0 = end_point * end_point - r2;
-    if( a0 <= 0 ) {
-      // both start_point and end_point are inside sphere so no intersection
-      return false;
+  HAPIFloat tmin = 0.0f;
+  HAPIFloat tmax = 1.0f;
+  Matrix4 inverse = transform.inverse();
+  Vec3 local_end_point = inverse * end_point;
+  Vec3 local_start_point = inverse * start_point;
+  Vec3 d = local_end_point - local_start_point;
+  // For all three slabs
+  for( int i = 0; i < 3; i++ ) {
+    if( H3DUtil::H3DAbs(d[i]) < Constants::epsilon ) {
+      // Ray is parallel to slab. No hit if origin not within slab;
+      if( start_point[i] < min[i] || start_point[i] > max[i] ) return false;
     } else {
-      // start_point is inside and end_point is outside. We will have an 
-      // intersection.
-      p = end_point;
-      v = start_point - end_point;
+      // Compute intersection t value of ray with near and far plane of slab
+      HAPIFloat ood = 1.0 / d[i];
+      HAPIFloat t1 = (min[i] - start_point[i]) * ood;
+      HAPIFloat t2 = (max[i] - start_point[i]) * ood;
+      // Make t1 be intersection with near plane, t2 with far plane
+      if( t1 > t2 ) {
+        HAPIFloat temp = t1;
+        t1 = t2;
+        t2 = temp;
+      }
+      // Compute the intersection of slab intersection intervals
+      if( t1 > tmin ) tmin = t1;
+      if( t2 > tmax ) tmax = t2;
+      // Exit with no collision as soon as slab intersection becomes empty
+      if( tmin > tmax ) return false;
     }
-  } else {
-    // start_point is outside sphere
-    p = start_point;
-    v = end_point - start_point;
-    
-    // check that the line will intersect 
-    HAPIFloat a1 = v * p;
-    if (a1 >= 0) {
-      // v is pointing away from the sphere so no intersection
-      return false;
-    }
   }
-  // use implicit quadratic formula to find the roots
-  HAPIFloat a = v.x*v.x + v.y*v.y + v.z*v.z;
-  HAPIFloat b = 2 * (p.x*v.x + p.y*v.y + p.z*v.z);
-  HAPIFloat c = p.x*p.x + p.y*p.y + p.z*p.z - r2;
-
-  HAPIFloat s = b*b - 4*a*c;
-
-  HAPIFloat u;
-  if( s == 0.0 ) {
-    // line is a tangent to the sphere
-    u = -b/(2*a);
-  } else if( s > 0.0 ) {
-    // line intersects sphere in two points
-    HAPIFloat u0 = (-b + sqrt(s))/(2*a);
-    HAPIFloat u1 = (-b - sqrt(s))/(2*a);
-    u = u0 < u1 ? u0 : u1;
-  }  else {
-    // line does not intersect
-    return false;
+  // Ray intersect all 3 slabs. Return point and intersection t value (tmin)
+  Vec3 temp_point = start_point + d * tmin;
+  // TODO: Normal, should be 22 different cases. (inside outside too)
+  // is this failsafe and fast? the box is assumed to not have 0 size in any of
+  // the directions
+  Vec3 normal;
+  for( int i = 0; i < 3; i++ ) {
+    if( H3DUtil::H3DAbs(temp_point[i] - min[i]) <= Constants::epsilon )
+      normal[i] = normal[i] - 1;
+    else if( H3DUtil::H3DAbs( temp_point[i] - max[i]) <= Constants::epsilon )
+      normal[i] = normal[i] + 1;
   }
+  normal.normalizeSafe();
 
-  // check that the intersection point is within the line segment
-  if( u > 1.0 || u < 0.0) {
-    return false;
-  }
-  
-  // calculate the intersection point and normal
-  result.point = p + u*v;
-  result.normal = result.point;
-  result.normal.normalize();
+  result.point = transform * temp_point;
+  result.normal = transform.getRotationPart() * normal;
   return true;
 }
 
 
-void HapticSphere::getConstraints(  const Vec3 &point,
+void HapticBox::getConstraints(  const Vec3 &point,
                                     HAPIFloat r,
                                     std::vector< PlaneConstraint > &result ) {
-
-  Vec3 v = point;
-  HAPIFloat v2 = v.lengthSqr();
-  
-  if(  //v2 <= r * r && 
-       v2 > Constants::epsilon ) {
-         v = v / H3DUtil::H3DSqrt( v2 );
-         // TODO: tex coord
-    result.push_back( PlaneConstraint( (radius+0.0025) * v, v, Vec3() ) );
-  } else {
-    cerr << point << endl;
-  }
+  Vec3 cp, n, tc;
+  closestPoint( point, cp, n, tc );
+  result.push_back( PlaneConstraint( cp, n, tc, this ) );
 }
 
-void HapticSphere::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
-  // the point p is assumed to not lie in the center of the sphere
-  // if that is the case the closest point is undefined.
-  // Maybe check this and return any point on the surface in this case.
-  n = transform.inverse() * p;
-  n.normalizeSafe();
-  cp = transform * ( radius * n );
-  n = transform.getRotationPart() * n;
+void HapticBox::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) { 
+  Vec3 temp_p = transform.inverse() * p;
+  
+  bool inside[3] = {false, false, false };
 
-  // TODO: fix tc
+  for( int i = 0; i < 3; i++ ) {
+    HAPIFloat v = temp_p[i];
+    if( v < min[i] ) v = min[i];
+    else if( v > max[i] ) v = max[i];
+    else inside[i] = true;
+    cp[i] = v;
+  }
+
+  if( temp_p.x > min.x && temp_p.x < max.x &&
+      temp_p.y > min.y && temp_p.y < max.y &&
+      temp_p.z > min.z && temp_p.z < max.z ) {
+    
+    Vec3 closest = temp_p;
+    closest.x = min.x;
+    HAPIFloat dist = temp_p.x - min.x;
+    
+    HAPIFloat temp_dist = temp_p.y - min.y;
+    if( temp_dist < dist ) {
+      closest.x = temp_p.x;
+      closest.y = min.y;
+      dist = temp_dist;
+    }
+
+    temp_dist = temp_p.z - min.z;
+    if( temp_dist < dist ) {
+      closest = temp_p;
+      closest.z = min.z;
+      dist = temp_dist;
+    }
+
+    temp_dist = max.x - temp_p.x;
+    if( temp_dist < dist ) {
+      closest = temp_p;
+      closest.x = max.x;
+      dist = temp_dist;
+    }
+
+    temp_dist = max.y - temp_p.y;
+    if( temp_dist < dist ) {
+      closest = temp_p;
+      closest.y = max.y;
+      dist = temp_dist;
+    }
+
+    temp_dist = max.z - temp_p.z;
+    if( temp_dist < dist ) {
+      closest = temp_p;
+      closest.z = max.z;
+      dist = temp_dist;
+    }
+
+    cp = closest;
+  }
+
+  for( int i = 0; i < 3; i++ ) {
+    if( H3DUtil::H3DAbs(cp[i] - min[i]) <= Constants::epsilon )
+      n[i] = n[i] - 1;
+    else if( H3DUtil::H3DAbs( cp[i] - max[i]) <= Constants::epsilon )
+      n[i] = n[i] + 1;
+  }
+  n.normalizeSafe();
+
+  cp = transform * cp;
+  n = transform.getRotationPart() * cp;
 }
