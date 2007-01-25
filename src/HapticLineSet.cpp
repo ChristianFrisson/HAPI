@@ -21,17 +21,17 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticTriangleSet.cpp
-/// \brief cpp file for HapticTriangleSet
+/// \file HapticLineSet.cpp
+/// \brief cpp file for HapticLineSet
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "HapticTriangleSet.h" 
+#include "HapticLineSet.h" 
 
 using namespace HAPI;
 
-bool HapticTriangleSet::lineIntersect( const Vec3 &from, 
+bool HapticLineSet::lineIntersect( const Vec3 &from, 
                                        const Vec3 &to,
                                        Bounds::IntersectionInfo &result,
                                        Bounds::FaceType face ) { 
@@ -42,9 +42,9 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
   HAPIFloat min_d2;
   Vec3 from_local = inv * from;
   Vec3 to_local = inv * to;
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
-    Bounds::Triangle &t = triangles[i];
-    if( t.lineIntersect( from_local, to_local, result, face ) )	{
+  for( unsigned int i = 0; i < lines.size(); i++ ) {
+    Bounds::LineSegment &l = lines[i];
+    if( l.lineIntersect( from_local, to_local, result, face ) )	{
       Vec3 v = result.point - from_local;
       HAPIFloat distance_sqr = v * v;
        
@@ -69,19 +69,19 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
   return have_intersection;
 }
 
-void HapticTriangleSet::getConstraints( const Vec3 &point,
+void HapticLineSet::getConstraints( const Vec3 &point,
                                         std::vector< PlaneConstraint > &constraints,
                                         Bounds::FaceType face ) {
-  if( triangles.size() > 0 ) {
+  if( lines.size() > 0 ) {
     // TODO: check if transform has uniform scale
     bool uniform_scale = true;
 
     if( uniform_scale ) {
       Vec3 p = transform.inverse() * point;
       unsigned int size = constraints.size();
-      for( unsigned int i = 0; i < triangles.size(); i++ ) {
-        Bounds::Triangle &t = triangles[i];
-        t.getConstraints( p, constraints, face );
+      for( unsigned int i = 0; i < lines.size(); i++ ) {
+        Bounds::LineSegment &l = lines[i];
+        l.getConstraints( p, constraints, face );
       }
 
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
@@ -94,9 +94,9 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
     } else {
       // TODO: fix this
       unsigned int size = constraints.size();
-      for( unsigned int i = 0; i < triangles.size(); i++ ) {
-        Bounds::Triangle &t = triangles[i];
-        t.getConstraints( point, constraints, face );
+      for( unsigned int i = 0; i < lines.size(); i++ ) {
+        Bounds::LineSegment &l = lines[i];
+        l.getConstraints( point, constraints, face );
       }
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];
@@ -107,38 +107,37 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
   }
 }
 
-void HapticTriangleSet::glRender() {
+void HapticLineSet::glRender() {
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
-  glPushAttrib( GL_POLYGON_BIT );
+  glPushAttrib( GL_LINE_BIT | GL_LIGHTING_BIT );
   glDisable( GL_CULL_FACE );
+  glDisable( GL_LIGHTING );
   const Matrix4 &m = transform;
   GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
                     m[0][1], m[1][1], m[2][1], 0,
                     m[0][2], m[1][2], m[2][2], 0,
                     m[0][3], m[1][3], m[2][3], 1 };
   glMultMatrixd( vt );
-  glBegin( GL_TRIANGLES );
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
-    HAPI::Bounds::Triangle &t = triangles[i];
-    glVertex3d( t.a.x, t.a.y, t.a.z );
-    glVertex3d( t.b.x, t.b.y, t.b.z );
-    glVertex3d( t.c.x, t.c.y, t.c.z );
+  glBegin( GL_LINE_STRIP );
+  for( unsigned int i = 0; i < lines.size(); i++ ) {
+    HAPI::Bounds::LineSegment &l = lines[i];
+    glVertex3d( l.start.x, l.start.y, l.start.z );
   }
   glEnd();
   glPopAttrib();
   glPopMatrix();
 }
 
-void HapticTriangleSet::closestPoint( const Vec3 &p,
+void HapticLineSet::closestPoint( const Vec3 &p,
                                       Vec3 &cp,
                                       Vec3 &n,
                                       Vec3 &tc ) {
   Vec3 temp_cp, temp_n, temp_tc;
   Vec3 local_pos = transform.inverse() * p;
   HAPIFloat distance, temp_distance;
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
-    triangles[i].closestPoint( local_pos, temp_cp, temp_n, temp_tc );
+  for( unsigned int i = 0; i < lines.size(); i++ ) {
+    lines[i].closestPoint( local_pos, temp_cp, temp_n, temp_tc );
     if( i == 0 ) {
       cp = temp_cp;
       distance = (cp - local_pos).lengthSqr();
@@ -155,7 +154,6 @@ void HapticTriangleSet::closestPoint( const Vec3 &p,
       }
     }
   }
-
   n = transform.getRotationPart() * n;
   cp = transform * cp;
 }

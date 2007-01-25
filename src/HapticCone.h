@@ -1,3 +1,4 @@
+
 //////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004, SenseGraphics AB
 //
@@ -21,43 +22,52 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticCylinder.h
-/// \brief Header file for HapticCylinder
+/// \file HapticCone.h
+/// \brief Header file for HapticCone
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __HAPTICCYLINDER_H__
-#define __HAPTICCYLINDER_H__
+#ifndef __HAPTICCONE_H__
+#define __HAPTICCONE_H__
 
 #include <HAPISurfaceObject.h>
 #include <HAPIHapticShape.h>
 
 namespace HAPI {
 
-  /// Class for rendering a haptic cylinder.
-  class HAPI_API HapticCylinder: public HAPIHapticShape {
+  /// Class for rendering a haptic Cone.
+  class HAPI_API HapticCone: public HAPIHapticShape {
   public:
     /// Constructor.
-    HapticCylinder( HAPIFloat _height,
-                    HAPIFloat _radius,
-                    void *_userdata,
-                    HAPISurfaceObject *_surface,
-                    const Matrix4 &_transform ):
+    /// \param _bottomRadius The radius of the bottom.
+    /// \param _height
+    /// \param _solid   If false, both the inside and outside of the cone is 
+    /// rendered. If true, only the outside is rendered.
+    /// \param _surface The Surface of the box.
+    HapticCone( HAPIFloat _bottomRadius,
+                HAPIFloat _height,
+                  bool _solid,
+                  void *_userdata,
+                  HAPISurfaceObject *_surface,
+                  const Matrix4 &_transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
+      bottomRadius( _bottomRadius ),
       height( _height ),
-      radius( _radius ) {}
-#ifdef HAVE_OPhENHAPTICS
+      solid( _solid ) {
+      }
+#ifdef HAVE_OPENHAPTICSfff
+fdas
     /// Intersect the line segment from start_point to end_point with
     /// the object.  
     /// This is used by the callback functions of the HLCustomObject.
     /// \param start_point The start point of the line segment.
     /// \param end_point The end point of the line segment.
-    /// \param intersection_point Return parameter that should be set to the 
+    /// \param intersection_point Return parameter that should be set to the
     /// point of intersection between the line segment and object.
-    /// \param intersection_normal Return parameter that should be set to the 
+    /// \param intersection_normal Return parameter that should be set to the
     /// normal of the surface of the objet at the intersection point.
     /// \param face Return parameter that should be set to HL_FRONT if the front
-    /// of the surface is touched and to HL_BACK if the backside of the surface
+    /// of the surface is touched and to HL_BACK if the backside of the surface 
     /// is touched. 
     /// \returns true if there is an intersection, false otherwise.
     ///
@@ -81,10 +91,9 @@ namespace HAPI {
                                  HLgeom *geom,
                                  Vec3 &closest_point );    
 
-    /// hlRender uses glutCylinder for now to render the cylinder.
+    /// hlRender is overriden to set up which sides of the sphere is touchable. 
     virtual void hlRender( HLHapticsDevice *hd );
 #endif
-
     virtual bool lineIntersect( const Vec3 &from, 
                                 const Vec3 &to,
                                 Bounds::IntersectionInfo &result ); 
@@ -95,10 +104,16 @@ namespace HAPI {
 
     virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );
 
-    // height and radius describes a cylinder with its spine along the y-axis
-    // from 0 to height with a radius radius.
-    HAPIFloat height, radius;
+    /// The radius of the base of the cone.
+    HAPIFloat bottomRadius;
+    /// The height of the cone.
+    HAPIFloat height;
 
+    /// If false, both the inside and outside of the cone is rendered.
+    /// If true, only the outside is rendered.
+    bool solid;
+
+  
   };
 }
 
