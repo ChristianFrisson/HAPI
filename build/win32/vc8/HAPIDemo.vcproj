@@ -1613,34 +1613,39 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\..\HAPIDemo\ForceFieldWidgetsPage.h"
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			>
-		</File>
-		<File
-			RelativePath="..\..\..\HAPIDemo\HAPIDemo.h"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\HAPIDemo\HapticShapeConstraintWidgetsPage.h"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\HAPIDemo\PositionFunctionWidgetsPage.h"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\HAPIDemo\SpringWidgetsPage.h"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\HAPIDemo\TimeFunctionWidgetsPage.h"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\HAPIDemo\ViscosityWidgetsPage.h"
-			>
-		</File>
+			<File
+				RelativePath="..\..\..\HAPIDemo\ForceFieldWidgetsPage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\HAPIDemo\HAPIDemo.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\HAPIDemo\HapticShapeConstraintWidgetsPage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\HAPIDemo\PositionFunctionWidgetsPage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\HAPIDemo\SpringWidgetsPage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\HAPIDemo\TimeFunctionWidgetsPage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\HAPIDemo\ViscosityWidgetsPage.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

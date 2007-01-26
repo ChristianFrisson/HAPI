@@ -1,9 +1,14 @@
 #include "HapticShapeConstraintWidgetsPage.h"
+#include <wx/tokenzr.h>
+#include <wx/msgdlg.h>
 #include "HapticSphere.h"
 #include "HapticBox.h"
 #include "HapticCone.h"
 #include "HapticCylinder.h"
 #include "HapticTriangle.h"
+#include "HapticLineSet.h"
+#include "HapticPointSet.h"
+#include "HapticTriangleSet.h"
 using namespace HAPI;
 
 enum
@@ -27,7 +32,10 @@ enum
   triangle_vertex2Z,
   triangle_vertex3X,
   triangle_vertex3Y,
-  triangle_vertex3Z
+  triangle_vertex3Z,
+  line_set_points_ValueText,
+  point_set_points_ValueText,
+  triangle_set_triangles_ValueText
 };
 
 enum {
@@ -35,7 +43,10 @@ enum {
   Button_box,
   Button_cone,
   Button_cylinder,
-  Button_triangle
+  Button_triangle,
+  Button_LineSet,
+  Button_PointSet,
+  Button_TriangleSet
 };
 
 BEGIN_EVENT_TABLE(HapticShapeConstraintWidgetsPage, WidgetsPage)
@@ -69,7 +80,7 @@ HapticShapeConstraintWidgetsPage::HapticShapeConstraintWidgetsPage(wxBookCtrlBas
                                    wxDefaultPosition, wxDefaultSize,
                                    WXSIZEOF(interpolate), interpolate);
 
-    sizerLeft->Add(m_radioInterpolate, 0, wxGROW | wxALL, 5);
+    sizerLeft->Add(m_radioInterpolate, 0, wxALL, 5);
 
     sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
 
@@ -80,12 +91,15 @@ HapticShapeConstraintWidgetsPage::HapticShapeConstraintWidgetsPage(wxBookCtrlBas
         _T("Box"),
         _T("Cone"),
         _T("Cylinder"),
-        _T("Triangle")
+        _T("Triangle"),
+        _T("LineSet"),
+        _T("PointSet"),
+        _T("TriangleSet")
     };
 
     m_radio_shapes = new wxRadioBox(this, wxID_ANY, _T("&Shape"),
                                    wxDefaultPosition, wxDefaultSize,
-                                   WXSIZEOF(shapes), shapes);
+                                   WXSIZEOF(shapes), shapes, 3, wxRA_SPECIFY_COLS );
 
     sizerLeft->Add(m_radio_shapes, 0, wxGROW | wxALL, 5);
 
@@ -97,7 +111,7 @@ HapticShapeConstraintWidgetsPage::HapticShapeConstraintWidgetsPage(wxBookCtrlBas
                                             &m_txt_spring_constant,
                                             this );
     
-    sizerLeft->Add( sizerRow, 0, wxGROW | wxALL, 5 );
+    sizerLeft->Add( sizerRow, 0, wxALL, 5 );
 
     rightPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxSize( 400, 100 ) );
     wxSizer *sizerMiddle = new wxBoxSizer(wxVERTICAL);
@@ -289,6 +303,57 @@ HapticShapeConstraintWidgetsPage::HapticShapeConstraintWidgetsPage(wxBookCtrlBas
     triangle_panel->Hide();
     // End Triangle
 
+    // LineSet
+    lineSet_panel = new wxPanel( rightPanel, wxID_ANY, wxDefaultPosition, wxSize( 100, 100 ));
+    wxSizer *lineSet_content = new wxBoxSizer( wxVERTICAL );
+
+    lineSet_content->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
+
+    sizerRow = CreateSizerWithTextAndLabel(
+      _T("points:"),
+      line_set_points_ValueText,
+      &m_txt_line_set_points,
+      lineSet_panel );
+    lineSet_content->Add( sizerRow, 0, wxALL | wxGROW, 5 );
+
+    lineSet_panel->SetSizer( lineSet_content );
+    lineSet_panel->Hide();
+    // End LineSet
+
+    // PointSet
+    pointSet_panel = new wxPanel( rightPanel, wxID_ANY, wxDefaultPosition, wxSize( 100, 100 ));
+    wxSizer *pointSet_content = new wxBoxSizer( wxVERTICAL );
+
+    pointSet_content->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
+
+    sizerRow = CreateSizerWithTextAndLabel(
+      _T("points:"),
+      point_set_points_ValueText,
+      &m_txt_point_set_points,
+      pointSet_panel );
+    pointSet_content->Add( sizerRow, 0, wxALL | wxGROW, 5 );
+
+    pointSet_panel->SetSizer( pointSet_content );
+    pointSet_panel->Hide();
+    // End PointSet
+
+    // TriangleSet
+    triangleSet_panel = new wxPanel( rightPanel, wxID_ANY, wxDefaultPosition, wxSize( 100, 100 ));
+    wxSizer *triangleSet_content = new wxBoxSizer( wxVERTICAL );
+
+    triangleSet_content->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
+
+    sizerRow = CreateSizerWithTextAndLabel(
+      _T("triangles:"),
+      triangle_set_triangles_ValueText,
+      &m_txt_triangle_set_triangles,
+      triangleSet_panel );
+    triangleSet_content->Add( sizerRow, 0, wxALL | wxGROW, 5 );
+
+    triangleSet_panel->SetSizer( triangleSet_content );
+    triangleSet_panel->Hide();
+    // End TriangleSet
+
     sizerTop->Add(sizerLeft, 0, wxALL | wxGROW, 10);
     sizerTop->Add(sizerMiddle, 1, wxALL | wxEXPAND, 10);
 
@@ -350,6 +415,23 @@ void HapticShapeConstraintWidgetsPage::Reset()
     triangle_vertex3.y = 0.05 * 1000;
     m_txt_triangle_3Z->SetValue( _T("0.01") );
     triangle_vertex3.z = 0.01 * 1000;
+
+    m_txt_line_set_points->SetValue("-0.1 0 0, 0.1 0 0");
+    if( !line_set_lines.empty() )
+      line_set_lines.clear();
+    line_set_lines.push_back( Bounds::LineSegment( Vec3( -0.1 * 1000, 0, 0 ), Vec3( 0.1 * 1000, 0, 0 ) ) );
+
+    m_txt_point_set_points->SetValue("-0.05 0 0, 0.05 0 0");
+    if( !point_set_points.empty() )
+      point_set_points.clear();
+    point_set_points.push_back( Bounds::Point( Vec3( -0.05 * 1000, 0, 0 ) ) );
+    point_set_points.push_back( Bounds::Point( Vec3( 0.05 * 1000, 0, 0 ) ) );
+
+    m_txt_triangle_set_triangles->SetValue("-0.05 0 0, 0.05 0 0, 0 0 -0.05, -0.05 0 0, 0.05 0 0, 0 0.05 0");
+    if( !triangle_set_triangles.empty() )
+      triangle_set_triangles.clear();
+    triangle_set_triangles.push_back( Bounds::Triangle( Vec3( -0.05 * 1000, 0, 0 ), Vec3( 0.05 * 1000, 0, 0 ), Vec3( 0, 0, -0.05 ) ) );
+    triangle_set_triangles.push_back( Bounds::Triangle( Vec3( -0.05 * 1000, 0, 0 ), Vec3( 0.05 * 1000, 0, 0 ), Vec3( 0, 0.05 * 1000, 0 ) ) );
 }
 
 void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSED(event))
@@ -376,7 +458,10 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
     box_panel->Hide();
     cone_panel->Hide();
     cylinder_panel->Hide();
+    lineSet_panel->Hide();
+    pointSet_panel->Hide();
     triangle_panel->Hide();
+    triangleSet_panel->Hide();
     panel_sizer->Clear();
     panel_sizer->Add( sphere_panel, 0, wxALL | wxGROW, 0 );
     sphere_panel->Show();
@@ -392,7 +477,10 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
     sphere_panel->Hide();
     cone_panel->Hide();
     cylinder_panel->Hide();
+    lineSet_panel->Hide();
+    pointSet_panel->Hide();
     triangle_panel->Hide();
+    triangleSet_panel->Hide();
     panel_sizer->Clear();
     panel_sizer->Add( box_panel, 0, wxALL | wxGROW, 0 );
     box_panel->Show();
@@ -404,8 +492,11 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
     choosen_shape = Button_cone;
     box_panel->Hide();
     cylinder_panel->Hide();
+    lineSet_panel->Hide();
+    pointSet_panel->Hide();
     sphere_panel->Hide();
     triangle_panel->Hide();
+    triangleSet_panel->Hide();
     panel_sizer->Clear();
     panel_sizer->Add( cone_panel, 0, wxALL | wxGROW, 0 );
     cone_panel->Show();
@@ -416,8 +507,11 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
     choosen_shape = Button_cylinder;
     box_panel->Hide();
     cone_panel->Hide();
+    lineSet_panel->Hide();
+    pointSet_panel->Hide();
     sphere_panel->Hide();
     triangle_panel->Hide();
+    triangleSet_panel->Hide();
     panel_sizer->Clear();
     panel_sizer->Add( cylinder_panel, 0, wxALL | wxGROW, 0 );
     cylinder_panel->Show();
@@ -429,11 +523,59 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
     box_panel->Hide();
     cone_panel->Hide();
     cylinder_panel->Hide();
+    lineSet_panel->Hide();
+    pointSet_panel->Hide();
     sphere_panel->Hide();
+    triangleSet_panel->Hide();
     panel_sizer->Clear();
     panel_sizer->Add( triangle_panel, 0, wxALL | wxGROW, 0 );
     triangle_panel->Show();
     panel_sizer->Layout();  
+    break;
+
+  case Button_LineSet:
+    choosen_shape = Button_LineSet;
+    box_panel->Hide();
+    cone_panel->Hide();
+    cylinder_panel->Hide();
+    pointSet_panel->Hide();
+    sphere_panel->Hide();
+    triangle_panel->Hide();
+    triangleSet_panel->Hide();
+    panel_sizer->Clear();
+    panel_sizer->Add( lineSet_panel, 0, wxALL | wxGROW, 0 );
+    lineSet_panel->Show();
+    panel_sizer->Layout();  
+    break;
+
+  case Button_PointSet:
+    choosen_shape = Button_PointSet;
+    box_panel->Hide();
+    cone_panel->Hide();
+    cylinder_panel->Hide();
+    lineSet_panel->Hide();
+    sphere_panel->Hide();
+    triangle_panel->Hide();
+    triangleSet_panel->Hide();
+    panel_sizer->Clear();
+    panel_sizer->Add( pointSet_panel, 0, wxALL | wxGROW, 0 );
+    pointSet_panel->Show();
+    panel_sizer->Layout();
+    break;
+
+  case Button_TriangleSet:
+    choosen_shape = Button_TriangleSet;
+    box_panel->Hide();
+    cone_panel->Hide();
+    cylinder_panel->Hide();
+    lineSet_panel->Hide();
+    sphere_panel->Hide();
+    triangle_panel->Hide();
+    pointSet_panel->Hide();
+    panel_sizer->Clear();
+    panel_sizer->Add( triangleSet_panel, 0, wxALL | wxGROW, 0 );
+    triangleSet_panel->Show();
+    panel_sizer->Layout();
     break;
   }
 }
@@ -519,6 +661,95 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         triangle_vertex3.z = val * 1000;
       }
       force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticTriangle( Bounds::Triangle( triangle_vertex1, triangle_vertex2, triangle_vertex3 ), 0, 0, Matrix4() ), spring_constant ) );
+      break;
+    }
+
+    case Button_LineSet: {
+      wxString temp_string = m_txt_line_set_points->GetValue();
+      wxStringTokenizer tkz( temp_string, wxT(","), wxTOKEN_STRTOK );
+      vector< HAPIFloat > line_values;
+      while ( tkz.HasMoreTokens() )
+      {
+        wxString token = tkz.GetNextToken();
+        wxStringTokenizer vec3_tkz( token, wxT(" "), wxTOKEN_STRTOK );
+        while( vec3_tkz.HasMoreTokens() ) {
+          wxString value = vec3_tkz.GetNextToken();
+          if( value.ToDouble(&val) ) {
+            line_values.push_back( val );
+          }
+        }
+      }
+
+      if( !line_values.empty() && line_values.size() > 5 ) {
+        line_set_lines.clear();
+        for( int i = 0; i < line_values.size(); i += 3 ) {
+          if( line_values.size() - i > 5 ) {
+            line_set_lines.push_back( Bounds::LineSegment( Vec3( line_values[i] * 1000, line_values[i+1] * 1000, line_values[i+2] * 1000 ), Vec3( line_values[i+3] * 1000, line_values[i+4] * 1000, line_values[i+5] * 1000 ) ) );
+          }
+        }
+      }
+
+      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticLineSet( line_set_lines, 0, 0, Matrix4() ), spring_constant ) );
+      break;
+    }
+
+    case Button_PointSet: {
+      wxString temp_string = m_txt_point_set_points->GetValue();
+      wxStringTokenizer tkz( temp_string, wxT(","), wxTOKEN_STRTOK );
+      vector< HAPIFloat > point_values;
+      while ( tkz.HasMoreTokens() )
+      {
+        wxString token = tkz.GetNextToken();
+        wxStringTokenizer vec3_tkz( token, wxT(" "), wxTOKEN_STRTOK );
+        while( vec3_tkz.HasMoreTokens() ) {
+          wxString value = vec3_tkz.GetNextToken();
+          if( value.ToDouble(&val) ) {
+            point_values.push_back( val );
+          }
+        }
+      }
+
+      if( !point_values.empty() && point_values.size() > 2 ) {
+        point_set_points.clear();
+        for( int i = 0; i < point_values.size(); i += 3 ) {
+          if( point_values.size() - i > 2 ) {
+            point_set_points.push_back( Bounds::Point( Vec3( point_values[i] * 1000, point_values[i+1] * 1000, point_values[i+2] * 1000 ) ) );
+          }
+        }
+      }
+
+      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticPointSet( point_set_points, 0, 0, Matrix4() ), spring_constant ) );
+      break;
+    }
+
+    case Button_TriangleSet: {
+      wxString temp_string = m_txt_triangle_set_triangles->GetValue();
+      wxStringTokenizer tkz( temp_string, wxT(","), wxTOKEN_STRTOK );
+      vector< HAPIFloat > triangle_values;
+      while ( tkz.HasMoreTokens() )
+      {
+        wxString token = tkz.GetNextToken();
+        wxStringTokenizer vec3_tkz( token, wxT(" "), wxTOKEN_STRTOK );
+        while( vec3_tkz.HasMoreTokens() ) {
+          wxString value = vec3_tkz.GetNextToken();
+          if( value.ToDouble(&val) ) {
+            triangle_values.push_back( val );
+          }
+        }
+      }
+
+      if( !triangle_values.empty() && triangle_values.size() > 8 ) {
+        triangle_set_triangles.clear();
+        for( int i = 0; i < triangle_values.size(); i += 9 ) {
+          if( triangle_values.size() - i > 8 ) {
+            triangle_set_triangles.push_back( Bounds::Triangle( Vec3( triangle_values[i] * 1000, triangle_values[i+1] * 1000, triangle_values[i+2] * 1000 ),
+                                                                Vec3( triangle_values[i+3] * 1000, triangle_values[i+4] * 1000, triangle_values[i+5] * 1000 ),
+                                                                Vec3( triangle_values[i+6] * 1000, triangle_values[i+7] * 1000, triangle_values[i+8] * 1000 ) ) );
+          }
+        }
+      }
+
+      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticTriangleSet( triangle_set_triangles, 0, 0, Matrix4() ), spring_constant ) );
       break;
     }
   }

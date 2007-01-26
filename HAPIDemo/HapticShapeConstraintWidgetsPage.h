@@ -103,6 +103,18 @@ protected:
     wxTextCtrl *m_txt_triangle_3Z;
     HAPI::Vec3 triangle_vertex3;
 
+    wxPanel *lineSet_panel;
+    wxTextCtrl *m_txt_line_set_points;
+    vector< HAPI::Bounds::LineSegment > line_set_lines;
+
+    wxPanel *pointSet_panel;
+    wxTextCtrl *m_txt_point_set_points;
+    vector< HAPI::Bounds::Point > point_set_points;
+
+    wxPanel *triangleSet_panel;
+    wxTextCtrl *m_txt_triangle_set_triangles;
+    vector< HAPI::Bounds::Triangle > triangle_set_triangles;
+
     H3DUtil::AutoRef<HAPI::HapticShapeConstraint> force_effect;
 
 private:

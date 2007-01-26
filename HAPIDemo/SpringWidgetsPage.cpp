@@ -44,7 +44,7 @@ SpringWidgetsPage::SpringWidgetsPage(wxBookCtrlBase *book, AnyHapticsDevice *_hd
                                    wxDefaultPosition, wxDefaultSize,
                                    WXSIZEOF(interpolate), interpolate);
 
-    sizerLeft->Add(m_radioInterpolate, 0, wxGROW | wxALL, 5);
+    sizerLeft->Add(m_radioInterpolate, 0, wxALL, 5);
 
     sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
 
@@ -79,7 +79,7 @@ SpringWidgetsPage::SpringWidgetsPage(wxBookCtrlBase *book, AnyHapticsDevice *_hd
                                             &m_txt_spring_constant,
                                             this );
 
-    sizerLeft->Add( sizerRow, 0, wxALL | wxGROW, 5 );
+    sizerLeft->Add( sizerRow, 0, wxALL, 5 );
 
     sizerTop->Add(sizerLeft, 0, wxALL | wxGROW, 10);
 
