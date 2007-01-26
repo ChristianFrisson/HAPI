@@ -42,7 +42,7 @@ ViscosityWidgetsPage::ViscosityWidgetsPage(wxBookCtrlBase *book, AnyHapticsDevic
                                    wxDefaultPosition, wxDefaultSize,
                                    WXSIZEOF(interpolate), interpolate);
 
-    sizerLeft->Add(m_radioInterpolate, 0, wxGROW | wxALL, 5);
+    sizerLeft->Add(m_radioInterpolate, 0, wxALL, 5);
 
     sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
 

@@ -131,7 +131,7 @@ bool WidgetsApp::OnInit()
 #endif
 
 #if defined(__WXMSW__)
-    title += _T("wxMSW");
+    title += _T("");
 #elif defined(__WXGTK__)
     title += _T("wxGTK");
 #elif defined(__WXMAC__)
@@ -142,7 +142,7 @@ bool WidgetsApp::OnInit()
     title += _T("wxWidgets");
 #endif
 
-    WidgetsFrame *frame = new WidgetsFrame(title + _T(" widgets demo"));
+    WidgetsFrame *frame = new WidgetsFrame(title + _T("HAPI demo"));
     frame->Show();
 
     if( frame->hd.initDevice() != HAPI::HAPIHapticsDevice::SUCCESS ) {
@@ -177,7 +177,7 @@ WidgetsFrame::WidgetsFrame(const wxString& title)
     wxMenuBar *mbar = new wxMenuBar;
     wxMenu *menuWidget = new wxMenu;
     menuWidget->Append(wxID_EXIT, _T("&Quit\tCtrl-Q"));
-    mbar->Append(menuWidget, _T("&Widget"));
+    mbar->Append(menuWidget, _T("&HAPI"));
     SetMenuBar(mbar);
 
     mbar->Check(Widgets_Enable, true);
