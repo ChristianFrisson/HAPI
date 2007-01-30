@@ -536,7 +536,7 @@
 				AdditionalOptions="/EHsc "
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(WXWIN)\lib\vc_lib\msw&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\samples&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -565,11 +565,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="HAPI.lib wxmsw26_core.lib wxbase26.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib"
+				AdditionalDependencies="HAPI.lib wxmsw28_core.lib wxbase28.lib wxtiff.lib wxjpeg.lib wxpng.lib wxzlib.lib wxregex.lib wxexpat.lib winmm.lib comctl32.lib rpcrt4.lib wsock32.lib odbc32.lib"
 				OutputFile="$(OutDir)/HAPIDemo.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\build\win32\vc8\Release;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;..\..\..\..\HAPI\build\win32\vc8\Release;$(WXWIN)\lib\vc_lib"
+				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\build\win32\vc8\Release;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;..\..\..\..\HAPI\build\win32\vc8\Release"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release/HAPIDemo.pdb"
 				SubSystem="2"
