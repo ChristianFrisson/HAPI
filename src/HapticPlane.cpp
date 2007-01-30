@@ -21,19 +21,19 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticBox.cpp
-/// \brief cpp file for HapticBox
+/// \file HapticPlane.cpp
+/// \brief cpp file for HapticPlane
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "HapticBox.h"
+#include "HapticPlane.h"
 
 using namespace HAPI;
 #ifdef HjAVE_OPENHAPTICS
 /// Intersect the line segment from start_point to end_point with
 /// the object.  
 ///
-bool HapticBox::intersectSurface( const Vec3 &start_point, 
+bool HapticPlane::intersectSurface( const Vec3 &start_point, 
                                      const Vec3 &end_point,
                                      Vec3 &intersection_point, 
                                      Vec3 &intersection_normal,
@@ -108,7 +108,7 @@ bool HapticBox::intersectSurface( const Vec3 &start_point,
 /// Find the closest point to query_point on the surface of the
 /// object. 
 /// 
-bool HapticBox::closestFeature( const Vec3 &query_point, 
+bool HapticPlane::closestFeature( const Vec3 &query_point, 
                                    const Vec3 &target_point,
                                    HLgeom *geom,
                                    Vec3 &closest_point ) {
@@ -129,7 +129,7 @@ bool HapticBox::closestFeature( const Vec3 &query_point,
   return true;
 }
 
-void HapticBox::hlRender( HLHapticsDevice *hd) {
+void HapticPlane::hlRender( HLHapticsDevice *hd) {
   HLSurface *s = dynamic_cast< HLSurface * >( surface );
   if( s ) {
      glMatrixMode( GL_MODELVIEW );
@@ -157,186 +157,39 @@ void HapticBox::hlRender( HLHapticsDevice *hd) {
 }
 #endif // HAVE_OPENHAPTICS
 
-bool HapticBox::lineIntersect( const Vec3 &start_point, 
+bool HapticPlane::lineIntersect( const Vec3 &start_point, 
                                   const Vec3 &end_point,
                                   Bounds::IntersectionInfo &result ) {
-  HAPIFloat tmin = 0.0f;
-  HAPIFloat tmax = 1.0f;
   Matrix4 inverse = transform.inverse();
-  Vec3 local_end_point = inverse * end_point;
   Vec3 local_start_point = inverse * start_point;
-  Vec3 d = local_end_point - local_start_point;
-  // For all three slabs
-  for( int i = 0; i < 3; i++ ) {
-    if( H3DUtil::H3DAbs(d[i]) < Constants::epsilon ) {
-      // Ray is parallel to slab. No hit if origin not within slab;
-      if( start_point[i] < min[i] || start_point[i] > max[i] ) return false;
-    } else {
-      // Compute intersection t value of ray with near and far plane of slab
-      HAPIFloat ood = 1.0 / d[i];
-      HAPIFloat t1 = (min[i] - start_point[i]) * ood;
-      HAPIFloat t2 = (max[i] - start_point[i]) * ood;
-      // Make t1 be intersection with near plane, t2 with far plane
-      if( t1 > t2 ) {
-        HAPIFloat temp = t1;
-        t1 = t2;
-        t2 = temp;
-      }
-      // Compute the intersection of slab intersection intervals
-      if( t1 > tmin ) tmin = t1;
-      if( t2 > tmax ) tmax = t2;
-      // Exit with no collision as soon as slab intersection becomes empty
-      if( tmin > tmax ) return false;
-    }
-  }
-  // Ray intersect all 3 slabs. Return point and intersection t value (tmin)
-  Vec3 temp_point = start_point + d * tmin;
-  // TODO: Normal, should be 22 different cases. (inside outside too)
-  // is this failsafe and fast? the box is assumed to not have 0 size in any of
-  // the directions
-  Vec3 normal;
-  for( int i = 0; i < 3; i++ ) {
-    if( H3DUtil::H3DAbs(temp_point[i] - min[i]) <= Constants::epsilon )
-      normal[i] = normal[i] - 1;
-    else if( H3DUtil::H3DAbs( temp_point[i] - max[i]) <= Constants::epsilon )
-      normal[i] = normal[i] + 1;
-  }
-  normal.normalizeSafe();
-
-  result.point = transform * temp_point;
-  result.normal = transform.getRotationPart() * normal;
-  return true;
+  Vec3 local_end_point = inverse * end_point;
+  bool intersection = plane.lineIntersect( start_point, end_point, result );
+  if( intersection ) {
+    result.point = transform * result.point;
+    result.normal = transform.getRotationPart() * result.normal;
+    return true;
+  }    
+  else
+  return false;
 }
 
 
-void HapticBox::getConstraints(  const Vec3 &point,
+void HapticPlane::getConstraints(  const Vec3 &point,
                                     HAPIFloat r,
                                     std::vector< PlaneConstraint > &result ) {
-  Vec3 cp, n, tc;
-  closestPoint( point, cp, n, tc );
-  result.push_back( PlaneConstraint( cp, n, tc, this ) );
+  Vec3 p = transform.inverse() * point;
+  unsigned int size = result.size();
+  plane.getConstraints( p, result, HAPI::Bounds::FRONT_AND_BACK );
+  for( unsigned int i = size; i < result.size(); i ++ ) {
+    PlaneConstraint &pc = result[i];
+    pc.point = transform * pc.point;
+    pc.normal = transform.getRotationPart() * pc.normal;
+  }
 }
 
-void HapticBox::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) { 
-  Vec3 temp_p = transform.inverse() * p;
-  
-  bool inside[3] = {false, false, false };
-
-  for( int i = 0; i < 3; i++ ) {
-    HAPIFloat v = temp_p[i];
-    if( v < min[i] ) v = min[i];
-    else if( v > max[i] ) v = max[i];
-    else inside[i] = true;
-    cp[i] = v;
-  }
-
-  if( temp_p.x > min.x && temp_p.x < max.x &&
-      temp_p.y > min.y && temp_p.y < max.y &&
-      temp_p.z > min.z && temp_p.z < max.z ) {
-    
-    Vec3 closest = temp_p;
-    closest.x = min.x;
-    HAPIFloat dist = temp_p.x - min.x;
-    
-    HAPIFloat temp_dist = temp_p.y - min.y;
-    if( temp_dist < dist ) {
-      closest.x = temp_p.x;
-      closest.y = min.y;
-      dist = temp_dist;
-    }
-
-    temp_dist = temp_p.z - min.z;
-    if( temp_dist < dist ) {
-      closest = temp_p;
-      closest.z = min.z;
-      dist = temp_dist;
-    }
-
-    temp_dist = max.x - temp_p.x;
-    if( temp_dist < dist ) {
-      closest = temp_p;
-      closest.x = max.x;
-      dist = temp_dist;
-    }
-
-    temp_dist = max.y - temp_p.y;
-    if( temp_dist < dist ) {
-      closest = temp_p;
-      closest.y = max.y;
-      dist = temp_dist;
-    }
-
-    temp_dist = max.z - temp_p.z;
-    if( temp_dist < dist ) {
-      closest = temp_p;
-      closest.z = max.z;
-      dist = temp_dist;
-    }
-
-    cp = closest;
-  }
-
-  for( int i = 0; i < 3; i++ ) {
-    if( H3DUtil::H3DAbs(cp[i] - min[i]) <= Constants::epsilon )
-      n[i] = n[i] - 1;
-    else if( H3DUtil::H3DAbs( cp[i] - max[i]) <= Constants::epsilon )
-      n[i] = n[i] + 1;
-  }
-  n.normalizeSafe();
-
+void HapticPlane::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
+  Vec3 local_p = transform.inverse() * p;
+  plane.closestPoint( p, cp, n, tc );
   cp = transform * cp;
-  n = transform.getRotationPart() * cp;
-}
-
-void HapticBox::glRender() {
-  glMatrixMode( GL_MODELVIEW );
-  glPushMatrix();
-  const Matrix4 &m = transform;
-  GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
-                    m[0][1], m[1][1], m[2][1], 0,
-                    m[0][2], m[1][2], m[2][2], 0,
-                    m[0][3], m[1][3], m[2][3], 1 };
-  glMultMatrixd( vt );
-  glBegin( GL_QUADS );
-  // +z
-  glVertex3d( max.x, max.y , max.z );
-  glVertex3d( min.x, max.y , max.z );
-  glVertex3d( min.x, min.y , max.z );
-  glVertex3d( max.x, min.y , max.z );
-
-  //-z
-  glVertex3d( max.x, max.y , min.z );
-  glVertex3d( max.x, min.y , min.z );
-  glVertex3d( min.x, min.y , min.z );
-  glVertex3d( min.x, max.y , min.z );
-
-  //-y
-  glVertex3d( max.x, min.y , max.z );
-  glVertex3d( min.x, min.y , max.z );
-  glVertex3d( min.x, min.y , min.z );
-  glVertex3d( max.x, min.y , min.z );
-
-  //+y
-  glVertex3d( max.x, max.y , min.z );
-  glVertex3d( min.x, max.y , min.z );
-  glVertex3d( min.x, max.y , max.z );
-  glVertex3d( max.x, max.y , max.z );
-
-  //+x
-  glVertex3d( max.x, max.y , min.z );
-  glVertex3d( max.x, max.y , max.z );
-  glVertex3d( max.x, min.y , max.z );
-  glVertex3d( max.x, min.y , min.z );
-
-  //-x
-  glVertex3d( min.x, max.y , max.z );
-  glVertex3d( min.x, max.y , min.z );
-  glVertex3d( min.x, min.y , min.z );
-  glVertex3d( min.x, min.y , max.z );
-  glEnd();
-  glPopMatrix();
-}
-
-int HapticBox::nrTriangles() {
-  return 12;
+  n = transform.getRotationPart() * n;
 }

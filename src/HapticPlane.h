@@ -22,39 +22,39 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticBox.h
-/// \brief Header file for HapticBox
+/// \file HapticPlane.h
+/// \brief Header file for HapticPlane
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __HAPTICBOX_H__
-#define __HAPTICBOX_H__
+#ifndef __HapticPlane_H__
+#define __HapticPlane_H__
 
 #include <HAPISurfaceObject.h>
 #include <HAPIHapticShape.h>
 
 namespace HAPI {
 
-  /// Class for rendering a haptic Box.
-  class HAPI_API HapticBox: public HAPIHapticShape {
+  /// Class for rendering a haptic Plane.
+  class HAPI_API HapticPlane: public HAPIHapticShape {
   public:
     /// Constructor.
-    /// \param _size The size of the box.
-    /// \param _solid   If false, both the inside and outside of the box is 
-    /// rendered. If true, only the outside is rendered.
-    /// \param _surface The Surface of the box.
-    HapticBox( Vec3 _size,
+    /// \param _point  A point in the plane
+    /// \param _normal  The normal of the plane (length 1)
+    /// \param _solid   If false, both the front and the back of the plane is 
+    /// rendered. If true, only the front is rendered.
+    /// \param _surface The Surface of the plane.
+    HapticPlane( Vec3 _point,
+                  Vec3 _normal,
                   bool _solid,
                   void *_userdata,
                   HAPISurfaceObject *_surface,
                   const Matrix4 &_transform ):
       HAPIHapticShape( _userdata, _surface, _transform ),
-      size( _size ),
-      solid( _solid ) {
-        Vec3 half_size = size / 2;
-        min = -half_size;
-        max = half_size;
-      }
+      point( _point ),
+      normal( _normal ),
+      solid( _solid ),
+      plane( Bounds::Plane( _point, _normal ) ){ }
 #ifdef HAVE_OPENHAPTICSfff
 fdas
     /// Intersect the line segment from start_point to end_point with
@@ -91,7 +91,7 @@ fdas
                                  HLgeom *geom,
                                  Vec3 &closest_point );    
 
-    /// hlRender is overriden to set up which sides of the sphere is touchable. 
+    /// hlRender is overriden to set up which sides of the plane is touchable. 
     virtual void hlRender( HLHapticsDevice *hd );
 #endif
     virtual bool lineIntersect( const Vec3 &from, 
@@ -104,20 +104,9 @@ fdas
 
     virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );
 
-    virtual void glRender();
-
-    virtual int nrTriangles();
-
-    /// The size of the Box (x, y, z )
-    Vec3 size;
-    /// The min and max extents of the box ( x, y, z )
-    Vec3 min, max;
-
-    /// If false, both the inside and outside of the box is rendered.
-    /// If true, only the outside is rendered.
+    Vec3 point, normal;
+    Bounds::Plane plane;
     bool solid;
-
-  
   };
 }
 
