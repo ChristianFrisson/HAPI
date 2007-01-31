@@ -73,13 +73,13 @@ namespace HAPI {
   protected:
     /// Implementation of updateDeviceValues using HD API to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt ) {
-      if( hd.get() ) return hd->updateDeviceValues( dv, dt );
+      if( hd.get() ) hd->updateDeviceValues( dv, dt );
     }
 
     /// Implementation of sendOutput using HD API to send forces.
     virtual void sendOutput( DeviceOutput &dv,
                              HAPITime dt ) {
-      if( hd.get() ) return hd->sendOutput( dv, dt );
+      if( hd.get() ) hd->sendOutput( dv, dt );
     }
 
     /// Implementation of initHapticsDevice using HD API.
