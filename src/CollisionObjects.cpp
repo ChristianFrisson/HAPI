@@ -319,6 +319,8 @@ void SphereBound::fitAroundPoints( const vector< Vec3 > &points ) {
 struct StackElement {
   BinaryBoundTree *tree;
   vector< int > triangles;
+  vector< int > linesegments;
+  vector< int > points;
 }; 
 
 BinaryBoundTree::BinaryBoundTree( BoundNewFunc func, 
@@ -363,18 +365,18 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 			continue;
 		}
 
-		std::vector<Vec3 > points;
+		std::vector<Vec3 > fitting_points;
 		points.reserve( stack_triangles.size() * 3 );
 		for (unsigned int i=0 ; i<stack_triangles.size() ; i++ ) {
       const Triangle &tri = triangle_vector[ stack_triangles[i ] ];
-      points.push_back( tri.a );
-      points.push_back( tri.b );
-      points.push_back( tri.c);
+      fitting_points.push_back( tri.a );
+      fitting_points.push_back( tri.b );
+      fitting_points.push_back( tri.c);
     }
     
     //	build bounding shape
 		stack_tree->bound.reset( new_func() );
-    stack_tree->bound->fitAroundPoints( points );
+    stack_tree->bound->fitAroundPoints( fitting_points );
 		
     //	DIVIDE SUBSET AND RECURSE
     //	longest axis
@@ -440,6 +442,246 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 	}
 } 
 
+BinaryBoundTree::BinaryBoundTree( BoundNewFunc func, 
+                       const vector< Triangle > &triangle_vector,
+                       const vector< LineSegment > &linesegment_vector,
+                       const vector< Point > &point_vector,
+                       unsigned int max_nr_triangles_in_leaf ):
+  left( NULL ), right( NULL ), new_func( func ) {
+
+  std::stack< StackElement > stack;
+	
+  if( triangle_vector.size() == 0 &&
+      linesegment_vector.size() == 0 &&
+      point_vector.size() == 0 ) return;
+ 
+  //	add the starting subtree to stack...
+	StackElement start;
+	start.tree = this;
+
+  vector< Vec3 > point_reps_triangles;
+  point_reps_triangles.reserve( triangle_vector.size() );
+
+  vector< Vec3 > point_reps_linesegments;
+  point_reps_linesegments.reserve( linesegment_vector.size() );
+
+  vector< Vec3 > point_reps_points;
+  point_reps_points.reserve( point_vector.size() );
+
+	start.triangles.reserve( triangle_vector.size() );
+  for( unsigned int i = 0; i < triangle_vector.size(); i++ ) {
+    start.triangles.push_back( i );
+    point_reps_triangles.push_back( triangle_vector[i].pointRepresentation() );
+  }
+
+  start.linesegments.reserve( linesegment_vector.size() );
+  for( unsigned int i = 0; i < linesegment_vector.size(); i++ ) {
+    start.linesegments.push_back( i );
+    point_reps_linesegments.push_back(
+      linesegment_vector[i].pointRepresentation() );
+  }
+
+  start.points.reserve( point_vector.size() );
+  for( unsigned int i = 0; i < point_vector.size(); i++ ) {
+    start.points.push_back( i );
+    point_reps_points.push_back( point_vector[i].pointRepresentation() );
+  }
+
+	stack.push( start );
+  //cerr << start.triangles.size() << endl;
+  //	BUILD TREE
+	while( !stack.empty() ) {
+		const std::vector< int > &stack_triangles = stack.top().triangles;
+    const std::vector< int > &stack_linesegments = stack.top().linesegments;
+    const std::vector< int > &stack_points = stack.top().points;
+		BinaryBoundTree* stack_tree = stack.top().tree;
+
+	  if (max_nr_triangles_in_leaf < 0 ||
+        ( stack_triangles.size() <= max_nr_triangles_in_leaf &&
+          stack_linesegments.size() <= max_nr_triangles_in_leaf &&
+          stack_points.size() <= max_nr_triangles_in_leaf ) ) {
+      //	build a leaf
+			stack_tree->triangles.reserve( stack_triangles.size() );
+      for( unsigned int i = 0; i < stack_triangles.size(); i++ ) {
+        stack_tree->triangles.push_back( triangle_vector[stack_triangles[i]] );
+      }
+
+      stack_tree->linesegments.reserve( stack_linesegments.size() );
+      for( unsigned int i = 0; i < stack_linesegments.size(); i++ ) {
+        stack_tree->linesegments.push_back(
+          linesegment_vector[stack_linesegments[i]] );
+      }
+
+      stack_tree->points.reserve( stack_points.size() );
+      for( unsigned int i = 0; i < stack_points.size(); i++ ) {
+        stack_tree->points.push_back( point_vector[stack_points[i]] );
+      }
+      stack.pop();
+			continue;
+		}
+
+		std::vector<Vec3 > fitting_points;
+    fitting_points.reserve( stack_triangles.size() * 3 +
+      stack_linesegments.size() * 2 + stack_points.size() );
+		for (unsigned int i=0 ; i<stack_triangles.size() ; i++ ) {
+      const Triangle &tri = triangle_vector[ stack_triangles[i ] ];
+      fitting_points.push_back( tri.a );
+      fitting_points.push_back( tri.b );
+      fitting_points.push_back( tri.c);
+    }
+
+    for (unsigned int i=0 ; i<stack_linesegments.size() ; i++ ) {
+      const LineSegment &ls = linesegment_vector[ stack_linesegments[i ] ];
+      fitting_points.push_back( ls.start );
+      fitting_points.push_back( ls.end );
+    }
+
+    for (unsigned int i=0 ; i<stack_points.size() ; i++ ) {
+      const Point &p = point_vector[ stack_points[i ] ];
+      fitting_points.push_back( p.position );
+    }
+    
+    //	build bounding shape
+		stack_tree->bound.reset( new_func() );
+    stack_tree->bound->fitAroundPoints( fitting_points );
+		
+    //	DIVIDE SUBSET AND RECURSE
+    //	longest axis
+		Vec3 axis = stack_tree->bound->longestAxis();
+
+    //	middle point of current set
+		Vec3 mid(0,0,0);
+
+    for(unsigned int i = 0 ; i < stack_triangles.size() ; i++) {
+      mid = mid + point_reps_triangles[stack_triangles[i]];
+    }
+
+    for(unsigned int i = 0 ; i < stack_linesegments.size() ; i++) {
+      mid = mid + point_reps_linesegments[stack_linesegments[i]];
+    }
+
+    for(unsigned int i = 0 ; i < stack_points.size() ; i++) {
+      mid = mid + point_reps_points[stack_points[i]];
+    }
+
+    mid = (1.0f/(stack_triangles.size() + stack_linesegments.size() +
+      stack_points.size()) ) * mid;	//divide by N
+    
+    //	build subsets based on axis/middle point
+		std::vector<int> left_triangles;
+		std::vector<int> right_triangles;
+    
+    left_triangles.reserve( stack_triangles.size() / 2 );
+    right_triangles.reserve( stack_triangles.size() / 2 );
+    
+		for( unsigned int i = 0 ; i<stack_triangles.size() ; i++ ) {
+      Vec3 mid_to_point = 
+        point_reps_triangles[ stack_triangles[i] ] - mid;
+      if ( mid_to_point * axis < 0 )
+				left_triangles.push_back(stack_triangles[i]);
+			else
+				right_triangles.push_back(stack_triangles[i]);
+    }
+		
+    //	anity check... sometimes current subset cannot be divided by longest 
+    // axis: change axis or just half
+		if ( (left_triangles.size() == 0) || (right_triangles.size() == 0) ) {
+			left_triangles.clear();
+			right_triangles.clear();
+			for (unsigned int i = 0 ; i<stack_triangles.size()/2 ; i++) 
+        left_triangles.push_back(stack_triangles[i]);
+			for (unsigned int i = stack_triangles.size()/2;
+        i<stack_triangles.size() ; i++) 
+        right_triangles.push_back(stack_triangles[i]);
+		}
+
+    //	build subsets based on axis/middle point
+		std::vector<int> left_linesegments;
+		std::vector<int> right_linesegments;
+    
+    left_linesegments.reserve( stack_linesegments.size() / 2 );
+    right_linesegments.reserve( stack_linesegments.size() / 2 );
+    
+		for( unsigned int i = 0 ; i<stack_linesegments.size() ; i++ ) {
+      Vec3 mid_to_point = 
+        point_reps_linesegments[ stack_linesegments[i] ] - mid;
+      if ( mid_to_point * axis < 0 )
+				left_linesegments.push_back(stack_linesegments[i]);
+			else
+				right_linesegments.push_back(stack_linesegments[i]);
+    }
+		
+    //	anity check... sometimes current subset cannot be divided by longest 
+    // axis: change axis or just half
+		if ( (left_linesegments.size() == 0) || (right_linesegments.size() == 0) ) {
+			left_linesegments.clear();
+			right_linesegments.clear();
+			for (unsigned int i = 0 ; i<stack_linesegments.size()/2 ; i++) 
+        left_linesegments.push_back(stack_linesegments[i]);
+			for (unsigned int i = stack_linesegments.size()/2 ;
+        i<stack_linesegments.size() ; i++) 
+        right_linesegments.push_back(stack_linesegments[i]);
+		}
+
+    //	build subsets based on axis/middle point
+		std::vector<int> left_points;
+		std::vector<int> right_points;
+    
+    left_points.reserve( stack_points.size() / 2 );
+    right_points.reserve( stack_points.size() / 2 );
+    
+		for( unsigned int i = 0 ; i<stack_points.size() ; i++ ) {
+      Vec3 mid_to_point = 
+        point_reps_points[ stack_points[i] ] - mid;
+      if ( mid_to_point * axis < 0 )
+				left_points.push_back(stack_points[i]);
+			else
+				right_points.push_back(stack_points[i]);
+    }
+		
+    //	anity check... sometimes current subset cannot be divided by longest 
+    // axis: change axis or just half
+		if ( (left_points.size() == 0) || (right_points.size() == 0) ) {
+			left_points.clear();
+			right_points.clear();
+			for (unsigned int i = 0 ; i<stack_points.size()/2 ; i++) 
+        left_points.push_back(stack_points[i]);
+			for (unsigned int i = stack_points.size()/2;
+        i<stack_points.size() ; i++) 
+        right_points.push_back(stack_points[i]);
+		}
+		
+		stack.pop();
+
+    //	do recurse
+		if ( left_triangles.size() != 0 ||
+         left_linesegments.size() != 0 ||
+         left_points.size() != 0 ) {
+      stack_tree->left.reset( new BinaryBoundTree );
+			
+			StackElement element;
+			element.tree = stack_tree->left.get();
+			element.triangles.swap( left_triangles );
+      element.linesegments.swap( left_linesegments );
+      element.points.swap( left_points );
+			stack.push( element );
+		}
+		
+		if ( right_triangles.size() != 0 ||
+         right_linesegments.size() != 0 ||
+         right_points.size() != 0 ) {
+			stack_tree->right.reset( new BinaryBoundTree );
+			
+			StackElement element;
+			element.tree = stack_tree->right.get();
+			element.triangles.swap( right_triangles );
+      element.linesegments.swap( right_linesegments );
+      element.points.swap( right_points );
+			stack.push( element );
+		}
+	}
+}
+
 void BinaryBoundTree::render() {
   render( 0 );
 }
@@ -473,6 +715,12 @@ void BinaryBoundTree::render( int depth) {
   } else {
     for( unsigned int i = 0; i < triangles.size(); i++ ) { 
       triangles[i].render();
+    }
+    for( unsigned int i = 0; i < linesegments.size(); i++ ) { 
+      linesegments[i].render();
+    }
+    for( unsigned int i = 0; i < points.size(); i++ ) { 
+      points[i].render();
     }
   }
 }
@@ -958,7 +1206,8 @@ cerr << "FD";
   }
 
   HAPIFloat cyl_t;
-  bool intersect = Bounds::intersectSegmentCylinder( from, to, a, b, radius, cyl_t );
+  bool intersect = Bounds::intersectSegmentCylinder(
+    from, to, a, b, radius, cyl_t );
   HAPIFloat intersection_point_t;
   if( intersect ) {
     intersection_point_t = cyl_t;
@@ -1045,6 +1294,10 @@ void BinaryBoundTree::clearCollidedFlag() {
   } else {
     for( unsigned int i = 0; i < triangles.size(); i++ )
       triangles[i].collided = false;
+    for( unsigned int i = 0; i < linesegments.size(); i++ )
+      linesegments[i].collided = false;
+    for( unsigned int i = 0; i < points.size(); i++ )
+      points[i].collided = false;
   }
 }
 
@@ -1067,10 +1320,36 @@ bool BinaryBoundTree::lineIntersect( const Vec3 &from,
         }
         else
           result = tempResult;
-        return true;
       }
 		}
-		return false;
+
+    for( unsigned int i = 0; i < linesegments.size(); i++ ) {
+      LineSegment &ls = linesegments[i];
+      if( ls.lineIntersect( from, to, tempResult, face ) ) {
+        if( result.intersection) {
+          if( (tempResult.point - from).lengthSqr() < 
+              (result.point - from).lengthSqr() )
+            result = tempResult;
+        }
+        else
+          result = tempResult;
+      }
+		}
+
+    for( unsigned int i = 0; i < points.size(); i++ ) {
+      Point &p = points[i];
+      if( p.lineIntersect( from, to, tempResult, face ) ) {
+        if( result.intersection) {
+          if( (tempResult.point - from).lengthSqr() < 
+              (result.point - from).lengthSqr() )
+            result = tempResult;
+        }
+        else
+          result = tempResult;
+      }
+		}
+    return result.intersection;
+		//return false;
 	}	else 	{
 		if ( bound->boundIntersect( from, to ) )	{
 			bool overlap = false;
@@ -1093,6 +1372,16 @@ bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
       Triangle &t = triangles[i];
       if( t.movingSphereIntersectRobust( radius, from, to ) )	return true;
+		}
+
+    for( unsigned int i = 0; i < linesegments.size(); i++ ) {
+      LineSegment &ls = linesegments[i];
+      if( ls.movingSphereIntersect( radius, from, to ) )	return true;
+		}
+
+    for( unsigned int i = 0; i < points.size(); i++ ) {
+      Point &pt = points[i];
+      if( pt.movingSphereIntersect( radius, from, to ) )	return true;
 		}
 		return false;
 	}	else 	{
@@ -1400,6 +1689,14 @@ void BinaryBoundTree::getConstraints( const Vec3 &point,
       Triangle &t = triangles[i];
       t.getConstraints( point, constraints, face );
 		}
+    for( unsigned int i = 0; i < linesegments.size(); i++ ) {
+      LineSegment &ls = linesegments[i];
+      ls.getConstraints( point, constraints, face );
+		}
+    for( unsigned int i = 0; i < points.size(); i++ ) {
+      Point &pt = points[i];
+      pt.getConstraints( point, constraints, face );
+		}
 	}	else 	{
 		//if ( bound->boundIntersect( from, to ) )	{
     if (left.get()) left->getConstraints( point, constraints, face );
@@ -1445,6 +1742,47 @@ void BinaryBoundTree::getTrianglesWithinRadius( const Vec3 &p,
 
     if (left.get()) left->getTrianglesWithinRadius( p, radius, result );
     if (right.get()) right->getTrianglesWithinRadius( p, radius, result );
+  }
+}
+
+void BinaryBoundTree::getPrimitivesWithinRadius( const Vec3 &p,
+                                                HAPIFloat radius,
+                                                vector< Triangle > &tris,
+                                                vector< LineSegment > &lines,
+                                                vector< Point > &pts ) {
+  HAPIFloat r2 = radius * radius;
+  if ( isLeaf() )	{
+    for( vector< Triangle >::iterator i = triangles.begin();
+         i != triangles.end(); i++ ) {
+      Vec3 cp, tmp;
+      (*i).closestPoint( p, cp, tmp, tmp );
+      if( (cp - p).lengthSqr() <= r2 )
+        tris.push_back( *i );
+    }
+
+    for( vector< LineSegment >::iterator i = linesegments.begin();
+         i != linesegments.end(); i++ ) {
+      Vec3 cp, tmp;
+      (*i).closestPoint( p, cp, tmp, tmp );
+      if( (cp - p).lengthSqr() <= r2 )
+        lines.push_back( *i );
+    }
+
+    for( vector< Point >::iterator i = points.begin();
+         i != points.end(); i++ ) {
+      Vec3 cp, tmp;
+      (*i).closestPoint( p, cp, tmp, tmp );
+      if( (cp - p).lengthSqr() <= r2 )
+        pts.push_back( *i );
+    }
+    //cerr << "!: " << triangles.size() << endl;
+           //result.insert( result.end(), triangles.begin(), triangles.end() );
+	}	else 	{
+    Vec3 cp = bound->boundClosestPoint( p );
+    if( (cp - p).lengthSqr() > r2 && !bound->insideBound(p) ) return;
+
+    if (left.get()) left->getPrimitivesWithinRadius( p, radius, tris, lines, pts );
+    if (right.get()) right->getPrimitivesWithinRadius( p, radius, tris, lines, pts );
   }
 }
 
@@ -1843,6 +2181,41 @@ void BinaryBoundTree::getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
   }
 }
 
+void BinaryBoundTree::getPrimitivesIntersectedByMovingSphere(
+                HAPIFloat radius,
+                Vec3 from,
+                Vec3 to,
+                vector< Triangle > &result_triangles,
+                vector< LineSegment > &result_lines,
+                vector< Point > &result_points ) {
+  if ( isLeaf() )	{
+    for( vector< Triangle >::iterator i = triangles.begin();
+         i != triangles.end(); i++ ) {
+      if( (*i).movingSphereIntersect( radius, from, to ) )
+        result_triangles.push_back( *i );
+    }
+
+    for( vector< LineSegment >::iterator i = linesegments.begin();
+         i != linesegments.end(); i++ ) {
+      if( (*i).movingSphereIntersect( radius, from, to ) )
+        result_lines.push_back( *i );
+    }
+
+    for( vector< Point >::iterator i = points.begin();
+         i != points.end(); i++ ) {
+      if( (*i).movingSphereIntersect( radius, from, to ) )
+        result_points.push_back( *i );
+    }
+	}	else 	{
+    if(  !bound->boundMovingSphereIntersect( radius, from, to ) ) return;
+
+    if (left.get()) left->getPrimitivesIntersectedByMovingSphere( radius,
+      from, to, result_triangles, result_lines, result_points );
+    if (right.get()) right->getPrimitivesIntersectedByMovingSphere( radius,
+      from, to, result_triangles, result_lines, result_points );
+  }
+}
+
 void BinaryBoundTree::closestPoint( const Vec3 &p,
                                     Vec3 &closest_point,
                                     Vec3 &closest_normal,
@@ -1857,6 +2230,343 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
       (*i).closestPoint( p, point, normal, tex_coord );
       Vec3 v = p - cp;
       if( i == triangles.begin() ) {
+        cp = point;
+        cn = normal;
+        d2 = v * v;
+      } else {
+        HAPIFloat new_d2 = v * v;
+        if( new_d2 < d2 ) {
+          cp = point;
+          cn = normal;
+          d2 = v * v;
+        }
+      }
+    }
+
+    for( vector< LineSegment >::iterator i = linesegments.begin();
+         i != linesegments.end(); i++ ) {
+      Vec3 point, normal;
+      (*i).closestPoint( p, point, normal, tex_coord );
+      Vec3 v = p - cp;
+      HAPIFloat new_d2 = v * v;
+      if( new_d2 < d2 ) {
+        cp = point;
+        cn = normal;
+        d2 = v * v;
+      }
+    }
+
+    for( vector< Point >::iterator i = points.begin();
+         i != points.end(); i++ ) {
+      Vec3 point, normal;
+      (*i).closestPoint( p, point, normal, tex_coord );
+      Vec3 v = p - cp;
+      HAPIFloat new_d2 = v * v;
+      if( new_d2 < d2 ) {
+        cp = point;
+        cn = normal;
+        d2 = v * v;
+      }
+    }
+    closest_point = cp;
+    closest_normal = cn;
+	}	else 	{
+   
+    if( left.get() && right.get() ) {
+      Vec3 cp, cn, tc;
+      left->closestPoint( p, cp, cn, tc  );
+      right->closestPoint( p, closest_point, closest_normal, tex_coord );
+      Vec3 v = p - cp;
+      HAPIFloat ld2 = v * v;
+      v = p - closest_point;
+      if( ld2 < v * v ) {
+        closest_point = cp;
+        closest_normal = cn;
+        tex_coord = tc;
+      }
+      
+    } else {
+      if (left.get()) {
+        left->closestPoint( p, closest_point, closest_normal, tex_coord  );
+      } else {
+        right->closestPoint( p, closest_point, closest_normal, tex_coord );
+      }
+    }
+  }
+}
+
+void BinaryBoundTree::getAllTriangles( vector< Triangle > &tris ) {
+  if ( isLeaf() )	{
+    tris.insert( tris.end(), triangles.begin(), triangles.end() );
+	}	else 	{
+    if (left.get()) left->getAllTriangles( tris );
+    if (right.get()) right->getAllTriangles( tris );
+  }
+}
+
+void BinaryBoundTree::getAllPrimitives( vector< Triangle > &tris,
+                                    vector< LineSegment > &lins,
+                                    vector< Point > &poins ) {
+  if ( isLeaf() )	{
+    tris.insert( tris.end(), triangles.begin(), triangles.end() );
+    lins.insert( lins.end(), linesegments.begin(), linesegments.end() );
+    poins.insert( poins.end(), points.begin(), points.end() );
+	}	else 	{
+    if (left.get()) left->getAllTriangles( tris );
+    if (right.get()) right->getAllTriangles( tris );
+  }
+}
+
+Vec3 OrientedBoxBound::longestAxis() const {
+  Vec3 a = AABoxBound::longestAxis();
+  return orientation * a;
+}
+
+
+struct StackElementPrimitive {
+  BBTreePrimitive *tree;
+  vector< int > primitives;
+}; 
+BBTreePrimitive::BBTreePrimitive(
+            BoundNewFunc func, 
+            const vector< GeometryPrimitive * > &primitive_vector,
+            unsigned int max_nr_primitives_in_leaf ):
+  left( NULL ), right( NULL ), new_func( func ) {
+
+  std::stack< StackElementPrimitive > stack;
+	
+  if( primitive_vector.size() == 0 ) return;
+ 
+  //	add the starting subtree to stack...
+	StackElementPrimitive start;
+	start.tree = this;
+
+  vector< Vec3 > point_reps;
+  point_reps.reserve( primitive_vector.size() );
+
+	start.primitives.reserve( primitive_vector.size() );
+  for( unsigned int i = 0; i < primitive_vector.size(); i++ ) {
+    start.primitives.push_back( i );
+    point_reps.push_back( primitive_vector[i]->pointRepresentation() );
+  }
+
+
+
+	stack.push( start );
+  //cerr << start.triangles.size() << endl;
+  //	BUILD TREE
+	while( !stack.empty() ) {
+		const std::vector< int > &stack_primitives = stack.top().primitives;
+		BBTreePrimitive* stack_tree = stack.top().tree;
+
+	  if (max_nr_primitives_in_leaf < 0 ||
+        stack_primitives.size() <= max_nr_primitives_in_leaf ) {
+      //	build a leaf
+			stack_tree->primitives.reserve( stack_primitives.size() );
+      for( unsigned int i = 0; i < stack_primitives.size(); i++ ) {
+        stack_tree->primitives.push_back(
+          primitive_vector[stack_primitives[i]] );
+      }
+      stack.pop();
+			continue;
+		}
+
+		std::vector<Vec3 > points;
+		points.reserve( stack_primitives.size() * 3 );
+		for (unsigned int i=0 ; i<stack_primitives.size() ; i++ ) {
+      GeometryPrimitive *a_primitive = primitive_vector[ stack_primitives[i ]];
+      Triangle *tri = dynamic_cast< Triangle * >(a_primitive);
+      if( tri ) {
+        points.push_back( tri->a );
+        points.push_back( tri->b );
+        points.push_back( tri->c );
+      } else {
+        Sphere * sph = dynamic_cast< Sphere * >(a_primitive);
+        if( sph ) {
+          Vec3 x_axis = Vec3( 1, 0, 0 );
+          Vec3 y_axis = Vec3( 0, 1, 0 );
+          Vec3 z_axis = Vec3( 0, 0, 1 );
+
+          points.push_back( sph->center + sph->radius * x_axis +
+                            sph->radius * y_axis + sph->radius * z_axis );
+          points.push_back( sph->center + sph->radius * x_axis -
+                            sph->radius * y_axis + sph->radius * z_axis );
+          points.push_back( sph->center - sph->radius * x_axis +
+                            sph->radius * y_axis + sph->radius * z_axis );
+          points.push_back( sph->center - sph->radius * x_axis -
+                            sph->radius * y_axis + sph->radius * z_axis );
+          points.push_back( sph->center + sph->radius * x_axis +
+                            sph->radius * y_axis - sph->radius * z_axis );
+          points.push_back( sph->center + sph->radius * x_axis -
+                            sph->radius * y_axis - sph->radius * z_axis );
+          points.push_back( sph->center - sph->radius * x_axis +
+                            sph->radius * y_axis - sph->radius * z_axis );
+          points.push_back( sph->center - sph->radius * x_axis -
+                            sph->radius * y_axis - sph->radius * z_axis );
+        } else {
+          LineSegment * lineseg = dynamic_cast< LineSegment * >(a_primitive);
+          if( lineseg ) {
+            points.push_back( lineseg->start );
+            points.push_back( lineseg->end );
+          } else {
+            Point * pt = dynamic_cast< Point * >(a_primitive);
+            if( pt ) {
+              points.push_back( pt->position );
+            } else {
+              Plane * pl = dynamic_cast< Plane * >(a_primitive);
+              if( pl ) {
+                // TODO
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    //	build bounding shape
+		stack_tree->bound.reset( new_func() );
+    stack_tree->bound->fitAroundPoints( points );
+		
+    //	DIVIDE SUBSET AND RECURSE
+    //	longest axis
+		Vec3 axis = stack_tree->bound->longestAxis();
+
+    //	middle point of current set
+		Vec3 mid(0,0,0);
+
+    for(unsigned int i = 0 ; i < stack_primitives.size() ; i++) {
+      mid = mid + point_reps[stack_primitives[i]];
+    }
+
+		mid = (1.0f/stack_primitives.size()) * mid;	//divide by N
+    
+    //	build subsets based on axis/middle point
+		std::vector<int> left;
+		std::vector<int> right;
+    
+    left.reserve( stack_primitives.size() / 2 );
+    right.reserve( stack_primitives.size() / 2 );
+
+    
+		for( unsigned int i = 0 ; i<stack_primitives.size() ; i++ ) {
+      Vec3 mid_to_point = 
+        point_reps[ stack_primitives[i] ] - mid;
+      if ( mid_to_point * axis < 0 )
+				left.push_back(stack_primitives[i]);
+			else
+				right.push_back(stack_primitives[i]);
+    }
+		
+    //	anity check... sometimes current subset cannot be divided by longest 
+    // axis: change axis or just half
+		if ( (left.size() == 0) || (right.size() == 0) ) {
+			left.clear();
+			right.clear();
+			for (unsigned int i = 0 ; i<stack_primitives.size()/2 ; i++) 
+        left.push_back(stack_primitives[i]);
+			for (unsigned int i = stack_primitives.size()/2 ;
+            i<stack_primitives.size() ; i++) 
+        right.push_back(stack_primitives[i]);
+		}
+		
+		stack.pop();
+
+    //	do recurse
+		if ( left.size() != 0) {
+      stack_tree->left.reset( new BBTreePrimitive );
+			
+			StackElementPrimitive element;
+			element.tree = stack_tree->left.get();
+			element.primitives.swap( left );
+			stack.push( element );
+		}
+		
+		if ( right.size() != 0) {
+			stack_tree->right.reset( new BBTreePrimitive );
+			
+			StackElementPrimitive element;
+			element.tree = stack_tree->right.get();
+			element.primitives.swap( right );
+			stack.push( element );
+		}
+	}
+}
+
+void BBTreePrimitive::getConstraints(
+                                  const Vec3 &point,
+                                  std::vector< PlaneConstraint > &constraints,
+                                  FaceType face ) {
+  if ( isLeaf() )	{
+    for( unsigned int i = 0; i < primitives.size(); i++ ) {
+      GeometryPrimitive *gp = primitives[i];
+      gp->getConstraints( point, constraints, face );
+		}
+	}	else 	{
+		//if ( bound->boundIntersect( from, to ) )	{
+    if (left.get()) left->getConstraints( point, constraints, face );
+    if (right.get()) right->getConstraints( point, constraints, face );
+    
+  }
+}
+
+void BBTreePrimitive::getConstraints(
+                                  const Vec3 &point,
+                                  const Matrix4 &matrix,
+                                  std::vector< PlaneConstraint > &constraints,
+                                  FaceType face ) {
+ // if ( isLeaf() )	{
+ //   for( unsigned int i = 0; i < primitives.size(); i++ ) {
+ //     GeometryPrimitive *gp = primitives[i];
+ //     gp->getConstraints( point, matrix, constraints, face );
+	//	}
+	//}	else 	{
+	//	//if ( bound->boundIntersect( from, to ) )	{
+ //   if (left.get()) left->getConstraints( point, matrix, constraints, face );
+ //   if (right.get()) right->getConstraints( point, matrix, constraints, face );
+ // }
+}
+
+
+void BBTreePrimitive::getPrimitivesWithinRadius(
+                                    const Vec3 &p,
+                                    HAPIFloat radius,
+                                    vector< GeometryPrimitive * > &result ) {
+  HAPIFloat r2 = radius * radius;
+  if ( isLeaf() )	{
+    for( H3DUtil::AutoRefVector< GeometryPrimitive >::const_iterator
+          i = primitives.begin();
+         i != primitives.end(); i++ ) {
+      Vec3 cp, tmp;
+      (*i)->closestPoint( p, cp, tmp, tmp );
+      if( (cp - p).lengthSqr() <= r2 )
+        result.push_back( *i );
+    }
+    //cerr << "!: " << triangles.size() << endl;
+           //result.insert( result.end(), triangles.begin(), triangles.end() );
+	}	else 	{
+    Vec3 cp = bound->boundClosestPoint( p );
+    if( (cp - p).lengthSqr() > r2 && !bound->insideBound(p) ) return;
+
+    if (left.get()) left->getPrimitivesWithinRadius( p, radius, result );
+    if (right.get()) right->getPrimitivesWithinRadius( p, radius, result );
+  }
+}
+
+void BBTreePrimitive::closestPoint( const Vec3 &p,
+                                    Vec3 &closest_point,
+                                    Vec3 &closest_normal,
+                                    Vec3 &tex_coord ) {
+  if ( isLeaf() )	{
+    Vec3 cp, cn;
+    HAPIFloat d2;
+    if( primitives.size() == 0 ) return;
+    for( H3DUtil::AutoRefVector< GeometryPrimitive >::const_iterator
+          i = primitives.begin();
+         i != primitives.end(); i++ ) {
+      Vec3 point, normal;
+      (*i)->closestPoint( p, point, normal, tex_coord );
+      Vec3 v = p - cp;
+      if( i == primitives.begin() ) {
         cp = point;
         cn = normal;
         d2 = v * v;
@@ -1896,16 +2606,130 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
   }
 }
 
-void BinaryBoundTree::getAllTriangles( vector< Triangle > &tris ) {
+void BBTreePrimitive::getAllPrimitives( vector< GeometryPrimitive * > &prim ) {
   if ( isLeaf() )	{
-    tris.insert( tris.end(), triangles.begin(), triangles.end() );
+    prim.insert( prim.end(), primitives.begin(), primitives.end() );
 	}	else 	{
-    if (left.get()) left->getAllTriangles( tris );
-    if (right.get()) right->getAllTriangles( tris );
+    if (left.get()) left->getAllPrimitives( prim );
+    if (right.get()) right->getAllPrimitives( prim );
   }
 }
 
-Vec3 OrientedBoxBound::longestAxis() const {
-  Vec3 a = AABoxBound::longestAxis();
-  return orientation * a;
+void BBTreePrimitive::clearCollidedFlag() {
+  if( !isLeaf() ) {
+    bound->collided = false;
+    left->clearCollidedFlag();
+    right->clearCollidedFlag();
+  } else {
+    for( unsigned int i = 0; i < primitives.size(); i++ )
+      primitives[i]->collided = false;
+  }
+}
+
+
+
+bool BBTreePrimitive::lineIntersect( const Vec3 &from, 
+                                     const Vec3 &to,
+                                     IntersectionInfo &result,
+                                     FaceType face ) {
+  if ( isLeaf() )	{
+    // TODO: find closest?
+    IntersectionInfo tempResult;
+    for( unsigned int i = 0; i < primitives.size(); i++ ) {
+      GeometryPrimitive *gp = primitives[i];
+      if( gp->lineIntersect( from, to, tempResult, face ) ) {
+        if( result.intersection) {
+          if( (tempResult.point - from).lengthSqr() < 
+              (result.point - from).lengthSqr() )
+            result = tempResult;
+        }
+        else
+          result = tempResult;
+        return true;
+      }
+		}
+		return false;
+	}	else 	{
+		if ( bound->boundIntersect( from, to ) )	{
+			bool overlap = false;
+      bound->collided = true;
+			
+			if (left.get()) overlap |=
+        left->lineIntersect( from, to, result, face );
+			if (right.get()) overlap |=
+        right->lineIntersect( from, to, result, face );
+			
+			return overlap;
+		}
+		else return false;
+	}
+}
+
+bool BBTreePrimitive::movingSphereIntersect( HAPIFloat radius,
+                                             const Vec3 &from, 
+                                             const Vec3 &to ) {
+  if ( isLeaf() )	{
+    // TODO: find closest?
+    for( unsigned int i = 0; i < primitives.size(); i++ ) {
+      GeometryPrimitive *gp = primitives[i];
+      if( gp->movingSphereIntersect( radius, from, to ) )	return true;
+		}
+		return false;
+	}	else 	{
+		if ( bound->boundMovingSphereIntersect( radius, from, to ) )	{
+			bool overlap = false;
+      bound->collided = true;
+			
+			if (left.get()) {
+        overlap = left->movingSphereIntersect( radius, from, to );
+        if( overlap ) return overlap;
+      }
+			if (right.get()) 
+        overlap = right->movingSphereIntersect( radius,from, to );
+			
+			return overlap;
+		}
+		else return false;
+	}
+}
+
+void BBTreePrimitive::render() {
+  render( 0 );
+}
+
+void BBTreePrimitive::render( int depth) {
+  if( !isLeaf() ) {
+    if( depth == 0 ) {
+      bound->render();
+    } else {
+      if( left.get() ) left->render( depth - 1 );
+      if( right.get() ) right->render( depth - 1 );
+    }
+  } else {
+    for( unsigned int i = 0; i < primitives.size(); i++ ) { 
+      primitives[i]->render();
+    }
+  }
+}
+
+void BBTreePrimitive::getPrimitivesIntersectedByMovingSphere(
+                                      HAPIFloat radius,
+                                      Vec3 from,
+                                      Vec3 to,
+                                      vector< GeometryPrimitive * > &result) {
+  if ( isLeaf() )	{
+    for( H3DUtil::AutoRefVector< GeometryPrimitive >::const_iterator
+          i = primitives.begin();
+         i != primitives.end(); i++ ) {
+      if( (*i)->movingSphereIntersect( radius, from, to ) )
+        result.push_back( *i );
+    }
+	}	else 	{
+    if(  !bound->boundMovingSphereIntersect( radius, from, to ) ) return;
+
+    if (left.get()) left->getPrimitivesIntersectedByMovingSphere(
+      radius, from, to, result );
+    if (right.get()) right->getPrimitivesIntersectedByMovingSphere(
+      radius, from, to, result );
+  }
 }

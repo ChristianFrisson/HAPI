@@ -37,6 +37,7 @@
 #include <assert.h>
 #include <RefCountedClass.h>
 #include <AutoRef.h>
+#include <AutoRefVector.h>
 
 namespace HAPI {
 
@@ -136,7 +137,7 @@ namespace HAPI {
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
                                  Vec3 &normal,
-                                 Vec3 &tex_coord ) = 0;
+                                 Vec3 &tex_coord ) {}// = 0;
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -150,7 +151,7 @@ namespace HAPI {
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK ) = 0;
+                                  FaceType face = Bounds::FRONT_AND_BACK ){ return false; }// = 0;
 
       /// Detect collision between a moving sphere and the object.
       /// \param The radius of the sphere
@@ -159,7 +160,7 @@ namespace HAPI {
       /// \returns true if intersected, false otherwise.
       virtual bool movingSphereIntersect( HAPIFloat radius,
                                           const Vec3 &from, 
-                                          const Vec3 &to ) = 0;
+                                          const Vec3 &to ){ return false; }// = 0;
     
     /// Render the outlines of the object for debugging purposes.
     virtual void render() {}
@@ -857,6 +858,13 @@ namespace HAPI {
       BinaryBoundTree( BoundNewFunc func, 
                        const vector< Triangle > &triangles,
                        unsigned int max_nr_triangles_in_leaf = 1 );
+
+      BinaryBoundTree( BoundNewFunc func, 
+                       const vector< Triangle > &triangle_vector,
+                       const vector< LineSegment > &linesegment_vector,
+                       const vector< Point > &point_vector,
+                       unsigned int max_nr_triangles_in_leaf = 1 );
+
       /// Returns true if the tree is a leaf, i.e. has no sub-tress and hence just
       /// contains triangles. false otherwise.
       inline bool isLeaf() { 
@@ -876,10 +884,24 @@ namespace HAPI {
                                              HAPIFloat radius,
                                              vector< Triangle > &triangles);
 
+      virtual void getPrimitivesWithinRadius( const Vec3 &p,
+                                             HAPIFloat radius,
+                                             vector< Triangle > &triangles,
+                                             vector< LineSegment > &lines,
+                                             vector< Point > &points );
+
+
       virtual void getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
                                                           Vec3 from,
                                                           Vec3 to,
                                                           vector< Triangle > &triangles);
+
+      virtual void getPrimitivesIntersectedByMovingSphere( HAPIFloat radius,
+                                                          Vec3 from,
+                                                          Vec3 to,
+                                                          vector< Triangle > &triangles,
+                                                          vector< LineSegment > &lines,
+                                                          vector< Point > &points );
 
       /// Render the outlines of the object for debugging purposes.
       virtual void render();
@@ -972,6 +994,11 @@ namespace HAPI {
       /// Add all triangles in the tree to the given vector.
       virtual void getAllTriangles( vector< Triangle > &triangles );
 
+      /// Add all triangles, lines and points in the tree to the given vector.
+      virtual void getAllPrimitives( vector< Triangle > &triangles,
+                                    vector< LineSegment > &lines,
+                                    vector< Point > &points );
+
       void clearCollidedFlag();
 
       /*union {
@@ -981,6 +1008,8 @@ namespace HAPI {
 
       H3DUtil::AutoRef< BoundPrimitive > bound;
       vector< Triangle > triangles;
+      vector< LineSegment > linesegments;
+      vector< Point > points;
 
       /// The left subtree.
       H3DUtil::AutoRef< BinaryBoundTree > left;
@@ -1005,6 +1034,14 @@ namespace HAPI {
       AABBTree( const vector< Triangle > &triangles,
                 unsigned int max_nr_triangles_in_leaf = 1 ):
         BinaryBoundTree( &(newInstance< AABoxBound >), triangles, max_nr_triangles_in_leaf ) {}
+
+      AABBTree( const vector< Triangle > &triangles,
+                const vector< LineSegment > &linesegment_vector,
+                const vector< Point > &point_vector,
+                unsigned int max_nr_triangles_in_leaf = 1 ):
+        BinaryBoundTree( &(newInstance< AABoxBound >), triangles,
+                         linesegment_vector, point_vector,
+                         max_nr_triangles_in_leaf ) {}
     };
 
 
@@ -1024,6 +1061,14 @@ namespace HAPI {
                unsigned int max_nr_triangles_in_leaf = 1 ):
         BinaryBoundTree( &(newInstance< OrientedBoxBound >), triangles, 
                          max_nr_triangles_in_leaf ) {}
+      
+      OBBTree( const vector< Triangle > &triangles,
+                const vector< LineSegment > &linesegment_vector,
+                const vector< Point > &point_vector,
+                unsigned int max_nr_triangles_in_leaf = 1 ):
+        BinaryBoundTree( &(newInstance< OrientedBoxBound >), triangles,
+                         linesegment_vector, point_vector,
+                         max_nr_triangles_in_leaf ) {}
     };
 
     /// \brief The SphereBoundTree is a BinaryBoundTree where the bounding 
@@ -1041,6 +1086,221 @@ namespace HAPI {
       SphereBoundTree( const vector< Triangle > &triangles,
                        unsigned int max_nr_triangles_in_leaf = 1): 
         BinaryBoundTree( &(newInstance< SphereBound > ), triangles, max_nr_triangles_in_leaf ) {}
+
+      SphereBoundTree( const vector< Triangle > &triangles,
+                const vector< LineSegment > &linesegment_vector,
+                const vector< Point > &point_vector,
+                unsigned int max_nr_triangles_in_leaf = 1 ):
+        BinaryBoundTree( &(newInstance< SphereBound >), triangles,
+                         linesegment_vector, point_vector,
+                         max_nr_triangles_in_leaf ) {}
+    };
+
+    // Primitive special kind
+    /// \brief The BBTreePrimitive class is the base class for bound objects 
+    /// structured as a binary tree. Each node in the tree has a BoundPrimitive
+    /// specifying a bound for itself and each subtree has the same.
+    class HAPI_API BBTreePrimitive: public BoundObject {
+    public: 
+      /// A function type for creating a bound primitive for a node in the tree.
+      typedef BoundPrimitive *( *BoundNewFunc)(); 
+
+      /// Convenience template for creating BoundNewFunc functions.
+      template< class N >
+      static BoundPrimitive *newInstance() { return new N; };
+
+      /// Default constructor.
+      BBTreePrimitive(  ): left( NULL ), right( NULL ), new_func( NULL ) {}
+
+      /// Constructor.
+      /// Builds a binary tree from a vector of GeometryPrimitive pointers.
+      /// The func argument specifies a function for creating  bound of the
+      /// wanted type in each tree node. max_nr_primitives_in_leaf specifies
+      /// the maximum number of primitives that are allowed to be in a bound
+      /// of a leaf in the tree. 
+      BBTreePrimitive( BoundNewFunc func, 
+                       const vector< GeometryPrimitive * > &_primitives,
+                       unsigned int max_nr_primitives_in_leaf = 1 );
+
+      /// Returns true if the tree is a leaf, i.e. has no sub-tress and hence just
+      /// contains triangles. false otherwise.
+      inline bool isLeaf() { 
+        return left.get() == NULL && right.get() == NULL; 
+      }
+
+      virtual void getConstraints( const Vec3 &point,
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK );
+
+      virtual void getConstraints( const Vec3 &point,
+                                   const Matrix4 &matrix,
+                                   std::vector< PlaneConstraint > &constraints,
+                                   FaceType face = Bounds::FRONT_AND_BACK );
+
+      virtual void getPrimitivesWithinRadius( const Vec3 &p,
+                                             HAPIFloat radius,
+                                             vector< GeometryPrimitive * > &primitives);
+
+      virtual void getPrimitivesIntersectedByMovingSphere( HAPIFloat radius,
+                                                          Vec3 from,
+                                                          Vec3 to,
+                                                          vector< GeometryPrimitive * > &primitives);
+
+      /// Render the outlines of the object for debugging purposes.
+      virtual void render();
+
+      /// Render the outlines of the tree at a given tree depth for debugging 
+      /// purposes.
+      virtual void render( int depth );
+
+      /// Returns true if the given point is inside the bound, and
+      /// false otherwise.
+      virtual bool insideBound( const Vec3 &p ) {
+        if( bound.get() )
+          return bound->insideBound( p );
+        else
+          return false;
+      }
+
+      /// The boundIntersect returns true if the line segment intersects the
+      /// bound or if the line segment is totally inside the bound.
+      virtual bool boundIntersect( const Vec3 &from, const Vec3 &to ) {
+        if( bound.get() )
+          return bound->boundIntersect( from, to );
+        else
+          return false;
+      }
+
+      /// Detect collision between a line segment and the object. Will check for 
+      /// collision between the triangles contained in the leaves of the tree and
+      /// the line segment.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param result Contains info about the closest intersection, if line
+      /// intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
+      /// \returns true if intersected, false otherwise.
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
+                                  IntersectionInfo &result,
+                                  FaceType face = Bounds::FRONT_AND_BACK );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool boundMovingSphereIntersect( HAPIFloat radius,
+                                               const Vec3 &from, 
+                                               const Vec3 &to ) {
+        if( bound.get() )
+          return bound->boundMovingSphereIntersect( radius, from, to );
+        else 
+          return false;
+      }
+
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord );
+
+      /// The closest point on the bound to the point. If tree is a leaf,
+      /// the closest point to the triangles in the leaf is returned.
+      /// To know the closest point to the primitives in the bound, use closestPoint
+      virtual Vec3 boundClosestPoint( const Vec3 &p ) {
+        if( !isLeaf() && bound.get() )
+          return bound->boundClosestPoint( p );
+        else {
+          Vec3 cp, tmp;
+          closestPoint( p, cp, tmp, tmp );
+          return cp;
+        }
+      }
+
+      /// Add all triangles in the tree to the given vector.
+      virtual void getAllPrimitives( vector< GeometryPrimitive * > &primitives );
+
+      void clearCollidedFlag();
+
+      H3DUtil::AutoRef< BoundPrimitive > bound;
+      H3DUtil::AutoRefVector< GeometryPrimitive > primitives;
+
+      /// The left subtree.
+      H3DUtil::AutoRef< BBTreePrimitive > left;
+      /// The right subtree.
+      H3DUtil::AutoRef< BBTreePrimitive > right;
+      /// The function to create new bounding primitives in for a tree node.
+      BoundNewFunc new_func;
+    };
+
+
+    /// \brief The AABBTree is a BinaryBoundTree where the bounding primitive 
+    /// for each node is a AABoxBound (axis-aligned bounding box).
+    class HAPI_API AABBTreePrimitive: public BBTreePrimitive {
+    public:
+      /// Default constructor.
+      AABBTreePrimitive(): BBTreePrimitive( ) {}
+
+      /// Constructor.
+      /// Builds a binary tree from a vector of primitives. 
+      /// max_nr_primitives_in_leaf specifies the maximum number of primitives 
+      /// that are allowed to be in a bound of a leaf in the tree. 
+      AABBTreePrimitive( const vector< GeometryPrimitive * > &_primitives,
+                unsigned int max_nr_primitives_in_leaf = 1 ):
+        BBTreePrimitive( &(newInstance< AABoxBound >), _primitives, max_nr_primitives_in_leaf ) {}
+    };
+
+
+    /// \brief The OBBTree is a BinaryBoundTree where the bounding primitive 
+    /// for each node is a OrientedBoxBound.
+
+    class HAPI_API OBBTreePrimitive: public BBTreePrimitive {
+    public:
+      /// Default constructor.
+      OBBTreePrimitive(): BBTreePrimitive( ) {}
+
+      /// Constructor.
+      /// Builds a binary tree from a vector of primitives. 
+      /// max_nr_primitives_in_leaf specifies the maximum number of primitives 
+      /// that are allowed to be in a bound of a leaf in the tree. 
+      OBBTreePrimitive( const vector< GeometryPrimitive * > &_primitives,
+               unsigned int max_nr_primitives_in_leaf = 1 ):
+        BBTreePrimitive( &(newInstance< OrientedBoxBound >), _primitives, 
+                         max_nr_primitives_in_leaf ) {}
+    };
+
+    /// \brief The SphereBoundTree is a BinaryBoundTree where the bounding 
+    /// primitive for each node is a SphereBound object.
+
+    class HAPI_API SBTreePrimitive: public BBTreePrimitive {
+    public:
+      /// Default constructor.
+      SBTreePrimitive(): BBTreePrimitive() {}
+
+      /// Constructor.
+      /// Builds a binary tree from a vector of primitives. 
+      /// max_nr_primitives_in_leaf specifies the maximum number of primitives 
+      /// that are allowed to be in a bound of a leaf in the tree. 
+      SBTreePrimitive( const vector< GeometryPrimitive * > &_primitives,
+                       unsigned int max_nr_primitives_in_leaf = 1): 
+        BBTreePrimitive( &(newInstance< SphereBound > ), _primitives, max_nr_primitives_in_leaf ) {}
     };
 
 }

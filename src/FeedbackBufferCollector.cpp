@@ -264,6 +264,7 @@ FeedbackBufferCollector::endCollecting(
       points.push_back( HAPI::Bounds::Point( pos ) );
       break;
     }
+    case( GL_LINE_RESET_TOKEN ):
     case( GL_LINE_TOKEN ): {
       Vec3 v0, v1;
       i+= parseVertex( buffer, i, p, col, tc );
