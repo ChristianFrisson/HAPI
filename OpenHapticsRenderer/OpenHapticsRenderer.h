@@ -44,7 +44,7 @@
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "hd.lib" )
-#pragma comment( lib, "hdu.lib" )
+//#pragma comment( lib, "hdu.lib" )
 #endif
 
 namespace HAPI {
