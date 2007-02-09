@@ -557,10 +557,6 @@ namespace HAPI {
     /// specified for a specified layer.
     inline void setHapticsRenderer( HAPIHapticsRenderer *r, 
                                     unsigned int layer = 0 ) {
-      renderer_change_lock.lock();
-      if( haptics_renderers.size() < layer + 1 ) 
-        haptics_renderers.resize( layer + 1, NULL );
-
       if( device_state != UNINITIALIZED ) {
         if( haptics_renderers[layer] ) {
           haptics_renderers[layer]->releaseRenderer( this );
@@ -568,6 +564,10 @@ namespace HAPI {
         if( r )
           r->initRenderer( this );
       }
+      renderer_change_lock.lock();
+      if( haptics_renderers.size() < layer + 1 ) 
+        haptics_renderers.resize( layer + 1, NULL );
+
       haptics_renderers[ layer ] = r;
       renderer_change_lock.unlock();
     }

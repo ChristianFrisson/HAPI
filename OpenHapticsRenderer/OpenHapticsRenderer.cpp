@@ -276,6 +276,8 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
       // haptic rendering.
       HHD jj = pd->getDeviceHandle();
       context_map[ pd ] = hlCreateContext( pd->getDeviceHandle() );
+      if( !dummy_context )
+        dummy_context = hlCreateContext( pd->getDeviceHandle() );
       hlMakeCurrent( context_map[ pd ] );  
 
       hlEnable(HL_HAPTIC_CAMERA_VIEW);
