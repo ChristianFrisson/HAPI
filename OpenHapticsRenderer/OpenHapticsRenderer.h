@@ -116,11 +116,15 @@ namespace HAPI {
       default_gl_shape( _default_shape_type ),
       default_adaptive_viewport( _default_adaptive_viewport ),
       default_haptic_camera_view( _default_haptic_camera_view ) {
+      dummy_context = NULL;
     }
                          
     
     /// Destructor.
-    virtual ~OpenHapticsRenderer() {}
+    virtual ~OpenHapticsRenderer() { 
+      if( dummy_context )
+        hlDeleteContext( dummy_context );
+    }
     
     /// The main function in any haptics renderer. Given a haptics device and 
     /// a group of shapes generate the force and torque to send to the device.
@@ -273,6 +277,7 @@ namespace HAPI {
 
     /// A map from haptics device to HL API context
     ContextMap context_map;
+    HHLRC dummy_context;
 
     /// A map from HAPI shape_id to HL API shape id
     typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, HLuint > IdMap;
