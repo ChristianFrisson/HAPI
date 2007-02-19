@@ -128,9 +128,7 @@ namespace HAPI {
   class HAPI_API ParsedFunction : public HAPIFunctionObject {
   public:
     /// Constructor.
-    ParsedFunction():
-      have_valid_function( false ){
-    }
+    ParsedFunction();
 
     /// Set the function to use.
     /// function is a string specifying the function, e.g. 
@@ -161,7 +159,7 @@ namespace HAPI {
     bool have_valid_function;
     string function_string;
     string params_string;
-    FunctionParser fparser;
+    auto_ptr< FunctionParser > fparser;
   };
 }
 

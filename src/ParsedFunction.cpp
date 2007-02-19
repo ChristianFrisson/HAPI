@@ -39,17 +39,22 @@ using namespace HAPI;
 #pragma comment( lib, "fparser.lib" )
 #endif
 
+ParsedFunction::ParsedFunction():
+  have_valid_function( false ),
+  fparser( new FunctionParser ) {
+}
+
 bool ParsedFunction::setFunctionString( const string &function,
                                         const string &evaluation_params ) {
   function_string = function;
   params_string = evaluation_params;
-  int res = fparser.Parse( function_string, evaluation_params );
+  int res = fparser->Parse( function_string, evaluation_params );
   if(res < 0) {
     have_valid_function = true;
     return true;
   }
  
-  H3DUtil::Console(3) << fparser.ErrorMsg() << endl;
+  H3DUtil::Console(3) << fparser->ErrorMsg() << endl;
   have_valid_function = false;
   return false;
 }
@@ -58,7 +63,7 @@ bool ParsedFunction::setFunctionString( const string &function,
 /// input points to the input values to the function.
 HAPIFloat ParsedFunction::evaluate( HAPIFloat *input ) {
   if( have_valid_function )
-    return fparser.Eval( input );
+    return fparser->Eval( input );
   else return 0;
 }
 
