@@ -28,12 +28,13 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Chai3DRenderer.h"
-#ifdef HAVE_CHAI3D
 
 #include "H3DMath.h"
 #include "DeviceInfo.h"
 
 #include "HapticTriangleSet.h"
+
+#ifdef HAVE_CHAI3D
 
 // Chai3D includes
 #include <cVector3d.h>

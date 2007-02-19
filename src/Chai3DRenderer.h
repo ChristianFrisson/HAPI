@@ -31,11 +31,11 @@
 #ifndef __CHAI3DRENDERER_H__
 #define __CHAI3DRENDERER_H__
 
-#ifdef HAVE_CHAI3D
-
 // HAPI includes
 #include <HAPIProxyBasedRenderer.h>
 #include <HAPIHapticShape.h>
+
+#ifdef HAVE_CHAI3D
 
 // H3DApi includes
 #include <H3DApi.h>
