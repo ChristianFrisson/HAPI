@@ -11,15 +11,15 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Debug\obj"
+			Name="Debug DLL|Win32"
+			OutputDirectory="..\..\..\lib"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
+				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -34,13 +34,68 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
-				OutputFile="$(OutDir)/HAPI.dll"
+				OutputFile="$(OutDir)/HAPI_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\build\win32\vc7\Debug;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\lib;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs="HD.dll; dhd.dll"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				ProgramDatabaseFile="$(OutDir)/HAPI_d.pdb"
 				SubSystem="2"
+				ImportLibrary="$(OutDir)\HAPI_d.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release DLL|Win32"
+			OutputDirectory="..\..\..\lib"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
+				OutputFile="$(OutDir)/HAPI.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				DelayLoadDLLs="HD.dll; dhd.dll"
+				GenerateDebugInformation="TRUE"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
 				ImportLibrary="$(OutDir)\HAPI.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -65,39 +120,31 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release\obj"
-			ConfigurationType="2"
+			Name="Debug Static|Win32"
+			OutputDirectory="..\..\..\lib"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="2"
-				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;HAPI_LIB;H3DUTIL_LIB"
+				MinimalRebuild="TRUE"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
-				OutputFile="$(OutDir)/HAPI.dll"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\build\win32\vc7\release;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
-				DelayLoadDLLs="HD.dll; dhd.dll"
-				GenerateDebugInformation="TRUE"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)\HAPI.lib"
-				TargetMachine="1"/>
+				Name="VCLibrarianTool"
+				AdditionalDependencies="winmm.lib"
+				OutputFile="$(OutDir)/libHAPI_d.lib"
+				AdditionalLibraryDirectories=""/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -113,7 +160,49 @@
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release Static|Win32"
+			OutputDirectory="..\..\..\lib"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;;HAPI_LIB;H3DUTIL_LIB"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
+				OutputFile="$(OutDir)/libHAPI.lib"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -155,16 +244,43 @@
 				RelativePath="..\..\..\src\HAPISurfaceObject.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HapticBox.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticCone.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HapticCylinder.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticForceField.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HapticLineSet.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticPlane.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticPointSet.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticPositionFunctionEffect.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticPrimitiveSet.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticShapeConstraint.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HapticSphere.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticSpring.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticTimeFunctionEffect.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticTriangle.cpp">
@@ -176,19 +292,13 @@
 				RelativePath="..\..\..\src\HapticTriangleTree.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HapticViscosity.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HaptikDevice.cpp">
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\src\ParsedFunction.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\PhantomHapticsDevice.cpp">
