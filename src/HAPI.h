@@ -65,6 +65,12 @@
 // exported.
 #ifdef WIN32
 #include <windows.h>
+
+
+#ifdef HAPI_LIB
+#define HAPI_API
+#else
+
 #ifdef HAPI_EXPORTS
 #define HAPI_API __declspec(dllexport)
 #else
@@ -76,7 +82,8 @@
 #endif
 
 
-#endif
+#endif // HAPI API else
+#endif // WIN32
 
 #if defined(__APPLE__) && defined(__MACH__)
 #define MACOSX
