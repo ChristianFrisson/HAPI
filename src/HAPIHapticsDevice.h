@@ -670,7 +670,7 @@ namespace HAPI {
     inline void sendForce( const Vec3 &f ) {
       if( device_state == ENABLED ) {
         device_values_lock.lock();
-        output.force = position_calibration_inverse * f;
+        output.force = position_calibration_inverse.getRotationPart() * f;
         device_values_lock.unlock();
       }
     }
