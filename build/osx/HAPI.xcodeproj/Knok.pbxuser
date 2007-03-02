@@ -1,0 +1,212 @@
+// !$*UTF8*$!
+{
+	0867D690FE84028FC02AAC07 /* Project object */ = {
+		activeBuildConfigurationName = Release;
+		activeTarget = 96CCB38D0B95C9B600DA703A /* HAPI Framework */;
+		addToTargets = (
+			D2AAC09C05546B4700DB518D /* HAPI */,
+		);
+		breakpointsGroup = 96E9DA890B8C4A7800B4BE63 /* XCBreakpointsBucket */;
+		codeSenseManager = 9618F2BA0B8B519A00C83BBA /* Code sense */;
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXExecutablesDataSource_NameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					22,
+					300,
+					131,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXExecutablesDataSource_ActiveFlagID,
+					PBXExecutablesDataSource_NameID,
+					PBXExecutablesDataSource_CommentsID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					243,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXFileTableDataSource3.PBXSymbolsDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXSymbolsDataSource_SymbolNameID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					16,
+					200,
+					50,
+					183,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXSymbolsDataSource_SymbolTypeIconID,
+					PBXSymbolsDataSource_SymbolNameID,
+					PBXSymbolsDataSource_SymbolTypeID,
+					PBXSymbolsDataSource_ReferenceNameID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					200,
+					63,
+					20,
+					48,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 194348234;
+			PBXWorkspaceStateSaveDate = 194348234;
+		};
+		sourceControlManager = 9618F2B90B8B519A00C83BBA /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	9618F2B90B8B519A00C83BBA /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+		scmType = "";
+	};
+	9618F2BA0B8B519A00C83BBA /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	9618F2CC0B8B51F700C83BBA /* CollisionObjects.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {691, 38304}}";
+			sepNavSelRange = "{59672, 0}";
+			sepNavVisRect = "{{0, 27854}, {691, 138}}";
+			sepNavWindowFrame = "{{492, 224}, {750, 558}}";
+		};
+	};
+	9618F2CD0B8B51F700C83BBA /* CollisionObjects.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 18354}}";
+			sepNavSelRange = "{1326, 0}";
+			sepNavVisRect = "{{0, 270}, {711, 429}}";
+			sepNavWindowFrame = "{{419, 44}, {750, 558}}";
+		};
+	};
+	9618F2CE0B8B51F700C83BBA /* DHDHapticsDevice.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 2240}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 270}, {711, 429}}";
+			sepNavWindowFrame = "{{114, 292}, {750, 558}}";
+		};
+	};
+	9618F2CF0B8B51F700C83BBA /* DHDHapticsDevice.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 1764}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 519}, {711, 429}}";
+			sepNavWindowFrame = "{{38, 294}, {750, 558}}";
+		};
+	};
+	9618F2D40B8B51F700C83BBA /* HAPI.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 1694}}";
+			sepNavSelRange = "{1490, 0}";
+			sepNavVisRect = "{{0, 526}, {711, 429}}";
+			sepNavWindowFrame = "{{15, 315}, {750, 558}}";
+		};
+	};
+	9618F2DC0B8B51F700C83BBA /* HAPIHapticShape.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 2002}}";
+			sepNavSelRange = "{159, 0}";
+			sepNavVisRect = "{{0, 0}, {711, 429}}";
+			sepNavWindowFrame = "{{90, 78}, {750, 558}}";
+		};
+	};
+	9618F2DF0B8B51F700C83BBA /* HAPIMain.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1288, 1190}}";
+			sepNavSelRange = "{62, 35}";
+			sepNavVisRect = "{{0, 266}, {1288, 134}}";
+			sepNavWindowFrame = "{{107, 231}, {750, 558}}";
+		};
+	};
+	9618F2E40B8B51F700C83BBA /* HAPITypes.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {691, 924}}";
+			sepNavSelRange = "{1150, 25}";
+			sepNavVisRect = "{{0, 344}, {691, 138}}";
+			sepNavWindowFrame = "{{61, 273}, {750, 558}}";
+		};
+	};
+	9618F2E50B8B51F700C83BBA /* HapticBinaryTreePrimitive.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 1288}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 304}, {711, 429}}";
+			sepNavWindowFrame = "{{84, 252}, {750, 558}}";
+		};
+	};
+	9618F2E60B8B51F700C83BBA /* HapticBinaryTreePrimitive.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 1274}}";
+			sepNavSelRange = "{3359, 0}";
+			sepNavVisRect = "{{0, 815}, {711, 429}}";
+			sepNavWindowFrame = "{{39, 135}, {750, 558}}";
+		};
+	};
+	9618F30B0B8B51F700C83BBA /* ParsedFunction.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {687, 994}}";
+			sepNavSelRange = "{1202, 30}";
+			sepNavVisRect = "{{0, 318}, {687, 190}}";
+		};
+	};
+	9618F3110B8B51F700C83BBA /* Threads.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 6594}}";
+			sepNavSelRange = "{4078, 0}";
+			sepNavVisRect = "{{0, 2044}, {711, 429}}";
+			sepNavWindowFrame = "{{258, -63}, {750, 558}}";
+		};
+	};
+	96CCB38D0B95C9B600DA703A /* HAPI Framework */ = {
+		activeExec = 0;
+	};
+	96E9DA890B8C4A7800B4BE63 /* XCBreakpointsBucket */ = {
+		isa = XCBreakpointsBucket;
+		name = "Project Breakpoints";
+		objects = (
+		);
+	};
+	D2AAC09C05546B4700DB518D /* HAPI */ = {
+		activeExec = 0;
+	};
+}
