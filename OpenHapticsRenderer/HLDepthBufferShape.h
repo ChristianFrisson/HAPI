@@ -53,7 +53,8 @@ namespace HAPI {
    /// Enable HL_ADAPTIVE_VIEWPORT or not
     bool use_adaptive_viewport;
   };
-#endif
+
 }
 
+#endif
 #endif
