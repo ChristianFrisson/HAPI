@@ -38,6 +38,9 @@ namespace HAPI {
   /// The function is a function R^n -> R.
   class HAPI_API HAPIFunctionObject {
   public:
+    /// Virtual destructor
+	virtual ~HAPIFunctionObject() {}
+  
     /// Evaluate the function. 
     /// input points to the input values to the function.
     virtual HAPIFloat evaluate( HAPIFloat *input ) = 0; 

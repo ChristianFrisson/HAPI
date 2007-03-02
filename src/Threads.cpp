@@ -154,7 +154,7 @@ void *PeriodicThread::thread_func( void * _data ) {
   if ((ret=thread_policy_set( mach_thread_self(),
                               THREAD_TIME_CONSTRAINT_POLICY, (thread_policy_t)&ttcpolicy,
                               THREAD_TIME_CONSTRAINT_POLICY_COUNT)) != KERN_SUCCESS) {
-    Console(4) << "Threads: set_realtime() failed" << endl;
+    H3DUtil::Console(4) << "Threads: set_realtime() failed" << endl;
     return 0;
   }
 #endif
