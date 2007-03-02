@@ -80,7 +80,7 @@ namespace HAPI {
     virtual void glRender();
 
     /// The primitives
-    //H3DUtil::AutoRefVector< Bounds::GeometryPrimitive > primitives;
+    H3DUtil::AutoRefVector< Bounds::GeometryPrimitive > primitives;
     string tree_type;
     Bounds::BBTreePrimitive *tree;
       

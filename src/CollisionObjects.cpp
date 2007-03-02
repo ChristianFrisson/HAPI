@@ -1935,7 +1935,7 @@ void LineSegment::getConstraints( const Vec3 &point,
   end = ob;
 }
 
-void Point::render() {
+void Bounds::Point::render() {
   glDisable( GL_LIGHTING );
   if( collided )
     glColor3d( 1, 0, 0 );
@@ -1950,7 +1950,7 @@ void Point::render() {
 }
 
 /// Detect collision between a line segment and the object.
-bool Point::lineIntersect( const Vec3 &from, 
+bool Bounds::Point::lineIntersect( const Vec3 &from, 
                                  const Vec3 &to,
                                  IntersectionInfo &result,
                                   FaceType face ) {
@@ -1981,7 +1981,7 @@ bool Point::lineIntersect( const Vec3 &from,
 }
       
 // Detect collision between a moving sphere and the object.
-bool Point::movingSphereIntersect( HAPIFloat radius,
+bool Bounds::Point::movingSphereIntersect( HAPIFloat radius,
                                    const Vec3 &from, 
                                    const Vec3 &to ) {
   HAPIFloat r2 = radius * radius;
@@ -1992,7 +1992,7 @@ bool Point::movingSphereIntersect( HAPIFloat radius,
   return v * v <= r2;
 }
 
-void Point::getConstraints( const Vec3 &point,
+void Bounds::Point::getConstraints( const Vec3 &point,
                             const Matrix4 &matrix,
                             std::vector< PlaneConstraint > &constraints,
                             FaceType face  ) {
