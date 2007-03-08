@@ -78,7 +78,7 @@ namespace HAPI {
 
     /// Release all resources that has been used in the renderer for
     /// the given haptics device.
-    virtual void releaseRenderer( HAPIHapticsDevice *hd ) {}
+    virtual void releaseRenderer( HAPIHapticsDevice *hd, bool finish ) {}
 
 
     /// This function will be called in the main loop when new shapes are

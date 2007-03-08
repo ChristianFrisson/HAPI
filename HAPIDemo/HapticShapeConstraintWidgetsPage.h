@@ -77,17 +77,27 @@ protected:
     wxTextCtrl *m_txt_box_sizeZ;
     HAPI::Vec3 box_size;
 
-    wxPanel *cone_panel;
+    /*wxPanel *cone_panel;
     wxTextCtrl *m_txt_cone_bottomRadius;
     HAPI::HAPIFloat cone_bottom_radius;
     wxTextCtrl *m_txt_cone_height;
-    HAPI::HAPIFloat cone_height;
+    HAPI::HAPIFloat cone_height;*/
 
     wxPanel *cylinder_panel;
     wxTextCtrl *m_txt_cylinder_radius;
     HAPI::HAPIFloat cylinder_radius;
     wxTextCtrl *m_txt_cylinder_height;
     HAPI::HAPIFloat cylinder_height;
+
+    wxPanel *plane_panel;
+    wxTextCtrl *m_txt_plane_pointX;
+    wxTextCtrl *m_txt_plane_pointY;
+    wxTextCtrl *m_txt_plane_pointZ;
+    HAPI::Vec3 plane_point;
+    wxTextCtrl *m_txt_plane_normalX;
+    wxTextCtrl *m_txt_plane_normalY;
+    wxTextCtrl *m_txt_plane_normalZ;
+    HAPI::Vec3 plane_normal;
 
     wxPanel *triangle_panel;
     wxTextCtrl *m_txt_triangle_1X;

@@ -3,12 +3,13 @@
 #include <wx/msgdlg.h>
 #include "HapticSphere.h"
 #include "HapticBox.h"
-#include "HapticCone.h"
+//#include "HapticCone.h"
 #include "HapticCylinder.h"
 #include "HapticTriangle.h"
 #include "HapticLineSet.h"
 #include "HapticPointSet.h"
 #include "HapticTriangleSet.h"
+#include "HapticPlane.h"
 using namespace HAPI;
 
 enum
@@ -20,8 +21,8 @@ enum
   box_size_ValueTextX,
   box_size_ValueTextY,
   box_size_ValueTextZ,
-  cone_bottomRadius_ValueText,
-  cone_height_ValueText,
+  /*cone_bottomRadius_ValueText,
+  cone_height_ValueText,*/
   cylinder_radius_ValueText,
   cylinder_height_ValueText,
   triangle_vertex1X,
@@ -35,18 +36,25 @@ enum
   triangle_vertex3Z,
   line_set_points_ValueText,
   point_set_points_ValueText,
-  triangle_set_triangles_ValueText
+  triangle_set_triangles_ValueText,
+  plane_pointX,
+  plane_pointY,
+  plane_pointZ,
+  plane_normalX,
+  plane_normalY,
+  plane_normalZ,
 };
 
 enum {
   Button_sphere,
   Button_box,
-  Button_cone,
+  //Button_cone,
   Button_cylinder,
   Button_triangle,
   Button_LineSet,
   Button_PointSet,
-  Button_TriangleSet
+  Button_TriangleSet,
+  Button_Plane
 };
 
 BEGIN_EVENT_TABLE(HapticShapeConstraintWidgetsPage, WidgetsPage)
@@ -89,12 +97,13 @@ HapticShapeConstraintWidgetsPage::HapticShapeConstraintWidgetsPage(wxBookCtrlBas
     {
         _T("Sphere"),
         _T("Box"),
-        _T("Cone"),
+        //_T("Cone"),
         _T("Cylinder"),
         _T("Triangle"),
         _T("LineSet"),
         _T("PointSet"),
-        _T("TriangleSet")
+        _T("TriangleSet"),
+        _T("Plane")
     };
 
     m_radio_shapes = new wxRadioBox(this, wxID_ANY, _T("&Shape"),
@@ -169,28 +178,28 @@ HapticShapeConstraintWidgetsPage::HapticShapeConstraintWidgetsPage(wxBookCtrlBas
     // End box
 
     // Cone
-    cone_panel = new wxPanel( rightPanel, wxID_ANY, wxDefaultPosition, wxSize( 100, 100 ));
-    wxSizer *cone_content = new wxBoxSizer( wxVERTICAL );
+    //cone_panel = new wxPanel( rightPanel, wxID_ANY, wxDefaultPosition, wxSize( 100, 100 ));
+    //wxSizer *cone_content = new wxBoxSizer( wxVERTICAL );
 
-    cone_content->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
+    //cone_content->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
 
-    sizerRow = CreateSizerWithTextAndLabel(
-      _T("bottom radius:"),
-      cone_bottomRadius_ValueText,
-      &m_txt_cone_bottomRadius,
-      cone_panel );
-    cone_content->Add( sizerRow, 0, wxALL | wxGROW, 5 );
+    //sizerRow = CreateSizerWithTextAndLabel(
+    //  _T("bottom radius:"),
+    //  cone_bottomRadius_ValueText,
+    //  &m_txt_cone_bottomRadius,
+    //  cone_panel );
+    //cone_content->Add( sizerRow, 0, wxALL | wxGROW, 5 );
 
-    sizerRow = CreateSizerWithTextAndLabel(
-      _T("height:"),
-      cone_height_ValueText,
-      &m_txt_cone_height,
-      cone_panel );
-    cone_content->Add( sizerRow, 0, wxALL | wxGROW, 5 );
+    //sizerRow = CreateSizerWithTextAndLabel(
+    //  _T("height:"),
+    //  cone_height_ValueText,
+    //  &m_txt_cone_height,
+    //  cone_panel );
+    //cone_content->Add( sizerRow, 0, wxALL | wxGROW, 5 );
 
-    cone_panel->SetSizer( cone_content );
+    //cone_panel->SetSizer( cone_content );
 
-    cone_panel->Hide();
+    //cone_panel->Hide();
     // End Cone
 
     // Cylinder
@@ -354,6 +363,66 @@ HapticShapeConstraintWidgetsPage::HapticShapeConstraintWidgetsPage(wxBookCtrlBas
     triangleSet_panel->Hide();
     // End TriangleSet
 
+    // Plane
+    plane_panel = new wxPanel( rightPanel, wxID_ANY, wxDefaultPosition, wxSize( 100, 100 ) );
+
+    wxSizer *plane_content = new wxBoxSizer( wxVERTICAL );
+
+    wxSizer *plane_point_sizer = new wxStaticBoxSizer(wxVERTICAL, plane_panel, _T("Plane point") );
+    
+    sizerRow = CreateSizerWithTextAndLabel(
+                                            _T("x:"),
+                                            plane_pointX,
+                                            &m_txt_plane_pointX,
+                                            plane_panel );
+    plane_point_sizer->Add( sizerRow, 0, wxALL, 5 );
+
+    sizerRow = CreateSizerWithTextAndLabel(
+                                            _T("y:"),
+                                            plane_pointY,
+                                            &m_txt_plane_pointY,
+                                            plane_panel );
+    plane_point_sizer->Add( sizerRow, 0, wxALL, 5 );
+
+    sizerRow = CreateSizerWithTextAndLabel(
+                                            _T("z:"),
+                                            plane_pointZ,
+                                            &m_txt_plane_pointZ,
+                                            plane_panel );
+    plane_point_sizer->Add( sizerRow, 0, wxALL, 5 );
+
+    plane_content->Add( plane_point_sizer, 0, wxALL, 5 );
+
+    plane_point_sizer = new wxStaticBoxSizer(wxVERTICAL, plane_panel, _T("Plane normal") );
+    
+    sizerRow = CreateSizerWithTextAndLabel(
+                                            _T("x:"),
+                                            plane_normalX,
+                                            &m_txt_plane_normalX,
+                                            plane_panel );
+    plane_point_sizer->Add( sizerRow, 0, wxALL, 5 );
+
+    sizerRow = CreateSizerWithTextAndLabel(
+                                            _T("y:"),
+                                            plane_normalY,
+                                            &m_txt_plane_normalY,
+                                            plane_panel );
+    plane_point_sizer->Add( sizerRow, 0, wxALL, 5 );
+
+    sizerRow = CreateSizerWithTextAndLabel(
+                                            _T("z:"),
+                                            plane_normalZ,
+                                            &m_txt_plane_normalZ,
+                                            plane_panel );
+    plane_point_sizer->Add( sizerRow, 0, wxALL, 5 );
+
+    plane_content->Add( plane_point_sizer, 0, wxALL, 5 );
+
+    plane_panel->SetSizer( plane_content );
+
+    plane_panel->Hide();
+    // End Plane
+
     sizerTop->Add(sizerLeft, 0, wxALL | wxGROW, 10);
     sizerTop->Add(sizerMiddle, 1, wxALL | wxEXPAND, 10);
 
@@ -385,10 +454,10 @@ void HapticShapeConstraintWidgetsPage::Reset()
     m_txt_box_sizeZ->SetValue( _T("0.05") );
     box_size.z = 0.05 * 1000;
 
-    m_txt_cone_bottomRadius->SetValue( _T("0.05") );
+    /*m_txt_cone_bottomRadius->SetValue( _T("0.05") );
     cone_bottom_radius = 0.05;
     m_txt_cone_height->SetValue( _T("0.05") );
-    cone_height = 0.05;
+    cone_height = 0.05;*/
 
     m_txt_cylinder_radius->SetValue( _T("0.02") );
     cylinder_radius = 0.05;
@@ -432,6 +501,21 @@ void HapticShapeConstraintWidgetsPage::Reset()
       triangle_set_triangles.clear();
     triangle_set_triangles.push_back( Bounds::Triangle( Vec3( -0.05 * 1000, 0, 0 ), Vec3( 0.05 * 1000, 0, 0 ), Vec3( 0, 0, -0.05 ) ) );
     triangle_set_triangles.push_back( Bounds::Triangle( Vec3( -0.05 * 1000, 0, 0 ), Vec3( 0.05 * 1000, 0, 0 ), Vec3( 0, 0.05 * 1000, 0 ) ) );
+
+
+    m_txt_plane_pointX->SetValue( _T("0.0") );
+    plane_point.x = 0.0 * 1000;
+    m_txt_plane_pointY->SetValue( _T("0.0") );
+    plane_point.y = 0.0 * 1000;
+    m_txt_plane_pointZ->SetValue( _T("0.0") );
+    plane_point.z = 0.0 * 1000;
+
+    m_txt_plane_normalX->SetValue( _T("0.0") );
+    plane_normal.x = 0.0;
+    m_txt_plane_normalY->SetValue( _T("1.0") );
+    plane_normal.y = 1.0;
+    m_txt_plane_normalZ->SetValue( _T("0.0") );
+    plane_normal.z = 0.0;
 }
 
 void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSED(event))
@@ -456,9 +540,10 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
   case Button_sphere:
     choosen_shape = Button_sphere;
     box_panel->Hide();
-    cone_panel->Hide();
+    //cone_panel->Hide();
     cylinder_panel->Hide();
     lineSet_panel->Hide();
+    plane_panel->Hide();
     pointSet_panel->Hide();
     triangle_panel->Hide();
     triangleSet_panel->Hide();
@@ -475,9 +560,10 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
   case Button_box:
     choosen_shape = Button_box;
     sphere_panel->Hide();
-    cone_panel->Hide();
+    //cone_panel->Hide();
     cylinder_panel->Hide();
     lineSet_panel->Hide();
+    plane_panel->Hide();
     pointSet_panel->Hide();
     triangle_panel->Hide();
     triangleSet_panel->Hide();
@@ -488,11 +574,12 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
     break;
   
 
-  case Button_cone:
+ /* case Button_cone:
     choosen_shape = Button_cone;
     box_panel->Hide();
     cylinder_panel->Hide();
     lineSet_panel->Hide();
+    plane_panel->Hide();
     pointSet_panel->Hide();
     sphere_panel->Hide();
     triangle_panel->Hide();
@@ -501,13 +588,14 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
     panel_sizer->Add( cone_panel, 0, wxALL | wxGROW, 0 );
     cone_panel->Show();
     panel_sizer->Layout();  
-    break;
+    break;*/
 
   case Button_cylinder:
     choosen_shape = Button_cylinder;
     box_panel->Hide();
-    cone_panel->Hide();
+    //cone_panel->Hide();
     lineSet_panel->Hide();
+    plane_panel->Hide();
     pointSet_panel->Hide();
     sphere_panel->Hide();
     triangle_panel->Hide();
@@ -521,9 +609,10 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
   case Button_triangle:
     choosen_shape = Button_triangle;
     box_panel->Hide();
-    cone_panel->Hide();
+    //cone_panel->Hide();
     cylinder_panel->Hide();
     lineSet_panel->Hide();
+    plane_panel->Hide();
     pointSet_panel->Hide();
     sphere_panel->Hide();
     triangleSet_panel->Hide();
@@ -536,8 +625,9 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
   case Button_LineSet:
     choosen_shape = Button_LineSet;
     box_panel->Hide();
-    cone_panel->Hide();
+    //cone_panel->Hide();
     cylinder_panel->Hide();
+    plane_panel->Hide();
     pointSet_panel->Hide();
     sphere_panel->Hide();
     triangle_panel->Hide();
@@ -551,9 +641,10 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
   case Button_PointSet:
     choosen_shape = Button_PointSet;
     box_panel->Hide();
-    cone_panel->Hide();
+    //cone_panel->Hide();
     cylinder_panel->Hide();
     lineSet_panel->Hide();
+    plane_panel->Hide();
     sphere_panel->Hide();
     triangle_panel->Hide();
     triangleSet_panel->Hide();
@@ -566,15 +657,32 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSE
   case Button_TriangleSet:
     choosen_shape = Button_TriangleSet;
     box_panel->Hide();
-    cone_panel->Hide();
+    //cone_panel->Hide();
     cylinder_panel->Hide();
     lineSet_panel->Hide();
+    plane_panel->Hide();
     sphere_panel->Hide();
     triangle_panel->Hide();
     pointSet_panel->Hide();
     panel_sizer->Clear();
     panel_sizer->Add( triangleSet_panel, 0, wxALL | wxGROW, 0 );
     triangleSet_panel->Show();
+    panel_sizer->Layout();
+    break;
+
+  case Button_Plane:
+    choosen_shape = Button_Plane;
+    box_panel->Hide();
+    //cone_panel->Hide();
+    cylinder_panel->Hide();
+    lineSet_panel->Hide();
+    triangleSet_panel->Hide();
+    sphere_panel->Hide();
+    triangle_panel->Hide();
+    pointSet_panel->Hide();
+    panel_sizer->Clear();
+    panel_sizer->Add( plane_panel, 0, wxALL | wxGROW, 0 );
+    plane_panel->Show();
     panel_sizer->Layout();
     break;
   }
@@ -611,7 +719,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticBox( box_size, false, 0, 0, Matrix4() ), spring_constant ) );
       break;
     }
-    case Button_cone: {
+   /* case Button_cone: {
       if( m_txt_cone_bottomRadius->GetValue().ToDouble(&val) ) {
         cone_bottom_radius = val * 1000;
       }
@@ -620,7 +728,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       }
       force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticCone( cone_bottom_radius, cone_height, false, 0, 0, Matrix4() ), spring_constant ) );
       break;
-    }
+    }*/
     case Button_cylinder: {
       if( m_txt_cylinder_radius->GetValue().ToDouble(&val) ) {
         cylinder_radius = val * 1000;
@@ -750,6 +858,33 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       }
 
       force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticTriangleSet( triangle_set_triangles, 0, 0, Matrix4() ), spring_constant ) );
+      break;
+    }
+
+    case Button_Plane: {
+      if( m_txt_plane_pointX->GetValue().ToDouble(&val) ) {
+        plane_point.x = val * 1000;
+      }
+      if( m_txt_plane_pointY->GetValue().ToDouble(&val) ) {
+        plane_point.y = val * 1000;
+      }
+      if( m_txt_plane_pointZ->GetValue().ToDouble(&val) ) {
+        plane_point.z = val * 1000;
+      }
+      if( m_txt_plane_normalX->GetValue().ToDouble(&val) ) {
+        plane_normal.x = val;
+      }
+      if( m_txt_plane_normalY->GetValue().ToDouble(&val) ) {
+        plane_normal.y = val;
+      }
+      if( m_txt_plane_normalZ->GetValue().ToDouble(&val) ) {
+        plane_normal.z = val;
+      }
+
+      plane_normal.normalizeSafe();
+
+      if( plane_normal.lengthSqr() > Constants::epsilon )
+        force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticPlane( plane_point, plane_normal, false, 0, 0, Matrix4() ), spring_constant ) );
       break;
     }
   }

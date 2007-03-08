@@ -72,12 +72,37 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
 
 /// Release all resources that has been used in the renderer for
 /// the given haptics device.
-void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
+void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd, bool finish ) {
   ContextMap::iterator i = context_map.find( hd );
   if( i != context_map.end() ) {
     hlMakeCurrent( NULL );
     hlDeleteContext( context_map[ hd ] );
     context_map.erase( i );
+  }
+
+  if( finish && dummy_context ) {
+    hlDeleteContext( dummy_context );
+    dummy_context = NULL;
+  }
+
+  callback_data.clear();
+  for( IdMap::iterator i = id_map.begin();
+       i != id_map.end();
+       i++ ) {
+    HLuint hl_shape_id = (*i).second; 
+    hlDeleteShapes( hl_shape_id, 1 );
+    hlRemoveEventCallback( HL_EVENT_MOTION, 
+                           hl_shape_id,
+                           HL_CLIENT_THREAD,
+                           &motionCallback );
+    hlRemoveEventCallback( HL_EVENT_TOUCH, 
+                           hl_shape_id,
+                           HL_CLIENT_THREAD,
+                           &touchCallback );
+    hlRemoveEventCallback( HL_EVENT_UNTOUCH, 
+                           hl_shape_id,
+                           HL_CLIENT_THREAD,
+                           &untouchCallback );
   }
 }
 
