@@ -61,7 +61,7 @@ void Chai3DRenderer::initRenderer( HAPIHapticsDevice *hd ) {
 
 /// Release all resources that has been used in the renderer for
 /// the given haptics device.
-void Chai3DRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
+void Chai3DRenderer::releaseRenderer( HAPIHapticsDevice *hd, bool finish ) {
   chai3d_tool->setForcesOFF();
   chai3d_tool->stop();
 }

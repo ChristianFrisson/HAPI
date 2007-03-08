@@ -168,7 +168,7 @@ namespace HAPI {
 
     /// Release all resources that has been used in the renderer for
     /// the given haptics device.
-    virtual void releaseRenderer( HAPI::HAPIHapticsDevice *hd );
+    virtual void releaseRenderer( HAPI::HAPIHapticsDevice *hd, bool finish );
 
     /// Use HL API in Chai3D to render the shapes.
     virtual void preProcessShapes( HAPI::HAPIHapticsDevice *hd,

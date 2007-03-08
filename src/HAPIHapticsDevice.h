@@ -177,7 +177,7 @@ namespace HAPI {
       
       for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
         if( haptics_renderers[i] ) {
-          haptics_renderers[i]->releaseRenderer( this );
+          haptics_renderers[i]->releaseRenderer( this, true );
         }
       }
 
@@ -559,7 +559,7 @@ namespace HAPI {
                                     unsigned int layer = 0 ) {
       if( device_state != UNINITIALIZED ) {
         if( haptics_renderers[layer] ) {
-          haptics_renderers[layer]->releaseRenderer( this );
+          haptics_renderers[layer]->releaseRenderer( this, false );
         }
         if( r )
           r->initRenderer( this );

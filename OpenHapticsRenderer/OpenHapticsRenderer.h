@@ -104,7 +104,7 @@ namespace HAPI {
 
     /// Release all resources that has been used in the renderer for
     /// the given haptics device.
-    virtual void releaseRenderer( HAPI::HAPIHapticsDevice *hd );
+    virtual void releaseRenderer( HAPI::HAPIHapticsDevice *hd, bool finish );
 
     /// Use HL API in OpenHaptics to render the shapes.
     virtual void preProcessShapes( HAPI::HAPIHapticsDevice *hd,
@@ -122,10 +122,7 @@ namespace HAPI {
                          
     
     /// Destructor.
-    virtual ~OpenHapticsRenderer() { 
-      if( dummy_context )
-        hlDeleteContext( dummy_context );
-    }
+    virtual ~OpenHapticsRenderer() {}
     
     /// The main function in any haptics renderer. Given a haptics device and 
     /// a group of shapes generate the force and torque to send to the device.
