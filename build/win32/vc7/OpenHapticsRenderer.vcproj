@@ -33,7 +33,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=" opengl32.lib H3DUtil.lib"
+				AdditionalDependencies=" opengl32.lib"
 				OutputFile="$(OutDir)/OpenHapticsRenderer_d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(Outdir)&quot;;..\..\..\..\H3DUtil\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
@@ -87,7 +87,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=" opengl32.lib H3DUtil.lib"
+				AdditionalDependencies=" opengl32.lib"
 				OutputFile="$(OutDir)/OpenHapticsRenderer.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(Outdir)&quot;;..\..\..\..\H3DUtil\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
