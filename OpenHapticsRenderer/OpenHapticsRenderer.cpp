@@ -29,12 +29,12 @@
 
 #include "OpenHapticsRenderer.h"
 #include "H3DMath.h"
-#include <HD/hd.h>
+
 #include "PhantomHapticsDevice.h"
 #include "AnyHapticsDevice.h"
 
 #ifdef HAVE_OPENHAPTICS
-
+#include <HD/hd.h>
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "hl.lib" )
 #pragma comment( lib, "hlu.lib" )
