@@ -29,15 +29,17 @@ namespace HAPI {
   public:
     /// Constructor.
     HLDepthBufferShape( HAPIGLShape *_glshape,
+                        void *_userdata,
                         HAPI::HAPISurfaceObject *_surface,
                         const Matrix4 &_transform,
                         Bounds::FaceType _touchable_face = Bounds::FRONT_AND_BACK,
                         bool _use_haptic_camera = true,
                         bool _use_adaptive_viewport = true ):
-      HAPIHapticShape( _glshape,_surface, _transform ),
+      HAPIHapticShape( _userdata,_surface, _transform ),
       touchable_face( _touchable_face ),
       use_haptic_camera( _use_haptic_camera ),
-      use_adaptive_viewport( _use_adaptive_viewport ) {}
+      use_adaptive_viewport( _use_adaptive_viewport ),
+      gl_shape( _glshape ) {}
     
     /// This function performs all the HLAPI calls that are needed to render
     /// the shape. Uses HL_SHAPE_FEEDBACK_BUFFER to render the object.     
@@ -52,6 +54,8 @@ namespace HAPI {
 
    /// Enable HL_ADAPTIVE_VIEWPORT or not
     bool use_adaptive_viewport;
+
+    HAPIGLShape *gl_shape;
   };
 
 }

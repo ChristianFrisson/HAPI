@@ -35,15 +35,17 @@ namespace HAPI {
 
     /// Constructor.
     HLFeedbackShape( HAPIGLShape *_glshape,
+                     void *_userdata,
                      HAPI::HAPISurfaceObject *_surface,
                      const Matrix4 &_transform,
                      int _nr_vertices = -1,
                      FaceType _touchable_face = Bounds::FRONT_AND_BACK,
                      bool _use_haptic_camera = true ):
-      HAPI::HAPIHapticShape( _glshape, _surface, _transform ),
+      HAPI::HAPIHapticShape( _userdata, _surface, _transform ),
       nr_vertices( _nr_vertices ),
       touchable_face( _touchable_face ),
-      use_haptic_camera( _use_haptic_camera ) {}
+      use_haptic_camera( _use_haptic_camera ),
+	  gl_shape( _glshape) {}
     
     /// This function performs all the HLAPI calls that are needed to render
     /// the shape. Uses HL_SHAPE_FEEDBACK_BUFFER to render the object.     
@@ -59,6 +61,8 @@ namespace HAPI {
     
     /// Enable HL_HAPTIC_CAMERA_VIEW or not
     bool use_haptic_camera;
+
+    HAPIGLShape *gl_shape;
   };
 }
 
