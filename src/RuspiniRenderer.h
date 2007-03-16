@@ -43,9 +43,7 @@ namespace HAPI {
   class HAPI_API RuspiniRenderer: public HAPIProxyBasedRenderer {
   public:
     /// Constructor.
-    RuspiniRenderer( HAPIFloat _proxy_radius = 2.5 ):
-      proxy_radius( _proxy_radius ) {
-    }
+    RuspiniRenderer( HAPIFloat _proxy_radius = 2.5 );
 
     /// Destructor.
     virtual ~RuspiniRenderer() {}

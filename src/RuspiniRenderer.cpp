@@ -33,6 +33,8 @@
 
 using namespace HAPI;
 
+const Vec3 UNINITIALIZED_PROXY_POS = Vec3( -200, -200, -202 );
+
 HAPIHapticsRenderer::HapticsRendererRegistration 
 RuspiniRenderer::renderer_registration(
                             "Ruspini",
@@ -44,6 +46,11 @@ const HAPIFloat length_sqr_point_epsilon = 1e-12; //12
 
 // epsilon value for deciding if a normal is the same.
 const HAPIFloat length_sqr_normal_epsilon = 1e-12;
+
+RuspiniRenderer::RuspiniRenderer( HAPIFloat _proxy_radius ):
+  proxy_radius( _proxy_radius ),
+  proxy_position( UNINITIALIZED_PROXY_POS ) {
+}
 
 void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c, 
                                          HAPISurfaceObject::ContactInfo &contact ) {
@@ -286,6 +293,10 @@ HAPIForceEffect::EffectOutput
 RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                                        const HapticShapeVector &shapes ) {
   HAPIHapticsDevice::DeviceValues input = hd->getDeviceValues();
+
+  if( proxy_position == UNINITIALIZED_PROXY_POS ) {
+    proxy_position = input.position;
+  }
 
   // clear all previous contacts
   tmp_contacts.clear();
