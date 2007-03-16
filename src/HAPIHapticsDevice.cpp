@@ -34,17 +34,17 @@ using namespace HAPI;
 list< HAPIHapticsDevice::HapticsDeviceRegistration > 
 *HAPIHapticsDevice::registered_devices = NULL;
 
-PeriodicThread::CallbackCode HAPIHapticsDevice::transferObjectsCallback( 
+H3DUtil::PeriodicThread::CallbackCode HAPIHapticsDevice::transferObjectsCallback( 
   void *data ) {
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
   hd->current_shapes = hd->tmp_shapes;
-  return PeriodicThread::CALLBACK_DONE;
+  return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
 
 // Callback function for rendering force effects on the 
 // HLHapticsDevice.  
-PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *data ) {
+H3DUtil::PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *data ) {
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
 
@@ -98,7 +98,7 @@ PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *d
   hd->sendTorque( output.torque );
 
   hd->sendOutput();
-  return PeriodicThread::CALLBACK_CONTINUE;
+  return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
 
 void HAPIHapticsDevice::transferObjects() {

@@ -129,7 +129,7 @@ namespace HAPI {
         if( !thread ) {
           // create a new thread to run the haptics in
 #ifdef WIN32
-          thread = new HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+          thread = new H3DUtil::HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
 #else
           thread = new HapticThread( 0, 1000 );
 #endif
@@ -589,7 +589,7 @@ namespace HAPI {
     }
 
     /// Get the thread that is used to run this haptics device.
-    inline PeriodicThreadBase *getThread() {
+    inline H3DUtil::PeriodicThreadBase *getThread() {
       return thread;
     }
 
@@ -760,7 +760,7 @@ namespace HAPI {
     virtual bool releaseHapticsDevice() = 0;
 
     /// The thread that this haptics device loop is run in.
-    PeriodicThreadBase *thread;
+    H3DUtil::PeriodicThreadBase *thread;
 
     // the force effects that are currently rendered in the realtime loop.
     // Should not be changed directly from the scenegraph loop but instead
@@ -778,16 +778,16 @@ namespace HAPI {
     DeviceOutput output;
 
     // lock for when changing the shapes to be rendered
-    MutexLock shape_lock;
+    H3DUtil::MutexLock shape_lock;
 
     // lock for when updating device values/sending output
-    MutexLock device_values_lock;
+    H3DUtil::MutexLock device_values_lock;
 
     // lock for when changing haptics renderer
-    MutexLock renderer_change_lock;
+    H3DUtil::MutexLock renderer_change_lock;
 
     // lock for when using force effects
-    MutexLock force_effect_lock;
+    H3DUtil::MutexLock force_effect_lock;
 
     //
     vector< HapticShapeVector > tmp_shapes ;
@@ -813,11 +813,11 @@ namespace HAPI {
     string device_name;
 
     /// Callback function to render force effects.
-    static PeriodicThread::CallbackCode hapticRenderingCallback( void *data );
+    static H3DUtil::PeriodicThread::CallbackCode hapticRenderingCallback( void *data );
 
     /// Callback function to transfer haptic objects to render to the 
     /// haptics loop.
-    static PeriodicThread::CallbackCode transferObjectsCallback( void *data );
+    static H3DUtil::PeriodicThread::CallbackCode transferObjectsCallback( void *data );
 
     friend class AnyHapticsDevice;
   };

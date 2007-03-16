@@ -157,7 +157,7 @@ namespace HAPI {
 
   protected:
     static list< HapticsRendererRegistration > *registered_renderers;
-    MutexLock contacts_lock;
+    H3DUtil::MutexLock contacts_lock;
     Contacts contacts;
     static bool initialized;
   };

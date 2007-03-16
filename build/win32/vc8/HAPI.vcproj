@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;..\..\..\..\H3DUtil\src;&quot;c:\Program Files\SensAble\3DTouch\include&quot;;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;..\..\..\..\H3DUtil\src;&quot;c:\Program Files\SensAble\3DTouch\include&quot;;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
+				PreprocessorDefinitions="_CRTDBG_MAP_ALLOC;_CRT_SECURE_NO_DEPRECATE;WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -63,11 +63,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/NODEFAULTLIB:msvcrt "
 				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
 				OutputFile="$(OutDir)/HAPI.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\build\win32\vc8\Debug;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
-				DelayLoadDLLs="HD.dll"
+				DelayLoadDLLs="HD.dll; dhd.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
 				SubSystem="2"
@@ -126,7 +127,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;..\..\..\..\H3DUtil\src;&quot;c:\Program Files\SensAble\3DTouch\include&quot;;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;..\..\..\..\H3DUtil\src;&quot;c:\Program Files\SensAble\3DTouch\include&quot;;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32;NDEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
@@ -147,11 +148,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib"
 				OutputFile="$(OutDir)/HAPI.dll"
-				LinkIncremental="1"
+				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\build\win32\vc8\release;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
-				DelayLoadDLLs="HD.dll"
+				DelayLoadDLLs="HD.dll; dhd.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -195,10 +196,6 @@
 			>
 			<File
 				RelativePath="..\..\..\src\AnyHapticsDevice.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\Chai3DRenderer.cpp"
 				>
 			</File>
 			<File
@@ -326,6 +323,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\src\HLThread.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\ParsedFunction.cpp"
 				>
 			</File>
@@ -337,10 +338,6 @@
 				RelativePath="..\..\..\src\RuspiniRenderer.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\..\..\src\Threads.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -349,10 +346,6 @@
 			>
 			<File
 				RelativePath="..\..\..\src\AnyHapticsDevice.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\Chai3DRenderer.h"
 				>
 			</File>
 			<File
@@ -496,6 +489,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\HLThread.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\ParsedFunction.h"
 				>
 			</File>
@@ -505,10 +502,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\RuspiniRenderer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\Threads.h"
 				>
 			</File>
 		</Filter>

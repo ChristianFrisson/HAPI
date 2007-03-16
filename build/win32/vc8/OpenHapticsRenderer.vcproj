@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="OpenHapticsRenderer"
 	ProjectGUID="{81C23655-AF1F-426E-9F63-5C415390A8CA}"
+	RootNamespace="OpenHapticsRenderer"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -16,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Release"
+			OutputDirectory="Debug"
 			IntermediateDirectory="Debug\obj"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -41,10 +42,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\OpenHapticsRenderer;..\..\..\src"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;OPENHAPTICSRENDERER_EXPORTS"
+				PreprocessorDefinitions="_CRTDBG_MAP_ALLOC ;WIN32;_DEBUG;_WINDOWS;_USRDLL;OPENHAPTICSRENDERER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="2"
+				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -62,6 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/NODEFAULTLIB:msvcrt"
 				AdditionalDependencies="opengl32.lib"
 				OutputFile="$(OutDir)/OpenHapticsRenderer.dll"
 				LinkIncremental="2"
@@ -148,7 +150,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib"
 				OutputFile="$(OutDir)/OpenHapticsRenderer.dll"
-				LinkIncremental="1"
+				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(Outdir)&quot;;..\..\..\..\H3DUtil\build\win32\vc8\release;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs="HD.dll"
 				GenerateDebugInformation="true"
@@ -232,10 +234,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\OpenHapticsRenderer\OpenHapticsRenderer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\PhantomHapticsDevice.h"
 				>
 			</File>
 		</Filter>
