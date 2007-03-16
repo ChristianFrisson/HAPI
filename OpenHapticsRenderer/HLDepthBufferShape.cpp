@@ -18,7 +18,6 @@ using namespace HAPI;
 
 void HLDepthBufferShape::hlRender( HAPI::HAPIHapticsDevice *hd,
                                    HLuint hl_shape_id ) {
-  HAPIGLShape *gl_shape = static_cast< HAPIGLShape *>( userdata );
 
   if( OpenHapticsRenderer::surfaceSupported( surface ) ) {
     //&& closeEnoughToBound( hd->proxyPosition->getValue(),  
