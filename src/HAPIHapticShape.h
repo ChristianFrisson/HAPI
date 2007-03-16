@@ -65,6 +65,7 @@ namespace HAPI {
                      int _shape_id = -1,
                      Bounds::FaceType _touchable_face = 
                      Bounds::FRONT_AND_BACK  ):
+      Bounds::CollisionObject( true ),
       HAPIHapticObject( _transform ),
       surface( _surface ),
       userdata( _userdata ),

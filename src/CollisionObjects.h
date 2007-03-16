@@ -118,6 +118,11 @@ namespace HAPI {
     /// can be used  in collision detection.
     class HAPI_API CollisionObject : public H3DUtil::RefCountedClass {
     public:
+
+      CollisionObject(){};
+
+      CollisionObject( bool _use_lock ) :
+        H3DUtil::RefCountedClass( _use_lock ){};
          
       virtual void getConstraints( const Vec3 &point,
                                    std::vector< PlaneConstraint > &constraints,
