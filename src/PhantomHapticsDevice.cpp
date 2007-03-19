@@ -31,7 +31,7 @@
 #include <PhantomHapticsDevice.h>
 
 #ifdef HAVE_OPENHAPTICS
-#include "HLThreads.h"
+#include "HLThread.h"
 #include <sstream>
 
 using namespace HAPI;
