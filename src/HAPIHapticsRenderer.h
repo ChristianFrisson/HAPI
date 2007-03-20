@@ -36,6 +36,7 @@
 #include <AutoRefVector.h>
 #include <Threads.h>
 #include <list>
+#include <map>
 
 namespace HAPI {
 
@@ -78,7 +79,7 @@ namespace HAPI {
 
     /// Release all resources that has been used in the renderer for
     /// the given haptics device.
-    virtual void releaseRenderer( HAPIHapticsDevice *hd, bool finish ) {}
+    virtual void releaseRenderer( HAPIHapticsDevice *hd ) {}
 
 
     /// This function will be called in the main loop when new shapes are
@@ -89,7 +90,7 @@ namespace HAPI {
                                    const HapticShapeVector &shapes ) {} 
 
     /// Destructor. Stops haptics rendering and remove callback functions.
-    virtual ~HAPIHapticsRenderer() {}
+    virtual ~HAPIHapticsRenderer();
 
     /// The main function in any haptics renderer. Given a haptics device and 
     /// a group of shapes generate the force and torque to send to the device.
@@ -155,11 +156,24 @@ namespace HAPI {
       registered_renderers->push_back( fr );
     }
 
+    // solution to clean up dummy_context in OpenHapticsRenderer correctly.
+    // Could perhaps switch for just calling hdstartscheduler in
+    // releaserenderer for OpenHapticsRenderer.
+    void cleanUpStuff( HAPIHapticsDevice *hd );
+
   protected:
     static list< HapticsRendererRegistration > *registered_renderers;
     H3DUtil::MutexLock contacts_lock;
     Contacts contacts;
     static bool initialized;
+
+    class HAPI_API WorkAroundToCleanUpHLContext {
+    public:
+      virtual void cleanUp() {}
+    };
+
+    static map< HAPIHapticsDevice *,
+      vector< WorkAroundToCleanUpHLContext * > > clean_up_stuff;
   };
 }
 

@@ -104,7 +104,7 @@ namespace HAPI {
 
     /// Release all resources that has been used in the renderer for
     /// the given haptics device.
-    virtual void releaseRenderer( HAPI::HAPIHapticsDevice *hd, bool finish );
+    virtual void releaseRenderer( HAPI::HAPIHapticsDevice *hd );
 
     /// Use HL API in OpenHaptics to render the shapes.
     virtual void preProcessShapes( HAPI::HAPIHapticsDevice *hd,
@@ -117,7 +117,7 @@ namespace HAPI {
       default_gl_shape( _default_shape_type ),
       default_adaptive_viewport( _default_adaptive_viewport ),
       default_haptic_camera_view( _default_haptic_camera_view ) {
-      dummy_context = NULL;
+        dummy_context = NULL;
     }
                          
     
@@ -209,6 +209,18 @@ namespace HAPI {
 
   protected:
 
+    class OPENHAPTICSRENDERER_API OpenHapticsWorkAroundToCleanUpHLContext :
+    public WorkAroundToCleanUpHLContext {
+    public:
+      OpenHapticsWorkAroundToCleanUpHLContext() {
+        dummy_context = NULL;
+      }
+      virtual void cleanUp();
+      HHLRC dummy_context;
+    };
+
+    HHLRC dummy_context;
+
     ShapeType default_gl_shape;
     bool default_adaptive_viewport;
     bool default_haptic_camera_view;
@@ -275,7 +287,6 @@ namespace HAPI {
 
     /// A map from haptics device to HL API context
     ContextMap context_map;
-    HHLRC dummy_context;
 
     /// A map from HAPI shape_id to HL API shape id
     typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, HLuint > IdMap;

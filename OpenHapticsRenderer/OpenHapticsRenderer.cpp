@@ -72,7 +72,7 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
 
 /// Release all resources that has been used in the renderer for
 /// the given haptics device.
-void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd, bool finish ) {
+void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   ContextMap::iterator i = context_map.find( hd );
   if( i != context_map.end() ) {
     hlMakeCurrent( NULL );
@@ -80,10 +80,12 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd, bool finish ) 
     context_map.erase( i );
   }
 
-  if( finish && dummy_context ) {
-    hlDeleteContext( dummy_context );
-    dummy_context = NULL;
-  }
+  // Ugly solution to clean up stuff correctly when the device is removed.
+  // TODO: Find a better solution.
+  OpenHapticsWorkAroundToCleanUpHLContext * temp_ptr =
+    new OpenHapticsWorkAroundToCleanUpHLContext();
+  temp_ptr->dummy_context = dummy_context;
+  clean_up_stuff[ hd ].push_back( temp_ptr );
 
   callback_data.clear();
   for( IdMap::iterator i = id_map.begin();
@@ -104,6 +106,7 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd, bool finish ) 
                            HL_CLIENT_THREAD,
                            &untouchCallback );
   }
+  id_map.clear();
 }
 
 HAPIForceEffect::EffectOutput 
@@ -545,6 +548,13 @@ void OpenHapticsRenderer::hlRenderAbsolute( HAPIFloat stiffness,
                     dynamic_friction,
                     magnetic,
                     snap_distance );
+}
+
+void OpenHapticsRenderer::OpenHapticsWorkAroundToCleanUpHLContext::cleanUp() {
+  if( dummy_context ) {
+    hlDeleteContext( dummy_context );
+    dummy_context = NULL;
+  }
 }
 
 #endif

@@ -34,7 +34,27 @@ using namespace HAPI;
 
 
 list< HAPIHapticsRenderer::HapticsRendererRegistration > 
-*HAPIHapticsRenderer::registered_renderers; 
+*HAPIHapticsRenderer::registered_renderers;
 
 bool HAPIHapticsRenderer::initialized = false; 
 
+map< HAPIHapticsDevice *,
+vector< HAPIHapticsRenderer::WorkAroundToCleanUpHLContext * > >
+      HAPIHapticsRenderer::clean_up_stuff;
+
+HAPIHapticsRenderer::~HAPIHapticsRenderer() {
+  H3DUtil::Console(3) << "renderer destroyed" << endl;
+}
+
+void HAPIHapticsRenderer::cleanUpStuff( HAPIHapticsDevice *hd ) {
+  if( clean_up_stuff.find( hd ) != clean_up_stuff.end() ) {
+    vector< WorkAroundToCleanUpHLContext * >
+      &clean_up_classes = clean_up_stuff[ hd ];
+    for( int i = 0; i < clean_up_classes.size(); i++ ) {
+      clean_up_classes[i]->cleanUp();
+      delete clean_up_classes[i];
+      clean_up_classes[i] = 0;
+    }
+    clean_up_stuff.erase( hd );
+  }
+}
