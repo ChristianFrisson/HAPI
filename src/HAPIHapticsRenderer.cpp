@@ -42,9 +42,7 @@ map< HAPIHapticsDevice *,
 vector< HAPIHapticsRenderer::WorkAroundToCleanUpHLContext * > >
       HAPIHapticsRenderer::clean_up_stuff;
 
-HAPIHapticsRenderer::~HAPIHapticsRenderer() {
-  H3DUtil::Console(3) << "renderer destroyed" << endl;
-}
+HAPIHapticsRenderer::~HAPIHapticsRenderer() { }
 
 void HAPIHapticsRenderer::cleanUpStuff( HAPIHapticsDevice *hd ) {
   if( clean_up_stuff.find( hd ) != clean_up_stuff.end() ) {
