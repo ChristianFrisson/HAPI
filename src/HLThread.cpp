@@ -81,7 +81,7 @@ void HLThread::setActive( bool _active ) {
     sg_lock.lock(); 
     threads.push_back( this );
     sg_lock.unlock();
-    synchronousCallback( setThreadId, this );
+    asynchronousCallback( setThreadId, this );
   } else if( !_active && is_active ) {
     sg_lock.lock();
     std::vector< H3DUtil::HapticThreadBase *>::iterator i = 
