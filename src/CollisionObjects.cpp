@@ -2158,7 +2158,10 @@ bool Sphere::movingSphereIntersect( HAPIFloat r,
   if (b >= 0.0f) return false; 
   HAPIFloat d = b * b - a * c;
   // No real-valued root, spheres do not intersect
-  if (d < 0.0f) return false;    
+  if (d < 0.0f) return false;  
+
+  HAPIFloat t = ( -b - H3DUtil::H3DSqrt( d ) ) / a;
+  if( t < 0.0f || t > 1.0f ) return false;
 
   return true;
 }
