@@ -298,6 +298,9 @@
 				RelativePath="..\..\..\src\HaptikDevice.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HLThread.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\ParsedFunction.cpp">
 			</File>
 			<File
@@ -305,9 +308,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\RuspiniRenderer.cpp">
-			</File>
-			<File
-				RelativePath="..\..\..\src\Threads.cpp">
 			</File>
 		</Filter>
 		<Filter
