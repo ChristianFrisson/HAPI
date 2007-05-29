@@ -157,19 +157,20 @@ void HapticCone::hlRender( HLHapticsDevice *hd) {
 }
 #endif // HAVE_OPENHAPTICS
 
-bool HapticCone::lineIntersect( const Vec3 &start_point, 
-                                  const Vec3 &end_point,
-                                  Bounds::IntersectionInfo &result ) {
+bool HapticCone::lineIntersect( const Vec3 &from, 
+                                const Vec3 &to,
+                                Bounds::IntersectionInfo &result,
+                                Bounds::FaceType face ) {
   return false;
 }
 
 
-void HapticCone::getConstraints(  const Vec3 &point,
-                                    HAPIFloat r,
-                                    std::vector< PlaneConstraint > &result ) {
+void HapticCone::getConstraints( const Vec3 &point,
+                                 std::vector< PlaneConstraint > &constraints,
+                                 Bounds::FaceType face ) {
   Vec3 cp, n, tc;
   closestPoint( point, cp, n, tc );
-  result.push_back( PlaneConstraint( cp, n, tc, this ) );
+  constraints.push_back( PlaneConstraint( cp, n, tc, this ) );
 }
 
 void HapticCone::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {

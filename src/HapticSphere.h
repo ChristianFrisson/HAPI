@@ -1,4 +1,3 @@
-
 //////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2007, SenseGraphics AB
 //
@@ -47,9 +46,13 @@ namespace HAPI {
                   bool _solid,
                   void *_userdata,
                   HAPISurfaceObject *_surface,
-                  const Matrix4 &_transform ):
-      HAPIHapticShape( _userdata, _surface, _transform ),
-      radius( _radius ),
+                  const Matrix4 &_transform,
+                  int _shape_id = -1,
+                  Bounds::FaceType _touchable_face = 
+                  Bounds::FRONT_AND_BACK ):
+      HAPIHapticShape( _userdata, _surface, _transform,
+                       _shape_id, _touchable_face ),
+      sphere( Vec3(), _radius ),
       solid( _solid ) {}
 #ifdef HAVE_OPENHAPTICSfff
 fdas
@@ -92,16 +95,17 @@ fdas
 #endif
     virtual bool lineIntersect( const Vec3 &from, 
                                 const Vec3 &to,
-                                Bounds::IntersectionInfo &result ); 
+                                Bounds::IntersectionInfo &result,
+                                Bounds::FaceType face = Bounds::FRONT_AND_BACK ); 
 
     virtual void getConstraints( const Vec3 &point,
-                                 HAPIFloat radius,
-                                 std::vector< PlaneConstraint > &constraints );
+                                 std::vector< PlaneConstraint > &constraints,
+                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK );
 
     virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );
 
     /// The radius of the sphere in metres. 
-    HAPIFloat radius;
+    Bounds::Sphere sphere;
 
     /// If false, both the inside and outside of the sphere is rendered.
     /// If true, only the outside is rendered.

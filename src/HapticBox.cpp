@@ -157,25 +157,26 @@ void HapticBox::hlRender( HLHapticsDevice *hd) {
 }
 #endif // HAVE_OPENHAPTICS
 
-bool HapticBox::lineIntersect( const Vec3 &start_point, 
-                                  const Vec3 &end_point,
-                                  Bounds::IntersectionInfo &result ) {
+bool HapticBox::lineIntersect( const Vec3 &from, 
+                               const Vec3 &to,
+                               Bounds::IntersectionInfo &result,
+                               Bounds::FaceType face ) {
   HAPIFloat tmin = 0.0f;
   HAPIFloat tmax = 1.0f;
   Matrix4 inverse = transform.inverse();
-  Vec3 local_end_point = inverse * end_point;
-  Vec3 local_start_point = inverse * start_point;
-  Vec3 d = local_end_point - local_start_point;
+  Vec3 local_to = inverse * to;
+  Vec3 local_from = inverse * from;
+  Vec3 d = local_to - local_from;
   // For all three slabs
   for( int i = 0; i < 3; i++ ) {
     if( H3DUtil::H3DAbs(d[i]) < Constants::epsilon ) {
       // Ray is parallel to slab. No hit if origin not within slab;
-      if( start_point[i] < min[i] || start_point[i] > max[i] ) return false;
+      if( local_from[i] < min[i] || local_from[i] > max[i] ) return false;
     } else {
       // Compute intersection t value of ray with near and far plane of slab
       HAPIFloat ood = 1.0 / d[i];
-      HAPIFloat t1 = (min[i] - start_point[i]) * ood;
-      HAPIFloat t2 = (max[i] - start_point[i]) * ood;
+      HAPIFloat t1 = (min[i] - local_from[i]) * ood;
+      HAPIFloat t2 = (max[i] - local_from[i]) * ood;
       // Make t1 be intersection with near plane, t2 with far plane
       if( t1 > t2 ) {
         HAPIFloat temp = t1;
@@ -190,7 +191,7 @@ bool HapticBox::lineIntersect( const Vec3 &start_point,
     }
   }
   // Ray intersect all 3 slabs. Return point and intersection t value (tmin)
-  Vec3 temp_point = start_point + d * tmin;
+  Vec3 temp_point = local_from + d * tmin;
   // TODO: Normal, should be 22 different cases. (inside outside too)
   // is this failsafe and fast? the box is assumed to not have 0 size in any of
   // the directions
@@ -208,13 +209,12 @@ bool HapticBox::lineIntersect( const Vec3 &start_point,
   return true;
 }
 
-
-void HapticBox::getConstraints(  const Vec3 &point,
-                                    HAPIFloat r,
-                                    std::vector< PlaneConstraint > &result ) {
+void HapticBox::getConstraints( const Vec3 &point,
+                                std::vector< PlaneConstraint > &constraints,
+                                Bounds::FaceType face ) {
   Vec3 cp, n, tc;
   closestPoint( point, cp, n, tc );
-  result.push_back( PlaneConstraint( cp, n, tc, this ) );
+  constraints.push_back( PlaneConstraint( cp, n, tc, this ) );
 }
 
 void HapticBox::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) { 
