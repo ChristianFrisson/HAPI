@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,12 +27,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Chai3DRenderer.h"
+#include <Chai3DRenderer.h>
 
-#include "H3DMath.h"
-#include "DeviceInfo.h"
+#include <H3DMath.h>
+#include <DeviceInfo.h>
 
-#include "HapticTriangleSet.h"
+#include <HapticTriangleSet.h>
 
 #ifdef HAVE_CHAI3D
 

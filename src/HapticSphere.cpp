@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -26,7 +26,7 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "HapticSphere.h"
+#include <HapticSphere.h>
 
 using namespace HAPI;
 #ifdef HjAVE_OPENHAPTICS

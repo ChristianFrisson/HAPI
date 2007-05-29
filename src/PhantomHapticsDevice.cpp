@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,7 +31,7 @@
 #include <PhantomHapticsDevice.h>
 
 #ifdef HAVE_OPENHAPTICS
-#include "HLThread.h"
+#include <HLThread.h>
 #include <sstream>
 
 using namespace HAPI;
