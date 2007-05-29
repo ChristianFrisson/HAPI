@@ -157,89 +157,31 @@ void HapticSphere::hlRender( HLHapticsDevice *hd) {
 }
 #endif // HAVE_OPENHAPTICS
 
-bool HapticSphere::lineIntersect( const Vec3 &start_point, 
-                                  const Vec3 &end_point,
-                                  Bounds::IntersectionInfo &result ) {
-  // p is the starting point of the ray used for determinining intersection
-  // v is the vector between this starting point and the end point.
-  // the starting point must be outside the sphere.
-  Vec3 p, v;
-  HAPIFloat r2 = radius * radius;
-
-  HAPIFloat a0  = start_point * start_point - r2;
-  if (a0 <= 0) {
-    // start_point is inside sphere
-    a0 = end_point * end_point - r2;
-    if( a0 <= 0 ) {
-      // both start_point and end_point are inside sphere so no intersection
-      return false;
-    } else {
-      // start_point is inside and end_point is outside. We will have an 
-      // intersection.
-      p = end_point;
-      v = start_point - end_point;
-    }
-  } else {
-    // start_point is outside sphere
-    p = start_point;
-    v = end_point - start_point;
-    
-    // check that the line will intersect 
-    HAPIFloat a1 = v * p;
-    if (a1 >= 0) {
-      // v is pointing away from the sphere so no intersection
-      return false;
-    }
+bool HapticSphere::lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
+                                  Bounds::IntersectionInfo &result,
+                                  Bounds::FaceType face ) {
+  Matrix4 inverse = transform.inverse();
+  Vec3 local_from = inverse * from;
+  Vec3 local_to = inverse * to;
+  if( sphere.lineIntersect( local_from, local_to, result, face ) ) {
+    result.normal = transform.getScaleRotationPart() * result.normal;
+    result.point = transform * result.point;
+    return true;
   }
-  // use implicit quadratic formula to find the roots
-  HAPIFloat a = v.x*v.x + v.y*v.y + v.z*v.z;
-  HAPIFloat b = 2 * (p.x*v.x + p.y*v.y + p.z*v.z);
-  HAPIFloat c = p.x*p.x + p.y*p.y + p.z*p.z - r2;
-
-  HAPIFloat s = b*b - 4*a*c;
-
-  HAPIFloat u;
-  if( s == 0.0 ) {
-    // line is a tangent to the sphere
-    u = -b/(2*a);
-  } else if( s > 0.0 ) {
-    // line intersects sphere in two points
-    HAPIFloat u0 = (-b + sqrt(s))/(2*a);
-    HAPIFloat u1 = (-b - sqrt(s))/(2*a);
-    u = u0 < u1 ? u0 : u1;
-  }  else {
-    // line does not intersect
-    return false;
-  }
-
-  // check that the intersection point is within the line segment
-  if( u > 1.0 || u < 0.0) {
-    return false;
-  }
-  
-  // calculate the intersection point and normal
-  result.point = p + u*v;
-  result.normal = result.point;
-  result.normal.normalize();
-  return true;
+  return false;
 }
 
-
-void HapticSphere::getConstraints(  const Vec3 &point,
-                                    HAPIFloat r,
-                                    std::vector< PlaneConstraint > &result ) {
-
-  Vec3 v = point;
-  HAPIFloat v2 = v.lengthSqr();
-  
-  if(  //v2 <= r * r && 
-       v2 > Constants::epsilon ) {
-         v = v / H3DUtil::H3DSqrt( v2 );
-         // TODO: tex coord
-    result.push_back( PlaneConstraint( (radius+0.0025) * v, v, Vec3() ) );
-  } else {
-    cerr << point << endl;
-  }
+void HapticSphere::getConstraints( const Vec3 &point,
+                                   std::vector< PlaneConstraint > &constraints,
+                                   Bounds::FaceType face ) {
+  Vec3 p = transform.inverse() * point;
+  sphere.getConstraints( p, constraints, face );
+  PlaneConstraint &pc = constraints.back();
+  pc.normal = transform.getScaleRotationPart() * pc.normal;
+  pc.normal.normalizeSafe();
+  pc.point = transform * pc.point;
+  pc.haptic_shape = this;  
 }
 
 void HapticSphere::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
@@ -248,7 +190,7 @@ void HapticSphere::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
   // Maybe check this and return any point on the surface in this case.
   n = transform.inverse() * p;
   n.normalizeSafe();
-  cp = transform * ( radius * n );
+  cp = transform * ( sphere.radius * n );
   n = transform.getRotationPart() * n;
 
   // TODO: fix tc

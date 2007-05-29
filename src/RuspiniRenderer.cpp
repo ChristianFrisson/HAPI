@@ -478,7 +478,8 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
       // get updated constraint
       (*i).primitive->getConstraints( p, constraints, 
                                       (*i).haptic_shape->touchable_face );
-      *i = constraints[0];
+      if( !constraints.empty() )
+        *i = constraints[0];
       // transform constraint to global space and move it out in the normal
       // direction by the proxy_radius
       (*i).normal = transform.getScaleRotationPart() * (*i).normal;

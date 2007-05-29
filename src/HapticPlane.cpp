@@ -157,13 +157,14 @@ void HapticPlane::hlRender( HLHapticsDevice *hd) {
 }
 #endif // HAVE_OPENHAPTICS
 
-bool HapticPlane::lineIntersect( const Vec3 &start_point, 
-                                  const Vec3 &end_point,
-                                  Bounds::IntersectionInfo &result ) {
+bool HapticPlane::lineIntersect( const Vec3 &from, 
+                                 const Vec3 &to,
+                                 Bounds::IntersectionInfo &result,
+                                 Bounds::FaceType face ) {
   Matrix4 inverse = transform.inverse();
-  Vec3 local_start_point = inverse * start_point;
-  Vec3 local_end_point = inverse * end_point;
-  bool intersection = plane.lineIntersect( start_point, end_point, result );
+  Vec3 local_from = inverse * from;
+  Vec3 local_to = inverse * to;
+  bool intersection = plane.lineIntersect( local_from, local_to, result );
   if( intersection ) {
     result.point = transform * result.point;
     result.normal = transform.getRotationPart() * result.normal;
@@ -174,17 +175,15 @@ bool HapticPlane::lineIntersect( const Vec3 &start_point,
 }
 
 
-void HapticPlane::getConstraints(  const Vec3 &point,
-                                    HAPIFloat r,
-                                    std::vector< PlaneConstraint > &result ) {
+void HapticPlane::getConstraints( const Vec3 &point,
+                                 std::vector< PlaneConstraint > &constraints,
+                                 Bounds::FaceType face ) {
   Vec3 p = transform.inverse() * point;
-  unsigned int size = result.size();
-  plane.getConstraints( p, result, HAPI::Bounds::FRONT_AND_BACK );
-  for( unsigned int i = size; i < result.size(); i ++ ) {
-    PlaneConstraint &pc = result[i];
-    pc.point = transform * pc.point;
-    pc.normal = transform.getRotationPart() * pc.normal;
-  }
+  plane.getConstraints( p, constraints, face );
+  PlaneConstraint &pc = constraints.back();
+  pc.point = transform * pc.point;
+  pc.normal = transform.getRotationPart() * pc.normal;
+  pc.haptic_shape = this;
 }
 
 void HapticPlane::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
