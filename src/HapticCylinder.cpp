@@ -169,8 +169,8 @@ bool HapticCylinder::lineIntersect( const Vec3 &from,
 }
 
 void HapticCylinder::getConstraints( const Vec3 &point,
-                            HAPIFloat radius,
-                            std::vector< PlaneConstraint > &constraints ) {
+                                 std::vector< PlaneConstraint > &constraints,
+                                 Bounds::FaceType face ) {
   Vec3 cp, n, tc;
   closestPoint( point, cp, n, tc );
   constraints.push_back( PlaneConstraint( cp, n, tc, this ) );
