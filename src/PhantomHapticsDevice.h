@@ -151,6 +151,16 @@ namespace HAPI {
     /// the device type.
     inline bool calibrateDevice();
 
+    /// Enable the device. Positions can be read and force can be sent.
+    inline virtual ErrorCode enableDevice() {
+      ErrorCode e = HAPIHapticsDevice::enableDevice();
+      // Starting scheduler here instead of in initHapticsDevice since because
+      // of random crashes when using OpenHapticsRenderer. Apparantly HL API does
+      // not like the scheduler to have already been started when creating a new
+      // HL context.
+      hdStartScheduler();
+      return e;
+    }
 
   protected:
     double device_firmware_version;
@@ -179,17 +189,6 @@ namespace HAPI {
 
     /// Releases all resources allocated in initHapticsDevice. 
     virtual bool releaseHapticsDevice();
-
-     /// Enable the device. Positions can be read and force can be sent.
-    inline virtual ErrorCode enableDevice() {
-      ErrorCode e = HAPIHapticsDevice::enableDevice();
-      // Starting scheduler here instead of in initHapticsDevice since because
-      // of random crashes when using OpenHapticsRenderer. Apparantly HL API does
-      // not like the scheduler to have already been started when creating a new
-      // HL context.
-      hdStartScheduler();
-      return e;
-    }
 
     /// The device name for this device.
     string device_name;
