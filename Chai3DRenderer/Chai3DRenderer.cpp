@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,17 +30,17 @@
 #include <Chai3DRenderer.h>
 
 #include <H3DMath.h>
-#include <DeviceInfo.h>
+//#include "DeviceInfo.h"
 
 #include <HapticTriangleSet.h>
-
-#ifdef HAVE_CHAI3D
+#include <HAPIHapticsDevice.h>
+#include <FrictionSurface.h>
 
 // Chai3D includes
 #include <cVector3d.h>
 #include <cMatrix3d.h>
 
-using namespace H3D;
+//using namespace H3D;
 using namespace HAPI;
 
 HAPIHapticsRenderer::HapticsRendererRegistration 
@@ -97,8 +97,10 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     HAPIHapticShape *shape = (*s);
     Chai3DSurface *chai3d_surface = 
       dynamic_cast< Chai3DSurface * >( shape->surface );
+    FrictionSurface *friction_surface = 
+      dynamic_cast< FrictionSurface * >( shape->surface );
 
-    if( chai3d_surface ) {
+    if( chai3d_surface || friction_surface ) {
       cMesh *mesh = new cMesh(world);
       
       new_meshes.push_back( mesh );
@@ -123,7 +125,13 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           index += 3;
         }
         cMaterial mat;
-        chai3d_surface->chai3dMaterial( mat );
+        if( chai3d_surface )
+          chai3d_surface->chai3dMaterial( mat );
+        else if( friction_surface ) {
+          mat.setStiffness( friction_surface->stiffness / 1000 );
+          mat.setStaticFriction( friction_surface->static_friction );
+          mat.setDynamicFriction( friction_surface->dynamic_friction );
+        }
         mesh->setMaterial( mat );
       }
     }
@@ -268,5 +276,3 @@ int Chai3DRenderer::H3DDevice::command(int a_command, void* a_data)
 
     return result;
 }
-
-#endif

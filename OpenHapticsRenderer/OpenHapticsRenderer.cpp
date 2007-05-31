@@ -32,6 +32,7 @@
 
 #include "PhantomHapticsDevice.h"
 #include "AnyHapticsDevice.h"
+#include <FrictionSurface.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <HD/hd.h>
@@ -452,7 +453,11 @@ HLboolean HLCALLBACK OpenHapticsRenderer::intersectCallback(
   intersection_point[0] = i.point.x;
   intersection_point[1] = i.point.y;
   intersection_point[2] = i.point.z;
-  
+
+  if( b && i.face == Bounds::BACK ) {
+      i.normal = -i.normal;
+  }
+
   intersection_normal[0] = i.normal.x;
   intersection_normal[1] = i.normal.y;
   intersection_normal[2] = i.normal.z;
@@ -503,11 +508,23 @@ bool OpenHapticsRenderer::hlRenderHAPISurface( HAPISurfaceObject *s ) {
     hl_surface->hlRender();
     return true;
   }
+  if( FrictionSurface *friction_surface =
+      dynamic_cast< FrictionSurface * >( s ) ) {
+    HAPI::OpenHapticsRenderer::hlRenderAbsolute(
+      friction_surface->stiffness,
+      friction_surface->damping,
+      friction_surface->static_friction,
+      friction_surface->dynamic_friction,
+      false,
+      0 );
+    return true;
+  }
   return false;
 }
 
 bool OpenHapticsRenderer::surfaceSupported( HAPISurfaceObject *s ) {
-  return dynamic_cast< HLSurface * >( s ) != NULL;
+  return dynamic_cast< HLSurface * >( s ) != NULL ||
+         dynamic_cast< FrictionSurface * >( s ) != NULL;
 }
 
 /// Sets up the surface parameters for HL API. All values are given in
