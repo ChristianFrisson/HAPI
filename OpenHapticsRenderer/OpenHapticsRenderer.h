@@ -74,6 +74,39 @@ namespace HAPI {
       virtual void hlRender() = 0;
     };
 
+    class OPENHAPTICSRENDERER_API OpenHapticsSurface: public HAPISurfaceObject,
+      public HLSurface
+    {
+    public:
+      OpenHapticsSurface( HAPIFloat _stiffness = 0.5,
+                          HAPIFloat _damping = 0,
+                          HAPIFloat _static_friction = 0.1,
+                          HAPIFloat _dynamic_friction = 0.4,
+                          bool _magnetic = false,
+                          HAPIFloat _snap_distance = 0.01 ):
+        stiffness( _stiffness ),
+        damping( _damping ),
+        static_friction( _static_friction ),
+        dynamic_friction( _dynamic_friction ),
+        magnetic( _magnetic ),
+        snap_distance( _snap_distance )
+      {
+      }
+      /// Renders the surface using hlMaterialf calls
+      virtual void hlRender() {
+        hlRenderRelative( stiffness,
+                          damping,
+                          static_friction,
+                          dynamic_friction, 
+                          magnetic,
+                          snap_distance );
+      }
+
+      HAPIFloat stiffness, damping, static_friction,
+                dynamic_friction, snap_distance;
+      bool magnetic;
+    };
+
     class OPENHAPTICSRENDERER_API OpenHapticsOptions: public HAPI::HAPIShapeRenderOptions {
     public:
       typedef enum {
