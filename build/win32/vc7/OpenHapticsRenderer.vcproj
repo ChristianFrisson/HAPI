@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="OpenHapticsRenderer"
 	ProjectGUID="{81C23655-AF1F-426E-9F63-5C415390A8CA}"
+	RootNamespace="OpenHapticsRenderer"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -12,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug DLL|Win32"
-			OutputDirectory="..\..\..\lib"
+			OutputDirectory="..\..\..\..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2">
@@ -34,14 +35,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" opengl32.lib"
-				OutputFile="$(OutDir)/OpenHapticsRenderer_d.dll"
+				OutputFile="$(OutDir)/OpenHapticsRenderer10_vc7_d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(Outdir)&quot;;..\..\..\..\H3DUtil\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs="HD.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName)_d.pdb"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)\OpenHapticsRenderer_d.lib"
+				ImportLibrary="..\..\..\..\lib\OpenHapticsRenderer10_vc7_d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -66,7 +67,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release DLL|Win32"
-			OutputDirectory="..\..\..\lib"
+			OutputDirectory="..\..\..\..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2">
@@ -88,7 +89,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" opengl32.lib"
-				OutputFile="$(OutDir)/OpenHapticsRenderer.dll"
+				OutputFile="$(OutDir)/OpenHapticsRenderer10_vc7_r.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(Outdir)&quot;;..\..\..\..\H3DUtil\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs="HD.dll"
@@ -96,7 +97,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)\OpenHapticsRenderer.lib"
+				ImportLibrary="..\..\..\..\lib\OpenHapticsRenderer10_vc7_r.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -267,9 +268,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\OpenHapticsRenderer\OpenHapticsRenderer.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\PhantomHapticsDevice.h">
 			</File>
 		</Filter>
 	</Files>
