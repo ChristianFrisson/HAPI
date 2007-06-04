@@ -128,7 +128,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
         if( chai3d_surface )
           chai3d_surface->chai3dMaterial( mat );
         else if( friction_surface ) {
-          mat.setStiffness( friction_surface->stiffness / 1000 );
+          mat.setStiffness( friction_surface->stiffness );
           mat.setStaticFriction( friction_surface->static_friction );
           mat.setDynamicFriction( friction_surface->dynamic_friction );
         }
