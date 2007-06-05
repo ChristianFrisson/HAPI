@@ -41,12 +41,9 @@ namespace HAPI {
     /// Constructor.
     /// \param _bottomRadius The radius of the bottom.
     /// \param _height
-    /// \param _solid   If false, both the inside and outside of the cone is 
-    /// rendered. If true, only the outside is rendered.
     /// \param _surface The Surface of the box.
     HapticCone( HAPIFloat _bottomRadius,
                 HAPIFloat _height,
-                  bool _solid,
                   void *_userdata,
                   HAPISurfaceObject *_surface,
                   const Matrix4 &_transform,
@@ -56,8 +53,7 @@ namespace HAPI {
       HAPIHapticShape( _userdata, _surface, _transform,
                        _shape_id, _touchable_face ),
       bottomRadius( _bottomRadius ),
-      height( _height ),
-      solid( _solid ) {
+      height( _height ) {
       }
 #ifdef HAVE_OPENHAPTICSfff
 fdas
@@ -114,11 +110,6 @@ fdas
     HAPIFloat bottomRadius;
     /// The height of the cone.
     HAPIFloat height;
-
-    /// If false, both the inside and outside of the cone is rendered.
-    /// If true, only the outside is rendered.
-    bool solid;
-
   
   };
 }

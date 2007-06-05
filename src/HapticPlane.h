@@ -40,12 +40,9 @@ namespace HAPI {
     /// Constructor.
     /// \param _point  A point in the plane
     /// \param _normal  The normal of the plane (length 1)
-    /// \param _solid   If false, both the front and the back of the plane is 
-    /// rendered. If true, only the front is rendered.
     /// \param _surface The Surface of the plane.
     HapticPlane( Vec3 _point,
                   Vec3 _normal,
-                  bool _solid,
                   void *_userdata,
                   HAPISurfaceObject *_surface,
                   const Matrix4 &_transform,
@@ -56,7 +53,6 @@ namespace HAPI {
                        _shape_id, _touchable_face ),
       point( _point ),
       normal( _normal ),
-      solid( _solid ),
       plane( Bounds::Plane( _point, _normal ) ){ }
 #ifdef HAVE_OPENHAPTICSfff
 fdas
@@ -110,7 +106,6 @@ fdas
 
     Vec3 point, normal;
     Bounds::Plane plane;
-    bool solid;
   };
 }
 
