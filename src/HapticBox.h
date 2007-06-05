@@ -40,11 +40,8 @@ namespace HAPI {
   public:
     /// Constructor.
     /// \param _size The size of the box.
-    /// \param _solid   If false, both the inside and outside of the box is 
-    /// rendered. If true, only the outside is rendered.
     /// \param _surface The Surface of the box.
     HapticBox( Vec3 _size,
-                  bool _solid,
                   void *_userdata,
                   HAPISurfaceObject *_surface,
                   const Matrix4 &_transform,
@@ -53,8 +50,7 @@ namespace HAPI {
                   Bounds::FRONT_AND_BACK ):
       HAPIHapticShape( _userdata, _surface, _transform,
                        _shape_id, _touchable_face ),
-      size( _size ),
-      solid( _solid ) {
+      size( _size ) {
         Vec3 half_size = size / 2;
         min = -half_size;
         max = half_size;
@@ -118,11 +114,6 @@ fdas
     Vec3 size;
     /// The min and max extents of the box ( x, y, z )
     Vec3 min, max;
-
-    /// If false, both the inside and outside of the box is rendered.
-    /// If true, only the outside is rendered.
-    bool solid;
-
   
   };
 }

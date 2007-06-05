@@ -48,13 +48,13 @@ FrictionSurface::~FrictionSurface() {
 void FrictionSurface::onContact( ContactInfo &contact_info ) {
   // SmoothSurface
   //Vec3 local_probe = contact_info.localProbePosition();
-  ////contact_info.setLocalForce( Vec3( 0, -local_probe.y/1000 * stiffness, 0 ) );
-  //contact_info.setLocalForce( -local_probe/1000 * stiffness );
+  //contact_info.setLocalForce( Vec3( 0, -local_probe.y * stiffness, 0 ) );
+  ////contact_info.setLocalForce( -local_probe * stiffness );
   //contact_info.proxy_movement_local = Vec2( local_probe.x, local_probe.z );
 
   // FrictionalSurface
   Vec3 local_probe = contact_info.localProbePosition();
-  Vec3 force = local_probe * -stiffness / 700;
+  Vec3 force = local_probe * -stiffness;
   Vec2 force_t( force.x, force.z );
 
   if( in_static_contact ) {

@@ -39,11 +39,8 @@ namespace HAPI {
   public:
     /// Constructor.
     /// \param _radius The radius of the sphere in metres.
-    /// \param _solid   If false, both the inside and outside of the sphere is 
-    /// rendered. If true, only the outside is rendered.
     /// \param _surface The Surface of the sphere.
     HapticSphere( HAPIFloat _radius,
-                  bool _solid,
                   void *_userdata,
                   HAPISurfaceObject *_surface,
                   const Matrix4 &_transform,
@@ -52,8 +49,7 @@ namespace HAPI {
                   Bounds::FRONT_AND_BACK ):
       HAPIHapticShape( _userdata, _surface, _transform,
                        _shape_id, _touchable_face ),
-      sphere( Vec3(), _radius ),
-      solid( _solid ) {}
+      sphere( Vec3(), _radius ) {}
 #ifdef HAVE_OPENHAPTICSfff
 fdas
     /// Intersect the line segment from start_point to end_point with
@@ -106,11 +102,6 @@ fdas
 
     /// The radius of the sphere in metres. 
     Bounds::Sphere sphere;
-
-    /// If false, both the inside and outside of the sphere is rendered.
-    /// If true, only the outside is rendered.
-    bool solid;
-
   
   };
 }
