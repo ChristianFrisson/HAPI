@@ -13,6 +13,8 @@ INCLUDES += introduction.tex
 # Examples:
 INCLUDES += examples/constant_force.tex
 INCLUDES += examples/transfer_objects.tex
+INCLUDES += examples/hapticsDeviceRegistration_h.tex
+INCLUDES += examples/hapticsDeviceRegistration_cpp.tex
 
 
 # Compile once

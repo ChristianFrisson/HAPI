@@ -92,22 +92,26 @@ type. E.g. RCL for triangle mesh with spherical proxy.
 
 
 \subsection{Surface Rendering Layer}
+(TODO check this subsection)
+
 The Surface Rendering Layer (SRL) will update the position of the
 proxy based on previous proxy position and current finger
 position. SRL works in surface texture coordinate space.
 
-proxy layering
-multiple proxies?
-magnetic/sticky surfaces
-force shading?
-moving geometries / dynamic o transform 
-forcemodels adding constraint planes? VHTK proxy
-OpenGL feedbackbuffer triangle meshes
-probably need double precision, but should be able to choose
+\begin{itemize}
+\item proxy layering
+\item multiple proxies?
+\item magnetic/sticky surfaces
+\item force shading?
+\item moving geometries / dynamic o transform 
+\item forcemodels adding constraint planes? VHTK proxy
+\item OpenGL feedbackbuffer triangle meshes
+\item probably need double precision, but should be able to choose
 non-uniform scaling? problem?
+\end{itemize}
 
 Surface has a local coordinate system.
-Surface - input: position, orientation, velocity, angular_velocity,
+Surface - input: position, orientation, velocity, angular\_velocity,
 texture coordinate, tc derivatives with respect to local coordinates
          output: force, torque?, jacobian matrices for force dependent
          on pos/vel, proxy movement (for HapticMaster support)
@@ -127,14 +131,17 @@ Haptic thread:
 Collide proxy with RCO and generate forces, torques, etc. Different
 rendering algorithms possible. Implemented from the beginning:
 
+
 Modified Ruspini - 
-1. Find constraint planes for all geometries.
-2. Set the goal of the proxy to be the finger and force to be 0
-3. Move proxy towards goal - 
+\begin{itemize}
+\item 1. Find constraint planes for all geometries.
+\item 2. Set the goal of the proxy to be the finger and force to be 0
+\item 3. Move proxy towards goal - 
   - if no new collision proxy moves to goal and force is returned
   - closest collision - call surface/s to get force and proxy movement.
-  - set goal to be proxy + proxy_movement 
+  - set goal to be proxy + proxy\_movement 
   - repeat 3
+\end{itemize}
 
 
  
