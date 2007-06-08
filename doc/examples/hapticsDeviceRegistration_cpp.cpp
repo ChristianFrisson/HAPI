@@ -1,5 +1,5 @@
 HAPIHapticsDevice::HapticsDeviceRegistration 
-MyNewHapticsDevice::device\_registration(
+MyNewHapticsDevice::device_registration(
                             "MyDevice",
-                            \&(newInstance< MyNewHapticsDevice >)
+                            &(newInstance< MyNewHapticsDevice >)
                             );
