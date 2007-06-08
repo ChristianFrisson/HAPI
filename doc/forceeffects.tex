@@ -51,8 +51,8 @@ namespace HAPI {
   class ConstantForce: public HAPIForceEffect {
   public:
     /// Constructor
-    ConstantForce( const Vec3 &_force ): 
-      force( _force ) {}
+    ConstantForce( const Vec3 \&\_force ): 
+      force( \_force ) {}
 
     /// The force of the EffectOutput will be the force of the force field. 
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,

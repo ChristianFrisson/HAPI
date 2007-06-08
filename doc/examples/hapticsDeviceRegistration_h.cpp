@@ -1,0 +1,1 @@
+static HapticsDeviceRegistration device_registration;

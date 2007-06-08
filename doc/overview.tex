@@ -28,7 +28,7 @@ areas:
 \end{itemize}
 
 HAPI can easily be extended for new devices by implementing abstract
-functions for performing those task. See \ref{aa} ??
+functions for performing those task. See section \ref{ssAddingHapticsSupport}.
 
 \subsection{Haptics rendering algorithm}
 A haptics rendering algorithm is need in order to calculate forces and
@@ -48,7 +48,7 @@ e.g. some does not support user defined surfaces. Check out the
 details of each algorithm to find out what is supported.
 
 \subsection{Collision classes}
-HAPI contains a some classes for collision handling used in the
+HAPI contains some classes for collision handling used in the
 haptics rendering algorithms. A user have to create instances of these
 classes and feed them to the haptics device that they are to be
 rendered at. It also contains classes for building binary bound trees
@@ -75,6 +75,7 @@ rendering and provides mechanisms to communicate between different
 threads. The thread handling functions can also be used to create new
 user defined threads.      
 
+(TODO: refer to these pictures from text either here or move to chapter about threads)
 
 \begin{figure} 
   \centering 
