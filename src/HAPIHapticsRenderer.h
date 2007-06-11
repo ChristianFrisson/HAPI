@@ -44,11 +44,11 @@ namespace HAPI {
   class HAPIHapticsDevice;
 
   /// \class HAPIHapticsRenderer
-  /// \brief Base class for all haptics renderers in HAPI.
-  /// The job of a haptics renderer is to given a set of geometries and the
-  /// current values of a haptics device generate a force and a torque to send
-  /// to the haptics device to render. Subclasses must define the following function
-  /// that does just that:
+  /// \brief Base class for all haptics renderers in HAPI. The purpose of a
+  /// haptics renderer is, given a set of geometries and the current
+  /// values of a haptics device, to generate a force and a torque to
+  /// send to the haptics device to render. Subclasses must define the
+  /// following function that does this: 
   /// -   HapticForceEffect::EffectOutput 
   ///     renderHapticsOneStep( HAPIHapticsDevice *hd, 
   ///                           const HapticShapeVector &shapes )
@@ -91,9 +91,11 @@ namespace HAPI {
 
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~HAPIHapticsRenderer();
-
-    /// The main function in any haptics renderer. Given a haptics device and 
-    /// a group of shapes generate the force and torque to send to the device.
+    
+    ///
+    /// \brief The main function in any haptics renderer. Given a haptics
+    /// device and a group of shapes generate the force and torque to send
+    /// to the device.
     virtual HAPIForceEffect::EffectOutput 
     renderHapticsOneStep( HAPIHapticsDevice *hd,
                           const HapticShapeVector &shapes ) {

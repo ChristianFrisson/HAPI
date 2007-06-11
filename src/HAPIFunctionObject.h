@@ -42,7 +42,7 @@ namespace HAPI {
 	virtual ~HAPIFunctionObject() {}
   
     /// Evaluate the function. 
-    /// input points to the input values to the function.
+    /// Input points to the input values to the function.
     virtual HAPIFloat evaluate( HAPIFloat *input ) = 0; 
   };
 }

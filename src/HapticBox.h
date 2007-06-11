@@ -110,10 +110,12 @@ fdas
 
     virtual int nrTriangles();
 
-    /// The size of the Box (x, y, z )
+    /// The size of the Box (x, y, z ) in millimetres
     Vec3 size;
-    /// The min and max extents of the box ( x, y, z )
-    Vec3 min, max;
+    /// The min extents of the box ( x, y, z )
+    Vec3 min;
+    /// The max extents of the box ( x, y, z )
+    Vec3 max;
   
   };
 }

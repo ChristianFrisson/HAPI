@@ -40,11 +40,11 @@
 #define HAVE_OPENHAPTICS
 
 /// Undef if you do not have Chai3d installed
-#define HAVE_CHAI3D
+#undef HAVE_CHAI3D
 
 /// Undef if you do not have DHD API(www.forcedimension,com) installed.
 /// Required for the Omega and Delta haptics devices.
-#define HAVE_DHDAPI
+#undef HAVE_DHDAPI
 
 /// Undef if you do not have the fparser library
 /// (http://iki.fi/warp/FunctionParser/) installed.

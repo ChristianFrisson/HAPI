@@ -48,10 +48,10 @@
 namespace HAPI {
 
 
-  /// Base class for haptic shapes, i.e. geometrical objects that are rendered
-  /// by letting their surfaces constrain the proxy. A HAPIHapticShape has a Surface
-  /// object associated to it that defines the properties of the surface, e.g.
-  /// stiffness and friction properties.
+  /// \brief Base class for haptic shapes, i.e. geometrical objects that are
+  /// rendered by letting their surfaces constrain the proxy. A HAPIHapticShape
+  /// has a Surface object associated to it that defines the properties of the
+  /// surface, e.g. stiffness and friction properties.
   class HAPI_API HAPIHapticShape: public HAPIHapticObject,
                                   public Bounds::CollisionObject,
                                   public HAPIGLShape {
