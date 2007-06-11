@@ -100,8 +100,8 @@ namespace HAPI {
 
     virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );
 
-    // height and radius describes a cylinder with its spine along the y-axis
-    // from 0 to height with a radius radius.
+    /// height and radius describes a cylinder with its spine along the y-axis
+    /// from 0 to height with a radius radius. Units in millimetres.
     HAPIFloat height, radius;
 
   };

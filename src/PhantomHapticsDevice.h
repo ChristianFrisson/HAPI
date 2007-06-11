@@ -94,7 +94,7 @@ namespace HAPI {
     /// initialized.
     inline string getDeviceSerialNumber() { return device_serial_number; }
    
-    /// Get the maximum workspace dimensions of the device, i.e. the
+    /// \brief Get the maximum workspace dimensions of the device, i.e. the
     /// mechanical limits of the device. Undefined if
     /// device not initialized.
     inline void getMaxWorkspaceDimensions( Vec3 &min, Vec3&max ) {
@@ -102,7 +102,7 @@ namespace HAPI {
       max = max_workspace_max;
     }
       
-    /// Get the usable workspace dimensions of the device, i.e. the 
+    /// \brief Get the usable workspace dimensions of the device, i.e. the 
     /// workspace in which forces are guaranteed to be reliably render.
     /// Undefined if device not initialized.
     inline void getUsableWorkspaceDimensions( Vec3 &min, Vec3&max ) {
@@ -114,12 +114,12 @@ namespace HAPI {
     /// the table top. Undefined if device not initialized.
     inline HAPIFloat getTabletopOffset() { return tabletop_offset; }
     
-    /// Get the maximum force, i.e. the amount of force that the
+    /// \brief Get the maximum force, i.e. the amount of force that the
     /// device can sustain when the motors are at room temperature
     /// Undefined if device not initialized.
     inline HAPIFloat getMaxForce() { return max_force; }
 
-    /// Get the maximum continuous force, i.e. the amount of force that the
+    /// \brief Get the maximum continuous force, i.e. the amount of force that the
     /// device can sustain through a period of time.
     inline HAPIFloat getMaxContinuousForce() { return max_cont_force; }
 

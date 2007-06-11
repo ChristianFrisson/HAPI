@@ -15,18 +15,18 @@
 #include <CollisionObjects.h>
 
 namespace HAPI {
-  /// The FeedbackBufferCollector contains a bunch of static function for 
+  /// The FeedbackBufferCollector contains a bunch of static functions for 
   /// collecting primitives rendered by OpenGL from the feedback buffer.
   ///
   /// If you have a class instance that inherit from HAPIGLShape you can
   /// use one of the collectTriangles() or collectPrimitives() functions.
   /// 
-  /// If you just want to collect primitives from any OpenGL calls you make
-  /// you have to encapsulate them with
-  /// startCollecting(..)
-  /// .
-  /// .
-  /// endCollecting(..)
+  /// If you just want to collect primitives from any OpenGL call you make
+  /// you have to encapsulate them with \n
+  /// startCollecting(..) \n
+  /// . \n
+  /// . \n
+  /// endCollecting(..)\n
   /// 
   /// All calls in between startCollecting() and endCollecting() will not
   /// be rendered to the frame buffer, so if you want the same calls to be 
@@ -49,7 +49,7 @@ namespace HAPI {
     /// the given HAPIGLShape. 
     /// \param shape The HAPIGLShape which to collect triangles for.
     /// \param transform A transformation matrix to transform the coordinate 
-    /// space before rendering the HAPIGLSHape.
+    /// space before rendering the HAPIGLShape.
     /// \param triangles Return parameter. All triangles rendered are added 
     /// to this vector.
     /// \returns SUCCESS if every thing went well. An ErrorType with the error
@@ -62,7 +62,7 @@ namespace HAPI {
     /// the given HAPIGLShape. 
     /// \param shape The HAPIGLShape which to collect primitives for.
     /// \param transform A transformation matrix to transform the coordinate 
-    /// space before rendering the HAPIGLSHape.
+    /// space before rendering the HAPIGLShape.
     /// \param triangles Return parameter. All triangles rendered are added 
     /// to this vector.
     /// \param lines Return parameter. All line segments rendered are added 

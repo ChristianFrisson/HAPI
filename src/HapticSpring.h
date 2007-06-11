@@ -34,7 +34,7 @@
 
 namespace HAPI {
 
-  /// Generates a spring force, 
+  /// \brief Generates a spring force, 
   /// i.e. force = ( position - device_position ) * spring_constant.
   /// 
   class HAPI_API HapticSpring: public HAPIForceEffect {

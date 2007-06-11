@@ -40,7 +40,7 @@ namespace HAPI {
   public:
     /// Constructor.
     /// \param _bottomRadius The radius of the bottom.
-    /// \param _height
+    /// \param _height The height of the cone.
     /// \param _surface The Surface of the box.
     HapticCone( HAPIFloat _bottomRadius,
                 HAPIFloat _height,
@@ -106,9 +106,9 @@ fdas
 
     virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );
 
-    /// The radius of the base of the cone.
+    /// The radius of the base of the cone in millimetres
     HAPIFloat bottomRadius;
-    /// The height of the cone.
+    /// The height of the cone in  millimetres
     HAPIFloat height;
   
   };

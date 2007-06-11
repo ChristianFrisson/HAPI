@@ -48,9 +48,9 @@ namespace HAPI {
   /// - void updateDeviceValues( DeviceValues &dv, HAPITime dt )
   /// - void sendOutput( DeviceOutput &dv, HAPITime dt )
   ///
-  /// In order to use a haptics device two things have to be done.
-  /// 1. Initialize the device (initDevice()). 
-  /// 2. Enable the device (enableDevice())
+  /// In order to use a haptics device two things have to be done. \n
+  /// 1. Initialize the device (initDevice()). \n
+  /// 2. Enable the device (enableDevice()) \n
   ///
   /// When a device has been initialized it will be ready to start receiving
   /// forces and updating position values, but it will not start doing these 
@@ -333,7 +333,7 @@ namespace HAPI {
     // Functions for getting/settings device values
     //
     
-    /// Set the position calibraion matrix, i.e. the transform matrix
+    /// \brief Set the position calibraion matrix, i.e. the transform matrix
     /// from the local device coordinate space to HAPI coordinate space.
     inline void setPositionCalibration( const Matrix4 &m,
                                         const Matrix4 &m_inv ) {
@@ -343,7 +343,7 @@ namespace HAPI {
       device_values_lock.unlock();
     }
 
-    /// Set the position calibration matrix, i.e. the transform matrix
+    /// \brief Set the position calibration matrix, i.e. the transform matrix
     /// from the local device coordinate space to HAPI coordinate space.
     inline void setPositionCalibration( const Matrix4 &m ) {
       device_values_lock.lock();
@@ -412,7 +412,7 @@ namespace HAPI {
       return dv;
     }
 
-    /// Get the position of the haptics device without the calibration
+    /// \brief Get the position of the haptics device without the calibration
     /// matrix applied, i.e. coordinates in metres.
     inline Vec3 getRawPosition() {
       return getRawDeviceValues().position;

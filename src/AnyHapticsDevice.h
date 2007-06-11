@@ -35,15 +35,11 @@
 namespace HAPI {
 
   /// \class AnyHapticsDevice
-  /// \brief Interface to all Any haptics devices from SensAble Technologies.
-  /// Uses the HD API of OpenHaptics to interface to the haptics devices, 
-  /// so every device supported by OpenHaptics is supported by this class.
+  /// \brief TODO: Comments needed!!!!!
+
   class HAPI_API AnyHapticsDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.
-    /// device_name is the name of the device, as defined in the 
-    /// "Any Configuration" tool. A device_name of "" will use the first
-    /// available device.
     AnyHapticsDevice(){}
 
     /// Destructor.
@@ -61,7 +57,7 @@ namespace HAPI {
       return e;
     }
 
-    /// Enable the device. Positions can be read and force can be sent.
+    /// Disable the device. 
     inline virtual ErrorCode disableDevice() {
       ErrorCode e = HAPIHapticsDevice::disableDevice();
       if(hd.get() ) hd->disableDevice();

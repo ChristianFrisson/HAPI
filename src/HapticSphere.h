@@ -38,7 +38,7 @@ namespace HAPI {
   class HAPI_API HapticSphere: public HAPIHapticShape {
   public:
     /// Constructor.
-    /// \param _radius The radius of the sphere in metres.
+    /// \param _radius The radius of the sphere in millimetres.
     /// \param _surface The Surface of the sphere.
     HapticSphere( HAPIFloat _radius,
                   void *_userdata,
@@ -100,7 +100,7 @@ fdas
 
     virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );
 
-    /// The radius of the sphere in metres. 
+    /// The radius of the sphere in millimetres
     Bounds::Sphere sphere;
   
   };

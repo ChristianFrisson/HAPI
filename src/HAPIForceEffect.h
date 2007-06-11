@@ -39,13 +39,13 @@ namespace HAPI {
 
   /// The base class for force effects. A HAPIForceEffect is a class that 
   /// generates force and torque based on the position and orientation 
-  /// of the haptics device (and possibly velocity). It is good to use
+  /// of the haptics device (and possibly velocity). It is a good choice to use
   /// to create global effects such as force fields. This class works in
-  /// the realtime loop and has to be added in the traversal of the 
-  /// scenegraph (traverseSG()) to the TraverseInfo structure in order
+  /// the real-time loop and has to be added in the traversal of the 
+  /// scene-graph (traverseSG()) to the TraverseInfo structure in order
   /// to be rendered. By setting the HAPIForceEffect to be interpolated
   /// the HAPIForceEffect will be interpolated with the HAPIForceEffect
-  /// added in the last scenegraph loop in order to avoid haptic rendering 
+  /// added in the last scene-graph loop in order to avoid haptic rendering
   /// artifacts.
   ///
   class HAPI_API HAPIForceEffect: public HAPIHapticObject, 

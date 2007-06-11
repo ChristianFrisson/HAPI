@@ -39,13 +39,13 @@
 
 namespace HAPI {
 
-  /// \class FalconHapticsDevice
+  /// \class FalconHapticsDevice TODO: Write doxygen comments to the Node
   class HAPI_API FalconHapticsDevice: public HAPIHapticsDevice {
   public:
   /// FalconThread is a singleton class providing an interface to the scheduler
-  /// and thread.It is used
-  /// by the FalconHapticsDevice and uses its own thread handling. Since only
-  /// one instance of the Falcon scheduler exists it is a singleton class.
+  /// and thread. It is used by the FalconHapticsDevice and uses its own thread
+  /// handling. Since only one instance of the Falcon scheduler exists it is a
+  /// singleton class.
   class HAPI_API FalconThread : public H3DUtil::HapticThreadBase,
                                 public H3DUtil::PeriodicThreadBase {
 

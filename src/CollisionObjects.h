@@ -92,8 +92,8 @@ namespace HAPI {
       /// change in pos at the intersection point.
       Matrix3 pos_to_tex_coord_gradient;
       
-      /// The id of the primitive that was intersected if applicable, e.g. 
-      /// triangle index. -1 if no id exists.
+      /// \brief The id of the primitive that was intersected if applicable,
+      /// e.g. triangle index. -1 if no id exists.
       int id;
     };
 
@@ -159,7 +159,7 @@ namespace HAPI {
                                   FaceType face = Bounds::FRONT_AND_BACK ){ return false; }// = 0;
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -190,7 +190,7 @@ namespace HAPI {
       }
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -233,7 +233,7 @@ namespace HAPI {
                                    std::vector< PlaneConstraint > &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
-      /// Returns a point representing the primitive. Is used e.g. when
+      /// Returns a point representing the primitive. Is used for example when
       /// building BinaryTreeBound.
       virtual Vec3 pointRepresentation() const { return Vec3(); }
       bool collided;
@@ -283,7 +283,7 @@ namespace HAPI {
                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -347,7 +347,7 @@ namespace HAPI {
                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -403,7 +403,7 @@ namespace HAPI {
                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -412,7 +412,7 @@ namespace HAPI {
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// object
@@ -506,7 +506,7 @@ namespace HAPI {
                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -523,8 +523,10 @@ namespace HAPI {
       /// Render the outlines of the object for debugging purposes.
       virtual void render();
       
-      /// The start and end of the line segment.
-      Vec3 start,end;
+      /// The start of the line segment.
+      Vec3 start;
+      /// The end of the line segment.
+      Vec3 end;
 
     protected:
       inline HAPIFloat clamp( HAPIFloat n, HAPIFloat min, HAPIFloat max) {
@@ -587,7 +589,7 @@ namespace HAPI {
                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -648,7 +650,7 @@ namespace HAPI {
       }
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -816,7 +818,7 @@ namespace HAPI {
       virtual bool boundIntersect( const Vec3 &from, const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -870,8 +872,8 @@ namespace HAPI {
                        const vector< Point > &point_vector,
                        unsigned int max_nr_triangles_in_leaf = 1 );
 
-      /// Returns true if the tree is a leaf, i.e. has no sub-tress and hence just
-      /// contains triangles. false otherwise.
+      /// \brief Returns true if the tree is a leaf, i.e. has no sub-tress
+      /// and hence just contains triangles. false otherwise.
       inline bool isLeaf() { 
         return left.get() == NULL && right.get() == NULL; 
       }
@@ -950,7 +952,7 @@ namespace HAPI {
                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -959,7 +961,7 @@ namespace HAPI {
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -1127,8 +1129,8 @@ namespace HAPI {
                        const vector< GeometryPrimitive * > &_primitives,
                        unsigned int max_nr_primitives_in_leaf = 1 );
 
-      /// Returns true if the tree is a leaf, i.e. has no sub-tress and hence just
-      /// contains triangles. false otherwise.
+      /// \brief Returns true if the tree is a leaf, i.e. has no sub-tress
+      /// and hence just contains triangles. false otherwise.
       inline bool isLeaf() { 
         return left.get() == NULL && right.get() == NULL; 
       }
@@ -1193,7 +1195,7 @@ namespace HAPI {
                                   FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
@@ -1202,7 +1204,7 @@ namespace HAPI {
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object.
-      /// \param The radius of the sphere
+      /// \param radius The radius of the sphere
       /// \param from The start position of the sphere
       /// \param to The end position of the sphere.
       /// \returns true if intersected, false otherwise.
