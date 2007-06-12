@@ -596,6 +596,9 @@ namespace HAPI {
       return last_error_message;
     }
 
+    /// Get the current actual update rate in loops per second
+    inline unsigned int getHapticsRate() { return haptics_rate; }
+
     /// Get the thread that is used to run this haptics device.
     inline H3DUtil::PeriodicThreadBase *getThread() {
       return thread;
@@ -800,8 +803,6 @@ namespace HAPI {
     //
     vector< HapticShapeVector > tmp_shapes ;
 
-    unsigned int nr_haptics_loops;
-
     /// The time at the beginning of the last rendering loop
     TimeStamp last_loop_time;
 
@@ -828,6 +829,11 @@ namespace HAPI {
     static H3DUtil::PeriodicThread::CallbackCode transferObjectsCallback( void *data );
 
     friend class AnyHapticsDevice;
+
+    unsigned int nr_haptics_loops;
+    unsigned int haptics_rate;
+    TimeStamp last_hr_update;
+    
   };
 }
 

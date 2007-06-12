@@ -48,6 +48,14 @@ H3DUtil::PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
 
+  if( hd->nr_haptics_loops > 100 ) {
+    TimeStamp dt = TimeStamp() - hd->last_hr_update;
+    hd->haptics_rate = (unsigned int)( hd->nr_haptics_loops / dt );
+	hd->nr_haptics_loops = 0;
+    hd->last_hr_update = TimeStamp();
+  }
+  hd->nr_haptics_loops++;
+  
   hd->updateDeviceValues();
   
   TimeStamp now = TimeStamp();
