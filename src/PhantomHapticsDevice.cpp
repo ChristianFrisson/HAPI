@@ -215,8 +215,6 @@ void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
   if (HD_DEVICE_ERROR(error))
     // TODO: do error handling
     cerr << hdGetErrorString(error.errorCode) << endl;
-  HDdouble force[3];
-  hdGetDoublev( HD_CURRENT_FORCE, force );
 }
 
 bool PhantomHapticsDevice::needsCalibration() {
