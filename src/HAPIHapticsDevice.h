@@ -111,37 +111,7 @@ namespace HAPI {
 
     /// Does all the initialization needed for the device before starting to
     /// use it.
-    inline virtual ErrorCode initDevice() {
-      if( device_state == UNINITIALIZED ) {
-        last_device_values = current_device_values = DeviceValues();
-        last_raw_device_values = current_raw_device_values = DeviceValues();
-        if( !initHapticsDevice() ) {
-          return FAIL;
-        }
-        device_state = INITIALIZED;
-        for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
-          if( haptics_renderers[i] ) {
-            haptics_renderers[i]->initRenderer( this );
-          }
-        }
-      
-        device_state = INITIALIZED;
-        if( !thread ) {
-          // create a new thread to run the haptics in
-#ifdef WIN32
-          thread = new H3DUtil::HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
-#else
-          thread = new HapticThread( 0, 1000 );
-#endif
-          delete_thread = true;
-        }
-        thread->asynchronousCallback( hapticRenderingCallback,
-                                      this );
-       
-      }
-
-      return SUCCESS;
-    }
+    virtual ErrorCode initDevice();
 
     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {
