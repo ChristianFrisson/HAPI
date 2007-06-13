@@ -47,12 +47,13 @@ H3DUtil::PeriodicThread::CallbackCode HAPIHapticsDevice::transferObjectsCallback
 H3DUtil::PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback( void *data ) {
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
-
   if( hd->nr_haptics_loops > 100 ) {
-    TimeStamp dt = TimeStamp() - hd->last_hr_update;
-    hd->haptics_rate = (unsigned int)( hd->nr_haptics_loops / dt );
-	hd->nr_haptics_loops = 0;
-    hd->last_hr_update = TimeStamp();
+    TimeStamp now = TimeStamp();
+    unsigned int nr_loops = hd->nr_haptics_loops;
+    hd->nr_haptics_loops = 0;
+    TimeStamp dt = now - hd->last_hr_update;
+    hd->haptics_rate = (unsigned int)( nr_loops / dt );
+    hd->last_hr_update = now;
   }
   hd->nr_haptics_loops++;
   
@@ -120,4 +121,36 @@ void HAPIHapticsDevice::transferObjects() {
                                  this );
 
   }
+}
+
+
+HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice() {
+  if( device_state == UNINITIALIZED ) {
+    last_device_values = current_device_values = DeviceValues();
+    last_raw_device_values = current_raw_device_values = DeviceValues();
+    if( !initHapticsDevice() ) {
+      return FAIL;
+    }
+    device_state = INITIALIZED;
+    for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
+      if( haptics_renderers[i] ) {
+	haptics_renderers[i]->initRenderer( this );
+      }
+    }
+    
+    device_state = INITIALIZED;
+    if( !thread ) {
+          // create a new thread to run the haptics in
+#ifdef WIN32
+      thread = new H3DUtil::HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+#else
+      thread = new H3DUtil::HapticThread( 20, 1000 );
+#endif
+      delete_thread = true;
+    }
+    thread->asynchronousCallback( hapticRenderingCallback,
+				  this );
+    
+  }
+  return SUCCESS;
 }
