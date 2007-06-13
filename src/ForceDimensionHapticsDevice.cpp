@@ -43,7 +43,7 @@ using namespace HAPI;
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
 ForceDimensionHapticsDevice::device_registration(
-                            "DHD",
+                            "ForceDimension",
                             &(newInstance< ForceDimensionHapticsDevice >)
                             );
 
