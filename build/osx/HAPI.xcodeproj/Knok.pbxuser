@@ -1,10 +1,11 @@
 // !$*UTF8*$!
 {
 	0867D690FE84028FC02AAC07 /* Project object */ = {
-		activeBuildConfigurationName = Release;
+		activeBuildConfigurationName = Debug;
 		activeTarget = 96CCB38D0B95C9B600DA703A /* HAPI Framework */;
 		addToTargets = (
 			D2AAC09C05546B4700DB518D /* HAPI */,
+			96CCB38D0B95C9B600DA703A /* HAPI Framework */,
 		);
 		breakpointsGroup = 96E9DA890B8C4A7800B4BE63 /* XCBreakpointsBucket */;
 		codeSenseManager = 9618F2BA0B8B519A00C83BBA /* Code sense */;
@@ -83,8 +84,14 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 194348234;
-			PBXWorkspaceStateSaveDate = 194348234;
+			PBXPerProjectTemplateStateSaveDate = 203357418;
+			PBXWorkspaceStateSaveDate = 203357418;
+		};
+		perUserProjectItems = {
+			96DEE46D0C1EE42F00879FC4 /* PBXTextBookmark */ = 96DEE46D0C1EE42F00879FC4 /* PBXTextBookmark */;
+			96F44F330C1F388B00C92F68 /* PBXTextBookmark */ = 96F44F330C1F388B00C92F68 /* PBXTextBookmark */;
+			96F44F8B0C1FEB2900C92F68 /* PBXTextBookmark */ = 96F44F8B0C1FEB2900C92F68 /* PBXTextBookmark */;
+			96F44F8C0C1FEB2900C92F68 /* PBXTextBookmark */ = 96F44F8C0C1FEB2900C92F68 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 9618F2B90B8B519A00C83BBA /* Source Control */;
 		userBuildSettings = {
@@ -136,10 +143,26 @@
 	};
 	9618F2D40B8B51F700C83BBA /* HAPI.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {711, 1694}}";
-			sepNavSelRange = "{1490, 0}";
-			sepNavVisRect = "{{0, 526}, {711, 429}}";
-			sepNavWindowFrame = "{{15, 315}, {750, 558}}";
+			sepNavIntBoundsRect = "{{0, 0}, {711, 1708}}";
+			sepNavSelRange = "{1734, 0}";
+			sepNavVisRect = "{{0, 465}, {711, 429}}";
+			sepNavWindowFrame = "{{15, 203}, {750, 558}}";
+		};
+	};
+	9618F2D90B8B51F700C83BBA /* HAPIHapticsDevice.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 2198}}";
+			sepNavSelRange = "{5352, 0}";
+			sepNavVisRect = "{{0, 1526}, {711, 429}}";
+			sepNavWindowFrame = "{{305, 203}, {750, 558}}";
+		};
+	};
+	9618F2DA0B8B51F700C83BBA /* HAPIHapticsDevice.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 11354}}";
+			sepNavSelRange = "{3347, 0}";
+			sepNavVisRect = "{{0, 1596}, {711, 429}}";
+			sepNavWindowFrame = "{{97, 202}, {750, 558}}";
 		};
 	};
 	9618F2DC0B8B51F700C83BBA /* HAPIHapticShape.h */ = {
@@ -189,22 +212,52 @@
 			sepNavVisRect = "{{0, 318}, {687, 190}}";
 		};
 	};
-	9618F3110B8B51F700C83BBA /* Threads.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {711, 6594}}";
-			sepNavSelRange = "{4078, 0}";
-			sepNavVisRect = "{{0, 2044}, {711, 429}}";
-			sepNavWindowFrame = "{{258, -63}, {750, 558}}";
-		};
-	};
 	96CCB38D0B95C9B600DA703A /* HAPI Framework */ = {
 		activeExec = 0;
+	};
+	96DEE46D0C1EE42F00879FC4 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 9618F2D40B8B51F700C83BBA /* HAPI.h */;
+		name = "HAPI.h: 49";
+		rLen = 0;
+		rLoc = 1734;
+		rType = 0;
+		vrLen = 1135;
+		vrLoc = 1312;
 	};
 	96E9DA890B8C4A7800B4BE63 /* XCBreakpointsBucket */ = {
 		isa = XCBreakpointsBucket;
 		name = "Project Breakpoints";
 		objects = (
 		);
+	};
+	96F44F330C1F388B00C92F68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "error: 'HAPIHapticeDevice' has not been declared";
+		fRef = 9618F2D90B8B51F700C83BBA /* HAPIHapticsDevice.cpp */;
+		rLen = 1;
+		rLoc = 125;
+		rType = 1;
+	};
+	96F44F8B0C1FEB2900C92F68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 9618F2D90B8B51F700C83BBA /* HAPIHapticsDevice.cpp */;
+		name = "HAPIHapticsDevice.cpp: 157";
+		rLen = 0;
+		rLoc = 5352;
+		rType = 0;
+		vrLen = 966;
+		vrLoc = 3966;
+	};
+	96F44F8C0C1FEB2900C92F68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 9618F2D40B8B51F700C83BBA /* HAPI.h */;
+		name = "HAPI.h: 49";
+		rLen = 0;
+		rLoc = 1734;
+		rType = 0;
+		vrLen = 1135;
+		vrLoc = 1312;
 	};
 	D2AAC09C05546B4700DB518D /* HAPI */ = {
 		activeExec = 0;
