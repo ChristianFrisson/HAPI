@@ -77,8 +77,10 @@
 		9618F3590B8B51F700C83BBA /* PhantomHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F30E0B8B51F700C83BBA /* PhantomHapticsDevice.h */; };
 		9618F35A0B8B51F700C83BBA /* RuspiniRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F30F0B8B51F700C83BBA /* RuspiniRenderer.cpp */; };
 		9618F35B0B8B51F700C83BBA /* RuspiniRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F3100B8B51F700C83BBA /* RuspiniRenderer.h */; };
-		9618F35C0B8B51F700C83BBA /* Threads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F3110B8B51F700C83BBA /* Threads.cpp */; };
-		9618F35D0B8B51F700C83BBA /* Threads.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F3120B8B51F700C83BBA /* Threads.h */; };
+		96C783F00C103694005538E7 /* FrictionSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96C783EE0C103694005538E7 /* FrictionSurface.cpp */; };
+		96C783F10C103694005538E7 /* FrictionSurface.h in Headers */ = {isa = PBXBuildFile; fileRef = 96C783EF0C103694005538E7 /* FrictionSurface.h */; };
+		96C783F20C103694005538E7 /* FrictionSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96C783EE0C103694005538E7 /* FrictionSurface.cpp */; };
+		96C783F30C103694005538E7 /* FrictionSurface.h in Headers */ = {isa = PBXBuildFile; fileRef = 96C783EF0C103694005538E7 /* FrictionSurface.h */; };
 		96CCB2170B9585CB00DA703A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96E9DAB10B8C538100B4BE63 /* OpenGL.framework */; };
 		96CCB38F0B95C9C800DA703A /* AnyHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F2C80B8B51F700C83BBA /* AnyHapticsDevice.cpp */; };
 		96CCB3900B95C9C800DA703A /* AnyHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F2C90B8B51F700C83BBA /* AnyHapticsDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -150,8 +152,6 @@
 		96CCB3D30B95C9FB00DA703A /* PhantomHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F30E0B8B51F700C83BBA /* PhantomHapticsDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96CCB3D40B95C9FC00DA703A /* RuspiniRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F30F0B8B51F700C83BBA /* RuspiniRenderer.cpp */; };
 		96CCB3D50B95C9FC00DA703A /* RuspiniRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F3100B8B51F700C83BBA /* RuspiniRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		96CCB3D60B95C9FD00DA703A /* Threads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F3110B8B51F700C83BBA /* Threads.cpp */; };
-		96CCB3D70B95C9FE00DA703A /* Threads.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F3120B8B51F700C83BBA /* Threads.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96CCB3D80B95CA0600DA703A /* fparser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DA8D0B8C4E4000B4BE63 /* fparser.cc */; };
 		96CCB3D90B95CA0900DA703A /* fparser.hh in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DA8E0B8C4E4000B4BE63 /* fparser.hh */; settings = {ATTRIBUTES = (Public, ); }; };
 		96CCB3DA0B95CA0B00DA703A /* fpconfig.hh in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DA8F0B8C4E4000B4BE63 /* fpconfig.hh */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -160,6 +160,10 @@
 		96CCB5DF0B9613F700DA703A /* H3DUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96CCB5DE0B9613F700DA703A /* H3DUtil.framework */; };
 		96CCB6100B96166E00DA703A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96E9DAB10B8C538100B4BE63 /* OpenGL.framework */; };
 		96CCB6140B96176A00DA703A /* H3DUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 96CCB5DE0B9613F700DA703A /* H3DUtil.framework */; };
+		96D454F30BE0A7C7001E8F3F /* HLThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96D454F10BE0A7C7001E8F3F /* HLThread.cpp */; };
+		96D454F40BE0A7C7001E8F3F /* HLThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 96D454F20BE0A7C7001E8F3F /* HLThread.h */; };
+		96D454F50BE0A7C7001E8F3F /* HLThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96D454F10BE0A7C7001E8F3F /* HLThread.cpp */; };
+		96D454F60BE0A7C7001E8F3F /* HLThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 96D454F20BE0A7C7001E8F3F /* HLThread.h */; };
 		96E9DA920B8C4E4000B4BE63 /* fparser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DA8D0B8C4E4000B4BE63 /* fparser.cc */; };
 		96E9DA930B8C4E4000B4BE63 /* fparser.hh in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DA8E0B8C4E4000B4BE63 /* fparser.hh */; };
 		96E9DA940B8C4E4000B4BE63 /* fpconfig.hh in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DA8F0B8C4E4000B4BE63 /* fpconfig.hh */; };
@@ -244,11 +248,13 @@
 		9618F30E0B8B51F700C83BBA /* PhantomHapticsDevice.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = PhantomHapticsDevice.h; path = ../../src/PhantomHapticsDevice.h; sourceTree = SOURCE_ROOT; };
 		9618F30F0B8B51F700C83BBA /* RuspiniRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.cpp.cpp; name = RuspiniRenderer.cpp; path = ../../src/RuspiniRenderer.cpp; sourceTree = SOURCE_ROOT; };
 		9618F3100B8B51F700C83BBA /* RuspiniRenderer.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = RuspiniRenderer.h; path = ../../src/RuspiniRenderer.h; sourceTree = SOURCE_ROOT; };
-		9618F3110B8B51F700C83BBA /* Threads.cpp */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.cpp.cpp; name = Threads.cpp; path = ../../src/Threads.cpp; sourceTree = SOURCE_ROOT; };
-		9618F3120B8B51F700C83BBA /* Threads.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = Threads.h; path = ../../src/Threads.h; sourceTree = SOURCE_ROOT; };
+		96C783EE0C103694005538E7 /* FrictionSurface.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FrictionSurface.cpp; path = ../../src/FrictionSurface.cpp; sourceTree = SOURCE_ROOT; };
+		96C783EF0C103694005538E7 /* FrictionSurface.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FrictionSurface.h; path = ../../src/FrictionSurface.h; sourceTree = SOURCE_ROOT; };
 		96CCB3100B95BAD300DA703A /* HAPI Framework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "HAPI Framework-Info.plist"; sourceTree = "<group>"; };
 		96CCB38E0B95C9B600DA703A /* HAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = HAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		96CCB5DE0B9613F700DA703A /* H3DUtil.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = H3DUtil.framework; path = ../../../../../Library/Frameworks/H3DUtil.framework; sourceTree = SOURCE_ROOT; };
+		96D454F10BE0A7C7001E8F3F /* HLThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = HLThread.cpp; path = ../../src/HLThread.cpp; sourceTree = SOURCE_ROOT; };
+		96D454F20BE0A7C7001E8F3F /* HLThread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HLThread.h; path = ../../src/HLThread.h; sourceTree = SOURCE_ROOT; };
 		96E9DA8D0B8C4E4000B4BE63 /* fparser.cc */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = fparser.cc; path = ../../src/fparser.cc; sourceTree = SOURCE_ROOT; };
 		96E9DA8E0B8C4E4000B4BE63 /* fparser.hh */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.h; name = fparser.hh; path = ../../src/fparser.hh; sourceTree = SOURCE_ROOT; };
 		96E9DA8F0B8C4E4000B4BE63 /* fpconfig.hh */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.h; name = fpconfig.hh; path = ../../src/fpconfig.hh; sourceTree = SOURCE_ROOT; };
@@ -318,6 +324,10 @@
 		08FB77ACFE841707C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				96C783EE0C103694005538E7 /* FrictionSurface.cpp */,
+				96C783EF0C103694005538E7 /* FrictionSurface.h */,
+				96D454F10BE0A7C7001E8F3F /* HLThread.cpp */,
+				96D454F20BE0A7C7001E8F3F /* HLThread.h */,
 				9618F2C80B8B51F700C83BBA /* AnyHapticsDevice.cpp */,
 				9618F2C90B8B51F700C83BBA /* AnyHapticsDevice.h */,
 				9618F2CA0B8B51F700C83BBA /* Chai3DRenderer.cpp */,
@@ -391,8 +401,6 @@
 				9618F30E0B8B51F700C83BBA /* PhantomHapticsDevice.h */,
 				9618F30F0B8B51F700C83BBA /* RuspiniRenderer.cpp */,
 				9618F3100B8B51F700C83BBA /* RuspiniRenderer.h */,
-				9618F3110B8B51F700C83BBA /* Threads.cpp */,
-				9618F3120B8B51F700C83BBA /* Threads.h */,
 				32BAE0B70371A74B00C91783 /* HAPI_Prefix.pch */,
 			);
 			name = Source;
@@ -453,10 +461,11 @@
 				96CCB3D10B95C9F800DA703A /* ParsedFunction.h in Headers */,
 				96CCB3D30B95C9FB00DA703A /* PhantomHapticsDevice.h in Headers */,
 				96CCB3D50B95C9FC00DA703A /* RuspiniRenderer.h in Headers */,
-				96CCB3D70B95C9FE00DA703A /* Threads.h in Headers */,
 				96CCB3D90B95CA0900DA703A /* fparser.hh in Headers */,
 				96CCB3DA0B95CA0B00DA703A /* fpconfig.hh in Headers */,
 				96CCB3DC0B95CA1000DA703A /* fptypes.hh in Headers */,
+				96D454F60BE0A7C7001E8F3F /* HLThread.h in Headers */,
+				96C783F30C103694005538E7 /* FrictionSurface.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -503,10 +512,11 @@
 				9618F3570B8B51F700C83BBA /* ParsedFunction.h in Headers */,
 				9618F3590B8B51F700C83BBA /* PhantomHapticsDevice.h in Headers */,
 				9618F35B0B8B51F700C83BBA /* RuspiniRenderer.h in Headers */,
-				9618F35D0B8B51F700C83BBA /* Threads.h in Headers */,
 				96E9DA930B8C4E4000B4BE63 /* fparser.hh in Headers */,
 				96E9DA940B8C4E4000B4BE63 /* fpconfig.hh in Headers */,
 				96E9DA960B8C4E4000B4BE63 /* fptypes.hh in Headers */,
+				96D454F40BE0A7C7001E8F3F /* HLThread.h in Headers */,
+				96C783F10C103694005538E7 /* FrictionSurface.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -611,9 +621,10 @@
 				96CCB3D00B95C9F800DA703A /* ParsedFunction.cpp in Sources */,
 				96CCB3D20B95C9FA00DA703A /* PhantomHapticsDevice.cpp in Sources */,
 				96CCB3D40B95C9FC00DA703A /* RuspiniRenderer.cpp in Sources */,
-				96CCB3D60B95C9FD00DA703A /* Threads.cpp in Sources */,
 				96CCB3D80B95CA0600DA703A /* fparser.cc in Sources */,
 				96CCB3DB0B95CA0D00DA703A /* fpoptimizer.cc in Sources */,
+				96D454F50BE0A7C7001E8F3F /* HLThread.cpp in Sources */,
+				96C783F20C103694005538E7 /* FrictionSurface.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -652,9 +663,10 @@
 				9618F3560B8B51F700C83BBA /* ParsedFunction.cpp in Sources */,
 				9618F3580B8B51F700C83BBA /* PhantomHapticsDevice.cpp in Sources */,
 				9618F35A0B8B51F700C83BBA /* RuspiniRenderer.cpp in Sources */,
-				9618F35C0B8B51F700C83BBA /* Threads.cpp in Sources */,
 				96E9DA920B8C4E4000B4BE63 /* fparser.cc in Sources */,
 				96E9DA950B8C4E4000B4BE63 /* fpoptimizer.cc in Sources */,
+				96D454F30BE0A7C7001E8F3F /* HLThread.cpp in Sources */,
+				96C783F00C103694005538E7 /* FrictionSurface.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
