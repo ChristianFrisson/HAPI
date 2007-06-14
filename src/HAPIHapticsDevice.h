@@ -528,6 +528,14 @@ namespace HAPI {
     /// specified for a specified layer.
     inline void setHapticsRenderer( HAPIHapticsRenderer *r, 
                                     unsigned int layer = 0 ) {
+
+
+      
+      if( haptics_renderers.size() < layer + 1 ) {
+        renderer_change_lock.lock();
+        haptics_renderers.resize( layer + 1, NULL );
+        renderer_change_lock.unlock();
+      }
       // TODO: synchronise with haptic thread in a way that does not
       // lock up openhaptics if openhaptics is used. Right now it is
       // not correctly synchronised or locked.
@@ -538,10 +546,8 @@ namespace HAPI {
         if( r )
           r->initRenderer( this );
       }
+ 
       renderer_change_lock.lock();
-      if( haptics_renderers.size() < layer + 1 ) 
-        haptics_renderers.resize( layer + 1, NULL );
-
       // give ownership to temporary auto_ptr to get correct deletion of 
       // the renderer that is replaces since the auto_ptr_vector does not
       // take care of this.
