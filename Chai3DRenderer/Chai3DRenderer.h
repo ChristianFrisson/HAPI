@@ -46,10 +46,6 @@
 #include <CGeneric3dofPointer.h>
 #include <CWorld.h>
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "chai3d_complete.lib" )
-#endif
-
 namespace HAPI {
 
   /// \class Chai3DRenderer

@@ -43,6 +43,11 @@
 //using namespace H3D;
 using namespace HAPI;
 
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#pragma comment( lib, "chai3d_complete.lib" )
+#endif
+
+
 HAPIHapticsRenderer::HapticsRendererRegistration 
 Chai3DRenderer::renderer_registration(
                             "Chai3D",
