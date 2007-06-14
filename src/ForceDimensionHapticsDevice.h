@@ -27,8 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef __FORCEDIMENSIONDEVICE_H__
-#define __FORCEDIMENSIONDEVICE_H__
+#ifndef __FORCEDIMENSIONHAPTICSDEVICE_H__
+#define __FORCEDIMENSIONHAPTICSDEVICE_H__
 
 #include <HAPIHapticsDevice.h>
 
