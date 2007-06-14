@@ -46,47 +46,51 @@ FrictionSurface::~FrictionSurface() {
 };
 
 void FrictionSurface::onContact( ContactInfo &contact_info ) {
-  // SmoothSurface
-  //Vec3 local_probe = contact_info.localProbePosition();
-  //contact_info.setLocalForce( Vec3( 0, -local_probe.y * stiffness, 0 ) );
-  ////contact_info.setLocalForce( -local_probe * stiffness );
-  //contact_info.proxy_movement_local = Vec2( local_probe.x, local_probe.z );
 
-  // FrictionalSurface
-  Vec3 local_probe = contact_info.localProbePosition();
-  Vec3 force = local_probe * -stiffness;
-  Vec2 force_t( force.x, force.z );
+  if( H3DUtil::H3DAbs( static_friction ) < Constants::epsilon &&
+      H3DUtil::H3DAbs( dynamic_friction ) < Constants::epsilon ) {
+    // SmoothSurface
+    Vec3 local_probe = contact_info.localProbePosition();
+    //contact_info.setLocalForce( Vec3( 0, -local_probe.y * stiffness, 0 ) );
+    contact_info.setLocalForce( -local_probe * stiffness );
+    contact_info.proxy_movement_local = Vec2( local_probe.x, local_probe.z );
+  } else {
+    // FrictionalSurface
+    Vec3 local_probe = contact_info.localProbePosition();
+    Vec3 force = local_probe * -stiffness;
+    Vec2 force_t( force.x, force.z );
 
-  if( in_static_contact ) {
-   
-    if( force_t.length() <= static_friction *  force.y ) {
+    if( in_static_contact ) {
+
+      if( force_t.length() <= static_friction *  force.y ) {
+        contact_info.setLocalForce( force );
+        contact_info.proxy_movement_local = Vec2( 0, 0 );
+      } else {
+        in_static_contact = false;
+      }
+    } 
+
+    if( !in_static_contact ) {
+      HAPIFloat b = 1;
+      HAPIFloat dt = 1e-3;
+      HAPIFloat velocity = 
+        ( force_t.length() - dynamic_friction * force.y ) / b;
+
       contact_info.setLocalForce( force );
-      contact_info.proxy_movement_local = Vec2( 0, 0 );
-    } else {
-      in_static_contact = false;
-    }
-  } 
-
-  if( !in_static_contact ) {
-    HAPIFloat b = 1;
-    HAPIFloat dt = 1e-3;
-    HAPIFloat velocity = 
-      ( force_t.length() - dynamic_friction * force.y ) / b;
-
-    contact_info.setLocalForce( force );
-    if( velocity < Constants::epsilon ) {
-      in_static_contact = true;
-      velocity = 0;
-      contact_info.proxy_movement_local = Vec2( 0, 0 ); 
-    } else {
-      HAPIFloat max_movement = velocity * 1e-3;
-      Vec2 proxy_movement = Vec2( local_probe.x, local_probe.z );
-      // TODO: review this algorithm, is this part needed?
-      /*HAPIFloat l = proxy_movement.length();
-      if( l > max_movement ) {
+      if( velocity < Constants::epsilon ) {
+        in_static_contact = true;
+        velocity = 0;
+        contact_info.proxy_movement_local = Vec2( 0, 0 ); 
+      } else {
+        HAPIFloat max_movement = velocity * 1e-3;
+        Vec2 proxy_movement = Vec2( local_probe.x, local_probe.z );
+        // TODO: review this algorithm, is this part needed?
+        /*HAPIFloat l = proxy_movement.length();
+        if( l > max_movement ) {
         proxy_movement *= max_movement / l; 
-      }*/
-      contact_info.proxy_movement_local = proxy_movement;
+        }*/
+        contact_info.proxy_movement_local = proxy_movement;
+      }
     }
   }
 }

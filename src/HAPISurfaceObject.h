@@ -37,7 +37,8 @@ namespace HAPI {
   class HAPI_API HAPISurfaceObject {
   public:
     struct HAPI_API ContactInfo {
-      ContactInfo(): has_inverse( false ) {}
+      ContactInfo(): has_inverse( false ),
+                     proxy_radius( 0 ) {}
 
       // input
       Vec3 contact_point_global;
