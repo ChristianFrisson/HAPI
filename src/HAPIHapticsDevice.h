@@ -680,34 +680,7 @@ namespace HAPI {
 
     /// Updates the current_device_values member to contain
     /// current values.
-    inline void updateDeviceValues() {
-      if( device_state == ENABLED ) {
-        DeviceValues dv;
-        updateDeviceValues( dv, 0 );
-        
-        device_values_lock.lock();
-        last_device_values = current_device_values;
-        last_raw_device_values = current_raw_device_values;
-        current_raw_device_values = dv;
-        current_device_values.position = position_calibration * dv.position;
-        current_device_values.velocity = 
-          position_calibration.getScaleRotationPart() * dv.velocity;
-        current_device_values.orientation = 
-          orientation_calibration * dv.orientation;
-        current_device_values.force = 
-          position_calibration.getScaleRotationPart() * dv.force;
-        current_device_values.torque = 
-          position_calibration.getScaleRotationPart() * dv.torque;
-        device_values_lock.unlock();
-      } else {
-        if( device_state == INITIALIZED ) {
-          device_values_lock.lock();
-          last_device_values = current_device_values;
-          last_raw_device_values = current_raw_device_values;
-          device_values_lock.unlock();
-        }
-      }
-    }
+    void updateDeviceValues();
 
     /// Sends the data in the output member to be rendered at
     /// the haptics device.

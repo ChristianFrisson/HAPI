@@ -16,8 +16,8 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="Debug"
+			Name="Debug DLL|Win32"
+			OutputDirectory="..\..\..\..\bin"
 			IntermediateDirectory="Debug\obj"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -41,11 +41,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\OpenHapticsRenderer;..\..\..\src"
+				AdditionalIncludeDirectories="..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\OpenHapticsRenderer;..\..\..\src"
 				PreprocessorDefinitions="_CRTDBG_MAP_ALLOC ;WIN32;_DEBUG;_WINDOWS;_USRDLL;OPENHAPTICSRENDERER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -65,14 +66,14 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/NODEFAULTLIB:msvcrt"
 				AdditionalDependencies="opengl32.lib"
-				OutputFile="$(OutDir)/OpenHapticsRenderer.dll"
+				OutputFile="$(OutDir)/OpenHapticsRenderer10_vc8_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(Outdir)&quot;;..\..\..\..\H3DUtil\build\win32\vc8\Debug;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs="HD.dll"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)\OpenHapticsRenderer.lib"
+				ImportLibrary="..\..\..\..\lib\OpenHapticsRenderer10_vc8_d.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -101,8 +102,8 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="Release"
+			Name="Release DLL|Win32"
+			OutputDirectory="..\..\..\..\bin"
 			IntermediateDirectory="Release\obj"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -127,9 +128,10 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\OpenHapticsRenderer;..\..\..\src"
+				AdditionalIncludeDirectories="..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\OpenHapticsRenderer;..\..\..\src"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;OPENHAPTICSRENDERER_EXPORTS"
 				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)\vc80OpenHapticsRenderer.pdb"
@@ -149,15 +151,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib"
-				OutputFile="$(OutDir)/OpenHapticsRenderer.dll"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(Outdir)&quot;;..\..\..\..\H3DUtil\build\win32\vc8\release;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				OutputFile="$(OutDir)/OpenHapticsRenderer10_vc8.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs="HD.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)\OpenHapticsRenderer.lib"
+				ImportLibrary="..\..\..\..\lib\OpenHapticsRenderer10_vc8.lib"
 				TargetMachine="1"
 			/>
 			<Tool

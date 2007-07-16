@@ -35,10 +35,6 @@
 
 using namespace HAPI;
 
-#ifdef _MSC_VER
-#pragma comment( lib, "fparser.lib" )
-#endif
-
 ParsedFunction::ParsedFunction():
   have_valid_function( false ),
   fparser( new FunctionParser ) {

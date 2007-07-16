@@ -63,6 +63,31 @@ namespace OpenHapticsRendererInternals {
 }
 
 
+OpenHapticsRenderer::OpenHapticsSurface::OpenHapticsSurface(  
+                          HAPIFloat _stiffness,
+                          HAPIFloat _damping,
+                          HAPIFloat _static_friction,
+                          HAPIFloat _dynamic_friction,
+                          bool _magnetic,
+                          HAPIFloat _snap_distance ):
+  stiffness( _stiffness ),
+  damping( _damping ),
+  static_friction( _static_friction ),
+  dynamic_friction( _dynamic_friction ),
+  magnetic( _magnetic ),
+  snap_distance( _snap_distance ) {
+}
+
+void OpenHapticsRenderer::OpenHapticsSurface::hlRender() {
+  hlRenderRelative( stiffness,
+                    damping,
+                    static_friction,
+                    dynamic_friction, 
+                    magnetic,
+                    snap_distance );
+}
+
+
 /// Initialize the renderer to be used with the given haptics device.
 void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
   HHLRC haptic_context = initHLLayer( hd );
@@ -349,6 +374,9 @@ void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
   for( Contacts::iterator i = renderer->contacts.begin();
        i != renderer->contacts.end(); i++ ) {
     if( (*i).first.get()->shape_id == shape->shape_id ) {
+      if( (*i).first.get() != shape ) {
+        (*i).first.reset( shape );
+      }
       HAPISurfaceObject::ContactInfo &ci = (*i).second;
       ci.contact_point_global = cp;
       ci.y_axis = cn;
@@ -366,7 +394,7 @@ void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
                                                 HLcache *cache,
                                                 void *userdata ) {
   CallbackData *cb_data = static_cast< CallbackData * >( userdata ); 
-
+  
   OpenHapticsRenderer *renderer = cb_data->renderer;
   HAPIHapticShape *shape = cb_data->shape.get();
 
@@ -426,6 +454,13 @@ HLuint OpenHapticsRenderer::getHLShapeId( HAPIHapticShape *hs,
                         HL_CLIENT_THREAD,
                         &untouchCallback,
                         cb_data );
+  } else {
+    for( int i = 0; i < callback_data.size(); i++ ) {
+      if( callback_data[i]->shape->shape_id == hs->shape_id
+          && callback_data[i]->renderer == this ) {
+        callback_data[i]->shape.reset( hs );
+      }
+    }
   }
   return id_map[ key ];
 }
@@ -481,8 +516,8 @@ HLboolean HLCALLBACK OpenHapticsRenderer::closestFeaturesCallback(
            (HAPIFloat)query_point[1],
            (HAPIFloat)query_point[2] );
 
-  Vec3 closest, normal;
-  object->closestPoint( qp, closest, normal, Vec3() );
+  Vec3 closest, normal, tex_coord;
+  object->closestPoint( qp, closest, normal, tex_coord );
   // TODO: do we want the normal of the geometry or the normal below
   //Vec3 normal = qp - closest;
   //normal.normalizeSafe();
@@ -540,10 +575,10 @@ void OpenHapticsRenderer::hlRenderRelative( HAPIFloat stiffness,
   if( magnetic ) hlTouchModel( HL_CONSTRAINT );
   else hlTouchModel( HL_CONTACT );
 
-  hlMaterialf(HL_FRONT_AND_BACK, HL_STIFFNESS, stiffness );
-  hlMaterialf(HL_FRONT_AND_BACK, HL_DAMPING, damping );
-  hlMaterialf(HL_FRONT_AND_BACK, HL_DYNAMIC_FRICTION, dynamic_friction );
-  hlMaterialf(HL_FRONT_AND_BACK, HL_STATIC_FRICTION, static_friction );
+  hlMaterialf(HL_FRONT_AND_BACK, HL_STIFFNESS, (HLfloat)stiffness );
+  hlMaterialf(HL_FRONT_AND_BACK, HL_DAMPING, (HLfloat)damping );
+  hlMaterialf(HL_FRONT_AND_BACK, HL_DYNAMIC_FRICTION, (HLfloat)dynamic_friction );
+  hlMaterialf(HL_FRONT_AND_BACK, HL_STATIC_FRICTION, (HLfloat)static_friction );
   // convert to millimeters
   hlTouchModelf( HL_SNAP_DISTANCE, snap_distance );
 }

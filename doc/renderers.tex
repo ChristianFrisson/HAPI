@@ -1,12 +1,12 @@
 
 \chapter {Haptics rendering algorithms}
-In HAPI a haptics rendering algorithm(or haptics renderer) is a class
+In HAPI a haptics rendering algorithm (or haptics renderer) is a class
 responsible for determining the forces and torque to render depending
 on position and other data from the haptics device and all the shapes
 the user has added to the scene. 
 
 \section{Proxy based rendering}
-All the algorithms supported by HAPI(both internally implemented and
+All the algorithms supported by HAPI (both internally implemented and
 external libraries such as OpenHaptics and Chai3D) use some variant of
 proxy based haptics rendering. The proxy based rendering technique
 involves having a virtual representation of the haptics device called
@@ -19,8 +19,8 @@ the proxy, and usally some kind of spring force between the proxy and
 haptics device is used. When the user moves the haptics device inside
 the object the proxy follows the movement, but on the surface. How the
 surface follows determines how the structure of the surface will
-fell. For example, if the proxy always is moved to a local minimum on
-the distance to the surface the surface will feel completely smooth,
+feel. For example, if the proxy is always moved to a local minimum on
+the distance to the surface, the surface will feel completely smooth,
 but if the proxy is dragging behind you can get friction effects. In
 HAPI the user can control both the forces generated and the movement
 of the proxy.
@@ -29,7 +29,7 @@ of the proxy.
   \centering 
   \includegraphics{images/proxyfinger.pdf}
   \caption{The proxy stays on the surface when the haptics
-  device(probe) penetrates the surface. The resulting for is most
+  device (probe) penetrates the surface. The resulting force is most
   commonly a spring force pushing the probe back towards the proxy.} 
   \label{Proxy-probe} 
 \end{figure}
@@ -72,10 +72,11 @@ The ruspini renderer is based on the algorithm presented by Ruspini in
 \section{Surfaces}
 (TODO)
 The way to specify how an object should feel in HAPI is done by
-specifying an instancs of a HAPISurfaceObject class that implements
+specifying an instance of a HAPISurfaceObject class that implements
 the behavior. See ref specifying geometres. There are a couple of
 surfaces already available in HAPI. They are:
 
+(TODO Change to FrictionSurface!! take away bumpMap??)
 \begin{itemize}
 \item SmoothSurface - A SmoothSurface is a frictionless surface, where
   the proxy is always moved to minimize the distance between proxy and

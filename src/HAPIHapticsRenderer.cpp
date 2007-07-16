@@ -48,7 +48,7 @@ void HAPIHapticsRenderer::cleanUpStuff( HAPIHapticsDevice *hd ) {
   if( clean_up_stuff.find( hd ) != clean_up_stuff.end() ) {
     vector< WorkAroundToCleanUpHLContext * >
       &clean_up_classes = clean_up_stuff[ hd ];
-    for( int i = 0; i < clean_up_classes.size(); i++ ) {
+    for( unsigned int i = 0; i < clean_up_classes.size(); i++ ) {
       clean_up_classes[i]->cleanUp();
       delete clean_up_classes[i];
       clean_up_classes[i] = 0;

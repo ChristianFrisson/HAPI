@@ -84,14 +84,14 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 203357418;
-			PBXWorkspaceStateSaveDate = 203357418;
+			PBXPerProjectTemplateStateSaveDate = 203852294;
+			PBXWorkspaceStateSaveDate = 203852294;
 		};
 		perUserProjectItems = {
-			96DEE46D0C1EE42F00879FC4 /* PBXTextBookmark */ = 96DEE46D0C1EE42F00879FC4 /* PBXTextBookmark */;
-			96F44F330C1F388B00C92F68 /* PBXTextBookmark */ = 96F44F330C1F388B00C92F68 /* PBXTextBookmark */;
-			96F44F8B0C1FEB2900C92F68 /* PBXTextBookmark */ = 96F44F8B0C1FEB2900C92F68 /* PBXTextBookmark */;
-			96F44F8C0C1FEB2900C92F68 /* PBXTextBookmark */ = 96F44F8C0C1FEB2900C92F68 /* PBXTextBookmark */;
+			96DEE46D0C1EE42F00879FC4 = 96DEE46D0C1EE42F00879FC4 /* PBXTextBookmark */;
+			96F44F330C1F388B00C92F68 = 96F44F330C1F388B00C92F68 /* PBXTextBookmark */;
+			96F44F8B0C1FEB2900C92F68 = 96F44F8B0C1FEB2900C92F68 /* PBXTextBookmark */;
+			96F44F8C0C1FEB2900C92F68 = 96F44F8C0C1FEB2900C92F68 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 9618F2B90B8B519A00C83BBA /* Source Control */;
 		userBuildSettings = {
@@ -123,22 +123,6 @@
 			sepNavSelRange = "{1326, 0}";
 			sepNavVisRect = "{{0, 270}, {711, 429}}";
 			sepNavWindowFrame = "{{419, 44}, {750, 558}}";
-		};
-	};
-	9618F2CE0B8B51F700C83BBA /* DHDHapticsDevice.cpp */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {711, 2240}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRect = "{{0, 270}, {711, 429}}";
-			sepNavWindowFrame = "{{114, 292}, {750, 558}}";
-		};
-	};
-	9618F2CF0B8B51F700C83BBA /* DHDHapticsDevice.h */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {711, 1764}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRect = "{{0, 519}, {711, 429}}";
-			sepNavWindowFrame = "{{38, 294}, {750, 558}}";
 		};
 	};
 	9618F2D40B8B51F700C83BBA /* HAPI.h */ = {
@@ -220,7 +204,7 @@
 		fRef = 9618F2D40B8B51F700C83BBA /* HAPI.h */;
 		name = "HAPI.h: 49";
 		rLen = 0;
-		rLoc = 1734;
+		rLoc = 1740;
 		rType = 0;
 		vrLen = 1135;
 		vrLoc = 1312;
@@ -254,7 +238,7 @@
 		fRef = 9618F2D40B8B51F700C83BBA /* HAPI.h */;
 		name = "HAPI.h: 49";
 		rLen = 0;
-		rLoc = 1734;
+		rLoc = 1740;
 		rType = 0;
 		vrLen = 1135;
 		vrLoc = 1312;

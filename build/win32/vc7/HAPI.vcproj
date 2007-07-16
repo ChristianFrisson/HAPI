@@ -36,10 +36,10 @@
 				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
 				OutputFile="$(OutDir)/HAPI10_vc7_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\lib;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
-				DelayLoadDLLs="HD.dll; dhd.dll"
+				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				DelayLoadDLLs="HD.dll; dhd.dll; hdl.dll"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/)/$(ProjectName)10_vc7_d.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(ProjectName)10_vc7_d.pdb"
 				SubSystem="2"
 				ImportLibrary="..\..\..\..\lib\HAPI10_vc7_d.lib"
 				TargetMachine="1"/>
@@ -88,16 +88,16 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
-				OutputFile="$(OutDir)/HAPI10_vc7_r.dll"
+				OutputFile="$(OutDir)/HAPI10_vc7.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
-				DelayLoadDLLs="HD.dll; dhd.dll"
+				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				DelayLoadDLLs="HD.dll; dhd.dll; hdl.dll"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName)10_vc7_r.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(ProjectName)10_vc7.pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\..\..\lib\HAPI10_vc7_r.lib"
+				ImportLibrary="..\..\..\..\lib\HAPI10_vc7.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -120,95 +120,6 @@
 			<Tool
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
-		<Configuration
-			Name="Debug Static|Win32"
-			OutputDirectory="..\..\..\lib"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;HAPI_LIB;H3DUTIL_LIB"
-				MinimalRebuild="TRUE"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="4"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalDependencies="winmm.lib"
-				OutputFile="$(OutDir)/libHAPI_d.lib"
-				AdditionalLibraryDirectories=""/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
-			Name="Release Static|Win32"
-			OutputDirectory="..\..\..\lib"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="2"
-				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\src"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;;HAPI_LIB;H3DUTIL_LIB"
-				RuntimeLibrary="2"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="FALSE"
-				DebugInformationFormat="3"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
-				OutputFile="$(OutDir)/libHAPI.lib"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -224,10 +135,22 @@
 				RelativePath="..\..\..\src\CollisionObjects.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DHDHapticsDevice.cpp">
+				RelativePath="..\..\..\src\FalconHapticsDevice.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\FeedbackBufferCollector.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\ForceDimensionHapticsDevice.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\fparser.cc">
+			</File>
+			<File
+				RelativePath="..\..\..\src\fpoptimizer.cc">
+			</File>
+			<File
+				RelativePath="..\..\..\src\FrictionSurface.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\GodObjectRenderer.cpp">
@@ -245,10 +168,10 @@
 				RelativePath="..\..\..\src\HAPISurfaceObject.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticBox.cpp">
+				RelativePath="..\..\..\src\HapticBinaryTreePrimitive.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticCone.cpp">
+				RelativePath="..\..\..\src\HapticBox.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticCylinder.cpp">
@@ -308,6 +231,9 @@
 				RelativePath="..\..\..\src\PhantomHapticsDevice.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\QuanserHapticsDevice.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\RuspiniRenderer.cpp">
 			</File>
 		</Filter>
@@ -316,10 +242,46 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath="..\..\..\src\AnyHapticsDevice.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\CollisionObjects.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\FalconHapticsDevice.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\FeedbackBufferCollector.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\ForceDimensionHapticsDevice.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\fparser.hh">
+			</File>
+			<File
+				RelativePath="..\..\..\src\fpconfig.hh">
+			</File>
+			<File
+				RelativePath="..\..\..\src\fptypes.hh">
+			</File>
+			<File
+				RelativePath="..\..\..\src\FrictionSurface.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\GodObjectRenderer.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HAPI.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HAPIForceEffect.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HAPIFunctionObject.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HAPIGLShape.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HAPIHapticObject.h">
@@ -334,25 +296,55 @@
 				RelativePath="..\..\..\src\HAPIHapticsRenderer.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HAPIProxyBasedRenderer.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HAPIShapeRenderOptions.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HAPISurfaceObject.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HAPITypes.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HapticBinaryTreePrimitive.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticBox.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HapticCylinder.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticForceEffect.h">
+				RelativePath="..\..\..\src\HapticForceField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticForceField.h">
+				RelativePath="..\..\..\src\HapticLineSet.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticPlane.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticPointSet.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticPositionFunctionEffect.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticPrimitiveSet.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticShapeConstraint.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticSphere.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticSpring.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticTimeFunctionEffect.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticTriangle.h">
@@ -364,16 +356,25 @@
 				RelativePath="..\..\..\src\HapticTriangleTree.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HapticViscosity.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HaptikDevice.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HLThread.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\ParsedFunction.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\PhantomHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\RuspiniRenderer.h">
+				RelativePath="..\..\..\src\QuanserHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Threads.h">
+				RelativePath="..\..\..\src\RuspiniRenderer.h">
 			</File>
 		</Filter>
 	</Files>

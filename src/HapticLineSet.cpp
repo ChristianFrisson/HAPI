@@ -119,10 +119,12 @@ void HapticLineSet::glRender() {
                     m[0][2], m[1][2], m[2][2], 0,
                     m[0][3], m[1][3], m[2][3], 1 };
   glMultMatrixd( vt );
-  glBegin( GL_LINE_STRIP );
+  glBegin( GL_LINES );
   for( unsigned int i = 0; i < lines.size(); i++ ) {
     HAPI::Bounds::LineSegment &l = lines[i];
     glVertex3d( l.start.x, l.start.y, l.start.z );
+    glVertex3d( l.end.x, l.end.y, l.end.z );
+  
   }
   glEnd();
   glPopAttrib();
