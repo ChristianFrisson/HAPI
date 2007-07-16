@@ -145,11 +145,11 @@ namespace HAPI {
     inline Vec3 getGimbalAngles() { return gimbal_angles; }
     
     /// Returns true if the device needs to be calibrated.
-    inline bool needsCalibration();
+    bool needsCalibration();
 
     /// Calibrate the device. The calibration procedure depends on
     /// the device type.
-    inline bool calibrateDevice();
+    bool calibrateDevice();
 
     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {

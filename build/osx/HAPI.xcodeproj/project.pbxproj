@@ -11,8 +11,6 @@
 		9618F3140B8B51F700C83BBA /* AnyHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F2C90B8B51F700C83BBA /* AnyHapticsDevice.h */; };
 		9618F3170B8B51F700C83BBA /* CollisionObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F2CC0B8B51F700C83BBA /* CollisionObjects.cpp */; };
 		9618F3180B8B51F700C83BBA /* CollisionObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F2CD0B8B51F700C83BBA /* CollisionObjects.h */; };
-		9618F3190B8B51F700C83BBA /* DHDHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F2CE0B8B51F700C83BBA /* DHDHapticsDevice.cpp */; };
-		9618F31A0B8B51F700C83BBA /* DHDHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F2CF0B8B51F700C83BBA /* DHDHapticsDevice.h */; };
 		9618F31B0B8B51F700C83BBA /* FeedbackBufferCollector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F2D00B8B51F700C83BBA /* FeedbackBufferCollector.cpp */; };
 		9618F31C0B8B51F700C83BBA /* FeedbackBufferCollector.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F2D10B8B51F700C83BBA /* FeedbackBufferCollector.h */; };
 		9618F31D0B8B51F700C83BBA /* GodObjectRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F2D20B8B51F700C83BBA /* GodObjectRenderer.cpp */; };
@@ -86,8 +84,6 @@
 		96CCB3900B95C9C800DA703A /* AnyHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F2C90B8B51F700C83BBA /* AnyHapticsDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96CCB3910B95C9C900DA703A /* CollisionObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F2CC0B8B51F700C83BBA /* CollisionObjects.cpp */; };
 		96CCB3920B95C9CA00DA703A /* CollisionObjects.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F2CD0B8B51F700C83BBA /* CollisionObjects.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		96CCB3930B95C9CA00DA703A /* DHDHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F2CE0B8B51F700C83BBA /* DHDHapticsDevice.cpp */; };
-		96CCB3940B95C9CA00DA703A /* DHDHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F2CF0B8B51F700C83BBA /* DHDHapticsDevice.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96CCB3950B95C9CC00DA703A /* FeedbackBufferCollector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F2D00B8B51F700C83BBA /* FeedbackBufferCollector.cpp */; };
 		96CCB3960B95C9CC00DA703A /* FeedbackBufferCollector.h in Headers */ = {isa = PBXBuildFile; fileRef = 9618F2D10B8B51F700C83BBA /* FeedbackBufferCollector.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96CCB3970B95C9CD00DA703A /* GodObjectRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9618F2D20B8B51F700C83BBA /* GodObjectRenderer.cpp */; };
@@ -169,6 +165,18 @@
 		96E9DA940B8C4E4000B4BE63 /* fpconfig.hh in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DA8F0B8C4E4000B4BE63 /* fpconfig.hh */; };
 		96E9DA950B8C4E4000B4BE63 /* fpoptimizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DA900B8C4E4000B4BE63 /* fpoptimizer.cc */; };
 		96E9DA960B8C4E4000B4BE63 /* fptypes.hh in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DA910B8C4E4000B4BE63 /* fptypes.hh */; };
+		96FA00600C268A5300C1F160 /* FalconHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96FA005A0C268A5300C1F160 /* FalconHapticsDevice.cpp */; };
+		96FA00610C268A5300C1F160 /* FalconHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FA005B0C268A5300C1F160 /* FalconHapticsDevice.h */; };
+		96FA00620C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96FA005C0C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp */; };
+		96FA00630C268A5300C1F160 /* ForceDimensionHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FA005D0C268A5300C1F160 /* ForceDimensionHapticsDevice.h */; };
+		96FA00640C268A5300C1F160 /* QuanserHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96FA005E0C268A5300C1F160 /* QuanserHapticsDevice.cpp */; };
+		96FA00650C268A5300C1F160 /* QuanserHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FA005F0C268A5300C1F160 /* QuanserHapticsDevice.h */; };
+		96FA00660C268A5300C1F160 /* FalconHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96FA005A0C268A5300C1F160 /* FalconHapticsDevice.cpp */; };
+		96FA00670C268A5300C1F160 /* FalconHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FA005B0C268A5300C1F160 /* FalconHapticsDevice.h */; };
+		96FA00680C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96FA005C0C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp */; };
+		96FA00690C268A5300C1F160 /* ForceDimensionHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FA005D0C268A5300C1F160 /* ForceDimensionHapticsDevice.h */; };
+		96FA006A0C268A5300C1F160 /* QuanserHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96FA005E0C268A5300C1F160 /* QuanserHapticsDevice.cpp */; };
+		96FA006B0C268A5300C1F160 /* QuanserHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FA005F0C268A5300C1F160 /* QuanserHapticsDevice.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -181,8 +189,6 @@
 		9618F2CB0B8B51F700C83BBA /* Chai3DRenderer.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = Chai3DRenderer.h; path = ../../src/Chai3DRenderer.h; sourceTree = SOURCE_ROOT; };
 		9618F2CC0B8B51F700C83BBA /* CollisionObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.cpp.cpp; name = CollisionObjects.cpp; path = ../../src/CollisionObjects.cpp; sourceTree = SOURCE_ROOT; };
 		9618F2CD0B8B51F700C83BBA /* CollisionObjects.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = CollisionObjects.h; path = ../../src/CollisionObjects.h; sourceTree = SOURCE_ROOT; };
-		9618F2CE0B8B51F700C83BBA /* DHDHapticsDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.cpp.cpp; name = DHDHapticsDevice.cpp; path = ../../src/DHDHapticsDevice.cpp; sourceTree = SOURCE_ROOT; };
-		9618F2CF0B8B51F700C83BBA /* DHDHapticsDevice.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = DHDHapticsDevice.h; path = ../../src/DHDHapticsDevice.h; sourceTree = SOURCE_ROOT; };
 		9618F2D00B8B51F700C83BBA /* FeedbackBufferCollector.cpp */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.cpp.cpp; name = FeedbackBufferCollector.cpp; path = ../../src/FeedbackBufferCollector.cpp; sourceTree = SOURCE_ROOT; };
 		9618F2D10B8B51F700C83BBA /* FeedbackBufferCollector.h */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.c.h; name = FeedbackBufferCollector.h; path = ../../src/FeedbackBufferCollector.h; sourceTree = SOURCE_ROOT; };
 		9618F2D20B8B51F700C83BBA /* GodObjectRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 5; lastKnownFileType = sourcecode.cpp.cpp; name = GodObjectRenderer.cpp; path = ../../src/GodObjectRenderer.cpp; sourceTree = SOURCE_ROOT; };
@@ -261,6 +267,12 @@
 		96E9DA900B8C4E4000B4BE63 /* fpoptimizer.cc */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = fpoptimizer.cc; path = ../../src/fpoptimizer.cc; sourceTree = SOURCE_ROOT; };
 		96E9DA910B8C4E4000B4BE63 /* fptypes.hh */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.h; name = fptypes.hh; path = ../../src/fptypes.hh; sourceTree = SOURCE_ROOT; };
 		96E9DAB10B8C538100B4BE63 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		96FA005A0C268A5300C1F160 /* FalconHapticsDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FalconHapticsDevice.cpp; path = ../../src/FalconHapticsDevice.cpp; sourceTree = SOURCE_ROOT; };
+		96FA005B0C268A5300C1F160 /* FalconHapticsDevice.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FalconHapticsDevice.h; path = ../../src/FalconHapticsDevice.h; sourceTree = SOURCE_ROOT; };
+		96FA005C0C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ForceDimensionHapticsDevice.cpp; path = ../../src/ForceDimensionHapticsDevice.cpp; sourceTree = SOURCE_ROOT; };
+		96FA005D0C268A5300C1F160 /* ForceDimensionHapticsDevice.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ForceDimensionHapticsDevice.h; path = ../../src/ForceDimensionHapticsDevice.h; sourceTree = SOURCE_ROOT; };
+		96FA005E0C268A5300C1F160 /* QuanserHapticsDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = QuanserHapticsDevice.cpp; path = ../../src/QuanserHapticsDevice.cpp; sourceTree = SOURCE_ROOT; };
+		96FA005F0C268A5300C1F160 /* QuanserHapticsDevice.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = QuanserHapticsDevice.h; path = ../../src/QuanserHapticsDevice.h; sourceTree = SOURCE_ROOT; };
 		D2AAC09D05546B4700DB518D /* libHAPI.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libHAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -324,6 +336,12 @@
 		08FB77ACFE841707C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				96FA005A0C268A5300C1F160 /* FalconHapticsDevice.cpp */,
+				96FA005B0C268A5300C1F160 /* FalconHapticsDevice.h */,
+				96FA005C0C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp */,
+				96FA005D0C268A5300C1F160 /* ForceDimensionHapticsDevice.h */,
+				96FA005E0C268A5300C1F160 /* QuanserHapticsDevice.cpp */,
+				96FA005F0C268A5300C1F160 /* QuanserHapticsDevice.h */,
 				96C783EE0C103694005538E7 /* FrictionSurface.cpp */,
 				96C783EF0C103694005538E7 /* FrictionSurface.h */,
 				96D454F10BE0A7C7001E8F3F /* HLThread.cpp */,
@@ -334,8 +352,6 @@
 				9618F2CB0B8B51F700C83BBA /* Chai3DRenderer.h */,
 				9618F2CC0B8B51F700C83BBA /* CollisionObjects.cpp */,
 				9618F2CD0B8B51F700C83BBA /* CollisionObjects.h */,
-				9618F2CE0B8B51F700C83BBA /* DHDHapticsDevice.cpp */,
-				9618F2CF0B8B51F700C83BBA /* DHDHapticsDevice.h */,
 				9618F2D00B8B51F700C83BBA /* FeedbackBufferCollector.cpp */,
 				9618F2D10B8B51F700C83BBA /* FeedbackBufferCollector.h */,
 				9618F2D20B8B51F700C83BBA /* GodObjectRenderer.cpp */,
@@ -424,7 +440,6 @@
 			files = (
 				96CCB3900B95C9C800DA703A /* AnyHapticsDevice.h in Headers */,
 				96CCB3920B95C9CA00DA703A /* CollisionObjects.h in Headers */,
-				96CCB3940B95C9CA00DA703A /* DHDHapticsDevice.h in Headers */,
 				96CCB3960B95C9CC00DA703A /* FeedbackBufferCollector.h in Headers */,
 				96CCB3980B95C9CE00DA703A /* GodObjectRenderer.h in Headers */,
 				96CCB3990B95C9CE00DA703A /* HAPI.h in Headers */,
@@ -466,6 +481,9 @@
 				96CCB3DC0B95CA1000DA703A /* fptypes.hh in Headers */,
 				96D454F60BE0A7C7001E8F3F /* HLThread.h in Headers */,
 				96C783F30C103694005538E7 /* FrictionSurface.h in Headers */,
+				96FA00670C268A5300C1F160 /* FalconHapticsDevice.h in Headers */,
+				96FA00690C268A5300C1F160 /* ForceDimensionHapticsDevice.h in Headers */,
+				96FA006B0C268A5300C1F160 /* QuanserHapticsDevice.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,7 +493,6 @@
 			files = (
 				9618F3140B8B51F700C83BBA /* AnyHapticsDevice.h in Headers */,
 				9618F3180B8B51F700C83BBA /* CollisionObjects.h in Headers */,
-				9618F31A0B8B51F700C83BBA /* DHDHapticsDevice.h in Headers */,
 				9618F31C0B8B51F700C83BBA /* FeedbackBufferCollector.h in Headers */,
 				9618F31E0B8B51F700C83BBA /* GodObjectRenderer.h in Headers */,
 				9618F31F0B8B51F700C83BBA /* HAPI.h in Headers */,
@@ -517,6 +534,9 @@
 				96E9DA960B8C4E4000B4BE63 /* fptypes.hh in Headers */,
 				96D454F40BE0A7C7001E8F3F /* HLThread.h in Headers */,
 				96C783F10C103694005538E7 /* FrictionSurface.h in Headers */,
+				96FA00610C268A5300C1F160 /* FalconHapticsDevice.h in Headers */,
+				96FA00630C268A5300C1F160 /* ForceDimensionHapticsDevice.h in Headers */,
+				96FA00650C268A5300C1F160 /* QuanserHapticsDevice.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -592,7 +612,6 @@
 			files = (
 				96CCB38F0B95C9C800DA703A /* AnyHapticsDevice.cpp in Sources */,
 				96CCB3910B95C9C900DA703A /* CollisionObjects.cpp in Sources */,
-				96CCB3930B95C9CA00DA703A /* DHDHapticsDevice.cpp in Sources */,
 				96CCB3950B95C9CC00DA703A /* FeedbackBufferCollector.cpp in Sources */,
 				96CCB3970B95C9CD00DA703A /* GodObjectRenderer.cpp in Sources */,
 				96CCB39E0B95C9D100DA703A /* HAPIHapticsDevice.cpp in Sources */,
@@ -625,6 +644,9 @@
 				96CCB3DB0B95CA0D00DA703A /* fpoptimizer.cc in Sources */,
 				96D454F50BE0A7C7001E8F3F /* HLThread.cpp in Sources */,
 				96C783F20C103694005538E7 /* FrictionSurface.cpp in Sources */,
+				96FA00660C268A5300C1F160 /* FalconHapticsDevice.cpp in Sources */,
+				96FA00680C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp in Sources */,
+				96FA006A0C268A5300C1F160 /* QuanserHapticsDevice.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -634,7 +656,6 @@
 			files = (
 				9618F3130B8B51F700C83BBA /* AnyHapticsDevice.cpp in Sources */,
 				9618F3170B8B51F700C83BBA /* CollisionObjects.cpp in Sources */,
-				9618F3190B8B51F700C83BBA /* DHDHapticsDevice.cpp in Sources */,
 				9618F31B0B8B51F700C83BBA /* FeedbackBufferCollector.cpp in Sources */,
 				9618F31D0B8B51F700C83BBA /* GodObjectRenderer.cpp in Sources */,
 				9618F3240B8B51F700C83BBA /* HAPIHapticsDevice.cpp in Sources */,
@@ -667,6 +688,9 @@
 				96E9DA950B8C4E4000B4BE63 /* fpoptimizer.cc in Sources */,
 				96D454F30BE0A7C7001E8F3F /* HLThread.cpp in Sources */,
 				96C783F00C103694005538E7 /* FrictionSurface.cpp in Sources */,
+				96FA00600C268A5300C1F160 /* FalconHapticsDevice.cpp in Sources */,
+				96FA00620C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp in Sources */,
+				96FA00640C268A5300C1F160 /* QuanserHapticsDevice.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -793,6 +817,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = NO;
 				HEADER_SEARCH_PATHS = (
 					../../src,
 					../../../H3DUtil/src,

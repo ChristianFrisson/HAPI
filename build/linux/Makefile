@@ -21,6 +21,7 @@ LDFLAGS    =
 #H3DUtil
 CXXLIBS   += -lH3DUtil
 INCLUDES  += -I$(H3DUTIL_HOME)/src
+INCLUDES  += -I$(HAPI_HOME)/OpenHapticsRenderer
 
 # OpenGL etc
 CXXLIBS   += -lGL -lGLU
@@ -45,19 +46,23 @@ update:
 	$(MAKE) depend
 
 sources:
-	ls $(HAPI_HOME)/src/*.cpp > Makefile.sources
+	ls $(HAPI_HOME)/src/*.c* > Makefile.sources
+	ls $(HAPI_HOME)/OpenHapticsRenderer/*.cpp >> Makefile.sources
 	echo -n "SOURCES=" > Makefile.sources2
 	cat Makefile.sources \
 	  | sed 's/.cpp/.cpp \\/g' \
+          | sed 's/.cc/.cc \\/g' \
 	  >> Makefile.sources2
 	mv Makefile.sources2 Makefile.sources
 
 objects:
-	ls $(HAPI_HOME)/src/*.cpp  > Makefile.objects
+	ls $(HAPI_HOME)/src/*.c*  > Makefile.objects
+	ls $(HAPI_HOME)/OpenHapticsRenderer/*.cpp  >> Makefile.objects
 	echo -n "OBJECTS=" > Makefile.objects2
 	cat Makefile.objects \
 	  | grep -v "HAPIMain.cpp" \
 	  | sed 's/.cpp/.o \\/g' \
+	  | sed 's/.cc/.o \\/g' \
 	  >> Makefile.objects2
 	mv Makefile.objects2 Makefile.objects
 

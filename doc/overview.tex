@@ -28,7 +28,7 @@ areas:
 \end{itemize}
 
 HAPI can easily be extended for new devices by implementing abstract
-functions for performing those task. See section \ref{ssAddingHapticsSupport}.
+functions for performing those tasks. See section \ref{ssAddingHapticsSupport}.
 
 \subsection{Haptics rendering algorithm}
 A haptics rendering algorithm is need in order to calculate forces and
@@ -57,16 +57,16 @@ that can be used in order to do faster collision detection.
 
 \subsection{Surface handling}
 When touching the surface of a geometry, the haptics rendering
-algorithm has to know to what forces to generate depending on the
+algorithm has to know what forces to generate depending on the
 penetration of the surface. This is handled by the surface classes. A
 user can define an arbitrary function for the force and proxy
-movement(does not work for all haptics rendering algorithms though as
+movement (does not work for all haptics rendering algorithms though as
 mentioned earlier).
 
 \subsection{Force effects}
-Many times a user wants to generate forces that are not based on
+Often a user wants to generate forces that are not based on
 touching geometries, but instead is only depending on the position and
-orientation of the haptics device. These are e.g. force fields,
+orientation of the haptics device. Some exampels of such forces are force fields,
 springs, viscosity, etc. In these cases a force effect can be used.
 
 \subsection{Thread handling}

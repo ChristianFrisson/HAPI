@@ -111,7 +111,7 @@ bool PhantomHapticsDevice::initHapticsDevice() {
 
   hdGetIntegerv( HD_OUTPUT_DOF, &i );
   output_dof = i;
-  
+  /*
   cerr << "HD API version: " << hdapi_version << endl;
   
   cerr << "Firmware version: " << device_firmware_version << endl;
@@ -129,7 +129,7 @@ bool PhantomHapticsDevice::initHapticsDevice() {
   cerr << "Offset: " << tabletop_offset << endl;
   cerr << "Input dof: " << input_dof << endl;
   cerr << "Output dof: " << output_dof << endl;
-
+  */
   hdEnable(HD_FORCE_OUTPUT);
 
   // Add callbacks in order to do hdBeginFrame/hdEndFrame in order to only get
@@ -218,7 +218,7 @@ void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
 }
 
 bool PhantomHapticsDevice::needsCalibration() {
-  if( device_state == DeviceState::INITIALIZED ) {
+  if( device_state == INITIALIZED ) {
     hdMakeCurrentDevice( device_handle );
     return hdCheckCalibration() != HD_CALIBRATION_OK;
   } else {
@@ -227,7 +227,7 @@ bool PhantomHapticsDevice::needsCalibration() {
 }
 
 bool PhantomHapticsDevice::calibrateDevice() {
-  if( device_state == DeviceState::INITIALIZED ) {
+  if( device_state == INITIALIZED ) {
     hdMakeCurrentDevice( device_handle );
     HDint style;
     hdGetIntegerv(HD_CALIBRATION_STYLE,&style);

@@ -38,11 +38,11 @@ using namespace HAPI;
 #pragma comment( lib, "hdl.lib" )
 #endif
 
-HAPIHapticsDevice::HapticsDeviceRegistration 
+/*HAPIHapticsDevice::HapticsDeviceRegistration 
 FalconHapticsDevice::device_registration(
                             "Falcon",
                             &(newInstance< FalconHapticsDevice >)
-                            );
+                            );*/
 
 namespace FalconDeviceInternal {
   /*
@@ -70,10 +70,11 @@ bool FalconHapticsDevice::initHapticsDevice() {
   device_handle = hdlInitDevice( HDL_DEFAULT_DEVICE_ID );
 	//device_handle = hdlInitNamedDevice( device_name.c_str() );
   HDLError error = hdlGetError();
-  if ( error != HDL_NO_ERROR ) {
+  if ( device_handle == -1 || error != HDL_NO_ERROR ) {
     stringstream s;
-    s << "Could not init Falcon device. Error code: "
-      << error << endl;
+    s << "Could not init Falcon device. ";
+	if( error != HDL_NO_ERROR ) 
+	  s << "Error code: " << error << endl;
      
     setErrorMsg( s.str() );
     return false;
@@ -135,7 +136,7 @@ void FalconHapticsDevice::updateDeviceValues( DeviceValues &dv,
 
   double v[16];
   hdlToolPosition( v ); 
-  dv.position = Vec3( v[0], v[1], v[2] );
+  dv.position = 1e3 * Vec3( v[0], v[1], v[2] );
 
   // TODO: calculate velocity
   //hdGetDoublev( HD_CURRENT_VELOCITY, v ); 

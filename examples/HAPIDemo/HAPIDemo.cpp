@@ -180,7 +180,7 @@ WidgetsFrame::WidgetsFrame(const wxString& title)
     mbar->Append(menuWidget, _T("&HAPI"));
     SetMenuBar(mbar);
 
-    mbar->Check(Widgets_Enable, true);
+    //mbar->Check(Widgets_Enable, true);
 #endif // wxUSE_MENUS
 
     // create controls

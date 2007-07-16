@@ -171,6 +171,7 @@ namespace HAPI {
 
     class HAPI_API WorkAroundToCleanUpHLContext {
     public:
+	  virtual ~WorkAroundToCleanUpHLContext() {}
       virtual void cleanUp() {}
     };
 

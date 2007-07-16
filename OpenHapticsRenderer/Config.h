@@ -33,7 +33,13 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
+#if defined(__APPLE__) && defined(__MACH__)
+#define OPENHAPTICSRENDERER_API
+#endif
 
+#if defined(__linux)
+#define OPENHAPTICSRENDERER_API
+#endif
 
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL

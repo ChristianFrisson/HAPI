@@ -703,7 +703,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       if( m_txt_sphere_radius->GetValue().ToDouble(&val) ) {
         sphere_radius = val * 1000;
       }
-      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticSphere( sphere_radius, false, 0, 0, Matrix4() ), spring_constant ) );
+      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticSphere( sphere_radius, 0, 0, Matrix4() ), spring_constant ) );
       break;
     }
     case Button_box: {
@@ -716,7 +716,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       if( m_txt_box_sizeZ->GetValue().ToDouble(&val) ) {
         box_size.z = val * 1000;
       }
-      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticBox( box_size, false, 0, 0, Matrix4() ), spring_constant ) );
+      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticBox( box_size, 0, 0, Matrix4() ), spring_constant ) );
       break;
     }
    /* case Button_cone: {
@@ -790,7 +790,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
 
       if( !line_values.empty() && line_values.size() > 5 ) {
         line_set_lines.clear();
-        for( int i = 0; i < line_values.size(); i += 3 ) {
+        for( unsigned int i = 0; i < line_values.size(); i += 3 ) {
           if( line_values.size() - i > 5 ) {
             line_set_lines.push_back( Bounds::LineSegment( Vec3( line_values[i] * 1000, line_values[i+1] * 1000, line_values[i+2] * 1000 ), Vec3( line_values[i+3] * 1000, line_values[i+4] * 1000, line_values[i+5] * 1000 ) ) );
           }
@@ -819,7 +819,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
 
       if( !point_values.empty() && point_values.size() > 2 ) {
         point_set_points.clear();
-        for( int i = 0; i < point_values.size(); i += 3 ) {
+        for( unsigned int i = 0; i < point_values.size(); i += 3 ) {
           if( point_values.size() - i > 2 ) {
             point_set_points.push_back( Bounds::Point( Vec3( point_values[i] * 1000, point_values[i+1] * 1000, point_values[i+2] * 1000 ) ) );
           }
@@ -848,7 +848,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
 
       if( !triangle_values.empty() && triangle_values.size() > 8 ) {
         triangle_set_triangles.clear();
-        for( int i = 0; i < triangle_values.size(); i += 9 ) {
+        for( unsigned int i = 0; i < triangle_values.size(); i += 9 ) {
           if( triangle_values.size() - i > 8 ) {
             triangle_set_triangles.push_back( Bounds::Triangle( Vec3( triangle_values[i] * 1000, triangle_values[i+1] * 1000, triangle_values[i+2] * 1000 ),
                                                                 Vec3( triangle_values[i+3] * 1000, triangle_values[i+4] * 1000, triangle_values[i+5] * 1000 ),
@@ -884,7 +884,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       plane_normal.normalizeSafe();
 
       if( plane_normal.lengthSqr() > Constants::epsilon )
-        force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticPlane( plane_point, plane_normal, false, 0, 0, Matrix4() ), spring_constant ) );
+        force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticPlane( plane_point, plane_normal, 0, 0, Matrix4() ), spring_constant ) );
       break;
     }
   }
