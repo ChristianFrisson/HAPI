@@ -591,9 +591,12 @@ namespace HAPI {
     public:
       /// Constructor.
       HapticsDeviceRegistration( const string &_name,
-                                   CreateInstanceFunc _create ):
+                                   CreateInstanceFunc _create,
+                                   list< string > _libs_to_support  ):
       name( _name ),
-      create_func( _create ) {
+      create_func( _create ),
+      libs_to_support( _libs_to_support )
+      {
         
         if( !HAPIHapticsDevice::registered_devices ) {
           HAPIHapticsDevice::registered_devices = 
@@ -604,6 +607,7 @@ namespace HAPI {
 
       string name;
       CreateInstanceFunc create_func;
+      list< string > libs_to_support;
     };
 #ifdef __BORLANDC__
     friend struct HapticsDeviceRegistration;
@@ -612,11 +616,13 @@ namespace HAPI {
     /// Register a haptics renderer to the database.
     /// \param name The name of the renderer
     /// \param create A function for creating an instance of that class.
-    /// \param supports A function to determine if the class supports a
-    /// given file type.
+    /// \param libs_to_support A list of strings with libraries that is needed
+    /// to be supported by this device (dlls, so).
     static void registerDevice( const string &name,
-                                  CreateInstanceFunc create ) {
-      registerDevice( HapticsDeviceRegistration( name, create ) );
+                                  CreateInstanceFunc create,
+                                  list< string > libs_to_support ) {
+      registerDevice( HapticsDeviceRegistration( name, create, 
+                                                 libs_to_support ) );
     }
 
     /// Register a haptics renderer that can then be returned by 

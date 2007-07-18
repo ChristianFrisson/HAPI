@@ -41,10 +41,16 @@
 
 using namespace HAPI;
 
+namespace ForceDimensionHapticsDeviceInternal {
+  string libs_array[1] = {"dhd.dll"};
+  list< string > force_dimension_libs(libs_array, libs_array + 1 );
+}
+
 HAPIHapticsDevice::HapticsDeviceRegistration 
 ForceDimensionHapticsDevice::device_registration(
                             "ForceDimension",
-                            &(newInstance< ForceDimensionHapticsDevice >)
+                            &(newInstance< ForceDimensionHapticsDevice >),
+                    ForceDimensionHapticsDeviceInternal::force_dimension_libs
                             );
 
 bool ForceDimensionHapticsDevice::initHapticsDevice() {

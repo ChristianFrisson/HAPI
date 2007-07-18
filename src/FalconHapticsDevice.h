@@ -108,7 +108,7 @@ namespace HAPI {
     }
 
     /// Register this renderer to the haptics renderer database.
-    //static HapticsDeviceRegistration device_registration;
+    static HapticsDeviceRegistration device_registration;
 
     /// Get the device model of the device. Undefined if device not
     /// initialized.
