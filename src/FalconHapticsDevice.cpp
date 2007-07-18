@@ -38,13 +38,9 @@ using namespace HAPI;
 #pragma comment( lib, "hdl.lib" )
 #endif
 
-/*HAPIHapticsDevice::HapticsDeviceRegistration 
-FalconHapticsDevice::device_registration(
-                            "Falcon",
-                            &(newInstance< FalconHapticsDevice >)
-                            );*/
-
-namespace FalconDeviceInternal {
+namespace FalconHapticsDeviceInternal {
+  string libs_array[1] = {"hdl.dll"};
+  list< string > falcon_device_libs(libs_array, libs_array + 1 );
   /*
   // Callback function that starts a new hd frame. It is used in order to 
   // encapsulate all HD API callback function within a hdBeginFrame/hdEndFrame
@@ -65,6 +61,13 @@ namespace FalconDeviceInternal {
   }
   */
 }
+
+HAPIHapticsDevice::HapticsDeviceRegistration 
+FalconHapticsDevice::device_registration(
+                            "Falcon",
+                            &(newInstance< FalconHapticsDevice >),
+                            FalconHapticsDeviceInternal::falcon_device_libs
+                            );
 
 bool FalconHapticsDevice::initHapticsDevice() {
   device_handle = hdlInitDevice( HDL_DEFAULT_DEVICE_ID );

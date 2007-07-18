@@ -40,13 +40,10 @@ using namespace HAPI;
 #pragma comment( lib, "hd.lib" )
 #endif
 
-HAPIHapticsDevice::HapticsDeviceRegistration 
-PhantomHapticsDevice::device_registration(
-                            "Phantom",
-                            &(newInstance< PhantomHapticsDevice >)
-                            );
-
 namespace PhantomDeviceInternal {
+  string libs_array[1] = {"HD.dll"};
+  list< string > phantom_device_libs(libs_array, libs_array + 1 );
+
   // Callback function that starts a new hd frame. It is used in order to 
   // encapsulate all HD API callback function within a hdBeginFrame/hdEndFrame
   // pair in order to only get one frame per loop.
@@ -65,6 +62,13 @@ namespace PhantomDeviceInternal {
     return HD_CALLBACK_CONTINUE;
   }
 }
+
+HAPIHapticsDevice::HapticsDeviceRegistration 
+PhantomHapticsDevice::device_registration(
+                            "Phantom",
+                            &(newInstance< PhantomHapticsDevice >),
+                            PhantomDeviceInternal::phantom_device_libs
+                            );
 
 bool PhantomHapticsDevice::initHapticsDevice() {
   device_handle = hdInitDevice( device_name == "" ? 

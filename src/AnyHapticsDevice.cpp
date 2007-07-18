@@ -29,13 +29,16 @@
 
 #include <AnyHapticsDevice.h>
 #include <sstream>
+#include <DynamicLibrary.h>
 
 using namespace HAPI;
 
+list< string > any_device_libs_list;
 HAPIHapticsDevice::HapticsDeviceRegistration 
 AnyHapticsDevice::device_registration(
                             "Any",
-                            &(newInstance< AnyHapticsDevice >)
+                            &(newInstance< AnyHapticsDevice >),
+                            any_device_libs_list
                             );
 
 bool AnyHapticsDevice::initHapticsDevice() {
@@ -44,6 +47,18 @@ bool AnyHapticsDevice::initHapticsDevice() {
          registered_devices->begin(); 
        i != registered_devices->end(); i++ ) {
     if( (*i).name != "Any" ) {
+#ifdef WIN32
+      bool all_libs_ok = true;
+      for( list< string >::iterator j = (*i).libs_to_support.begin();
+           j != (*i).libs_to_support.end();
+           j++ ) {
+        if( H3DUtil::DynamicLibrary::load( *j ) == NULL ) {
+          all_libs_ok = false;
+          break;
+        }
+      }
+      if( all_libs_ok ) {
+#endif
       HAPIHapticsDevice *device = ((*i).create_func)();
       if( device->initHapticsDevice() ) {
         hd.reset( device );
@@ -54,6 +69,9 @@ bool AnyHapticsDevice::initHapticsDevice() {
       } else {
         delete device;
       }
+#ifdef WIN32
+      }
+#endif
     }
   }
 
