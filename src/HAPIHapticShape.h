@@ -62,17 +62,19 @@ namespace HAPI {
     HAPIHapticShape( void *_userdata,
                      HAPISurfaceObject *_surface,
                      const Matrix4 & _transform,
+                     void (*_clean_up_func)( void * ) = 0,
                      int _shape_id = -1,
                      Bounds::FaceType _touchable_face = 
                      Bounds::FRONT_AND_BACK  ):
-      Bounds::CollisionObject( true ),
-      HAPIHapticObject( _transform ),
-      surface( _surface ),
-      userdata( _userdata ),
-      shape_id( _shape_id ),
-      touchable_face( _touchable_face ) {
-      
-    }
+                  Bounds::CollisionObject( true ),
+                  HAPIHapticObject( _transform ),
+                  clean_up_func( _clean_up_func ),
+                  surface( _surface ),
+                  userdata( _userdata ),
+                  shape_id( _shape_id ),
+                  touchable_face( _touchable_face ) {}
+
+    virtual ~HAPIHapticShape();
 
     virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
       // todo: fix
@@ -96,7 +98,7 @@ namespace HAPI {
     static void delShapeId( int id );
 
     /// The Surface object describing the properties of the surface.
-    HAPISurfaceObject *surface;
+    H3DUtil::AutoRef< HAPISurfaceObject > surface;
 
     inline void addRenderOption( HAPIShapeRenderOptions *o ) {
       options.push_back( o );
@@ -137,6 +139,9 @@ namespace HAPI {
 
     static int current_max_id;
     static list< int > free_ids;
+
+  protected:
+    void (*clean_up_func)( void * );
   };
 }
 

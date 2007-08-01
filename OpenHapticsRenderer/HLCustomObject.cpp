@@ -38,7 +38,7 @@ using namespace HAPI;
 
 void HLCustomObject::hlRender( HAPI::HAPIHapticsDevice *hd,
                                HLuint hl_shape_id ) {
-  if( OpenHapticsRenderer::hlRenderHAPISurface( surface ) ) {
+  if( OpenHapticsRenderer::hlRenderHAPISurface( surface.get() ) ) {
     hlBeginShape(HL_SHAPE_CALLBACK, hl_shape_id );
     hlCallback(HL_SHAPE_INTERSECT_LS, 
                (HLcallbackProc) intersectCallback, this);

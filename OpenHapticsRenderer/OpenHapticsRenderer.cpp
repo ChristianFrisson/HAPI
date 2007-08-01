@@ -108,10 +108,24 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
 
   // Ugly solution to clean up stuff correctly when the device is removed.
   // TODO: Find a better solution.
-  OpenHapticsWorkAroundToCleanUpHLContext * temp_ptr =
-    new OpenHapticsWorkAroundToCleanUpHLContext();
-  temp_ptr->dummy_context = dummy_context;
-  clean_up_stuff[ hd ].push_back( temp_ptr );
+  if( dummy_context ) {
+    bool add_dummy = true;
+    for( unsigned int i = 0; i < clean_up_stuff[hd].size(); i++ ) {
+      OpenHapticsWorkAroundToCleanUpHLContext * temp_ptr = 
+        dynamic_cast< OpenHapticsWorkAroundToCleanUpHLContext * >
+        ( clean_up_stuff[hd][i] );
+      if( temp_ptr ) {
+        if( temp_ptr->dummy_context == dummy_context )
+          add_dummy = false;
+      }
+    }
+    if( add_dummy ) {
+      OpenHapticsWorkAroundToCleanUpHLContext * temp_ptr =
+        new OpenHapticsWorkAroundToCleanUpHLContext();
+      temp_ptr->dummy_context = dummy_context;
+      clean_up_stuff[ hd ].push_back( temp_ptr );
+    }
+  }
 
   callback_data.clear();
   for( IdMap::iterator i = id_map.begin();
@@ -133,6 +147,9 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
                            &untouchCallback );
   }
   id_map.clear();
+  if( !contacts.empty() ) {
+    contacts.clear();
+  }
 }
 
 HAPIForceEffect::EffectOutput 
@@ -205,7 +222,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     if( hl ) {    
       hl->hlRender( hd, hl_shape_id );
     } else {
-      if( surfaceSupported( (*i)->surface ) ) {
+      if( surfaceSupported( (*i)->surface.get() ) ) {
         OpenHapticsOptions::ShapeType shape_type = default_gl_shape;
         bool camera_view = default_haptic_camera_view;
         bool adaptive_viewport = default_adaptive_viewport;
@@ -225,7 +242,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 #endif
 
           glLoadIdentity();
-          hlRenderHAPISurface( (*i)->surface );
+          hlRenderHAPISurface( (*i)->surface.get() );
 
           HLenum touchable_face;
           Bounds::FaceType face = (*i)->touchable_face;
@@ -455,7 +472,7 @@ HLuint OpenHapticsRenderer::getHLShapeId( HAPIHapticShape *hs,
                         &untouchCallback,
                         cb_data );
   } else {
-    for( int i = 0; i < callback_data.size(); i++ ) {
+    for( unsigned int i = 0; i < callback_data.size(); i++ ) {
       if( callback_data[i]->shape->shape_id == hs->shape_id
           && callback_data[i]->renderer == this ) {
         callback_data[i]->shape.reset( hs );

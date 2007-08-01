@@ -41,10 +41,11 @@ namespace HAPI {
                        void *_userdata,
                        HAPISurfaceObject *_surface,
                        const Matrix4 & _transform,
+                       void (*_clean_up_func)( void * ) = 0,
                        int _shape_id = -1,
                        Bounds::FaceType _touchable_face = 
                        Bounds::FRONT_AND_BACK):
-      HAPIHapticShape( _userdata, _surface, _transform, 
+      HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func,
                        _shape_id, _touchable_face ),
       triangles( _triangles ) {}
 
@@ -54,10 +55,11 @@ namespace HAPI {
                        void *_userdata,
                        HAPISurfaceObject *_surface,
                        const Matrix4 & _transform,
+                       void (*_clean_up_func)( void * ) = 0,
                        int _shape_id = -1,
                        Bounds::FaceType _touchable_face = 
                        Bounds::FRONT_AND_BACK ):
-      HAPIHapticShape( _userdata, _surface, _transform, 
+      HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func,
                        _shape_id, _touchable_face ),
       triangles( begin, end ) {}
 

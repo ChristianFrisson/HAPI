@@ -32,10 +32,11 @@ namespace HAPI {
                         void *_userdata,
                         HAPI::HAPISurfaceObject *_surface,
                         const Matrix4 &_transform,
+                        void (*_clean_up_func)( void * ) = 0,
                         Bounds::FaceType _touchable_face = Bounds::FRONT_AND_BACK,
                         bool _use_haptic_camera = true,
                         bool _use_adaptive_viewport = true ):
-      HAPIHapticShape( _userdata,_surface, _transform ),
+      HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func ),
       touchable_face( _touchable_face ),
       use_haptic_camera( _use_haptic_camera ),
       use_adaptive_viewport( _use_adaptive_viewport ),

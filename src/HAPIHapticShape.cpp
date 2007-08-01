@@ -48,3 +48,8 @@ void HAPIHapticShape::delShapeId( int id ) {
   // todo: remove all resources used by id, e.g. hl shape id
   free_ids.push_front( id );
 }
+
+HAPIHapticShape::~HAPIHapticShape(){
+  if( clean_up_func )
+    clean_up_func( userdata );
+}

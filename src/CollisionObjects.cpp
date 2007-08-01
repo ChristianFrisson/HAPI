@@ -29,6 +29,7 @@
 
 #include <CollisionObjects.h>
 #include <stack>
+#include <PlaneConstraint.h>
 
 using namespace HAPI;
 using namespace Bounds;
@@ -78,43 +79,6 @@ bool Bounds::intersectSegmentCylinder( Vec3 sa, Vec3 sb,
   // Segment intersects cylinder between the endcaps; t is correct
   return true;
 }
-
-bool PlaneConstraint::lineIntersect( const Vec3 &from, 
-                                     const Vec3 &to,
-                                     Bounds::IntersectionInfo &result ) {
-      Vec3 from_to = to - from;
-      if( normal * from_to > Constants::epsilon ) { 
-        /*if( result.normal.z == 0.5 ) {
-          cerr << "a" << endl;
-          cerr << normal * from_to << endl;
-          }*/
-        return false;
-      }
-
-
-      HAPIFloat denom = normal * from_to;
-      if( denom * denom < Constants::epsilon ) {
-        /*        if( result.normal.z == 0.5 )
-                  cerr << "b" << endl; */
-        return false;
-      }
-      HAPIFloat u = ( normal * ( point - from ) ) / denom; 
-      /*      if( result.normal.z == 0.5 )
-              cerr << u << endl;*/
-      if( u <= 1 + Constants::epsilon && u >= 0 - Constants::epsilon ) {
-
-        if( u < 0 ) u = 0;
-        if( u > 1 ) u = 1;
-                //cerr << u << endl;
-        result.point = from + u * from_to;
-        result.normal = normal;
-        // TODO: temp. Mybe use derivatives to get correct tex coord
-        result.tex_coord = tex_coord;
-        return true;
-      }
-      return false;
-    }
-
 
 void AABoxBound::render() {
   glDisable( GL_LIGHTING );

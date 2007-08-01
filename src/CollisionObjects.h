@@ -38,10 +38,9 @@
 #include <RefCountedClass.h>
 #include <AutoRef.h>
 #include <AutoRefVector.h>
+#include <IntersectionInfo.h>
 
 namespace HAPI {
-
-  class HAPIHapticShape;   
 
   namespace Bounds {
     /// Intersect segment S(t)=sa+t(sb-sa), 0<=t<=1 against cylinder 
@@ -51,68 +50,7 @@ namespace HAPI {
                                    HAPIFloat r, 
                                    HAPIFloat & t );
 
-    class GeometryPrimitive;
-     typedef enum {
-        BACK,
-        FRONT,
-        FRONT_AND_BACK
-      } FaceType;
-
-    /// \brief The IntersectionInfo struct contains information about an 
-    /// intersection.
-    struct IntersectionInfo {
-     
-
-      /// Constructor.
-      IntersectionInfo( const Vec3 &_point = Vec3(), 
-                        const Vec3 &_normal = Vec3(),
-                        const Vec3 &_tex_coord = Vec3(),
-                        FaceType intersected_face = FRONT,
-                        int _id = -1 ) :
-      point( _point ),
-      normal( _normal ),
-      tex_coord( _tex_coord ),
-      id( _id ) { intersection = false; }
-
-      /// The intersection point.
-      Vec3 point;
-
-      /// The normal at the intersection point.
-      Vec3 normal;
-
-      /// The texture coordinate at the intersection point.
-      Vec3 tex_coord;
-
-      /// The face that was intersected. BACK or FRONT.
-      FaceType face;
-
-      bool intersection;
-
-      /// Gradient describing the change of tex coord depending on
-      /// change in pos at the intersection point.
-      Matrix3 pos_to_tex_coord_gradient;
-      
-      /// \brief The id of the primitive that was intersected if applicable,
-      /// e.g. triangle index. -1 if no id exists.
-      int id;
-    };
-
-    class HAPI_API PlaneConstraint {
-    public:
-      PlaneConstraint( const Vec3 &p, const Vec3 &n, const Vec3 &tc, 
-                       HAPIHapticShape *shape = NULL,
-                       GeometryPrimitive *_primitive = NULL ):
-        point( p ), normal( n ), tex_coord( tc ), 
-        haptic_shape( shape ), primitive( _primitive )  {}
-      
-      bool lineIntersect( const Vec3 &from, 
-			  const Vec3 &to,    
-			  Bounds::IntersectionInfo &result );
-      Vec3 point, normal;
-      Vec3 tex_coord;
-      HAPIHapticShape * haptic_shape;
-      GeometryPrimitive * primitive;
-    };
+    class PlaneConstraint; 
     
     /// \brief The CollisionObject class is the base class for objects that 
     /// can be used  in collision detection.

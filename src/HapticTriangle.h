@@ -45,10 +45,11 @@ namespace HAPI {
                     void *_userdata,
                     HAPISurfaceObject *_surface,
                     const Matrix4 & _transform,
+                    void (*_clean_up_func)( void * ) = 0,
                     int _shape_id = -1,
                     Bounds::FaceType _touchable_face = 
                     Bounds::FRONT_AND_BACK ):
-      HAPIHapticShape( _userdata, _surface, _transform, 
+      HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func,
                        _shape_id, _touchable_face  ),
       triangle( _triangle ) {}
     
@@ -80,16 +81,7 @@ namespace HAPI {
     inline virtual void getConstraints( const Vec3 &point,
                                         std::vector< PlaneConstraint > &constraints,
                                         Bounds::FaceType face = 
-                                        Bounds::FRONT_AND_BACK ) {
-      Vec3 p = transform.inverse() * point;
-      unsigned int size = constraints.size();
-      triangle.getConstraints( p, constraints, face );
-      for( unsigned int i = size; i < constraints.size(); i ++ ) {
-        PlaneConstraint &pc = constraints[i];
-        pc.point = transform * pc.point;
-        pc.normal = transform.getRotationPart() * pc.normal;
-      }
-    }
+                                        Bounds::FRONT_AND_BACK );
 
     inline virtual void glRender() {
       glMatrixMode( GL_MODELVIEW );

@@ -325,6 +325,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\PlaneConstraint.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\QuanserHapticsDevice.cpp"
 				>
 			</File>
@@ -491,11 +495,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\IntersectionInfo.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\ParsedFunction.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\PhantomHapticsDevice.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\PlaneConstraint.h"
 				>
 			</File>
 			<File

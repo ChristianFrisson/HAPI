@@ -28,6 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <HapticCylinder.h>
+#include <PlaneConstraint.h>
 
 using namespace HAPI;
 #ifdef HAVE_OPENjHAPTICS
