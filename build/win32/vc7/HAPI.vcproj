@@ -26,6 +26,7 @@
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"/>
@@ -39,7 +40,7 @@
 				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs="HD.dll; dhd.dll; hdl.dll"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName)10_vc7_d.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
 				ImportLibrary="..\..\..\..\lib\HAPI10_vc7_d.lib"
 				TargetMachine="1"/>
@@ -80,6 +81,7 @@
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"/>
@@ -92,8 +94,8 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs="HD.dll; dhd.dll; hdl.dll"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName)10_vc7.pdb"
+				GenerateDebugInformation="FALSE"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -231,6 +233,9 @@
 				RelativePath="..\..\..\src\PhantomHapticsDevice.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\PlaneConstraint.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\QuanserHapticsDevice.cpp">
 			</File>
 			<File
@@ -365,10 +370,16 @@
 				RelativePath="..\..\..\src\HLThread.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\IntersectionInfo.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\ParsedFunction.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\PhantomHapticsDevice.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\PlaneConstraint.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\QuanserHapticsDevice.h">

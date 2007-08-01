@@ -27,7 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HapticBinaryTreePrimitive.h> 
+#include <HapticBinaryTreePrimitive.h>
+#include <PlaneConstraint.h>
 
 using namespace HAPI;
 
@@ -62,7 +63,7 @@ void HapticBinaryTreePrimitive::getConstraints( const Vec3 &point,
       pc.normal = transform.getScaleRotationPart() * pc.normal;
       pc.normal.normalizeSafe();
       pc.point = transform * pc.point;
-      pc.haptic_shape = this;
+      pc.haptic_shape.reset(this);
     }
   } else {
     // TODO: fix this
@@ -72,7 +73,7 @@ void HapticBinaryTreePrimitive::getConstraints( const Vec3 &point,
     for( unsigned int i = size; i < constraints.size(); i ++ ) {
       PlaneConstraint &pc = constraints[i];
       pc.point = pc.point;
-      pc.haptic_shape = this;
+      pc.haptic_shape.reset(this);
     }
   }
 }

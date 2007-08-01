@@ -19,7 +19,7 @@ using namespace HAPI;
 void HLDepthBufferShape::hlRender( HAPI::HAPIHapticsDevice *hd,
                                    HLuint hl_shape_id ) {
 
-  if( OpenHapticsRenderer::surfaceSupported( surface ) ) {
+  if( OpenHapticsRenderer::surfaceSupported( surface.get() ) ) {
     //&& closeEnoughToBound( hd->proxyPosition->getValue(),  
     //hd->getPreviousProxyPosition(),
     //(Matrix4f)transform.inverse(), 
@@ -37,7 +37,7 @@ void HLDepthBufferShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     glLoadIdentity();
     glScalef( 1e3f, 1e3f, 1e3f ); 
     glMultMatrixd( vt );
-    OpenHapticsRenderer::hlRenderHAPISurface( surface );
+    OpenHapticsRenderer::hlRenderHAPISurface( surface.get() );
 
     hlTouchableFace( HL_FRONT_AND_BACK );
     Matrix3 m3 = m.getScaleRotationPart();

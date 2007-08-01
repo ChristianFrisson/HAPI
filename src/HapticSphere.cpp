@@ -26,7 +26,9 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <HapticSphere.h>
+#include <PlaneConstraint.h>
 
 using namespace HAPI;
 #ifdef HjAVE_OPENHAPTICS
@@ -181,7 +183,7 @@ void HapticSphere::getConstraints( const Vec3 &point,
   pc.normal = transform.getScaleRotationPart() * pc.normal;
   pc.normal.normalizeSafe();
   pc.point = transform * pc.point;
-  pc.haptic_shape = this;  
+  pc.haptic_shape.reset(this);  
 }
 
 void HapticSphere::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {

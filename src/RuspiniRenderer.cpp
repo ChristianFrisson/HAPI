@@ -30,6 +30,7 @@
 #include <RuspiniRenderer.h>
 #include <H3DMath.h>
 #include <HAPIHapticsDevice.h>
+#include <PlaneConstraint.h>
 
 using namespace HAPI;
 
@@ -62,7 +63,7 @@ void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c,
   contact.z_axis = contact.x_axis % contact.y_axis;
   contact.x_axis.normalizeSafe();
   contact.z_axis.normalizeSafe();
-  assert( c.haptic_shape );
+  assert( c.haptic_shape.get() );
 
   // call the surface to determine forces and proxy movement
   c.haptic_shape->surface->onContact( contact );
@@ -121,7 +122,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
     
     Vec3 line_dir_local = contact.vectorToLocal( line_dir );
 
-    assert( p0.haptic_shape );
+    assert( p0.haptic_shape.get() );
 
     // calculate the force and proxy movement for the first plane
     p0.haptic_shape->surface->onContact( contact );
@@ -136,7 +137,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
 
     Vec3 p0_force = contact.force_global;
     
-    assert( p1.haptic_shape );
+    assert( p1.haptic_shape.get() );
     // calculate the force and proxy movement for the second plane
     p1.haptic_shape->surface->onContact( contact );
 
@@ -160,9 +161,9 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
     contact.force_global = p0_force * weight + p1_force * ( 1 - weight );
 
     // add contacts
-    tmp_contacts.push_back( make_pair( p0.haptic_shape, contact ) );
-    if( p0.haptic_shape != p1.haptic_shape )
-      tmp_contacts.push_back( make_pair( p1.haptic_shape, contact ) );
+    tmp_contacts.push_back( make_pair( p0.haptic_shape.get(), contact ) );
+    if( p0.haptic_shape.get() != p1.haptic_shape.get() )
+      tmp_contacts.push_back( make_pair( p1.haptic_shape.get(), contact ) );
   }
 }
 
@@ -248,17 +249,17 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
     contact.z_axis.normalizeSafe();
 
     // calculate the force and proxy movement for the first plane
-    assert( p0.haptic_shape );
+    assert( p0.haptic_shape.get() );
     p0.haptic_shape->surface->onContact( contact );
     Vec3 p0_force = contact.force_global;
     
     // calculate the force and proxy movement for the second plane
-    assert( p1.haptic_shape );
+    assert( p1.haptic_shape.get() );
     p1.haptic_shape->surface->onContact( contact );
     Vec3 p1_force = contact.force_global;
 
     // calculate the force and proxy movement for the third plane
-    assert( p2.haptic_shape );
+    assert( p2.haptic_shape.get() );
     p2.haptic_shape->surface->onContact( contact );
     Vec3 p2_force = contact.force_global;
     
@@ -274,14 +275,14 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
 
 
     // add contacts
-    tmp_contacts.push_back( make_pair( p0.haptic_shape, contact ) );
-    if( p0.haptic_shape != p1.haptic_shape ) {
-      tmp_contacts.push_back( make_pair( p1.haptic_shape, contact ) );
+    tmp_contacts.push_back( make_pair( p0.haptic_shape.get(), contact ) );
+    if( p0.haptic_shape.get() != p1.haptic_shape.get() ) {
+      tmp_contacts.push_back( make_pair( p1.haptic_shape.get(), contact ) );
     }
     
-    if( p0.haptic_shape != p2.haptic_shape &&
-        p1.haptic_shape != p2.haptic_shape ) {
-      tmp_contacts.push_back( make_pair( p2.haptic_shape, contact ) );
+    if( p0.haptic_shape.get() != p2.haptic_shape.get() &&
+        p1.haptic_shape.get() != p2.haptic_shape.get() ) {
+      tmp_contacts.push_back( make_pair( p2.haptic_shape.get(), contact ) );
     }
   }    
 }

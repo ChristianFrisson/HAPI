@@ -31,10 +31,11 @@
 
 #include <HAPI.h>
 #include <HAPITypes.h>
+#include <RefCountedClass.h>
 
 namespace HAPI {
 
-  class HAPI_API HAPISurfaceObject {
+  class HAPI_API HAPISurfaceObject:public H3DUtil::RefCountedClass {
   public:
     struct HAPI_API ContactInfo {
       ContactInfo(): has_inverse( false ),
