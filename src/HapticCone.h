@@ -47,7 +47,7 @@ namespace HAPI {
                   void *_userdata,
                   HAPISurfaceObject *_surface,
                   const Matrix4 &_transform,
-                  void (*_clean_up_func) = 0,
+                  void (*_clean_up_func)(void *) = 0,
                   int _shape_id = -1,
                   Bounds::FaceType _touchable_face = 
                   Bounds::FRONT_AND_BACK ):

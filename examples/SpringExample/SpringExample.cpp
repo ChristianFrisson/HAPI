@@ -48,11 +48,11 @@ int main(int argc, char* argv[]) {
       false );
     hd.addEffect( spring_effect );
 
-    cout << "Type n and then ENTER to exit, any other input and then ";
+    cout << "Type q and then ENTER to exit, any other input and then ";
     cout << "ENTER will allow you to a new point and a new springconstant"
       << endl;
     getline( cin, thePosition );
-    if( thePosition == "n" ) {
+    if( thePosition == "q" ) {
       continue_trying = false;
     }
     hd.removeEffect( spring_effect );

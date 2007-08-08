@@ -177,6 +177,12 @@
 		96FA00690C268A5300C1F160 /* ForceDimensionHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FA005D0C268A5300C1F160 /* ForceDimensionHapticsDevice.h */; };
 		96FA006A0C268A5300C1F160 /* QuanserHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96FA005E0C268A5300C1F160 /* QuanserHapticsDevice.cpp */; };
 		96FA006B0C268A5300C1F160 /* QuanserHapticsDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FA005F0C268A5300C1F160 /* QuanserHapticsDevice.h */; };
+		96FACE4F0C67787C009362C4 /* IntersectionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FACE4C0C67787C009362C4 /* IntersectionInfo.h */; };
+		96FACE500C67787C009362C4 /* PlaneConstraint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96FACE4D0C67787C009362C4 /* PlaneConstraint.cpp */; };
+		96FACE510C67787C009362C4 /* PlaneConstraint.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FACE4E0C67787C009362C4 /* PlaneConstraint.h */; };
+		96FACE520C67787C009362C4 /* IntersectionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FACE4C0C67787C009362C4 /* IntersectionInfo.h */; };
+		96FACE530C67787C009362C4 /* PlaneConstraint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96FACE4D0C67787C009362C4 /* PlaneConstraint.cpp */; };
+		96FACE540C67787C009362C4 /* PlaneConstraint.h in Headers */ = {isa = PBXBuildFile; fileRef = 96FACE4E0C67787C009362C4 /* PlaneConstraint.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -273,6 +279,9 @@
 		96FA005D0C268A5300C1F160 /* ForceDimensionHapticsDevice.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ForceDimensionHapticsDevice.h; path = ../../src/ForceDimensionHapticsDevice.h; sourceTree = SOURCE_ROOT; };
 		96FA005E0C268A5300C1F160 /* QuanserHapticsDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = QuanserHapticsDevice.cpp; path = ../../src/QuanserHapticsDevice.cpp; sourceTree = SOURCE_ROOT; };
 		96FA005F0C268A5300C1F160 /* QuanserHapticsDevice.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = QuanserHapticsDevice.h; path = ../../src/QuanserHapticsDevice.h; sourceTree = SOURCE_ROOT; };
+		96FACE4C0C67787C009362C4 /* IntersectionInfo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IntersectionInfo.h; path = ../../src/IntersectionInfo.h; sourceTree = SOURCE_ROOT; };
+		96FACE4D0C67787C009362C4 /* PlaneConstraint.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PlaneConstraint.cpp; path = ../../src/PlaneConstraint.cpp; sourceTree = SOURCE_ROOT; };
+		96FACE4E0C67787C009362C4 /* PlaneConstraint.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PlaneConstraint.h; path = ../../src/PlaneConstraint.h; sourceTree = SOURCE_ROOT; };
 		D2AAC09D05546B4700DB518D /* libHAPI.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libHAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -336,6 +345,9 @@
 		08FB77ACFE841707C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				96FACE4C0C67787C009362C4 /* IntersectionInfo.h */,
+				96FACE4D0C67787C009362C4 /* PlaneConstraint.cpp */,
+				96FACE4E0C67787C009362C4 /* PlaneConstraint.h */,
 				96FA005A0C268A5300C1F160 /* FalconHapticsDevice.cpp */,
 				96FA005B0C268A5300C1F160 /* FalconHapticsDevice.h */,
 				96FA005C0C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp */,
@@ -484,6 +496,8 @@
 				96FA00670C268A5300C1F160 /* FalconHapticsDevice.h in Headers */,
 				96FA00690C268A5300C1F160 /* ForceDimensionHapticsDevice.h in Headers */,
 				96FA006B0C268A5300C1F160 /* QuanserHapticsDevice.h in Headers */,
+				96FACE520C67787C009362C4 /* IntersectionInfo.h in Headers */,
+				96FACE540C67787C009362C4 /* PlaneConstraint.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,6 +551,8 @@
 				96FA00610C268A5300C1F160 /* FalconHapticsDevice.h in Headers */,
 				96FA00630C268A5300C1F160 /* ForceDimensionHapticsDevice.h in Headers */,
 				96FA00650C268A5300C1F160 /* QuanserHapticsDevice.h in Headers */,
+				96FACE4F0C67787C009362C4 /* IntersectionInfo.h in Headers */,
+				96FACE510C67787C009362C4 /* PlaneConstraint.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -647,6 +663,7 @@
 				96FA00660C268A5300C1F160 /* FalconHapticsDevice.cpp in Sources */,
 				96FA00680C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp in Sources */,
 				96FA006A0C268A5300C1F160 /* QuanserHapticsDevice.cpp in Sources */,
+				96FACE530C67787C009362C4 /* PlaneConstraint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -691,6 +708,7 @@
 				96FA00600C268A5300C1F160 /* FalconHapticsDevice.cpp in Sources */,
 				96FA00620C268A5300C1F160 /* ForceDimensionHapticsDevice.cpp in Sources */,
 				96FA00640C268A5300C1F160 /* QuanserHapticsDevice.cpp in Sources */,
+				96FACE500C67787C009362C4 /* PlaneConstraint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

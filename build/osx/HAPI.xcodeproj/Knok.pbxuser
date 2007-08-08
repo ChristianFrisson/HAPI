@@ -84,14 +84,18 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 203852294;
-			PBXWorkspaceStateSaveDate = 203852294;
+			PBXPerProjectTemplateStateSaveDate = 208107594;
+			PBXWorkspaceStateSaveDate = 208107594;
 		};
 		perUserProjectItems = {
-			96DEE46D0C1EE42F00879FC4 = 96DEE46D0C1EE42F00879FC4 /* PBXTextBookmark */;
-			96F44F330C1F388B00C92F68 = 96F44F330C1F388B00C92F68 /* PBXTextBookmark */;
-			96F44F8B0C1FEB2900C92F68 = 96F44F8B0C1FEB2900C92F68 /* PBXTextBookmark */;
-			96F44F8C0C1FEB2900C92F68 = 96F44F8C0C1FEB2900C92F68 /* PBXTextBookmark */;
+			96FA01360C26C58100C1F160 /* PBXTextBookmark */ = 96FA01360C26C58100C1F160 /* PBXTextBookmark */;
+			96FACE560C677886009362C4 /* PBXTextBookmark */ = 96FACE560C677886009362C4 /* PBXTextBookmark */;
+			96FACE5A0C677922009362C4 /* PBXTextBookmark */ = 96FACE5A0C677922009362C4 /* PBXTextBookmark */;
+			96FACE5C0C677974009362C4 /* PBXTextBookmark */ = 96FACE5C0C677974009362C4 /* PBXTextBookmark */;
+			96FACE790C677FA8009362C4 /* PBXTextBookmark */ = 96FACE790C677FA8009362C4 /* PBXTextBookmark */;
+			96FACE7A0C677FA8009362C4 /* PBXTextBookmark */ = 96FACE7A0C677FA8009362C4 /* PBXTextBookmark */;
+			96FACE7B0C677FA8009362C4 /* PBXTextBookmark */ = 96FACE7B0C677FA8009362C4 /* PBXTextBookmark */;
+			96FACE7C0C677FA8009362C4 /* PBXTextBookmark */ = 96FACE7C0C677FA8009362C4 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 9618F2B90B8B519A00C83BBA /* Source Control */;
 		userBuildSettings = {
@@ -127,17 +131,17 @@
 	};
 	9618F2D40B8B51F700C83BBA /* HAPI.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {711, 1708}}";
-			sepNavSelRange = "{1734, 0}";
-			sepNavVisRect = "{{0, 465}, {711, 429}}";
+			sepNavIntBoundsRect = "{{0, 0}, {711, 1764}}";
+			sepNavSelRange = "{3685, 0}";
+			sepNavVisRect = "{{0, 691}, {711, 429}}";
 			sepNavWindowFrame = "{{15, 203}, {750, 558}}";
 		};
 	};
 	9618F2D90B8B51F700C83BBA /* HAPIHapticsDevice.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {711, 2198}}";
+			sepNavIntBoundsRect = "{{0, 0}, {711, 2632}}";
 			sepNavSelRange = "{5352, 0}";
-			sepNavVisRect = "{{0, 1526}, {711, 429}}";
+			sepNavVisRect = "{{0, 1531}, {711, 429}}";
 			sepNavWindowFrame = "{{305, 203}, {750, 558}}";
 		};
 	};
@@ -189,6 +193,22 @@
 			sepNavWindowFrame = "{{39, 135}, {750, 558}}";
 		};
 	};
+	9618F2E90B8B51F700C83BBA /* HapticCone.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1186, 2506}}";
+			sepNavSelRange = "{5670, 63}";
+			sepNavVisRect = "{{0, 2261}, {1186, 231}}";
+			sepNavWindowFrame = "{{151, 252}, {750, 558}}";
+		};
+	};
+	9618F2EA0B8B51F700C83BBA /* HapticCone.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {711, 1666}}";
+			sepNavSelRange = "{1828, 0}";
+			sepNavVisRect = "{{0, 489}, {711, 429}}";
+			sepNavWindowFrame = "{{15, 315}, {750, 558}}";
+		};
+	};
 	9618F30B0B8B51F700C83BBA /* ParsedFunction.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {687, 994}}";
@@ -196,18 +216,15 @@
 			sepNavVisRect = "{{0, 318}, {687, 190}}";
 		};
 	};
+	9618F30E0B8B51F700C83BBA /* PhantomHapticsDevice.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {868, 2884}}";
+			sepNavSelRange = "{1354, 20}";
+			sepNavVisRect = "{{0, 387}, {868, 221}}";
+		};
+	};
 	96CCB38D0B95C9B600DA703A /* HAPI Framework */ = {
 		activeExec = 0;
-	};
-	96DEE46D0C1EE42F00879FC4 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 9618F2D40B8B51F700C83BBA /* HAPI.h */;
-		name = "HAPI.h: 49";
-		rLen = 0;
-		rLoc = 1740;
-		rType = 0;
-		vrLen = 1135;
-		vrLoc = 1312;
 	};
 	96E9DA890B8C4A7800B4BE63 /* XCBreakpointsBucket */ = {
 		isa = XCBreakpointsBucket;
@@ -215,15 +232,7 @@
 		objects = (
 		);
 	};
-	96F44F330C1F388B00C92F68 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		comments = "error: 'HAPIHapticeDevice' has not been declared";
-		fRef = 9618F2D90B8B51F700C83BBA /* HAPIHapticsDevice.cpp */;
-		rLen = 1;
-		rLoc = 125;
-		rType = 1;
-	};
-	96F44F8B0C1FEB2900C92F68 /* PBXTextBookmark */ = {
+	96FA01360C26C58100C1F160 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 9618F2D90B8B51F700C83BBA /* HAPIHapticsDevice.cpp */;
 		name = "HAPIHapticsDevice.cpp: 157";
@@ -233,15 +242,69 @@
 		vrLen = 966;
 		vrLoc = 3966;
 	};
-	96F44F8C0C1FEB2900C92F68 /* PBXTextBookmark */ = {
+	96FACE560C677886009362C4 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "error: expected unqualified-id before '<<' token";
+		fRef = 9618F2D40B8B51F700C83BBA /* HAPI.h */;
+		rLen = 1;
+		rLoc = 50;
+		rType = 1;
+	};
+	96FACE5A0C677922009362C4 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "error:   initializing argument 4 of 'HAPI::HAPIHapticShape::HAPIHapticShape(void*, HAPI::HAPISurfaceObject*, const HAPI::Matrix4&, void (*)(void*), int, HAPI::Bounds::FaceType)'";
+		fRef = 9618F2EA0B8B51F700C83BBA /* HapticCone.h */;
+		rLen = 1;
+		rLoc = 56;
+		rType = 1;
+	};
+	96FACE5C0C677974009362C4 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "error: invalid use of undefined type 'struct HAPI::Bounds::PlaneConstraint'";
+		fRef = 9618F2E90B8B51F700C83BBA /* HapticCone.cpp */;
+		rLen = 1;
+		rLoc = 173;
+		rType = 1;
+	};
+	96FACE790C677FA8009362C4 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 9618F2E90B8B51F700C83BBA /* HapticCone.cpp */;
+		name = "HapticCone.cpp: 30";
+		rLen = 0;
+		rLoc = 1221;
+		rType = 0;
+		vrLen = 1238;
+		vrLoc = 424;
+	};
+	96FACE7A0C677FA8009362C4 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 9618F2EA0B8B51F700C83BBA /* HapticCone.h */;
+		name = "HapticCone.h: 50";
+		rLen = 0;
+		rLoc = 1828;
+		rType = 0;
+		vrLen = 1279;
+		vrLoc = 1282;
+	};
+	96FACE7B0C677FA8009362C4 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 9618F2D40B8B51F700C83BBA /* HAPI.h */;
-		name = "HAPI.h: 49";
+		name = "HAPI.h: 126";
 		rLen = 0;
-		rLoc = 1740;
+		rLoc = 3685;
 		rType = 0;
-		vrLen = 1135;
-		vrLoc = 1312;
+		vrLen = 997;
+		vrLoc = 1809;
+	};
+	96FACE7C0C677FA8009362C4 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 9618F2D90B8B51F700C83BBA /* HAPIHapticsDevice.cpp */;
+		name = "HAPIHapticsDevice.cpp: 157";
+		rLen = 0;
+		rLoc = 5352;
+		rType = 0;
+		vrLen = 966;
+		vrLoc = 3966;
 	};
 	D2AAC09C05546B4700DB518D /* HAPI */ = {
 		activeExec = 0;

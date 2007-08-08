@@ -27,6 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <HapticCone.h>
+#include <PlaneConstraint.h>
 
 using namespace HAPI;
 #ifdef HjAVE_OPENHAPTICS

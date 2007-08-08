@@ -101,9 +101,9 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     
     HAPIHapticShape *shape = (*s);
     Chai3DSurface *chai3d_surface = 
-      dynamic_cast< Chai3DSurface * >( shape->surface );
+      dynamic_cast< Chai3DSurface * >( shape->surface.get() );
     FrictionSurface *friction_surface = 
-      dynamic_cast< FrictionSurface * >( shape->surface );
+      dynamic_cast< FrictionSurface * >( shape->surface.get() );
 
     if( chai3d_surface || friction_surface ) {
       cMesh *mesh = new cMesh(world);
