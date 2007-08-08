@@ -190,24 +190,24 @@
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
-				<string>96F44ED00C1F227B00C92F68</string>
+				<string>96FACE600C677999009362C4</string>
 				<key>PBXProjectModuleLabel</key>
-				<string>HAPIHapticsDevice.cpp</string>
+				<string>HapticCone.cpp</string>
 				<key>PBXSplitModuleInNavigatorKey</key>
 				<dict>
 					<key>Split0</key>
 					<dict>
 						<key>PBXProjectModuleGUID</key>
-						<string>96F44ED10C1F227B00C92F68</string>
+						<string>96FACE610C677999009362C4</string>
 						<key>PBXProjectModuleLabel</key>
-						<string>HAPIHapticsDevice.cpp</string>
+						<string>HapticCone.cpp</string>
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>96F44F8B0C1FEB2900C92F68</string>
+						<string>96FACE790C677FA8009362C4</string>
 						<key>history</key>
 						<array>
-							<string>96F44F330C1F388B00C92F68</string>
+							<string>96FACE5C0C677974009362C4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -223,7 +223,47 @@
 				<key>PBXModuleWindowStatusBarHidden2</key>
 				<false/>
 				<key>RubberWindowFrame</key>
-				<string>305 259 750 502 0 0 1440 878 </string>
+				<string>151 308 750 502 0 0 1440 878 </string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Content</key>
+			<dict>
+				<key>PBXProjectModuleGUID</key>
+				<string>96FACE630C677999009362C4</string>
+				<key>PBXProjectModuleLabel</key>
+				<string>HapticCone.h</string>
+				<key>PBXSplitModuleInNavigatorKey</key>
+				<dict>
+					<key>Split0</key>
+					<dict>
+						<key>PBXProjectModuleGUID</key>
+						<string>96FACE640C677999009362C4</string>
+						<key>PBXProjectModuleLabel</key>
+						<string>HapticCone.h</string>
+						<key>_historyCapacity</key>
+						<integer>0</integer>
+						<key>bookmark</key>
+						<string>96FACE7A0C677FA8009362C4</string>
+						<key>history</key>
+						<array>
+							<string>96FACE5A0C677922009362C4</string>
+						</array>
+					</dict>
+					<key>SplitCount</key>
+					<string>1</string>
+				</dict>
+				<key>StatusBarVisibility</key>
+				<true/>
+			</dict>
+			<key>Geometry</key>
+			<dict>
+				<key>Frame</key>
+				<string>{{0, 20}, {750, 461}}</string>
+				<key>PBXModuleWindowStatusBarHidden2</key>
+				<false/>
+				<key>RubberWindowFrame</key>
+				<string>15 371 750 502 0 0 1440 878 </string>
 			</dict>
 		</dict>
 		<dict>
@@ -244,10 +284,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>96F44F8C0C1FEB2900C92F68</string>
+						<string>96FACE7B0C677FA8009362C4</string>
 						<key>history</key>
 						<array>
-							<string>96DEE46D0C1EE42F00879FC4</string>
+							<string>96FACE560C677886009362C4</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -264,6 +304,46 @@
 				<false/>
 				<key>RubberWindowFrame</key>
 				<string>15 259 750 502 0 0 1440 878 </string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Content</key>
+			<dict>
+				<key>PBXProjectModuleGUID</key>
+				<string>96F44ED00C1F227B00C92F68</string>
+				<key>PBXProjectModuleLabel</key>
+				<string>HAPIHapticsDevice.cpp</string>
+				<key>PBXSplitModuleInNavigatorKey</key>
+				<dict>
+					<key>Split0</key>
+					<dict>
+						<key>PBXProjectModuleGUID</key>
+						<string>96F44ED10C1F227B00C92F68</string>
+						<key>PBXProjectModuleLabel</key>
+						<string>HAPIHapticsDevice.cpp</string>
+						<key>_historyCapacity</key>
+						<integer>0</integer>
+						<key>bookmark</key>
+						<string>96FACE7C0C677FA8009362C4</string>
+						<key>history</key>
+						<array>
+							<string>96FA01360C26C58100C1F160</string>
+						</array>
+					</dict>
+					<key>SplitCount</key>
+					<string>1</string>
+				</dict>
+				<key>StatusBarVisibility</key>
+				<true/>
+			</dict>
+			<key>Geometry</key>
+			<dict>
+				<key>Frame</key>
+				<string>{{0, 20}, {750, 461}}</string>
+				<key>PBXModuleWindowStatusBarHidden2</key>
+				<false/>
+				<key>RubberWindowFrame</key>
+				<string>305 259 750 502 0 0 1440 878 </string>
 			</dict>
 		</dict>
 	</array>
@@ -300,6 +380,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -367,7 +449,7 @@
 							<real>186</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>444 324 690 397 0 0 1440 878 </string>
+						<string>517 157 690 397 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -404,7 +486,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {482, 0}}</string>
 								<key>RubberWindowFrame</key>
-								<string>444 324 690 397 0 0 1440 878 </string>
+								<string>517 157 690 397 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -412,8 +494,6 @@
 							<string>0pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -426,7 +506,7 @@
 								<key>Frame</key>
 								<string>{{0, 5}, {482, 351}}</string>
 								<key>RubberWindowFrame</key>
-								<string>444 324 690 397 0 0 1440 878 </string>
+								<string>517 157 690 397 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -450,9 +530,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>96F44ECE0C1F227B00C92F68</string>
+				<string>96FACE5E0C677998009362C4</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>96F44ECF0C1F227B00C92F68</string>
+				<string>96FACE5F0C677998009362C4</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -586,13 +666,15 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>96DEE3D20C1EB9BE00879FC4</string>
 		<string>96F44ED00C1F227B00C92F68</string>
-		<string>/Users/Knok/devel/H3D/HAPI/build/osx/HAPI.xcodeproj</string>
+		<string>96DEE3D20C1EB9BE00879FC4</string>
+		<string>/Users/Knok/devel/release/HAPI/build/osx/HAPI.xcodeproj</string>
+		<string>96FACE630C677999009362C4</string>
 		<string>9618F3640B8B529800C83BBA</string>
+		<string>96FACE600C677999009362C4</string>
 	</array>
 	<key>WindowString</key>
-	<string>444 324 690 397 0 0 1440 878 </string>
+	<string>517 157 690 397 0 0 1440 878 </string>
 	<key>WindowTools</key>
 	<array>
 		<dict>
@@ -608,30 +690,30 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>HAPIHapticsDevice.cpp</string>
+								<string>HapticCone.cpp</string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1329, 166}}</string>
+								<string>{{0, 0}, {1227, 263}}</string>
 								<key>RubberWindowFrame</key>
-								<string>109 248 1329 448 0 0 1440 878 </string>
+								<string>534 268 1227 545 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>166pt</string>
+							<string>263pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -646,9 +728,9 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 171}, {1329, 236}}</string>
+								<string>{{0, 268}, {1227, 236}}</string>
 								<key>RubberWindowFrame</key>
-								<string>109 248 1329 448 0 0 1440 878 </string>
+								<string>534 268 1227 545 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXBuildResultsModule</string>
@@ -657,7 +739,7 @@
 						</dict>
 					</array>
 					<key>Proportion</key>
-					<string>407pt</string>
+					<string>504pt</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -671,14 +753,14 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>9618F3640B8B529800C83BBA</string>
-				<string>96F44ED40C1F227B00C92F68</string>
+				<string>96FACE680C677999009362C4</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.build</string>
 			<key>WindowString</key>
-			<string>109 248 1329 448 0 0 1440 878 </string>
+			<string>534 268 1227 545 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>9618F3640B8B529800C83BBA</string>
 			<key>WindowToolIsVisible</key>

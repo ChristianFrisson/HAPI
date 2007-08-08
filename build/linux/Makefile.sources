@@ -36,6 +36,7 @@ SOURCES=../../src/AnyHapticsDevice.cpp \
 ../../src/PhantomHapticsDevice.cpp \
 ../../src/QuanserHapticsDevice.cpp \
 ../../src/RuspiniRenderer.cpp \
+../../src/PlaneConstraint.cpp \
 ../../OpenHapticsRenderer/HLCustomObject.cpp \
 ../../OpenHapticsRenderer/HLDepthBufferShape.cpp \
 ../../OpenHapticsRenderer/HLFeedbackShape.cpp \

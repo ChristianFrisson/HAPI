@@ -35,6 +35,7 @@ OBJECTS=../../src/AnyHapticsDevice.o \
 ../../src/PhantomHapticsDevice.o \
 ../../src/QuanserHapticsDevice.o \
 ../../src/RuspiniRenderer.o \
+../../src/PlaneConstraint.o \
 ../../OpenHapticsRenderer/HLCustomObject.o \
 ../../OpenHapticsRenderer/HLDepthBufferShape.o \
 ../../OpenHapticsRenderer/HLFeedbackShape.o \
