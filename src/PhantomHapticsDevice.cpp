@@ -69,6 +69,9 @@ PhantomHapticsDevice::device_registration(
                             &(newInstance< PhantomHapticsDevice >),
                             PhantomDeviceInternal::phantom_device_libs
                             );
+//static int blaj = 0;
+bool PhantomHapticsDevice::restart_scheduler = false;
+bool PhantomHapticsDevice::scheduler_started = false;
 
 bool PhantomHapticsDevice::initHapticsDevice() {
   device_handle = hdInitDevice( device_name == "" ? 
@@ -152,6 +155,7 @@ bool PhantomHapticsDevice::initHapticsDevice() {
   HLThread *hl_thread = HLThread::getInstance();
   thread = hl_thread;
   hl_thread->setActive( true );
+  restart_scheduler = true;
   
   return true;
 }

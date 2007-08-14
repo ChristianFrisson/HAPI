@@ -158,7 +158,13 @@ namespace HAPI {
       // of random crashes when using OpenHapticsRenderer. Apparantly HL API does
       // not like the scheduler to have already been started when creating a new
       // HL context.
+      if( scheduler_started && restart_scheduler ) {
+        hdStopScheduler();
+        restart_scheduler = false;
+      }
       hdStartScheduler();
+      if( !scheduler_started )
+        scheduler_started = true;
       return e;
     }
 
@@ -196,7 +202,12 @@ namespace HAPI {
     HHD device_handle;
 
     /// Handle for the callback for rendering ForceEffects.  
-    vector< HDCallbackCode > hd_handles; 
+    vector< HDCallbackCode > hd_handles;
+
+    /// If a phantom device is initialized after the scheduler has been started
+    /// the stop and start again.
+    static bool restart_scheduler;
+    static bool scheduler_started;
   };
 }
 
