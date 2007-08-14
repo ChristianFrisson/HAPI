@@ -360,6 +360,8 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
 }
 
 HAPI::Vec3 OpenHapticsRenderer::getProxyPosition() {
+  if( !context_map.empty() )
+    hlMakeCurrent( (*context_map.begin()).second );
   HLdouble pos[3];
   hlGetDoublev( HL_PROXY_POSITION, pos );
   return HAPI::Vec3( pos[0], pos[1], pos[2] );
