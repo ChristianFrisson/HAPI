@@ -33,6 +33,13 @@
 #ifndef __CHAI3DRENDERERCONFIG_H__
 #define __CHAI3DRENDERERCONFIG_H__
 
+#if defined(__APPLE__) && defined(__MACH__)
+#define CHAI3DRENDERER_API
+#endif
+
+#if defined(__linux)
+#define CHAI3DRENDERER_API
+#endif
 
 
 // The following ifdef block is the standard way of creating macros

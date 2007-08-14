@@ -37,8 +37,8 @@
 #include <FrictionSurface.h>
 
 // Chai3D includes
-#include <cVector3d.h>
-#include <cMatrix3d.h>
+#include <CVector3d.h>
+#include <CMatrix3d.h>
 
 //using namespace H3D;
 using namespace HAPI;
