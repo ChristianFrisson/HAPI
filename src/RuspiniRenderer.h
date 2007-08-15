@@ -32,6 +32,7 @@
 
 #include <HAPIProxyBasedRenderer.h>
 #include <Threads.h>
+#include <PlaneConstraint.h>
 #include <map>
 
 namespace HAPI {
@@ -42,6 +43,8 @@ namespace HAPI {
   /// It allows for variable proxy radius.
   class HAPI_API RuspiniRenderer: public HAPIProxyBasedRenderer {
   public:
+	  typedef Bounds::CollisionObject::Constraints Constraints;
+
     /// Constructor.
     RuspiniRenderer( HAPIFloat _proxy_radius = 2.5 );
 
@@ -80,14 +83,16 @@ namespace HAPI {
                             const PlaneConstraint &p1,
                             HAPISurfaceObject::ContactInfo &contact );
 
-    void onThreeOrMorePlaneContact(  vector< PlaneConstraint > &constraints,
+    void onThreeOrMorePlaneContact(  Constraints &constraints,
                                      HAPISurfaceObject::ContactInfo &contact );
     
     HAPIFloat proxy_radius;
     Vec3 proxy_position;
     Contacts tmp_contacts;
 
-    
+    Constraints constraints;
+    Constraints closest_constraints;
+    Constraints other_constraints;
 
   };
 }

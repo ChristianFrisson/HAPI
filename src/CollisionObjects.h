@@ -41,7 +41,7 @@
 #include <IntersectionInfo.h>
 
 namespace HAPI {
-
+class Constraints;
   namespace Bounds {
     /// Intersect segment S(t)=sa+t(sb-sa), 0<=t<=1 against cylinder 
     /// specified by p, q and r. The segment finds the first along the segment.
@@ -51,6 +51,7 @@ namespace HAPI {
                                    HAPIFloat & t );
 
     class PlaneConstraint; 
+	
     
     /// \brief The CollisionObject class is the base class for objects that 
     /// can be used  in collision detection.
@@ -62,13 +63,16 @@ namespace HAPI {
       CollisionObject( bool _use_lock ) :
         H3DUtil::RefCountedClass( _use_lock ){};
          
+      //typedef HAPI::Constraints Constraints;
+      typedef vector< Bounds::PlaneConstraint > Constraints;
+
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK ) {}
       
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK ) {}
       
       /// Get the closest point and normal on the object to the given point p.
@@ -168,7 +172,7 @@ namespace HAPI {
     class HAPI_API GeometryPrimitive: public CollisionObject {
     public:
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Returns a point representing the primitive. Is used for example when
@@ -313,7 +317,16 @@ namespace HAPI {
                 const Vec3& tb_ = Vec3(), 
                 const Vec3& tc_ = Vec3()) : 
         a(a_),b(b_),c(c_),
-        ta( ta_ ), tb( tb_ ), tc( tc_ ) {}
+        ta( ta_ ), tb( tb_ ), tc( tc_ ) {
+        ab = b - a;
+        ac = c - a;
+        normal = ab % ac;
+        normal.normalizeSafe();
+      }
+
+      bool getConstraint(  const Vec3 &point,
+                           Bounds::PlaneConstraint *constraint,
+                           FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
@@ -373,14 +386,14 @@ namespace HAPI {
     public:
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK ) {
         GeometryPrimitive::getConstraints( point, constraints, face );
       }
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
       /// The corners of the triangle.
@@ -388,6 +401,10 @@ namespace HAPI {
 
       /// The texture coordinates at the corners of the triangle.
       Vec3 ta, tb, tc;
+
+      Vec3 normal;
+
+      Vec3 ac, ab;
     };
 
     /// \brief The LineSegment class represents a line segment primitive.
@@ -402,14 +419,14 @@ namespace HAPI {
 
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK ) {
         GeometryPrimitive::getConstraints( point, constraints, face );
       }
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Get the closest point and normal on the object to the given point p.
@@ -486,14 +503,14 @@ namespace HAPI {
 
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK ) {
         GeometryPrimitive::getConstraints( point, constraints, face );
       }
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
       /// Get the closest point and normal on the object to the given point p.
@@ -817,12 +834,12 @@ namespace HAPI {
       }
 
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
       virtual void getTrianglesWithinRadius( const Vec3 &p,
@@ -1074,12 +1091,12 @@ namespace HAPI {
       }
 
       virtual void getConstraints( const Vec3 &point,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
-                                   std::vector< PlaneConstraint > &constraints,
+                                   Constraints &constraints,
                                    FaceType face = Bounds::FRONT_AND_BACK );
 
       virtual void getPrimitivesWithinRadius( const Vec3 &p,

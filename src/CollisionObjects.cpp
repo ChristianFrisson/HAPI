@@ -986,12 +986,12 @@ bool Triangle::lineIntersect( const Vec3 &p,
   Vec3 tc1 = tb;
   Vec3 tc2 = tc;
  
-  Vec3 ab = v1 - v0;
-  Vec3 ac = v2 - v0;
+  //  Vec3 ab = v1 - v0;
+  //  Vec3 ac = v2 - v0;
   Vec3 qp = p - q;
 
   // Compute normal.
-  Vec3 n = ab % ac;
+  Vec3 n = normal; //ab % ac;
 
   Vec3 original_normal = n;
 
@@ -1043,7 +1043,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
 
   result.point = u*v0 + v*v1 + w*v2;
   result.normal = original_normal;
-  result.normal.normalizeSafe();
+  //  result.normal.normalizeSafe();
   result.tex_coord =  u*tc0 + v*tc1 + w*tc2;
   result.face = intersection_face;
   result.intersection = true;
@@ -1610,7 +1610,7 @@ void OrientedBoxBound::render( ) {
 }
 
 void GeometryPrimitive::getConstraints( const Vec3 &point,
-                           std::vector< PlaneConstraint > &constraints,
+                           Constraints &constraints,
                                   FaceType face ) {
   Vec3 closest_point, cp_normal, cp_tex_coord;
   closestPoint( point, closest_point, cp_normal, cp_tex_coord );
@@ -1630,7 +1630,7 @@ void GeometryPrimitive::getConstraints( const Vec3 &point,
 
 void Triangle::getConstraints( const Vec3 &point,
                                const Matrix4 &matrix,
-                               std::vector< PlaneConstraint > &constraints,
+                               Constraints &constraints,
                                FaceType face ) {
   Vec3 oa = a;
   Vec3 ob = b;
@@ -1646,7 +1646,7 @@ void Triangle::getConstraints( const Vec3 &point,
 
 
 void BinaryBoundTree::getConstraints( const Vec3 &point,
-                                      std::vector< PlaneConstraint > &constraints,
+                                      Constraints &constraints,
                                       FaceType face ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
@@ -1671,7 +1671,7 @@ void BinaryBoundTree::getConstraints( const Vec3 &point,
 
 void BinaryBoundTree::getConstraints( const Vec3 &point,
                                       const Matrix4 &matrix,
-                                      std::vector< PlaneConstraint > &constraints,
+                                      Constraints &constraints,
                                       FaceType face ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
@@ -1884,7 +1884,7 @@ HAPIFloat LineSegment::closestPointOnLine( const Vec3 &from, const Vec3 &to,
   
 void LineSegment::getConstraints( const Vec3 &point,
                                   const Matrix4 &matrix,
-                                  std::vector< PlaneConstraint > &constraints,
+                                  Constraints &constraints,
                                   FaceType face 
                                       
 ) {
@@ -1958,7 +1958,7 @@ bool Bounds::Point::movingSphereIntersect( HAPIFloat radius,
 
 void Bounds::Point::getConstraints( const Vec3 &point,
                             const Matrix4 &matrix,
-                            std::vector< PlaneConstraint > &constraints,
+                            Constraints &constraints,
                             FaceType face  ) {
   Vec3 oa = position;
   position = (matrix * position);
@@ -2461,7 +2461,7 @@ BBTreePrimitive::BBTreePrimitive(
 
 void BBTreePrimitive::getConstraints(
                                   const Vec3 &point,
-                                  std::vector< PlaneConstraint > &constraints,
+                                  Constraints &constraints,
                                   FaceType face ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < primitives.size(); i++ ) {
@@ -2479,7 +2479,7 @@ void BBTreePrimitive::getConstraints(
 void BBTreePrimitive::getConstraints(
                                   const Vec3 &point,
                                   const Matrix4 &matrix,
-                                  std::vector< PlaneConstraint > &constraints,
+                                  Constraints &constraints,
                                   FaceType face ) {
  // if ( isLeaf() )	{
  //   for( unsigned int i = 0; i < primitives.size(); i++ ) {
@@ -2699,4 +2699,24 @@ void BBTreePrimitive::getPrimitivesIntersectedByMovingSphere(
     if (right.get()) right->getPrimitivesIntersectedByMovingSphere(
       radius, from, to, result );
   }
+}
+
+
+bool Triangle::getConstraint(  const Vec3 &point,
+                               Bounds::PlaneConstraint *constraint,
+                               FaceType face ) {
+  Vec3 closest_point, cp_normal, cp_tex_coord;
+  closestPoint( point, closest_point, cp_normal, cp_tex_coord );
+  //cerr << closest_point << endl;
+  Vec3 normal = point - closest_point;
+  
+  if( face == Bounds::FRONT ) {
+    if( normal * cp_normal < 0 ) return false;
+  } else if( face == Bounds::BACK ) {
+    if( normal * cp_normal > 0 ) return false;
+  }
+  normal.normalizeSafe();
+  
+  *constraint = PlaneConstraint( closest_point, normal, 
+                                 cp_tex_coord, NULL, this );
 }
