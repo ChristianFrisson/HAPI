@@ -43,8 +43,10 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
   HAPIFloat min_d2;
   Vec3 from_local = inv * from;
   Vec3 to_local = inv * to;
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
-    Bounds::Triangle &t = triangles[i];
+   for( vector< Bounds::Triangle >::iterator i = triangles.begin();
+             i != triangles.end(); ++i ) {
+          //unsigned int i = 0; i < triangles.size(); i++ ) {
+          Bounds::Triangle &t = (*i); //*triangles[i];
     if( t.lineIntersect( from_local, to_local, result, face ) )	{
       Vec3 v = result.point - from_local;
       HAPIFloat distance_sqr = v * v;
@@ -52,6 +54,13 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
       if( !have_intersection ) {
         have_intersection = true;
         closest_intersection = result;
+        // if we have a convex shape we only have one intersection
+        if( ( convex == CONVEX_FRONT && 
+              result.face == Bounds::FRONT ) ||
+            ( convex == CONVEX_BACK && 
+              result.face == Bounds::BACK ) ) {
+          break;
+        }
         min_d2 = distance_sqr;
       } else {
         if( distance_sqr < min_d2 ) {
@@ -80,9 +89,44 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
     if( uniform_scale ) {
       Vec3 p = transform.inverse() * point;
       unsigned int size = constraints.size();
-      for( unsigned int i = 0; i < triangles.size(); i++ ) {
-        Bounds::Triangle &t = triangles[i];
-        t.getConstraints( p, constraints, face );
+
+      if( ( convex == CONVEX_FRONT && 
+            face == Bounds::FRONT ) ||
+          ( convex == CONVEX_BACK && 
+            face == Bounds::BACK ) ) {
+        PlaneConstraint constraint;
+        PlaneConstraint best;
+        HAPIFloat best_sqr_dist = 0;
+        bool first_constraint = true;
+
+        for( vector< Bounds::Triangle >::iterator i = triangles.begin();
+             i != triangles.end(); ++i ) {
+          //unsigned int i = 0; i < triangles.size(); i++ ) {
+          Bounds::Triangle &t = (*i); //*triangles[i];
+          
+          if( t.getConstraint( p, &constraint, face ) ) {
+            if( first_constraint ) {
+              best = constraint;
+              Vec3 v = p - best.point;
+              best_sqr_dist = v * v; 
+              first_constraint = false;
+            } else {
+              Vec3 v = p - constraint.point;
+              HAPIFloat sqr_dist = v * v; 
+              if( sqr_dist < best_sqr_dist ) {
+                best = constraint;
+                best_sqr_dist = sqr_dist;
+              }
+            }
+          }
+          //constraint.clear();
+        }
+        if( !first_constraint ) constraints.push_back( best );
+      } else {
+        for( unsigned int i = 0; i < triangles.size(); i++ ) {
+          Bounds::Triangle &t = triangles[i];
+          t.getConstraints( p, constraints, face );
+        }
       }
 
       for( unsigned int i = size; i < constraints.size(); i ++ ) {

@@ -36,6 +36,12 @@ namespace HAPI {
   /// A shape defined by a set of triangles.
   class HAPI_API HapticTriangleSet: public HAPIHapticShape {
   public:
+    typedef enum {
+      CONVEX_FRONT,
+      CONVEX_BACK,
+      NOT_CONVEX
+    } ConvexType;
+
     /// Constructor.
     HapticTriangleSet( const vector< Bounds::Triangle > &_triangles,
                        void *_userdata,
@@ -44,10 +50,12 @@ namespace HAPI {
                        void (*_clean_up_func)( void * ) = 0,
                        int _shape_id = -1,
                        Bounds::FaceType _touchable_face = 
-                       Bounds::FRONT_AND_BACK):
+                       Bounds::FRONT_AND_BACK,
+                       ConvexType _convex = NOT_CONVEX ):
       HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func,
                        _shape_id, _touchable_face ),
-      triangles( _triangles ) {}
+      triangles( _triangles ),
+      convex( _convex ) {}
 
     template< class Iterator >
     HapticTriangleSet( Iterator begin,
@@ -58,10 +66,12 @@ namespace HAPI {
                        void (*_clean_up_func)( void * ) = 0,
                        int _shape_id = -1,
                        Bounds::FaceType _touchable_face = 
-                       Bounds::FRONT_AND_BACK ):
+                       Bounds::FRONT_AND_BACK,
+                       ConvexType _convex = NOT_CONVEX):
       HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func,
                        _shape_id, _touchable_face ),
-      triangles( begin, end ) {}
+      triangles( begin, end ),
+      convex( _convex ) {}
 
     virtual bool lineIntersect( const Vec3 &from, 
                                 const Vec3 &to,
@@ -82,6 +92,7 @@ namespace HAPI {
 
     /// The triangles.
     vector< Bounds::Triangle > triangles;
+    ConvexType convex;
       
   };
 }
