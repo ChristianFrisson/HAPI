@@ -43,20 +43,111 @@ namespace HAPI {
     class HAPI_API PlaneConstraint {
 
     public:
-      PlaneConstraint( const Vec3 &p, const Vec3 &n, const Vec3 &tc, 
-        HAPIHapticShape *shape = NULL,
-        GeometryPrimitive *_primitive = NULL ):
+      PlaneConstraint( const Vec3 &p = Vec3(), 
+                       const Vec3 &n = Vec3(1, 0, 0), 
+                       const Vec3 &tc = Vec3(), 
+                       HAPIHapticShape *shape = NULL,
+                       GeometryPrimitive *_primitive = NULL ):
       point( p ), normal( n ), tex_coord( tc ), 
         haptic_shape( shape ), primitive( _primitive )  {}
 
       bool lineIntersect( const Vec3 &from, 
-        const Vec3 &to,    
-        Bounds::IntersectionInfo &result );
+                          const Vec3 &to,    
+                          Bounds::IntersectionInfo &result );
       Vec3 point, normal;
       Vec3 tex_coord;
       H3DUtil::AutoRef< HAPIHapticShape > haptic_shape;
       GeometryPrimitive * primitive;
     };
   }
+  
+  class Constraints {
+  public:
+	  Constraints( unsigned int size = 3000 ) {
+      constraints = new PlaneConstraint[size];
+	    //constraints = (PlaneConstraint *) malloc( sizeof( PlaneConstraint ) * size );
+      min_allocated_constraints = size;
+      allocated_constraints = size;
+      nr_constraints = 0;
+	  }
+    
+    ~Constraints() {
+      delete [] constraints;
+    }
+    
+    class iterator {
+    public:
+      const static unsigned int end_value = 1929294;
+      
+      inline iterator( unsigned int _index = end_value, 
+                       unsigned int _size = 0, 
+                       Constraints *o = NULL ):
+        index( _index ), size( _size ), owner( o ) {
+        
+      }
+      
+      inline iterator& operator++(void) {
+        if( index != end_value ) index++;
+        if( index == size ) index = end_value;
+        return *this;
+      }
+      
+      inline iterator operator++(int) {                    
+        iterator old_val(*this);  
+        operator++();    
+        return old_val;   
+      }  
+
+      inline iterator operator+(int i) {  
+        if( index != end_value ) index += i;
+        if( index >= size ) index = end_value;
+        return *this;
+      }  
+
+      inline PlaneConstraint & operator*() {
+		  return owner->constraints[index];
+	  }
+      inline bool operator==( const iterator &i ) {
+	    return index == i.index; 
+	  }
+      inline bool operator!=( const iterator &i ) {
+	    return index != i.index;
+	  }
+
+      unsigned int index, size;
+      Constraints *owner;
+
+    };
+
+
+    inline iterator begin() { 
+		if( !empty() ) return iterator( 0, nr_constraints, this );
+		else return end();
+	}
+    inline iterator end() {
+		return iterator( iterator::end_value, nr_constraints, this );
+	}
+    inline void clear() { nr_constraints = 0; }
+    inline bool empty() { return nr_constraints == 0; }
+    inline unsigned int size() { return nr_constraints; }
+
+    inline void insert( iterator pos, iterator s, iterator e ) {
+      
+    }
+    
+	inline void push_back( const PlaneConstraint &p ) {
+	  constraints[nr_constraints] = p;
+	  nr_constraints++;
+    }
+
+    inline PlaneConstraint & front() { return constraints[0];}
+    inline PlaneConstraint & back() { return constraints[nr_constraints-1]; }
+
+    unsigned int min_allocated_constraints;
+    unsigned int allocated_constraints;
+    unsigned int nr_constraints;
+    PlaneConstraint *constraints;
+  };
+
 }
 #endif

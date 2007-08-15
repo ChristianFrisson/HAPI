@@ -169,12 +169,12 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
 
 
 void RuspiniRenderer::onThreeOrMorePlaneContact(  
-          vector< PlaneConstraint > &constraints,
+          Constraints &constraints,
           HAPISurfaceObject::ContactInfo &contact ) {
   assert( constraints.size() >= 3 );
 
   // find the first three planes that all constrain the proxy
-  vector< PlaneConstraint >::iterator i = constraints.begin();
+  Constraints::iterator i = constraints.begin();
   PlaneConstraint &p0 = (*i++);
   PlaneConstraint &p1 = (*i++);
   PlaneConstraint &p2 = (*i++);
@@ -306,8 +306,13 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   bool has_intersection = false;
   HAPIFloat d2;
   Bounds::IntersectionInfo closest_intersection;
-  vector< Bounds::PlaneConstraint > constraints;
-  
+
+  constraints.clear();  
+  constraints.reserve( 3000 );
+  closest_constraints.clear();
+  other_constraints.clear();
+
+  //  vector< Bounds::PlaneConstraint > constraints;
   // get the constraints from the current shapes.
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
@@ -316,18 +321,18 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   }
   
   // move them out by the proxy radius in the direction of the normal. 
-  for( vector< Bounds::PlaneConstraint >::iterator i = constraints.begin();
+  for( Constraints::iterator i = constraints.begin();
        i != constraints.end(); i++ ) {
     (*i).point += (*i).normal * proxy_radius;
   }
-  
 
+  
   // make sure the proxy is above any constraints
   bool done = false;
   int counter = 0;
   while( !done && counter < 25 ) {
     done = true;
-    for( vector< Bounds::PlaneConstraint >::iterator i = constraints.begin();
+    for( Constraints::iterator i = constraints.begin();
          i != constraints.end(); i++ ) {
       HAPIFloat d = (*i).normal * (proxy_pos - (*i).point );
       if( d < 0 && d > -proxy_radius ) {
@@ -339,21 +344,20 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     counter++;
   }
 
+
   // the constraints which contraint point is closest to the proxy.
   // if more than one the constraint point is the same
-  vector< PlaneConstraint > closest_constraints;
+
 
   // the constraints not in closest_constraints
-  vector< PlaneConstraint > other_constraints;
+
   other_constraints.reserve( constraints.size() );
 
+  Bounds::IntersectionInfo intersection;
 
   // find the closest constraining PlaneConstraints
-  for( vector< Bounds::PlaneConstraint >::iterator i = constraints.begin();
+  for( Constraints::iterator i = constraints.begin();
        i != constraints.end(); i++ ) {
-    Bounds::IntersectionInfo intersection;
-    Vec3 vv = input.position -  proxy_pos;
-    vv.normalizeSafe();
     if( (*i).lineIntersect( proxy_pos, input.position, intersection ) ) {
 
       if( !has_intersection ) {
@@ -376,7 +380,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
           // check if same normal, if so the new plane should be ignored
           // since it is the same as a previous one.
           bool unique_constraint = true;
-          for( vector< Bounds::PlaneConstraint >::iterator j = 
+          for( Constraints::iterator j = 
                  closest_constraints.begin();
                j != closest_constraints.end(); j++ ) {
             if( ( intersection.normal - (*j).normal ).lengthSqr() < 
@@ -429,10 +433,10 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     new_proxy_pos = proxy_pos + (input.position-proxy_pos)*0.05;
   } else {
     if( nr_constraints == 1 ) {
-      onOnePlaneContact( closest_constraints[0], contact );
+      onOnePlaneContact( closest_constraints.front(), contact );
     } else if( nr_constraints == 2 ) {
-      onTwoPlaneContact( closest_constraints[0],
-                         closest_constraints[1], contact );
+      onTwoPlaneContact( closest_constraints.front(),
+                         *(closest_constraints.begin() + 1), contact );
     } if( nr_constraints >= 3 ) {
       onThreeOrMorePlaneContact( closest_constraints,
                                  contact );
@@ -451,15 +455,12 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
 
   // try to move the proxy from proxy_pos -> new_proxy_pos and check for 
   // intersection with the other plane constraints. 
-  vector< Bounds::PlaneConstraint >::iterator inter_i;
-  for( vector< Bounds::PlaneConstraint >::iterator i = 
+  Constraints::iterator inter_i;
+  for( Constraints::iterator i = 
          other_constraints.begin();
        i != other_constraints.end(); i++ ) {
     
-    Bounds::IntersectionInfo intersection;
     Vec3 from_point = closest_intersection.point;
-    Vec3 vv = new_proxy_pos - proxy_pos;
-    vv.normalizeSafe();
     done = false;
     counter = 0;
     bool plane_intersected = false;
@@ -480,7 +481,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
       (*i).primitive->getConstraints( p, constraints, 
                                       (*i).haptic_shape->touchable_face );
       if( !constraints.empty() )
-        *i = constraints[0];
+        *i = constraints.front();
       // transform constraint to global space and move it out in the normal
       // direction by the proxy_radius
       (*i).normal = transform.getScaleRotationPart() * (*i).normal;
