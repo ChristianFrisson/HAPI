@@ -107,7 +107,10 @@ H3DUtil::PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback
   hd->sendTorque( output.torque );
 
   hd->sendOutput();
-  return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
+  if( hd->device_state == UNINITIALIZED )
+    return H3DUtil::PeriodicThread::CALLBACK_DONE;
+  else
+    return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
 
 void HAPIHapticsDevice::transferObjects() {

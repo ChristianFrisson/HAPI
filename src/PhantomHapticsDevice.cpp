@@ -165,14 +165,18 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
 
   hdMakeCurrentDevice( device_handle );
 
+  // TODO: should not stop scheduler unless it is the last device
+  if( scheduler_started ) {
+    hdStopScheduler();
+    scheduler_started = false;
+  }
+
   for( vector< HDCallbackCode >::iterator i = hd_handles.begin();
        i != hd_handles.end();
        i++ ) {
     hdUnschedule(*i);
   }
 
-  // TODO: should not stop scheduler unless it is the last device
-  hdStopScheduler();
   hdDisableDevice( device_handle );
   device_handle = 0;
   HLThread *hl_thread = static_cast< HLThread * >( thread );
