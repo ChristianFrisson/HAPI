@@ -45,7 +45,8 @@ namespace HAPI {
   public:
     /// Constructor.
     ForceDimensionHapticsDevice():
-      device_id( -1 ) {
+      device_id( -1 ),
+      com_thread( NULL ) {
     }
 
     /// Destructor.
@@ -117,6 +118,21 @@ namespace HAPI {
 
     /// The DHD API device id for this device.
     int device_id;
+
+    /// Callback function for communication thread
+    static H3DUtil::PeriodicThread::CallbackCode com_func( void *data );
+
+    /// Thread used to do communication with the haptics device
+    H3DUtil::PeriodicThread *com_thread;
+
+    /// Lock for exchanging data with the communication thread.
+    H3DUtil::MutexLock com_lock;
+
+    /// The current device values updated in the communicataion thread.
+    /// Access to this structure must be contained within locking with 
+    /// com_lock.
+    DeviceValues current_values;
+
   };
 }
 

@@ -62,15 +62,31 @@ bool ForceDimensionHapticsDevice::initHapticsDevice() {
     setErrorMsg( s.str() );
     return false;
   }
+
+#ifdef WIN32
+  com_thread = 
+    new H3DUtil::PeriodicThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+#else
+  com_thread = new H3DUtil::PeriodicThread( 20, 1000 );
+#endif
+
+  com_thread->asynchronousCallback( com_func, this );
+
   return true;
 }
 
 bool ForceDimensionHapticsDevice::releaseHapticsDevice() {
   HAPIHapticsDevice::disableDevice();
   if( device_id != -1 ) {
+    if( com_thread ) {
+      delete com_thread;
+      com_thread = NULL;
+    }
+
     int id = device_id;
     device_id = -1;
     dhdClose( id );
+    
   }
   return true;
 }
@@ -80,29 +96,22 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
 
   if( device_id != -1 ) {
-    double x, y, z;
-    dhdGetPosition( &z, &x, &y, device_id );
-    
-    // convert to millimetres
-    dv.position = Vec3( x, y, z ) * 1000;
-    // TODO: calculate velocity
-    dv.velocity = Vec3( 0, 0, 0 );
-
-    dhdGetOrientationRad( &z, &x, &y, device_id );
-    Vec3 r( x, y, z );
-    dv.orientation = Rotation( r );
-
-    // TODO: multiple buttons
-    dv.button_status = (dhdGetButton( 0, device_id ) == DHD_ON);
+    com_lock.lock();
+    dv.position = current_values.position;
+    dv.velocity = current_values.velocity;
+    dv.orientation = current_values.orientation;
+    dv.button_status = current_values.button_status;
+    com_lock.unlock();
   }
 }
 
 void ForceDimensionHapticsDevice::sendOutput( DeviceOutput &dv,
                                    HAPITime dt ) {
   if( device_id != -1 ) {
-    dhdSetForceAndTorque( dv.force.z, dv.force.x, dv.force.y, 
-                          dv.torque.z, dv.torque.x, dv.torque.y,
-                          device_id );
+    com_lock.lock();
+    current_values.force = dv.force;
+    current_values.torque = dv.torque;
+    com_lock.unlock();
   }
 }
 
@@ -159,6 +168,39 @@ void ForceDimensionHapticsDevice::useBrakes( bool enable ) {
     dhdSetBrakes(  enable ? DHD_ON : DHD_OFF,
                    device_id );
   }
+}
+
+H3DUtil::PeriodicThread::CallbackCode
+ForceDimensionHapticsDevice::com_func( void *data ) {
+  ForceDimensionHapticsDevice *hd = 
+    static_cast< ForceDimensionHapticsDevice * >( data );
+  
+  if( hd->device_id != -1 ) {
+    double x, y, z, rx, ry, rz;
+    dhdGetPosition( &z, &x, &y, hd->device_id );
+    dhdGetOrientationRad( &rz, &rx, &ry, hd->device_id );    
+    // TODO: multiple buttons
+    bool button = (dhdGetButton( 0, hd->device_id ) == DHD_ON);
+    
+    Rotation orientation = Rotation( Vec3( rx, ry, rz ) );
+    // convert to millimetres
+    Vec3 position = Vec3( x, y, z ) * 1000;
+
+    hd->com_lock.lock();
+
+    hd->current_values.position = position;
+    hd->current_values.velocity = Vec3( 0, 0, 0 );
+    hd->current_values.button_status = button;
+ 
+    Vec3 force = hd->current_values.force;
+    Vec3 torque = hd->current_values.torque;
+    hd->com_lock.unlock();
+
+    dhdSetForceAndTorque( force.z, force.x, force.y, 
+                          torque.z, torque.x, torque.y,
+                          hd->device_id );
+                          }
+  return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
 
 
