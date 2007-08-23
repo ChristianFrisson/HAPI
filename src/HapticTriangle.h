@@ -78,10 +78,10 @@ namespace HAPI {
       return triangle.lineIntersect( from, to, result, face );
     }
 
-    inline virtual void getConstraints( const Vec3 &point,
-                                        std::vector< PlaneConstraint > &constraints,
-                                        Bounds::FaceType face = 
-                                        Bounds::FRONT_AND_BACK );
+    virtual void getConstraints( const Vec3 &point,
+                                 std::vector< PlaneConstraint > &constraints,
+                                 Bounds::FaceType face = 
+                                 Bounds::FRONT_AND_BACK );
 
     inline virtual void glRender() {
       glMatrixMode( GL_MODELVIEW );
