@@ -52,15 +52,19 @@ namespace PhantomDeviceInternal {
     hdBeginFrame( hd->getDeviceHandle() );
     return HD_CALLBACK_CONTINUE;
   }
+}
 
-  // Callback function that ends a hd frame. It is used in order to 
-  // encapsulate all HD API callback function within a hdBeginFrame/hdEndFrame
-  // pair in order to only get one frame per loop.
-  HDCallbackCode HDCALLBACK endFrameCallback( void *data ) {
-    PhantomHapticsDevice *hd = static_cast< PhantomHapticsDevice * >( data );
-    hdEndFrame( hd->getDeviceHandle() );
-    return HD_CALLBACK_CONTINUE;
-  }
+// Callback function that ends a hd frame. It is used in order to 
+// encapsulate all HD API callback function within a hdBeginFrame/hdEndFrame
+// pair in order to only get one frame per loop.
+HDCallbackCode HDCALLBACK PhantomHapticsDevice::endFrameCallback( void *data ){
+  // Makes the call to hapticRenderingCallback here in order to be sure
+  // that openhaptics own rendering has already been done so the correct
+  // force is used when using OpenHapticsRenderer.
+  HAPIHapticsDevice::hapticRenderingCallback( data );
+  PhantomHapticsDevice *hd = static_cast< PhantomHapticsDevice * >( data );
+  hdEndFrame( hd->getDeviceHandle() );
+  return HD_CALLBACK_CONTINUE;
 }
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
@@ -69,7 +73,7 @@ PhantomHapticsDevice::device_registration(
                             &(newInstance< PhantomHapticsDevice >),
                             PhantomDeviceInternal::phantom_device_libs
                             );
-//static int blaj = 0;
+
 bool PhantomHapticsDevice::restart_scheduler = false;
 bool PhantomHapticsDevice::scheduler_started = false;
 
@@ -147,7 +151,7 @@ bool PhantomHapticsDevice::initHapticsDevice() {
                             this,
                             HD_MAX_SCHEDULER_PRIORITY );
   hd_handles.push_back( handle );
-  handle = hdScheduleAsynchronous( PhantomDeviceInternal::endFrameCallback,
+  handle = hdScheduleAsynchronous( endFrameCallback,
                                    this,
                                    HD_MIN_SCHEDULER_PRIORITY );
   hd_handles.push_back( handle );

@@ -98,7 +98,8 @@ namespace HAPI {
     HAPIHapticsDevice() :
       thread( NULL ),
       device_state( UNINITIALIZED ),
-      delete_thread( false ) {
+      delete_thread( false ),
+      setup_haptic_rendering_callback( true ) {
       setHapticsRenderer( NULL );
     }
     
@@ -778,6 +779,11 @@ namespace HAPI {
 
     /// Callback function to render force effects.
     static H3DUtil::PeriodicThread::CallbackCode hapticRenderingCallback( void *data );
+
+    /// If true then set up hapticRenderingCallback as its own callback.
+    /// If false the hapticRenderingCallback functions has to be called
+    /// explicity from somewhere.
+    bool setup_haptic_rendering_callback;
 
     /// Callback function to transfer haptic objects to render to the 
     /// haptics loop.
