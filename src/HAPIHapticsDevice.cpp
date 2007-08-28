@@ -137,7 +137,7 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice() {
     device_state = INITIALIZED;
     for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
       if( haptics_renderers[i] ) {
-	haptics_renderers[i]->initRenderer( this );
+        haptics_renderers[i]->initRenderer( this );
       }
     }
     
@@ -151,8 +151,10 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice() {
 #endif
       delete_thread = true;
     }
-    thread->asynchronousCallback( hapticRenderingCallback,
-				  this );
+    if( setup_haptic_rendering_callback ) {
+      thread->asynchronousCallback( hapticRenderingCallback,
+                                    this );
+    }
     
   }
   return SUCCESS;

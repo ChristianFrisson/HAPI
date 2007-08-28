@@ -49,7 +49,8 @@ namespace HAPI {
     /// device.
     PhantomHapticsDevice( string _device_name = "" ):
         device_name( _device_name ) {
-      hdapi_version = hdGetString( HD_VERSION ); 
+      hdapi_version = hdGetString( HD_VERSION );
+      setup_haptic_rendering_callback = false;
     }
 
     /// Destructor.
@@ -195,6 +196,8 @@ namespace HAPI {
 
     /// Releases all resources allocated in initHapticsDevice. 
     virtual bool releaseHapticsDevice();
+    
+    static HDCallbackCode HDCALLBACK endFrameCallback( void *data );
 
     /// The device name for this device.
     string device_name;
