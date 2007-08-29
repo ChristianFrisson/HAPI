@@ -73,7 +73,7 @@ namespace HAPI {
                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK  );
 
     virtual void getConstraints( const Vec3 &point,
-                                 std::vector< PlaneConstraint > &constraints,
+                                 Constraints &constraints,
                                  Bounds::FaceType face = Bounds::FRONT_AND_BACK );
 
     virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );

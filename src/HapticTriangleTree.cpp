@@ -34,7 +34,7 @@ using namespace HAPI;
 
 void HapticTriangleTree::getConstraints( const Vec3 &point,
                                          HAPIFloat radius,
-                                         std::vector< PlaneConstraint > &constraints,
+                                         Constraints &constraints,
                                          Bounds::FaceType face ) {
   if( tree ) {
     // TODO: check if transform has uniform scale

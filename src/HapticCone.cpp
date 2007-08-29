@@ -167,7 +167,7 @@ bool HapticCone::lineIntersect( const Vec3 &from,
 
 
 void HapticCone::getConstraints( const Vec3 &point,
-                                 std::vector< PlaneConstraint > &constraints,
+                                 Constraints &constraints,
                                  Bounds::FaceType face ) {
   Vec3 cp, n, tc;
   closestPoint( point, cp, n, tc );

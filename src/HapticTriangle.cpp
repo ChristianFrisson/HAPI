@@ -33,7 +33,7 @@
 using namespace HAPI;
 
 void HapticTriangle::getConstraints( const Vec3 &point,
-                                     std::vector< PlaneConstraint > &constraints,
+                                     Constraints &constraints,
                                      Bounds::FaceType face ) {
   Vec3 p = transform.inverse() * point;
   unsigned int size = constraints.size();

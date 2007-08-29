@@ -71,7 +71,7 @@ bool HapticLineSet::lineIntersect( const Vec3 &from,
 }
 
 void HapticLineSet::getConstraints( const Vec3 &point,
-                                        std::vector< PlaneConstraint > &constraints,
+                                        Constraints &constraints,
                                         Bounds::FaceType face ) {
   if( lines.size() > 0 ) {
     // TODO: check if transform has uniform scale
