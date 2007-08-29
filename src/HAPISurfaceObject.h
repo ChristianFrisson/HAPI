@@ -48,8 +48,8 @@ namespace HAPI {
       Vec3 x_axis;
       Vec3 y_axis;
       Vec3 z_axis;
-
-
+      Vec3 origin_global;
+      
       // output
       Vec3 force_global;
       Vec3 torque_global;
@@ -68,18 +68,23 @@ namespace HAPI {
 
       // HAPIHapticsDevice *hd;
 
+      inline void setGlobalOrigin( const Vec3 &o ) {
+        origin_global = o;
+        has_inverse = false;
+      }
+
       inline void updateInverse() {
         inverse = 
-          Matrix4( x_axis.x, y_axis.x, z_axis.x, contact_point_global.x,
-                   x_axis.y, y_axis.y, z_axis.y, contact_point_global.y,
-                   x_axis.z, y_axis.z, z_axis.z, contact_point_global.z,
+          Matrix4( x_axis.x, y_axis.x, z_axis.x, origin_global.x,
+                   x_axis.y, y_axis.y, z_axis.y, origin_global.y,
+                   x_axis.z, y_axis.z, z_axis.z, origin_global.z,
                    0,0,0,1 ).transformInverse();
         has_inverse = true;
       }
 
       inline Vec3 pointToGlobal( const Vec3 &p ) { 
         return p.x * x_axis + p.y * y_axis + p.z * z_axis + 
-          contact_point_global;
+          origin_global;
       }
       
       inline Vec3 pointToLocal( const Vec3 &p ) { 
@@ -94,8 +99,8 @@ namespace HAPI {
       inline Vec3 vectorToLocal( const Vec3 &p ) {
         //if( !has_inverse ) updateInverse();
         return Matrix3( x_axis.x, y_axis.x, z_axis.x,
-                         x_axis.y, y_axis.y, z_axis.y,
-                         x_axis.z, y_axis.z, z_axis.z ).inverse() * p;
+                        x_axis.y, y_axis.y, z_axis.y,
+                        x_axis.z, y_axis.z, z_axis.z ).inverse() * p;
       }
       
       inline Vec3 globalContactPoint() {
@@ -122,6 +127,14 @@ namespace HAPI {
         return pointToLocal( probe_position_global );
       }
 
+      inline Vec3 globalOrigin() {
+        return origin_global;
+      }
+
+      inline Vec3 localOrigin() {
+        return Vec3( 0, 0, 0 );
+      }
+
       inline void setLocalForce( const Vec3 &f ) {
         force_global = vectorToGlobal( f );
       }
@@ -139,11 +152,8 @@ namespace HAPI {
 
     virtual ~HAPISurfaceObject();
 
-    virtual void onContact( ContactInfo &contact_info ) {
-      
-    }
-    
-    
+    virtual void getProxyMovement( ContactInfo &contact_info ) {}
+    virtual void getForces( ContactInfo &contact_info ) {}
   };
 }
 

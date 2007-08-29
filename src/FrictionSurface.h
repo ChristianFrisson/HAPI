@@ -44,7 +44,8 @@ namespace HAPI {
 
     virtual ~FrictionSurface();
 
-    virtual void onContact( ContactInfo &contact_info );
+    virtual void getProxyMovement( ContactInfo &contact_info );
+    virtual void getForces( ContactInfo &contact_info );
 
     HAPIFloat stiffness, damping, static_friction, dynamic_friction;
   protected:

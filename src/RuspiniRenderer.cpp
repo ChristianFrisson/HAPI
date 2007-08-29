@@ -63,10 +63,21 @@ void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c,
   contact.z_axis = contact.x_axis % contact.y_axis;
   contact.x_axis.normalizeSafe();
   contact.z_axis.normalizeSafe();
+  contact.setGlobalOrigin( contact.contact_point_global );
   assert( c.haptic_shape.get() );
 
+  c.haptic_shape->surface->getProxyMovement( contact );
+
+  Vec3 new_proxy_pos =  
+    contact.contact_point_global + 
+    contact.proxy_movement_local.x * contact.x_axis + 
+    contact.proxy_movement_local.y * contact.z_axis;
+
+  contact.setGlobalOrigin(  tryProxyMovement( proxy_position, 
+                                              new_proxy_pos, c.normal ) );
+  
   // call the surface to determine forces and proxy movement
-  c.haptic_shape->surface->onContact( contact );
+  c.haptic_shape->surface->getForces( contact );
   
   // add a contact
   tmp_contacts.push_back( make_pair( c.haptic_shape, contact ) );
@@ -119,13 +130,14 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
     contact.z_axis = contact.x_axis % contact.y_axis;
     contact.z_axis.normalizeSafe();
     contact.x_axis.normalizeSafe();
-    
+    contact.setGlobalOrigin( contact.contact_point_global );
+
     Vec3 line_dir_local = contact.vectorToLocal( line_dir );
 
     assert( p0.haptic_shape.get() );
 
     // calculate the force and proxy movement for the first plane
-    p0.haptic_shape->surface->onContact( contact );
+    p0.haptic_shape->surface->getProxyMovement( contact );
     
     // constrain the proxy movement to the intersection between 
     // the two planes
@@ -135,11 +147,10 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
             contact.proxy_movement_local.y ) *
       line_dir_local;
 
-    Vec3 p0_force = contact.force_global;
-    
     assert( p1.haptic_shape.get() );
+
     // calculate the force and proxy movement for the second plane
-    p1.haptic_shape->surface->onContact( contact );
+    p1.haptic_shape->surface->getProxyMovement( contact );
 
     // constrain the proxy movement to the intersection between 
     // the two planes
@@ -149,8 +160,6 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
              contact.proxy_movement_local.y ) *
       line_dir_local;
 
-    Vec3 p1_force = contact.force_global;
-    
     // calculate and set the final output parameters for force and 
     // proxy movement
     Vec3 proxy_movement = 
@@ -158,6 +167,20 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
       line_dir_local;
 
     contact.proxy_movement_local = Vec2( proxy_movement.x, proxy_movement.z ); 
+
+    Vec3 new_proxy_pos =  
+      contact.contact_point_global + 
+      contact.proxy_movement_local.x * contact.x_axis + 
+      contact.proxy_movement_local.y * contact.z_axis;
+    
+    contact.setGlobalOrigin( tryProxyMovement( proxy_position, 
+                                               new_proxy_pos, contact.y_axis ) );
+
+    p0.haptic_shape->surface->getForces( contact );
+    Vec3 p0_force = contact.force_global;
+    p0.haptic_shape->surface->getForces( contact );
+    Vec3 p1_force = contact.force_global;
+
     contact.force_global = p0_force * weight + p1_force * ( 1 - weight );
 
     // add contacts
@@ -247,20 +270,21 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
 
     contact.x_axis.normalizeSafe();
     contact.z_axis.normalizeSafe();
+    contact.setGlobalOrigin( contact.contact_point_global );
 
     // calculate the force and proxy movement for the first plane
     assert( p0.haptic_shape.get() );
-    p0.haptic_shape->surface->onContact( contact );
+    p0.haptic_shape->surface->getForces( contact );
     Vec3 p0_force = contact.force_global;
     
     // calculate the force and proxy movement for the second plane
     assert( p1.haptic_shape.get() );
-    p1.haptic_shape->surface->onContact( contact );
+    p1.haptic_shape->surface->getForces( contact );
     Vec3 p1_force = contact.force_global;
 
     // calculate the force and proxy movement for the third plane
     assert( p2.haptic_shape.get() );
-    p2.haptic_shape->surface->onContact( contact );
+    p2.haptic_shape->surface->getForces( contact );
     Vec3 p2_force = contact.force_global;
     
     // proxy is constrained by three planes and cannot move in any 
@@ -344,6 +368,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     counter++;
   }
 
+  proxy_position = proxy_pos;
 
   // the constraints which contraint point is closest to the proxy.
   // if more than one the constraint point is the same
@@ -442,16 +467,32 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                                  contact );
     } 
 
-    new_proxy_pos = 
-      closest_intersection.point + 
-      contact.proxy_movement_local.x * contact.x_axis + 
-      contact.proxy_movement_local.y * contact.z_axis;
+    new_proxy_pos = contact.globalOrigin();
+
     new_force = contact.force_global;
   }
     
 
-  has_intersection = false;
+      
+  proxy_position = new_proxy_pos;
+  output.force = new_force;
+    
+  contacts_lock.lock();
+  contacts.swap( tmp_contacts );
+  contacts_lock.unlock();
+
+  return output;
+}
+
+
+Vec3 RuspiniRenderer::tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal ) {
+  // from = closest_intersection.point;
+  // to = new_proxy_pos
+
+  bool has_intersection = false;
+  Bounds::IntersectionInfo intersection;
   Vec3 closest_point;
+  HAPIFloat d2;
 
   // try to move the proxy from proxy_pos -> new_proxy_pos and check for 
   // intersection with the other plane constraints. 
@@ -460,17 +501,54 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
          other_constraints.begin();
        i != other_constraints.end(); i++ ) {
     
-    Vec3 from_point = closest_intersection.point;
-    done = false;
-    counter = 0;
-    bool plane_intersected = false;
-    
+    Vec3 from_point = from;
+    Vec3 to_point = to;
+#if 0
     // since a constraint at a triangle edge might be unwanted if it e.g. has
     // a neighbouring triangle in the same plane, we make sure that this is not
-    // the case by updating the constraint plane until the normal does not change
+    // the case by updating the constraint plane until the normal does not change/*
+    if( (*i).lineIntersect( from_point, 
+                            to_point, intersection ) ) {
+      const Matrix4 &transform = (*i).haptic_shape->transform;
+      const Matrix4 &inv = transform.inverse();
+      Vec3 s = inv.getScalePart();
+      HAPIFloat scale = max( s.x, max( s.y, s.z ) ); 
+
+      Vec3 f = from_point;/* + normal * 1e-3;*/
+      Vec3 t = to_point;/* + normal * 1e-3;*/
+
+      if( true || (*i).primitive->movingSphereIntersect( proxy_radius * scale,
+                                                 inv * f, 
+                                                 inv * t ) ) {
+        
+        if( !has_intersection ) {
+          // first intersection, so closest
+          closest_point = /*transform * */ intersection.point;
+          Vec3 v = closest_point - from;
+          d2 = v * v;
+          has_intersection = true;
+        } else {
+          // check if the new intersection is closer than the closest of the
+          // previous
+          Vec3 p = /* transform * */ intersection.point;
+          Vec3 v = p - from;
+          HAPIFloat distance = v * v;
+          if( distance < d2 ) {
+            closest_point = p;
+            d2 = distance;
+          }
+        }
+      }
+    }
+  } 
+
+#else
+    bool done = false;
+    unsigned int counter = 0;
+    bool plane_intersected = false;
     while( !done && counter < 5 && 
            (*i).lineIntersect( from_point, 
-                               new_proxy_pos, intersection ) ) {
+                               to_point, intersection ) ) {
       plane_intersected = true;
       constraints.clear();
       PlaneConstraint pc = *i;
@@ -497,7 +575,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         from_point = intersection.point;
 
         // make sure the point is above the new constraint
-        HAPIFloat d = (*i).normal * (proxy_pos - (*i).point );
+        HAPIFloat d = (*i).normal * (from_point - (*i).point );
         if( d < 0 ) {
           from_point = from_point + (*i).normal * (-d+1e-15);
         } 
@@ -506,17 +584,17 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     }
 
     
-    if( plane_intersected ) {
+    if( (plane_intersected && counter >= 5 ) || done ) {
       if( !has_intersection ) {
         // first intersection, so closest
         closest_point = intersection.point;
-        Vec3 v = intersection.point - proxy_pos;
+        Vec3 v = intersection.point - from;
         d2 = v * v;
         has_intersection = true;
       } else {
         // check if the new intersection is closer than the closest of the
         // previous
-        Vec3 v = intersection.point - proxy_pos;
+        Vec3 v = intersection.point - from;
         HAPIFloat distance = v * v;
         if( distance < d2 ) {
           closest_point = intersection.point;
@@ -525,19 +603,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
       }
     } 
   }
-
-  // if a plane has been intersected when moving to the wanted new proxy position,
-  // the closest intersection point is the new proxy position.
-  if( has_intersection ) {
-    new_proxy_pos = closest_point;
-  }
-    
-  proxy_position = new_proxy_pos;
-  output.force = new_force;
-    
-  contacts_lock.lock();
-  contacts.swap( tmp_contacts );
-  contacts_lock.unlock();
-
-  return output;
+#endif
+  if( has_intersection ) return closest_point;
+  else return to;
 }

@@ -64,14 +64,23 @@ namespace HAPI {
 
   protected:
     void onOnePlaneContact( const PlaneConstraint &c, 
-                            HAPISurfaceObject::ContactInfo &contact );
+                            HAPISurfaceObject::ContactInfo &contact,
+                            const HapticShapeVector &shapes );
 
     void onTwoPlaneContact( const PlaneConstraint &p0,
                             const PlaneConstraint &p1,
-                            HAPISurfaceObject::ContactInfo &contact );
+                            HAPISurfaceObject::ContactInfo &contact,
+                            const HapticShapeVector &shapes );
 
     void onThreeOrMorePlaneContact(  vector< PlaneConstraint > &constraints,
-                                     HAPISurfaceObject::ContactInfo &contact );
+                                     HAPISurfaceObject::ContactInfo &contact,
+                                     const HapticShapeVector &shapes );
+
+    bool tryProxyMovement( Vec3 from, Vec3 to, 
+                           int nr_constraints,
+                           const PlaneConstraint &pc,
+                           const HapticShapeVector &shapes,
+                           Vec3 &point );
     
     Vec3 proxy_position;
     Contacts tmp_contacts;
