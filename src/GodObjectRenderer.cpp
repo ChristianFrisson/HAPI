@@ -40,15 +40,75 @@ GodObjectRenderer::renderer_registration(
                             &(newInstance< GodObjectRenderer >)
                             );
 
+// the minimum distance the proxy will be from the surface. The proxy
+// will be moved above the surface with the given factor in order to
+// avoid roundoff errors and fallthrough problems.
+const HAPIFloat min_distance = 1e-3;
+
 // epsilon value for deciding if a point is the same
 const HAPIFloat length_sqr_point_epsilon = 1e-12; //12
 
 // epsilon value for deciding if a normal is the same.
 const HAPIFloat length_sqr_normal_epsilon = 1e-12;
 
+inline bool planeIntersect( Vec3 p1, Vec3 n1, Vec3 p2, Vec3 n2,
+                            Vec3 &p, Vec3 &dir ) {
+  HAPIFloat d1 = n1 * p1;
+  HAPIFloat d2 = n2 * p2;
+  
+  // Direction of intersection line
+  dir = n1 % n2;
+
+  // Check if planes are parallell
+  HAPIFloat denom = dir * dir;
+  if( denom < Constants::epsilon ) return false;
+  
+  // Compute point on intersection line.
+  p = ( (d1 * n2 - d2 * n1 ) % dir ) / denom;
+  return true;
+}
+  
+inline Vec3 projectOntoLine( Vec3 p, 
+                             Vec3 point1, 
+                             Vec3 point2, 
+                             bool segment = false ) {
+  Vec3 ab = point2 - point1;
+
+  // Project c onto ab.
+  HAPIFloat t = (p - point1) * ab / (ab * ab );
+
+  if( segment ) {
+    if( t < 0 ) t = 0;
+    if( t > 1 ) t = 1;
+  }
+  
+  return  point1 + t * ab;
+} 
+
+inline Vec3 projectOntoPlane( Vec3 p, Vec3 point_on_plane, Vec3 normal ) {
+  HAPIFloat t = normal * ( p - point_on_plane );
+  return p - t * normal;
+}                         
+
+
+inline Vec3 projectOntoPlaneIntersection( const Vec3 &p, 
+                            Vec3 p1,
+                            Vec3 n1,
+                            Vec3 p2,
+                            Vec3 n2 ) {
+  Vec3 lp, ld;
+  if( !planeIntersect( p1, n1, p2, n2, lp, ld ) ) {
+     return projectOntoPlane( p, p1, n1 ); 
+  }
+
+  return projectOntoLine( p, lp, lp + ld );
+}
+
+
 void GodObjectRenderer::onOnePlaneContact( 
                             const PlaneConstraint &c, 
-                            HAPISurfaceObject::ContactInfo &contact ) {
+                            HAPISurfaceObject::ContactInfo &contact,
+                            const HapticShapeVector &shapes ) {
   
   // create a local coordinate system with the PlaneConstraint normal
   // as y-axis
@@ -58,10 +118,33 @@ void GodObjectRenderer::onOnePlaneContact(
   contact.z_axis = contact.x_axis % contact.y_axis;
   contact.x_axis.normalizeSafe();
   contact.z_axis.normalizeSafe();
+  contact.setGlobalOrigin( contact.contact_point_global );
   assert( c.haptic_shape.get() );
 
+  c.haptic_shape->surface->getProxyMovement( contact );
+
+  Vec3 new_proxy_pos = 
+	contact.contact_point_global + 
+    contact.y_axis * min_distance +
+    contact.proxy_movement_local.x * contact.x_axis + 
+    contact.proxy_movement_local.y * contact.z_axis;
+
+  // try to move the proxy from proxy_pos -> new_proxy_pos and check for 
+  // intersection with shapes. If intersection the new goal will be 
+  // new_proxy_pos projected onto the plane created by intersection point
+  // and its normal and the previous constraint planes.
+  Vec3 o;
+  tryProxyMovement( proxy_position, 
+                    new_proxy_pos,
+                    1, 
+                    c, 
+                    shapes, 
+                    o );
+
+  contact.setGlobalOrigin( o );
+  
   // call the surface to determine forces and proxy movement
-  c.haptic_shape->surface->onContact( contact );
+  c.haptic_shape->surface->getForces( contact );
   
   // add a contact
   tmp_contacts.push_back( make_pair( c.haptic_shape.get(), contact ) );
@@ -70,7 +153,8 @@ void GodObjectRenderer::onOnePlaneContact(
 void GodObjectRenderer::onTwoPlaneContact( 
            const PlaneConstraint &p0,
            const PlaneConstraint &p1,
-           HAPISurfaceObject::ContactInfo &contact ) {
+           HAPISurfaceObject::ContactInfo &contact,
+           const HapticShapeVector &shapes ) {
   
   Vec3 contact_global = contact.globalContactPoint();
 
@@ -94,9 +178,9 @@ void GodObjectRenderer::onTwoPlaneContact(
   // check that both planes constrain, if not just do one plane contact
   // calculations
   if( local_pos.x > Constants::epsilon ) {
-    onOnePlaneContact( p1, contact );
+    onOnePlaneContact( p1, contact, shapes );
   } else if( local_pos.y > Constants::epsilon ) {
-    onOnePlaneContact( p0, contact );
+    onOnePlaneContact( p0, contact, shapes );
   } else {
     // both planes constrains
 
@@ -116,13 +200,14 @@ void GodObjectRenderer::onTwoPlaneContact(
     contact.z_axis = contact.x_axis % contact.y_axis;
     contact.z_axis.normalizeSafe();
     contact.x_axis.normalizeSafe();
-    
+    contact.setGlobalOrigin( contact.contact_point_global );
+ 
     Vec3 line_dir_local = contact.vectorToLocal( line_dir );
 
     assert( p0.haptic_shape.get() );
 
     // calculate the force and proxy movement for the first plane
-    p0.haptic_shape->surface->onContact( contact );
+    p0.haptic_shape->surface->getProxyMovement( contact );
     
     // constrain the proxy movement to the intersection between 
     // the two planes
@@ -132,11 +217,9 @@ void GodObjectRenderer::onTwoPlaneContact(
             contact.proxy_movement_local.y ) *
       line_dir_local;
 
-    Vec3 p0_force = contact.force_global;
-    
     assert( p1.haptic_shape.get() );
     // calculate the force and proxy movement for the second plane
-    p1.haptic_shape->surface->onContact( contact );
+    p1.haptic_shape->surface->getProxyMovement( contact );
 
     // constrain the proxy movement to the intersection between 
     // the two planes
@@ -146,8 +229,6 @@ void GodObjectRenderer::onTwoPlaneContact(
              contact.proxy_movement_local.y ) *
       line_dir_local;
 
-    Vec3 p1_force = contact.force_global;
-    
     // calculate and set the final output parameters for force and 
     // proxy movement
     Vec3 proxy_movement = 
@@ -155,6 +236,31 @@ void GodObjectRenderer::onTwoPlaneContact(
       line_dir_local;
 
     contact.proxy_movement_local = Vec2( proxy_movement.x, proxy_movement.z ); 
+ 
+    Vec3 new_proxy_pos = 
+      contact.contact_point_global + 
+      contact.y_axis * min_distance +
+      contact.proxy_movement_local.x * contact.x_axis + 
+      contact.proxy_movement_local.y * contact.z_axis;
+
+    // try to move the proxy from proxy_pos -> new_proxy_pos and check for 
+    // intersection with shapes. If intersection the new goal will be 
+    // new_proxy_pos projected onto the plane created by intersection point
+    // and its normal and the previous constraint planes.
+    Vec3 o;
+    tryProxyMovement( proxy_position,
+                      new_proxy_pos,
+                      2, 
+                      p0, 
+                      shapes, 
+                      o );
+    contact.setGlobalOrigin( o );
+    
+    p0.haptic_shape->surface->getForces( contact );
+    Vec3 p0_force = contact.force_global;
+    p0.haptic_shape->surface->getForces( contact );
+    Vec3 p1_force = contact.force_global;
+
     contact.force_global = p0_force * weight + p1_force * ( 1 - weight );
 
     // add contacts
@@ -167,7 +273,8 @@ void GodObjectRenderer::onTwoPlaneContact(
 
 void GodObjectRenderer::onThreeOrMorePlaneContact(  
           vector< PlaneConstraint > &constraints,
-          HAPISurfaceObject::ContactInfo &contact ) {
+          HAPISurfaceObject::ContactInfo &contact,
+          const HapticShapeVector &shapes ) {
 
   assert( constraints.size() >= 3 );
 
@@ -218,11 +325,11 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
   // check that all three planes constrain, if not just do two plane contact
   // calculations
   if( probe_local_pos.x > Constants::epsilon ) {
-    onTwoPlaneContact( p1, p2, contact );
+    onTwoPlaneContact( p1, p2, contact, shapes );
   } else if( probe_local_pos.y > Constants::epsilon ) {
-    onTwoPlaneContact( p0, p2, contact );
+    onTwoPlaneContact( p0, p2, contact, shapes );
   } else if( probe_local_pos.z > Constants::epsilon ) {
-    onTwoPlaneContact( p0, p1, contact );
+    onTwoPlaneContact( p0, p1, contact, shapes );
   } else {
 
     // find weighting factors between different planes
@@ -244,20 +351,21 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
 
     contact.x_axis.normalizeSafe();
     contact.z_axis.normalizeSafe();
+    contact.setGlobalOrigin( contact.contact_point_global );
 
     // calculate the force and proxy movement for the first plane
     assert( p0.haptic_shape.get() );
-    p0.haptic_shape->surface->onContact( contact );
+    p0.haptic_shape->surface->getForces( contact );
     Vec3 p0_force = contact.force_global;
     
     // calculate the force and proxy movement for the second plane
     assert( p1.haptic_shape.get() );
-    p1.haptic_shape->surface->onContact( contact );
+    p1.haptic_shape->surface->getForces( contact );
     Vec3 p1_force = contact.force_global;
 
     // calculate the force and proxy movement for the third plane
     assert( p2.haptic_shape.get() );
-    p2.haptic_shape->surface->onContact( contact );
+    p2.haptic_shape->surface->getForces( contact );
     Vec3 p2_force = contact.force_global;
     
     // proxy is constrained by three planes and cannot move in any 
@@ -285,55 +393,6 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
 }
 
 
-inline bool planeIntersect( Vec3 p1, Vec3 n1, Vec3 p2, Vec3 n2,
-                            Vec3 &p, Vec3 &dir ) {
-  HAPIFloat d1 = n1 * p1;
-  HAPIFloat d2 = n2 * p2;
-  
-  // Direction of intersection line
-  dir = n1 % n2;
-
-  // Check if planes are parallell
-  HAPIFloat denom = dir * dir;
-  if( denom < Constants::epsilon ) return false;
-  
-  // Compute point on intersection line.
-  p = ( (d1 * n2 - d2 * n1 ) % dir ) / denom;
-  return true;
-}
-  
-inline Vec3 projectOntoLine( Vec3 p, Vec3 point1, Vec3 point2, bool segment = false ) {
-  Vec3 ab = point2 - point1;
-
-  // Project c onto ab.
-  HAPIFloat t = (p - point1) * ab / (ab * ab );
-
-  if( segment ) {
-    if( t < 0 ) t = 0;
-    if( t > 1 ) t = 1;
-  }
-  
-  return  point1 + t * ab;
-} 
-
-inline Vec3 projectOntoPlane( Vec3 p, Vec3 point_on_plane, Vec3 normal ) {
-  HAPIFloat t = normal * ( p - point_on_plane );
-  return p - t * normal;
-}                         
-
-
-inline Vec3 projectOntoPlaneIntersection( const Vec3 &p, 
-                            Vec3 p1,
-                            Vec3 n1,
-                            Vec3 p2,
-                            Vec3 n2 ) {
-  Vec3 lp, ld;
-  if( !planeIntersect( p1, n1, p2, n2, lp, ld ) ) {
-     return projectOntoPlane( p, p1, n1 ); 
-  }
-
-  return projectOntoLine( p, lp, lp + ld );
-}
 
 
 
@@ -424,10 +483,6 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   unsigned int nr_constraints = closest_constraints.size();
 
   Vec3 new_proxy_pos, new_force;
-  // the minimum distance the proxy will be from the surface. The proxy
-  // will be moved above the surface with the given factor in order to
-  // avoid roundoff errors and fallthrough problems.
-  HAPIFloat min_distance = 1e-1;
 
   HAPISurfaceObject::ContactInfo contact;
 
@@ -442,121 +497,19 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     new_proxy_pos = proxy_pos + (input.position-proxy_pos)*0.05;
   } else {
     if( nr_constraints == 1 ) {
-      onOnePlaneContact( closest_constraints[0], contact );
+      onOnePlaneContact( closest_constraints[0], contact, shapes );
     } else if( nr_constraints == 2 ) {
       onTwoPlaneContact( closest_constraints[0],
-                         closest_constraints[1], contact );
+                         closest_constraints[1], contact, shapes );
     } if( nr_constraints >= 3 ) {
       onThreeOrMorePlaneContact( closest_constraints,
-                                 contact );
+                                 contact, shapes );
     } 
 
     new_proxy_pos = 
-      closest_intersection.point + 
-      contact.y_axis * min_distance +
-      contact.proxy_movement_local.x * contact.x_axis + 
-      contact.proxy_movement_local.y * contact.z_axis;
-    new_force = contact.force_global;
-    
-    if( nr_constraints < 3 ) {
-      // try to move the proxy from proxy_pos -> new_proxy_pos and check for 
-      // intersection with shapes. If intersection the new goal will be 
-      // new_proxy_pos projected onto the plane created by intersection point
-      // and its normal and the previous constraint planes.
-      
-      // the point from which to move
-      Vec3 from_point = proxy_pos;
-      bool have_new_goal = true;
-      bool first_loop = true;
+      contact.globalOrigin(); 
 
-      while( have_new_goal ) {
-        have_new_goal = false;
-        
-        /*
-          bool done = false;
-          int counter = 0;
-          while( !done && counter < 25 ) {
-          done = true;
-          // make sure the proxy is above any constraints
-          for( vector< Bounds::PlaneConstraint >::iterator i = 
-          closest_constraints.begin();
-          i != closest_constraints.end(); i++ ) {
-          HAPIFloat d = (*i).normal * (new_proxy_pos - (*i).point );
-          if( d < min_distance - Constants::epsilon) {
-          //cerr << (*i).normal << " " << d << endl;
-          new_proxy_pos = new_proxy_pos + (*i).normal * (-d+min_distance);
-          done = false;
-          }
-          }
-          counter++;
-          }
-          
-          if( counter > 4 ) cerr << "C";*/
-        
-        // find the closest intersection
-        has_intersection = false;
-        for( HapticShapeVector::const_iterator i = shapes.begin();
-             i != shapes.end();
-             i++ ) {
-          Bounds::IntersectionInfo intersection;
-          if( (*i)->lineIntersect( from_point, new_proxy_pos, intersection,
-                                   (*i)->touchable_face) ){
-            if( !has_intersection ) {
-              closest_intersection = intersection;
-              Vec3 v = intersection.point - proxy_pos;
-              d2 = v * v;
-              has_intersection = true;
-            } else {
-              Vec3 v = intersection.point - proxy_pos;
-              HAPIFloat distance = v * v; 
-              if( distance < d2 ) {
-                closest_intersection = intersection;
-                d2 = distance;
-              } 
-            }
-          } 
-        }
-        
-        if( has_intersection ) {
-          Vec3 normal = 
-            closest_intersection.face == Bounds::FRONT ?
-            closest_intersection.normal : -closest_intersection.normal;
-          from_point = closest_intersection.point + normal * min_distance;
-          
-          if( nr_constraints == 1 && first_loop ) {
-            // project onto plane intersection between intersection plane and
-            // closest constraint
-            from_point = 
-              projectOntoPlaneIntersection( from_point, 
-                           closest_intersection.point + 
-                           normal * min_distance,
-                           normal,
-                           closest_constraints[0].point + 
-                           closest_constraints[0].normal * min_distance,
-                           closest_constraints[0].normal );
-            
-            new_proxy_pos = 
-              projectOntoPlaneIntersection( new_proxy_pos, 
-                           closest_intersection.point + normal * min_distance,
-                           normal,
-                           closest_constraints[0].point + 
-                           closest_constraints[0].normal * min_distance,
-                           closest_constraints[0].normal );
-            have_new_goal = true;
-          } else {
-            Vec3 move = closest_intersection.point - from_point;
-            HAPIFloat l = move.length();
-            if( l >= min_distance + 1e-8) {
-              move = move * ( (l-min_distance) / l );
-              new_proxy_pos = from_point + move;
-            } else {
-              new_proxy_pos = from_point;
-            }
-          }
-        }
-        first_loop = false;
-      }
-    }
+    new_force = contact.force_global;
   }
   
   proxy_position = new_proxy_pos;
@@ -566,7 +519,99 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   contacts.swap( tmp_contacts );
   contacts_lock.unlock();
 
-   // add the resulting force and torque to the rendered force.
-    
   return output;
 }
+
+bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to, 
+                                          int nr_constraints,
+                                          const PlaneConstraint &pc,
+                                          const HapticShapeVector &shapes,
+                                          Vec3 &point ) {
+  // the point from which to move
+
+  Vec3 from_point = from;
+  Vec3 to_point = to;
+
+  bool have_new_goal = true;
+  bool first_loop = true;
+  bool has_intersection;
+
+  point = to;
+
+  HAPIFloat d2;
+  Bounds::IntersectionInfo closest_intersection;
+
+  while( have_new_goal ) {
+    have_new_goal = false;
+    
+    // find the closest intersection
+    has_intersection = false;
+    for( HapticShapeVector::const_iterator i = shapes.begin();
+         i != shapes.end();
+         i++ ) {
+      Bounds::IntersectionInfo intersection;
+      if( (*i)->lineIntersect( from_point, to_point, intersection,
+                               (*i)->touchable_face) ){
+        if( !has_intersection ) {
+          closest_intersection = intersection;
+          Vec3 v = intersection.point - from_point;
+          d2 = v * v;
+          has_intersection = true;
+        } else {
+          Vec3 v = intersection.point - from_point;
+          HAPIFloat distance = v * v; 
+          if( distance < d2 ) {
+            closest_intersection = intersection;
+            d2 = distance;
+          } 
+        }
+      } 
+    }
+        
+    if( has_intersection ) {
+      Vec3 normal = 
+        closest_intersection.face == Bounds::FRONT ?
+        closest_intersection.normal : -closest_intersection.normal;
+      from_point = closest_intersection.point + normal * min_distance;
+      
+      if( nr_constraints == 1 && first_loop ) {
+        // project onto plane intersection between intersection plane and
+        // closest constraint
+        from_point =  
+          projectOntoPlaneIntersection( from_point, 
+                                        closest_intersection.point + 
+                                        normal * min_distance,
+                                        normal,
+                                        pc.point + 
+                                        pc.normal * min_distance,
+                                        pc.normal );
+        to_point = 
+          projectOntoPlaneIntersection( to_point, 
+                                        closest_intersection.point + 
+                                        normal * min_distance,
+                                        normal,
+                                        pc.point + 
+                                        pc.normal * min_distance,
+                                        pc.normal );
+        have_new_goal = true;
+      } else {
+        Vec3 move = closest_intersection.point - from_point;
+        HAPIFloat l = move.length();
+        if( l >= min_distance + 1e-8) {
+          move = move * ( (l-min_distance) / l );
+          point = from_point + move;
+        } else {
+          point = from_point;
+        }
+      }
+    } else {
+      point = to_point;
+      if( first_loop ) return true;
+      else return false;
+    } 
+    first_loop = false;
+  }
+
+  return false;
+}
+

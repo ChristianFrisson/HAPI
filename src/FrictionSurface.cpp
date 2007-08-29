@@ -45,15 +45,13 @@ in_static_contact( true ) {
 FrictionSurface::~FrictionSurface() {
 };
 
-void FrictionSurface::onContact( ContactInfo &contact_info ) {
 
+void FrictionSurface::getProxyMovement( ContactInfo &contact_info ) {
   if( H3DUtil::H3DAbs( static_friction ) < Constants::epsilon &&
       H3DUtil::H3DAbs( dynamic_friction ) < Constants::epsilon ) {
     // SmoothSurface
     Vec3 local_probe = contact_info.localProbePosition();
-    //contact_info.setLocalForce( Vec3( 0, -local_probe.y * stiffness, 0 ) );
-    contact_info.setLocalForce( -local_probe * stiffness );
-    contact_info.proxy_movement_local = Vec2( local_probe.x, local_probe.z );
+    contact_info.proxy_movement_local = Vec2( local_probe.x , local_probe.z );
   } else {
     // FrictionalSurface
     Vec3 local_probe = contact_info.localProbePosition();
@@ -61,9 +59,7 @@ void FrictionSurface::onContact( ContactInfo &contact_info ) {
     Vec2 force_t( force.x, force.z );
 
     if( in_static_contact ) {
-
       if( force_t.length() <= static_friction *  force.y ) {
-        contact_info.setLocalForce( force );
         contact_info.proxy_movement_local = Vec2( 0, 0 );
       } else {
         in_static_contact = false;
@@ -76,7 +72,6 @@ void FrictionSurface::onContact( ContactInfo &contact_info ) {
       HAPIFloat velocity = 
         ( force_t.length() - dynamic_friction * force.y ) / b;
 
-      contact_info.setLocalForce( force );
       if( velocity < Constants::epsilon ) {
         in_static_contact = true;
         velocity = 0;
@@ -93,4 +88,10 @@ void FrictionSurface::onContact( ContactInfo &contact_info ) {
       }
     }
   }
+}
+
+void FrictionSurface::getForces( ContactInfo &contact_info ) {
+  Vec3 probe_to_origin = 
+    contact_info.globalOrigin() - contact_info.globalProbePosition();
+  contact_info.setGlobalForce(  probe_to_origin * stiffness );
 }

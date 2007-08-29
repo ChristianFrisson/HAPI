@@ -85,6 +85,8 @@ namespace HAPI {
 
     void onThreeOrMorePlaneContact(  Constraints &constraints,
                                      HAPISurfaceObject::ContactInfo &contact );
+
+    Vec3 tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal );
     
     HAPIFloat proxy_radius;
     Vec3 proxy_position;
@@ -94,6 +96,7 @@ namespace HAPI {
     Constraints closest_constraints;
     Constraints other_constraints;
 
+    
   };
 }
 
