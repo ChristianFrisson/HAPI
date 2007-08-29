@@ -99,6 +99,7 @@ namespace HAPI {
       thread( NULL ),
       device_state( UNINITIALIZED ),
       delete_thread( false ),
+      time_in_last_loop( 0 ),
       setup_haptic_rendering_callback( true ) {
       setHapticsRenderer( NULL );
     }
@@ -576,6 +577,11 @@ namespace HAPI {
     /// Get the current actual update rate in loops per second
     inline unsigned int getHapticsRate() { return haptics_rate; }
 
+    /// Get the time spent in the last haptics loop(in seconds)
+    inline HAPITime getTimeSpentInLastLoop() {
+      return time_in_last_loop;
+    }
+
     /// Get the thread that is used to run this haptics device.
     inline H3DUtil::PeriodicThreadBase *getThread() {
       return thread;
@@ -761,6 +767,7 @@ namespace HAPI {
 
     /// The time at the beginning of the last rendering loop
     TimeStamp last_loop_time;
+    HAPITime time_in_last_loop;
 
     DeviceState device_state;
     DeviceValues current_device_values;
