@@ -74,7 +74,7 @@ namespace HAPI {
 
     virtual void getConstraints( const Vec3 &point,
                                  HAPIFloat radius,
-                                 std::vector< PlaneConstraint > &constraints,
+                                 Constraints &constraints,
                                  Bounds::FaceType face = Bounds::FRONT_AND_BACK   );
     
     /// The Surface object describing the properties of the surface of the 

@@ -79,7 +79,7 @@ namespace HAPI {
     }
 
     virtual void getConstraints( const Vec3 &point,
-                                 std::vector< PlaneConstraint > &constraints,
+                                 Constraints &constraints,
                                  Bounds::FaceType face = 
                                  Bounds::FRONT_AND_BACK );
 

@@ -48,7 +48,7 @@ bool HapticBinaryTreePrimitive::lineIntersect( const Vec3 &from,
 }
 
 void HapticBinaryTreePrimitive::getConstraints( const Vec3 &point,
-                                        std::vector< PlaneConstraint > &constraints,
+                                        Constraints &constraints,
                                         Bounds::FaceType face ) {
   // TODO: check if transform has uniform scale
   bool uniform_scale = true;
