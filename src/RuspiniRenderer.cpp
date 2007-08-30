@@ -178,7 +178,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
 
     p0.haptic_shape->surface->getForces( contact );
     Vec3 p0_force = contact.force_global;
-    p0.haptic_shape->surface->getForces( contact );
+    p1.haptic_shape->surface->getForces( contact );
     Vec3 p1_force = contact.force_global;
 
     contact.force_global = p0_force * weight + p1_force * ( 1 - weight );
