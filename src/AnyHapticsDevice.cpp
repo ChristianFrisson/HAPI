@@ -63,6 +63,10 @@ bool AnyHapticsDevice::initHapticsDevice() {
       if( device->initHapticsDevice() ) {
         hd.reset( device );
         hd->device_state = HAPIHapticsDevice::INITIALIZED;
+        setup_haptic_rendering_callback = hd->setup_haptic_rendering_callback;
+        if( !setup_haptic_rendering_callback ) {
+          hd->haptic_rendering_callback_data = this;
+        }
         if( hd->thread )
           thread = hd->thread;
         break;

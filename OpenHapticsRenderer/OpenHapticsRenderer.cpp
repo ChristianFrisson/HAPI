@@ -157,7 +157,13 @@ OpenHapticsRenderer::renderHapticsOneStep(
                      HAPIHapticsDevice *hd,
                      const HapticShapeVector &shapes ) {
   PhantomHapticsDevice *pd = dynamic_cast< PhantomHapticsDevice * >( hd );
-  if( !pd ) return HAPIForceEffect::EffectOutput();
+  if( !pd ) {
+    AnyHapticsDevice *d = dynamic_cast< AnyHapticsDevice *>( hd );
+    if( d ) {
+      pd = dynamic_cast< PhantomHapticsDevice * >( d->getActualHapticsDevice() );
+    }
+    if( !pd ) return HAPIForceEffect::EffectOutput();
+  }
 
   hdMakeCurrentDevice( pd->getDeviceHandle() );
 
