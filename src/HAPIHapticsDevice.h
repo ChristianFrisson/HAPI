@@ -102,6 +102,7 @@ namespace HAPI {
       time_in_last_loop( 0 ),
       setup_haptic_rendering_callback( true ) {
       setHapticsRenderer( NULL );
+      haptic_rendering_callback_data = this;
     }
     
     /// Destructor. Stops haptics rendering and remove callback functions.
@@ -791,6 +792,12 @@ namespace HAPI {
     /// If false the hapticRenderingCallback functions has to be called
     /// explicity from somewhere.
     bool setup_haptic_rendering_callback;
+
+    /// Use this to send to hapticRenderingCallback when
+    /// setup_haptic_rendering_callback is false. Needed to have
+    /// anydevice call the callback correctly depending on
+    /// setup_haptic_rendering_callback.
+    void * haptic_rendering_callback_data;
 
     /// Callback function to transfer haptic objects to render to the 
     /// haptics loop.

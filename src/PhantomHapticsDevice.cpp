@@ -61,8 +61,9 @@ HDCallbackCode HDCALLBACK PhantomHapticsDevice::endFrameCallback( void *data ){
   // Makes the call to hapticRenderingCallback here in order to be sure
   // that openhaptics own rendering has already been done so the correct
   // force is used when using OpenHapticsRenderer.
-  HAPIHapticsDevice::hapticRenderingCallback( data );
   PhantomHapticsDevice *hd = static_cast< PhantomHapticsDevice * >( data );
+  HAPIHapticsDevice::hapticRenderingCallback(
+    hd->haptic_rendering_callback_data );
   hdEndFrame( hd->getDeviceHandle() );
   return HD_CALLBACK_CONTINUE;
 }
