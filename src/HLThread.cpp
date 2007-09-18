@@ -36,7 +36,7 @@
 
 using namespace HAPI;
 
-HLThread *HLThread::singleton = new HLThread;
+std::auto_ptr< HLThread > HLThread::singleton( new HLThread );
 
 #ifdef HAVE_OPENHAPTICS
 HDCallbackCode HDCALLBACK hdCallback( void *_data ) {

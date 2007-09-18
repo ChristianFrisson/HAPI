@@ -31,8 +31,10 @@
 
 using namespace HAPI;
 
-list< HAPIHapticsDevice::HapticsDeviceRegistration > 
-*HAPIHapticsDevice::registered_devices = NULL;
+HAPIHapticsDevice::local_auto_ptr< list< HAPIHapticsDevice::HapticsDeviceRegistration > 
+ > HAPIHapticsDevice::registered_devices( NULL );
+ 
+bool HAPIHapticsDevice::initialized = false; 
 
 H3DUtil::PeriodicThread::CallbackCode HAPIHapticsDevice::transferObjectsCallback( 
   void *data ) {
