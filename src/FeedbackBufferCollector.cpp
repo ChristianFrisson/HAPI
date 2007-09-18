@@ -166,6 +166,7 @@ FeedbackBufferCollector::endCollecting(
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
     collecting_triangles = false;
+    delete [] buffer;
     return NOT_ENOUGH_MEMORY_ALLOCATED;
   }
 
@@ -223,7 +224,7 @@ FeedbackBufferCollector::endCollecting(
   }
   glMatrixMode( GL_PROJECTION );
   glPopMatrix();
-  delete buffer;
+  delete [] buffer;
   collecting_triangles = false;
   return SUCCESS;
 }
@@ -240,6 +241,7 @@ FeedbackBufferCollector::endCollecting(
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
     collecting_triangles = false;
+    delete [] buffer;
     return NOT_ENOUGH_MEMORY_ALLOCATED;
   }
 
@@ -305,7 +307,7 @@ FeedbackBufferCollector::endCollecting(
   } 
   glMatrixMode( GL_PROJECTION );
   glPopMatrix();
-  delete buffer;
+  delete [] buffer;
   collecting_triangles = false;
   return SUCCESS;
 }

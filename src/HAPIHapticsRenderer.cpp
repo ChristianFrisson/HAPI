@@ -33,8 +33,8 @@
 using namespace HAPI;
 
 
-list< HAPIHapticsRenderer::HapticsRendererRegistration > 
-*HAPIHapticsRenderer::registered_renderers;
+HAPIHapticsRenderer::local_auto_ptr< list< HAPIHapticsRenderer::HapticsRendererRegistration > > 
+HAPIHapticsRenderer::registered_renderers(NULL);
 
 bool HAPIHapticsRenderer::initialized = false; 
 

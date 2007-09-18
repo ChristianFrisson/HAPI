@@ -606,9 +606,10 @@ namespace HAPI {
       libs_to_support( _libs_to_support )
       {
         
-        if( !HAPIHapticsDevice::registered_devices ) {
-          HAPIHapticsDevice::registered_devices = 
-            new list< HapticsDeviceRegistration >;
+        if( !initialized ) {
+          HAPIHapticsDevice::registered_devices.reset( 
+            new list< HapticsDeviceRegistration > );
+          initialized = true;
         }
         HAPIHapticsDevice::registerDevice( *this );
       }
@@ -639,7 +640,88 @@ namespace HAPI {
       registered_devices->push_back( fr );
     }
 
-    static list< HapticsDeviceRegistration > *registered_devices;
+        // Creating a new auto_ptr local for this node, because 
+    // registrated_file_reader caused a memory leak and because
+    // of the order of setting the static variables the autp_ptr's
+    // constructor resets the auto_ptr to 0 eventhough the 
+    // registrated_file_reader has been initilazed, and therefore
+    // cause an error making it imposible to use the standard auto_ptr.
+    template<class T>
+    class local_auto_ptr{
+    private:
+      T* ap;    // refers to the actual owned object (if any)
+    public:
+      typedef T element_type;
+
+      // constructor
+      explicit local_auto_ptr (T* ptr = 0) {
+        if(!initialized){
+          ap=ptr;
+        }
+      }
+      
+      // copy constructors (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr (local_auto_ptr& rhs) throw() : ap(rhs.release()) { }
+
+      template<class Y>
+      local_auto_ptr (local_auto_ptr<Y>& rhs) throw() : ap(rhs.release()) { }
+      
+      // assignments (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr& operator= (local_auto_ptr& rhs) throw(){
+        if(!initialized){  
+          reset(rhs.release());
+          return *this;
+        }
+      }
+      template<class Y>
+      local_auto_ptr& operator= (local_auto_ptr<Y>& rhs) throw(){
+        if(!initialized){
+          reset(rhs.release());
+          return *this;
+        }
+      }
+
+      // destructor
+      ~local_auto_ptr() throw(){
+        delete ap;
+      }
+
+      // value access
+      T* get() const throw(){
+        return ap;
+      }
+      T& operator*() const throw(){
+        return *ap;
+      }
+      T* operator->() const throw(){
+        return ap;
+      }
+
+      // release ownership
+      T* release() throw(){
+        if(!initialized){
+          T* tmp(ap);
+          ap = 0;
+          return tmp;
+        }
+      }
+
+      // reset value
+      void reset (T* ptr=0) throw(){
+        if(!initialized){
+          if (ap != ptr){
+            delete ap;
+            ap = ptr;
+          }
+        }
+      }
+    };
+
+    static local_auto_ptr< list< HapticsDeviceRegistration > >
+    registered_devices;
+    static bool initialized;
 
   protected:
 

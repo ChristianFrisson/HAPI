@@ -61,7 +61,7 @@ namespace HAPI {
   public:
     /// Get the singleton instance of FalconThread.
     static FalconThread *getInstance() {
-      return singleton;
+      return singleton.get();
     }
 
     /// If the scheduler has been started true is returned.
@@ -82,7 +82,7 @@ namespace HAPI {
     virtual void asynchronousCallback( CallbackFunc func, void *data );
   protected:
     static H3DUtil::PeriodicThread::CallbackCode setThreadId( void * _data );
-    static FalconThread *singleton;
+    static auto_ptr< FalconThread > singleton;
     bool is_active;
   };
 

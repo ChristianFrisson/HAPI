@@ -172,7 +172,8 @@ void FalconHapticsDevice::sendOutput( DeviceOutput &dv,
 }
 
 
-FalconHapticsDevice::FalconThread *FalconHapticsDevice::FalconThread::singleton = new FalconThread;
+auto_ptr< FalconHapticsDevice::FalconThread > 
+FalconHapticsDevice::FalconThread::singleton( new FalconThread );
 
 HDLServoOpExitCode falcon_callback( void *_data ) {
   void * * data = static_cast< void * * >( _data );

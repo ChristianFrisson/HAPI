@@ -128,8 +128,8 @@ namespace HAPI {
       create_func( _create ) {
         
         if( !HAPIHapticsRenderer::initialized ) {
-          HAPIHapticsRenderer::registered_renderers = 
-            new list< HapticsRendererRegistration >;
+          HAPIHapticsRenderer::registered_renderers.reset( 
+            new list< HapticsRendererRegistration > );
           initialized = true;
         }
         HAPIHapticsRenderer::registerRenderer( *this );
@@ -164,7 +164,88 @@ namespace HAPI {
     void cleanUpStuff( HAPIHapticsDevice *hd );
 
   protected:
-    static list< HapticsRendererRegistration > *registered_renderers;
+    // Creating a new auto_ptr local for this node, because 
+    // registrated_file_reader caused a memory leak and because
+    // of the order of setting the static variables the autp_ptr's
+    // constructor resets the auto_ptr to 0 eventhough the 
+    // registrated_file_reader has been initilazed, and therefore
+    // cause an error making it imposible to use the standard auto_ptr.
+    template<class T>
+    class local_auto_ptr{
+    private:
+      T* ap;    // refers to the actual owned object (if any)
+    public:
+      typedef T element_type;
+
+      // constructor
+      explicit local_auto_ptr (T* ptr = 0) {
+        if(!initialized){
+          ap=ptr;
+        }
+      }
+      
+      // copy constructors (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr (local_auto_ptr& rhs) throw() : ap(rhs.release()) { }
+
+      template<class Y>
+      local_auto_ptr (local_auto_ptr<Y>& rhs) throw() : ap(rhs.release()) { }
+      
+      // assignments (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr& operator= (local_auto_ptr& rhs) throw(){
+        if(!initialized){  
+          reset(rhs.release());
+          return *this;
+        }
+      }
+      template<class Y>
+      local_auto_ptr& operator= (local_auto_ptr<Y>& rhs) throw(){
+        if(!initialized){
+          reset(rhs.release());
+          return *this;
+        }
+      }
+
+      // destructor
+      ~local_auto_ptr() throw(){
+        delete ap;
+      }
+
+      // value access
+      T* get() const throw(){
+        return ap;
+      }
+      T& operator*() const throw(){
+        return *ap;
+      }
+      T* operator->() const throw(){
+        return ap;
+      }
+
+      // release ownership
+      T* release() throw(){
+        if(!initialized){
+          T* tmp(ap);
+          ap = 0;
+          return tmp;
+        }
+      }
+
+      // reset value
+      void reset (T* ptr=0) throw(){
+        if(!initialized){
+          if (ap != ptr){
+            delete ap;
+            ap = ptr;
+          }
+        }
+      }
+    };
+
+  protected:
+    static local_auto_ptr< list< HapticsRendererRegistration > >
+    registered_renderers;
     H3DUtil::MutexLock contacts_lock;
     Contacts contacts;
     static bool initialized;
