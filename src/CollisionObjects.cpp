@@ -691,15 +691,16 @@ void BinaryBoundTree::render( int depth) {
 
  void Triangle::closestPoint( const Vec3 &p,
                               Vec3 &closest_point,
-                              Vec3 &normal,
+                              Vec3 &return_normal,
                               Vec3 &tex_coord ) {
 
   Vec3 ab = b-a;
   Vec3 ac = c-a;
   Vec3 ap = p-a ;
 
-  normal = ab % ac;
-  normal.normalizeSafe();
+  Vec3  nn = ab % ac;
+  nn.normalizeSafe();
+  return_normal = nn;
 
   HAPIFloat d1 = ab * ap;
   HAPIFloat d2 = ac * ap;
@@ -986,13 +987,21 @@ bool Triangle::lineIntersect( const Vec3 &p,
   Vec3 tc1 = tb;
   Vec3 tc2 = tc;
  
-  //  Vec3 ab = v1 - v0;
-  //  Vec3 ac = v2 - v0;
+  Vec3 ab = v1 - v0;
+  Vec3 ac = v2 - v0;
   Vec3 qp = p - q;
 
   // Compute normal.
-  Vec3 n = normal; //ab % ac;
+  Vec3 n = ab % ac;
+/*
+  Vec3 diff1 = abf - ab;
+  Vec3 diff2 = acf - ac;
 
+  if( diff1 * diff1 > 1e-13 ||
+	  diff2 * diff2 > 1e-13 ) {
+		  H3DUtil::Console(3) << "What! " << endl;  
+  }
+*/
   Vec3 original_normal = n;
 
   HAPIFloat epsilon = 1e-5;
@@ -1003,7 +1012,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   if ( d < 0 ) {
     // line segment pointing away from triangle
     if( face == Bounds::FRONT ) return false;
-
+ 
     // flip normal in calculations since they assume starting point is
     // in the direction of the normal
     d = -d;
@@ -1043,7 +1052,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
 
   result.point = u*v0 + v*v1 + w*v2;
   result.normal = original_normal;
-  //  result.normal.normalizeSafe();
+  result.normal.normalizeSafe();
   result.tex_coord =  u*tc0 + v*tc1 + w*tc2;
   result.face = intersection_face;
   result.intersection = true;
@@ -1610,8 +1619,9 @@ void OrientedBoxBound::render( ) {
 }
 
 void GeometryPrimitive::getConstraints( const Vec3 &point,
-                           Constraints &constraints,
-                                  FaceType face ) {
+                                        Constraints &constraints,
+                                        FaceType face,
+                                        HAPIFloat radius ) {
   Vec3 closest_point, cp_normal, cp_tex_coord;
   closestPoint( point, closest_point, cp_normal, cp_tex_coord );
   //cerr << closest_point << endl;
@@ -1624,21 +1634,24 @@ void GeometryPrimitive::getConstraints( const Vec3 &point,
   }
   normal.normalizeSafe();
   //cerr << closest_point << endl;
-  constraints.push_back( PlaneConstraint( closest_point, normal, 
-                                          cp_tex_coord, NULL, this ) );
+   Vec3 v = closest_point - point;
+   if( radius < 0 || v * v <= radius * radius )
+     constraints.push_back( PlaneConstraint( closest_point, normal, 
+                                             cp_tex_coord, NULL, this ) );
 }
 
 void Triangle::getConstraints( const Vec3 &point,
                                const Matrix4 &matrix,
                                Constraints &constraints,
-                               FaceType face ) {
+                               FaceType face,
+                               HAPIFloat radius ) {
   Vec3 oa = a;
   Vec3 ob = b;
   Vec3 oc = c;
   a = (matrix * a);
   b = (matrix * b);
   c = (matrix * c);
-  Triangle::getConstraints( point, constraints, face );
+  Triangle::getConstraints( point, constraints, face, radius );
   a = oa;
   b = ob;
   c = oc;
@@ -1647,24 +1660,25 @@ void Triangle::getConstraints( const Vec3 &point,
 
 void BinaryBoundTree::getConstraints( const Vec3 &point,
                                       Constraints &constraints,
-                                      FaceType face ) {
+                                      FaceType face,
+                                      HAPIFloat radius ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
       Triangle &t = triangles[i];
-      t.getConstraints( point, constraints, face );
+      t.getConstraints( point, constraints, face, radius );
 		}
     for( unsigned int i = 0; i < linesegments.size(); i++ ) {
       LineSegment &ls = linesegments[i];
-      ls.getConstraints( point, constraints, face );
+      ls.getConstraints( point, constraints, face, radius );
 		}
     for( unsigned int i = 0; i < points.size(); i++ ) {
       Point &pt = points[i];
-      pt.getConstraints( point, constraints, face );
+      pt.getConstraints( point, constraints, face, radius );
 		}
 	}	else 	{
 		//if ( bound->boundIntersect( from, to ) )	{
-    if (left.get()) left->getConstraints( point, constraints, face );
-    if (right.get()) right->getConstraints( point, constraints, face );
+    if (left.get()) left->getConstraints( point, constraints, face, radius );
+    if (right.get()) right->getConstraints( point, constraints, face, radius );
     
   }
 }
@@ -1672,16 +1686,19 @@ void BinaryBoundTree::getConstraints( const Vec3 &point,
 void BinaryBoundTree::getConstraints( const Vec3 &point,
                                       const Matrix4 &matrix,
                                       Constraints &constraints,
-                                      FaceType face ) {
+                                      FaceType face,
+                                      HAPIFloat radius ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < triangles.size(); i++ ) {
       Triangle &t = triangles[i];
-      t.getConstraints( point, matrix, constraints, face );
+      t.getConstraints( point, matrix, constraints, face, radius );
 		}
 	}	else 	{
 		//if ( bound->boundIntersect( from, to ) )	{
-    if (left.get()) left->getConstraints( point, matrix, constraints, face );
-    if (right.get()) right->getConstraints( point, matrix, constraints, face );
+    if (left.get()) left->getConstraints( point, matrix, 
+                                          constraints, face, radius );
+    if (right.get()) right->getConstraints( point, matrix, 
+                                            constraints, face, radius );
   }
 }
 
@@ -1885,16 +1902,16 @@ HAPIFloat LineSegment::closestPointOnLine( const Vec3 &from, const Vec3 &to,
 void LineSegment::getConstraints( const Vec3 &point,
                                   const Matrix4 &matrix,
                                   Constraints &constraints,
-                                  FaceType face 
-                                      
-) {
+                                  FaceType face,
+                                  HAPIFloat radius
+                                  ) {
   Vec3 oa = start;
   Vec3 ob = end;
 
   start = (matrix * start);
   end = (matrix * end);
 
-  getConstraints( point, constraints, face );
+  getConstraints( point, constraints, face, radius );
   start = oa;
   end = ob;
 }
@@ -1957,12 +1974,13 @@ bool Bounds::Point::movingSphereIntersect( HAPIFloat radius,
 }
 
 void Bounds::Point::getConstraints( const Vec3 &point,
-                            const Matrix4 &matrix,
-                            Constraints &constraints,
-                            FaceType face  ) {
+                                    const Matrix4 &matrix,
+                                    Constraints &constraints,
+                                    FaceType face,
+                                    HAPIFloat radius ) {
   Vec3 oa = position;
   position = (matrix * position);
-  getConstraints( point, constraints, face );
+  getConstraints( point, constraints, face, radius );
   position = oa;
 }
 
@@ -2462,16 +2480,17 @@ BBTreePrimitive::BBTreePrimitive(
 void BBTreePrimitive::getConstraints(
                                   const Vec3 &point,
                                   Constraints &constraints,
-                                  FaceType face ) {
+                                  FaceType face,
+                                  HAPIFloat radius ) {
   if ( isLeaf() )	{
     for( unsigned int i = 0; i < primitives.size(); i++ ) {
       GeometryPrimitive *gp = primitives[i];
-      gp->getConstraints( point, constraints, face );
+      gp->getConstraints( point, constraints, face, radius );
 		}
 	}	else 	{
 		//if ( bound->boundIntersect( from, to ) )	{
-    if (left.get()) left->getConstraints( point, constraints, face );
-    if (right.get()) right->getConstraints( point, constraints, face );
+    if (left.get()) left->getConstraints( point, constraints, face, radius );
+    if (right.get()) right->getConstraints( point, constraints, face, radius );
     
   }
 }
@@ -2480,7 +2499,8 @@ void BBTreePrimitive::getConstraints(
                                   const Vec3 &point,
                                   const Matrix4 &matrix,
                                   Constraints &constraints,
-                                  FaceType face ) {
+                                  FaceType face,
+                                  HAPIFloat radius ) {
  // if ( isLeaf() )	{
  //   for( unsigned int i = 0; i < primitives.size(); i++ ) {
  //     GeometryPrimitive *gp = primitives[i];
@@ -2719,4 +2739,5 @@ bool Triangle::getConstraint(  const Vec3 &point,
   
   *constraint = PlaneConstraint( closest_point, normal, 
                                  cp_tex_coord, NULL, this );
+  return true;
 }

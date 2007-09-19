@@ -177,17 +177,6 @@ bool HapticPlane::lineIntersect( const Vec3 &from,
 }
 
 
-void HapticPlane::getConstraints( const Vec3 &point,
-                                 Constraints &constraints,
-                                 Bounds::FaceType face ) {
-  Vec3 p = transform.inverse() * point;
-  plane.getConstraints( p, constraints, face );
-  PlaneConstraint &pc = constraints.back();
-  pc.point = transform * pc.point;
-  pc.normal = transform.getRotationPart() * pc.normal;
-  pc.haptic_shape.reset(this);
-}
-
 void HapticPlane::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
   Vec3 local_p = transform.inverse() * p;
   plane.closestPoint( p, cp, n, tc );

@@ -73,9 +73,9 @@ namespace HAPI {
     }
 
     virtual void getConstraints( const Vec3 &point,
-                                 HAPIFloat radius,
                                  Constraints &constraints,
-                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK   );
+                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK,
+                                 HAPIFloat radius = -1 );
     
     /// The Surface object describing the properties of the surface of the 
     /// HapticShape.

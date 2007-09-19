@@ -61,7 +61,10 @@ namespace HAPI {
                                Vec3 &closest_point,
                                Vec3 &normal,
                                Vec3 &tex_coord ) {
-       return triangle.closestPoint( p, closest_point, normal, tex_coord );
+      Vec3 local_pos = transform.inverse() * p;
+      triangle.closestPoint( local_pos, closest_point, normal, tex_coord );
+      normal = transform.getRotationPart() * normal;
+      closest_point = transform * closest_point;
     }
 
     /// Detect collision between a line segment and the object.
@@ -77,11 +80,6 @@ namespace HAPI {
                                        Bounds::FRONT_AND_BACK ) {
       return triangle.lineIntersect( from, to, result, face );
     }
-
-    virtual void getConstraints( const Vec3 &point,
-                                 Constraints &constraints,
-                                 Bounds::FaceType face = 
-                                 Bounds::FRONT_AND_BACK );
 
     inline virtual void glRender() {
       glMatrixMode( GL_MODELVIEW );

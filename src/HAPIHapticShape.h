@@ -93,6 +93,11 @@ namespace HAPI {
       return false;
     }
 
+    virtual void getConstraints( const Vec3 &point,
+                                 Constraints &constraints,
+                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK,
+                                 HAPIFloat radius = -1 );
+    
     static int genShapeId();
     
     static void delShapeId( int id );

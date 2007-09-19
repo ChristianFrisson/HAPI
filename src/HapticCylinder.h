@@ -95,10 +95,6 @@ namespace HAPI {
                                 const Vec3 &to,
                                 Bounds::IntersectionInfo &result ); 
 
-    virtual void getConstraints( const Vec3 &point,
-                                 Constraints &constraints,
-                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK );
-
     virtual void closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc );
 
     /// height and radius describes a cylinder with its spine along the y-axis

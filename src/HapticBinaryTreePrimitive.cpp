@@ -49,14 +49,20 @@ bool HapticBinaryTreePrimitive::lineIntersect( const Vec3 &from,
 
 void HapticBinaryTreePrimitive::getConstraints( const Vec3 &point,
                                         Constraints &constraints,
-                                        Bounds::FaceType face ) {
+                                        Bounds::FaceType face,
+                                                HAPIFloat radius ) {
   // TODO: check if transform has uniform scale
   bool uniform_scale = true;
 
   if( uniform_scale ) {
-    Vec3 p = transform.inverse() * point;
+    Matrix4 inverse =  transform.inverse();
+    Vec3 p = inverse * point;
+    Vec3 s = inverse.getScalePart();
+    // uniform scaling so use any component
+    HAPIFloat r = radius * s.x;
+
     unsigned int size = constraints.size();
-    tree->getConstraints( p, constraints, face );
+    tree->getConstraints( p, constraints, face, r );
 
     for( unsigned int i = size; i < constraints.size(); i ++ ) {
       PlaneConstraint &pc = constraints[i];
@@ -68,7 +74,7 @@ void HapticBinaryTreePrimitive::getConstraints( const Vec3 &point,
   } else {
     // TODO: fix this
     unsigned int size = constraints.size();
-    tree->getConstraints( point, constraints, face );
+    tree->getConstraints( point, constraints, face /*r */ );
 
     for( unsigned int i = size; i < constraints.size(); i ++ ) {
       PlaneConstraint &pc = constraints[i];
