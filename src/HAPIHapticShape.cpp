@@ -28,6 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <HAPIHapticShape.h>
+#include <PlaneConstraint.h>
 
 using namespace HAPI;
 
@@ -52,4 +53,15 @@ void HAPIHapticShape::delShapeId( int id ) {
 HAPIHapticShape::~HAPIHapticShape(){
   if( clean_up_func )
     clean_up_func( userdata );
+}
+
+void HAPIHapticShape::getConstraints( const Vec3 &point,
+                                      Constraints &constraints,
+                                      Bounds::FaceType face, 
+                                      HAPIFloat radius ) {
+  Vec3 cp, n, tc;
+  closestPoint( point, cp, n, tc );
+  Vec3 v = cp - point;
+  if( radius < 0 || v * v <= radius * radius )
+    constraints.push_back( PlaneConstraint( cp, n, tc, this ) );
 }

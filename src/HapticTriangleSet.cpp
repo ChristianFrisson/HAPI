@@ -81,13 +81,15 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
 
 void HapticTriangleSet::getConstraints( const Vec3 &point,
                                         Constraints &constraints,
-                                        Bounds::FaceType face ) {
+                                        Bounds::FaceType face,
+                                        HAPIFloat radius ) {
   if( triangles.size() > 0 ) {
     // TODO: check if transform has uniform scale
     bool uniform_scale = true;
 
     if( uniform_scale ) {
-      Vec3 p = transform.inverse() * point;
+      Matrix4 inverse =  transform.inverse();
+      Vec3 p = inverse * point;
       unsigned int size = constraints.size();
 
       if( ( convex == CONVEX_FRONT && 
@@ -123,9 +125,13 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
         }
         if( !first_constraint ) constraints.push_back( best );
       } else {
+        Vec3 s = inverse.getScalePart();
+        // uniform scaling so use any component
+        HAPIFloat r = radius * s.x;
+
         for( unsigned int i = 0; i < triangles.size(); i++ ) {
           Bounds::Triangle &t = triangles[i];
-          t.getConstraints( p, constraints, face );
+          t.getConstraints( p, constraints, face, r  );
         }
       }
 
@@ -139,9 +145,11 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
     } else {
       // TODO: fix this
       unsigned int size = constraints.size();
+      //      Vec3 s = inverse.getScalePart();
+      //      HAPIFloat r = radius * max( s.x, max( s.y, s.z ) );
       for( unsigned int i = 0; i < triangles.size(); i++ ) {
         Bounds::Triangle &t = triangles[i];
-        t.getConstraints( point, constraints, face );
+        t.getConstraints( point, constraints, face, radius );
       }
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];

@@ -32,15 +32,3 @@
 
 using namespace HAPI;
 
-void HapticTriangle::getConstraints( const Vec3 &point,
-                                     Constraints &constraints,
-                                     Bounds::FaceType face ) {
-  Vec3 p = transform.inverse() * point;
-  unsigned int size = constraints.size();
-  triangle.getConstraints( p, constraints, face );
-  for( unsigned int i = size; i < constraints.size(); i ++ ) {
-    PlaneConstraint &pc = constraints[i];
-    pc.point = transform * pc.point;
-    pc.normal = transform.getRotationPart() * pc.normal;
-  }
-}

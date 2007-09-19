@@ -63,17 +63,19 @@ class Constraints;
       CollisionObject( bool _use_lock ) :
         H3DUtil::RefCountedClass( _use_lock ){};
          
-      //typedef HAPI::Constraints Constraints;
-      typedef vector< Bounds::PlaneConstraint > Constraints;
+      typedef HAPI::Constraints Constraints;
+      //typedef vector< Bounds::PlaneConstraint > Constraints;
 
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK ) {}
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 ) {}
       
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK ) {}
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 ) {}
       
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
@@ -173,7 +175,8 @@ class Constraints;
     public:
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
 
       /// Returns a point representing the primitive. Is used for example when
       /// building BinaryTreeBound.
@@ -387,14 +390,16 @@ class Constraints;
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK ) {
-        GeometryPrimitive::getConstraints( point, constraints, face );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 ) {
+        GeometryPrimitive::getConstraints( point, constraints, face, radius );
       }
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
 
       /// The corners of the triangle.
       Vec3 a,b,c;
@@ -420,14 +425,16 @@ class Constraints;
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK ) {
-        GeometryPrimitive::getConstraints( point, constraints, face );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 ) {
+        GeometryPrimitive::getConstraints( point, constraints, face, radius );
       }
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
 
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
@@ -504,14 +511,16 @@ class Constraints;
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK ) {
-        GeometryPrimitive::getConstraints( point, constraints, face );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 ) {
+        GeometryPrimitive::getConstraints( point, constraints, face, radius );
       }
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
 
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
@@ -835,12 +844,14 @@ class Constraints;
 
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
 
       virtual void getTrianglesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
@@ -1092,12 +1103,14 @@ class Constraints;
 
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK );
+                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
 
       virtual void getPrimitivesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,

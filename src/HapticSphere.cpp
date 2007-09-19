@@ -174,18 +174,6 @@ bool HapticSphere::lineIntersect( const Vec3 &from,
   return false;
 }
 
-void HapticSphere::getConstraints( const Vec3 &point,
-                                   Constraints &constraints,
-                                   Bounds::FaceType face ) {
-  Vec3 p = transform.inverse() * point;
-  sphere.getConstraints( p, constraints, face );
-  PlaneConstraint &pc = constraints.back();
-  pc.normal = transform.getScaleRotationPart() * pc.normal;
-  pc.normal.normalizeSafe();
-  pc.point = transform * pc.point;
-  pc.haptic_shape.reset(this);  
-}
-
 void HapticSphere::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
   // the point p is assumed to not lie in the center of the sphere
   // if that is the case the closest point is undefined.

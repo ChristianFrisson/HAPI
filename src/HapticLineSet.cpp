@@ -71,18 +71,24 @@ bool HapticLineSet::lineIntersect( const Vec3 &from,
 }
 
 void HapticLineSet::getConstraints( const Vec3 &point,
-                                        Constraints &constraints,
-                                        Bounds::FaceType face ) {
+                                    Constraints &constraints,
+                                    Bounds::FaceType face,
+                                    HAPIFloat radius ) {
   if( lines.size() > 0 ) {
     // TODO: check if transform has uniform scale
     bool uniform_scale = true;
 
     if( uniform_scale ) {
-      Vec3 p = transform.inverse() * point;
+      Matrix4 inverse =  transform.inverse();
+      Vec3 p = inverse * point;
+
+      Vec3 s = inverse.getScalePart();
+        // uniform scaling so use any component
+      HAPIFloat r = radius * s.x;
       unsigned int size = constraints.size();
       for( unsigned int i = 0; i < lines.size(); i++ ) {
         Bounds::LineSegment &l = lines[i];
-        l.getConstraints( p, constraints, face );
+        l.getConstraints( p, constraints, face, r );
       }
 
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
@@ -97,7 +103,7 @@ void HapticLineSet::getConstraints( const Vec3 &point,
       unsigned int size = constraints.size();
       for( unsigned int i = 0; i < lines.size(); i++ ) {
         Bounds::LineSegment &l = lines[i];
-        l.getConstraints( point, constraints, face );
+        l.getConstraints( point, constraints, face /*r */ );
       }
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
         PlaneConstraint &pc = constraints[i];

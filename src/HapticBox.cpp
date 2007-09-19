@@ -211,14 +211,6 @@ bool HapticBox::lineIntersect( const Vec3 &from,
   return true;
 }
 
-void HapticBox::getConstraints( const Vec3 &point,
-                                Constraints &constraints,
-                                Bounds::FaceType face ) {
-  Vec3 cp, n, tc;
-  closestPoint( point, cp, n, tc );
-  constraints.push_back( PlaneConstraint( cp, n, tc, this ) );
-}
-
 void HapticBox::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) { 
   Vec3 temp_p = transform.inverse() * p;
   
