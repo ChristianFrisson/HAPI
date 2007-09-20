@@ -332,16 +332,20 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   Bounds::IntersectionInfo closest_intersection;
 
   constraints.clear();  
-  constraints.reserve( 3000 );
+  //constraints.reserve( 3000 );
   closest_constraints.clear();
   other_constraints.clear();
+
+  // only get the planes that are within the distance the proxy can move
+  HAPIFloat r = (proxy_radius * 2 + 
+                 (input.position - proxy_position).length() ) * 1.1;
 
   //  vector< Bounds::PlaneConstraint > constraints;
   // get the constraints from the current shapes.
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
        i++ ) {
-    (*i)->getConstraints( proxy_pos, constraints, (*i)->touchable_face );
+    (*i)->getConstraints( proxy_pos, constraints, (*i)->touchable_face, r );
   }
   
   // move them out by the proxy radius in the direction of the normal. 
@@ -376,7 +380,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
 
   // the constraints not in closest_constraints
 
-  other_constraints.reserve( constraints.size() );
+//  other_constraints.reserve( constraints.size() );
 
   Bounds::IntersectionInfo intersection;
 
