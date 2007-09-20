@@ -210,6 +210,8 @@ namespace HAPI {
 
       friend class RuspiniRenderer;
       friend class GodObjectRenderer;
+      friend class OpenHapticsRenderer;
+      friend class Chai3DRenderer;
     }; 
 
     /// Destructor.
