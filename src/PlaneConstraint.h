@@ -120,6 +120,14 @@ namespace HAPI {
     };
 
 
+    inline PlaneConstraint & operator[]( int i ) {
+	    return constraints[i]; 
+	  }
+
+    inline PlaneConstraint & operator[]( unsigned int i ) {
+	    return constraints[i]; 
+	  }
+
     inline iterator begin() { 
 		if( !empty() ) return iterator( 0, nr_constraints, this );
 		else return end();
@@ -127,12 +135,20 @@ namespace HAPI {
     inline iterator end() {
 		return iterator( iterator::end_value, nr_constraints, this );
 	}
-    inline void clear() { nr_constraints = 0; }
+    inline void clear() { 
+      for( unsigned int i = 0; i < nr_constraints; i++ )
+        constraints[i].haptic_shape.reset( NULL );
+      nr_constraints = 0;
+
+    }
     inline bool empty() { return nr_constraints == 0; }
     inline unsigned int size() { return nr_constraints; }
 
+
+    // TODO: implement properly
     inline void insert( iterator pos, iterator s, iterator e ) {
-      
+      for( iterator i = s; i != e; i++ )
+        push_back( *i );
     }
     
 	inline void push_back( const PlaneConstraint &p ) {
