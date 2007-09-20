@@ -48,7 +48,8 @@ namespace HAPI {
     struct HAPI_API ContactInfo {
       ContactInfo(): has_inverse( false ),
                      proxy_radius( 0 ) {}
-    protected:
+      //    protected:
+    public:
       // INPUT
 
       // The point of contact in global coordinates.
@@ -212,6 +213,7 @@ namespace HAPI {
       friend class GodObjectRenderer;
       friend class OpenHapticsRenderer;
       friend class Chai3DRenderer;
+      friend class H3DHapticsDevice;
     }; 
 
     /// Destructor.
