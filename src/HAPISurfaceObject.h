@@ -32,6 +32,7 @@
 #include <HAPI.h>
 #include <HAPITypes.h>
 #include <RefCountedClass.h>
+#include <CollisionObjects.h>
 
 namespace HAPI {
 
@@ -47,7 +48,8 @@ namespace HAPI {
     /// Structure that contains information about a contact.
     struct HAPI_API ContactInfo {
       ContactInfo(): has_inverse( false ),
-                     proxy_radius( 0 ) {}
+                     proxy_radius( 0 ),
+                     primitive( 0 ) {}
       //    protected:
     public:
       // INPUT
@@ -68,6 +70,9 @@ namespace HAPI {
 
       // The origin of the local coordinate space in global coordinates.
       Vec3 origin_global;
+
+      // Contains the primitive on which the point of contact was detected.
+      Bounds::GeometryPrimitive * primitive;
       
       // OUTPUT
 

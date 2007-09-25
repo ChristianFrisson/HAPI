@@ -19,12 +19,9 @@
 //
 //    A commercial license is also available. Please contact us at 
 //    www.sensegraphics.com for more information.
-// TODO: 
-// Base code that this code was built upon was contributed by .....
-//
 //
 /// \file CollisionStructures.h
-/// \brief Header file for CollisionStructures, 
+/// \brief Header file for CollisionStructures
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -37,8 +34,6 @@
 namespace HAPI {
 
   namespace Bounds {
-
-    class GeometryPrimitive;
 
     class HAPI_API PlaneConstraint {
 

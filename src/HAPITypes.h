@@ -43,6 +43,7 @@ namespace HAPI {
   typedef H3DUtil::TimeStamp TimeStamp;
   typedef int HAPIInt32;
   typedef double HAPITime;
+  typedef H3DUtil::RGBA RGBA;
 
 #ifdef USE_DOUBLE_PRECISION
   typedef H3DUtil::Vec2d Vec2;
