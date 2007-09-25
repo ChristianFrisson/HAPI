@@ -54,7 +54,7 @@ RuspiniRenderer::RuspiniRenderer( HAPIFloat _proxy_radius ):
 }
 
 void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c, 
-                                         HAPISurfaceObject::ContactInfo &contact ) {
+                                    HAPISurfaceObject::ContactInfo &contact ) {
   // create a local coordinate system with the PlaneConstraint normal
   // as y-axis
   contact.y_axis = c.normal;
@@ -66,6 +66,7 @@ void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c,
   contact.setGlobalOrigin( contact.contact_point_global );
   assert( c.haptic_shape.get() );
 
+  contact.primitive = c.primitive;
   c.haptic_shape->surface->getProxyMovement( contact );
 
   Vec3 new_proxy_pos =  
@@ -85,7 +86,7 @@ void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c,
 
 void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
                                          const PlaneConstraint &p1,
-                                         HAPISurfaceObject::ContactInfo &contact ) {
+                                    HAPISurfaceObject::ContactInfo &contact ) {
   Vec3 contact_global = contact.globalContactPoint();
 
   // the direction along the intersection of the two planes. 
@@ -136,6 +137,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
 
     assert( p0.haptic_shape.get() );
 
+    contact.primitive = p0.primitive;
     // calculate the force and proxy movement for the first plane
     p0.haptic_shape->surface->getProxyMovement( contact );
     
@@ -149,6 +151,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
 
     assert( p1.haptic_shape.get() );
 
+    contact.primitive = p1.primitive;
     // calculate the force and proxy movement for the second plane
     p1.haptic_shape->surface->getProxyMovement( contact );
 
@@ -174,10 +177,12 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
       contact.proxy_movement_local.y * contact.z_axis;
     
     contact.setGlobalOrigin( tryProxyMovement( proxy_position, 
-                                               new_proxy_pos, contact.y_axis ) );
+                                             new_proxy_pos, contact.y_axis ) );
 
+    contact.primitive = p0.primitive;
     p0.haptic_shape->surface->getForces( contact );
     Vec3 p0_force = contact.force_global;
+    contact.primitive = p1.primitive;
     p1.haptic_shape->surface->getForces( contact );
     Vec3 p1_force = contact.force_global;
 

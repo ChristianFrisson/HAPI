@@ -23,8 +23,8 @@
 // Base code that this code was built upon was contributed by .....
 //
 //
-/// \file CollisionStructures.h
-/// \brief Header file for CollisionStructures, 
+/// \file CollisionObjects.h
+/// \brief Header file for CollisionObjects, 
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -63,8 +63,8 @@ class Constraints;
       CollisionObject( bool _use_lock ) :
         H3DUtil::RefCountedClass( _use_lock ){};
          
-      typedef HAPI::Constraints Constraints;
-      //typedef vector< Bounds::PlaneConstraint > Constraints;
+      //typedef HAPI::Constraints Constraints;
+      typedef vector< Bounds::PlaneConstraint > Constraints;
 
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
@@ -100,7 +100,8 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK ){ return false; }// = 0;
+                                  FaceType face = Bounds::FRONT_AND_BACK ){
+        return false; }// = 0;
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -181,6 +182,14 @@ class Constraints;
       /// Returns a point representing the primitive. Is used for example when
       /// building BinaryTreeBound.
       virtual Vec3 pointRepresentation() const { return Vec3(); }
+
+      /// Calculates a matrix transforming a vector from global space
+      /// to texture space.
+      /// \param point The point at which to find the tangent vectors
+      /// \param result_mtx Where the result is stored.
+      virtual void getTangentSpaceMatrix( const Vec3 &point,
+                                          Matrix4 &result_mtx );
+
       bool collided;
     };
     
@@ -330,6 +339,13 @@ class Constraints;
       bool getConstraint(  const Vec3 &point,
                            Bounds::PlaneConstraint *constraint,
                            FaceType face = Bounds::FRONT_AND_BACK );
+
+      /// Calculates a matrix transforming a vector from global space
+      /// to texture space.
+      /// \param point The point at which to find the tangent vectors
+      /// \param result_mtx Where the result is stored.
+      virtual void getTangentSpaceMatrix( const Vec3 &point,
+                                          Matrix4 &result_mtx );
 
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
@@ -864,17 +880,19 @@ class Constraints;
                                              vector< Point > &points );
 
 
-      virtual void getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
-                                                          Vec3 from,
-                                                          Vec3 to,
-                                                          vector< Triangle > &triangles);
+      virtual void getTrianglesIntersectedByMovingSphere(
+                    HAPIFloat radius,
+                    Vec3 from,
+                    Vec3 to,
+                    vector< Triangle > &triangles);
 
-      virtual void getPrimitivesIntersectedByMovingSphere( HAPIFloat radius,
-                                                          Vec3 from,
-                                                          Vec3 to,
-                                                          vector< Triangle > &triangles,
-                                                          vector< LineSegment > &lines,
-                                                          vector< Point > &points );
+      virtual void getPrimitivesIntersectedByMovingSphere(
+                    HAPIFloat radius,
+                    Vec3 from,
+                    Vec3 to,
+                    vector< Triangle > &triangles,
+                    vector< LineSegment > &lines,
+                    vector< Point > &points );
 
       /// Render the outlines of the object for debugging purposes.
       virtual void render();
@@ -901,9 +919,9 @@ class Constraints;
           return false;
       }
 
-      /// Detect collision between a line segment and the object. Will check for 
-      /// collision between the triangles contained in the leaves of the tree and
-      /// the line segment.
+      /// Detect collision between a line segment and the object. Will check
+      /// for collision between the triangles contained in the leaves of the
+      /// tree and the line segment.
       /// \param from The start of the line segment.
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if line
@@ -953,7 +971,8 @@ class Constraints;
 
       /// The closest point on the bound to the point. If tree is a leaf,
       /// the closest point to the triangles in the leaf is returned.
-      /// To know the closest point to the primitives in the bound, use closestPoint
+      /// To know the closest point to the primitives in the bound,
+      /// use closestPoint
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
         if( !isLeaf() && bound.get() )
           return bound->boundClosestPoint( p );
@@ -1006,7 +1025,9 @@ class Constraints;
       /// that are allowed to be in a bound of a leaf in the tree. 
       AABBTree( const vector< Triangle > &triangles,
                 unsigned int max_nr_triangles_in_leaf = 1 ):
-        BinaryBoundTree( &(newInstance< AABoxBound >), triangles, max_nr_triangles_in_leaf ) {}
+        BinaryBoundTree( &(newInstance< AABoxBound >),
+                         triangles,
+                         max_nr_triangles_in_leaf ) {}
 
       AABBTree( const vector< Triangle > &triangles,
                 const vector< LineSegment > &linesegment_vector,
@@ -1058,7 +1079,9 @@ class Constraints;
       /// that are allowed to be in a bound of a leaf in the tree. 
       SphereBoundTree( const vector< Triangle > &triangles,
                        unsigned int max_nr_triangles_in_leaf = 1): 
-        BinaryBoundTree( &(newInstance< SphereBound > ), triangles, max_nr_triangles_in_leaf ) {}
+        BinaryBoundTree( &(newInstance< SphereBound > ),
+                         triangles,
+                         max_nr_triangles_in_leaf ) {}
 
       SphereBoundTree( const vector< Triangle > &triangles,
                 const vector< LineSegment > &linesegment_vector,
@@ -1114,12 +1137,13 @@ class Constraints;
 
       virtual void getPrimitivesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
-                                             vector< GeometryPrimitive * > &primitives);
+                                    vector< GeometryPrimitive * > &primitives);
 
-      virtual void getPrimitivesIntersectedByMovingSphere( HAPIFloat radius,
-                                                          Vec3 from,
-                                                          Vec3 to,
-                                                          vector< GeometryPrimitive * > &primitives);
+      virtual void getPrimitivesIntersectedByMovingSphere(
+                      HAPIFloat radius,
+                      Vec3 from,
+                      Vec3 to,
+                      vector< GeometryPrimitive * > &primitives);
 
       /// Render the outlines of the object for debugging purposes.
       virtual void render();
@@ -1146,9 +1170,9 @@ class Constraints;
           return false;
       }
 
-      /// Detect collision between a line segment and the object. Will check for 
-      /// collision between the triangles contained in the leaves of the tree and
-      /// the line segment.
+      /// Detect collision between a line segment and the object. Will check
+      /// for collision between the triangles contained in the leaves of the
+      /// tree and the line segment.
       /// \param from The start of the line segment.
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if line
@@ -1198,7 +1222,8 @@ class Constraints;
 
       /// The closest point on the bound to the point. If tree is a leaf,
       /// the closest point to the triangles in the leaf is returned.
-      /// To know the closest point to the primitives in the bound, use closestPoint
+      /// To know the closest point to the primitives in the bound,
+      /// use closestPoint
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
         if( !isLeaf() && bound.get() )
           return bound->boundClosestPoint( p );
@@ -1210,7 +1235,8 @@ class Constraints;
       }
 
       /// Add all triangles in the tree to the given vector.
-      virtual void getAllPrimitives( vector< GeometryPrimitive * > &primitives );
+      virtual void getAllPrimitives(
+        vector< GeometryPrimitive * > &primitives );
 
       void clearCollidedFlag();
 
@@ -1239,7 +1265,9 @@ class Constraints;
       /// that are allowed to be in a bound of a leaf in the tree. 
       AABBTreePrimitive( const vector< GeometryPrimitive * > &_primitives,
                 unsigned int max_nr_primitives_in_leaf = 1 ):
-        BBTreePrimitive( &(newInstance< AABoxBound >), _primitives, max_nr_primitives_in_leaf ) {}
+        BBTreePrimitive( &(newInstance< AABoxBound >),
+                         _primitives,
+                         max_nr_primitives_in_leaf ) {}
     };
 
 
@@ -1275,7 +1303,9 @@ class Constraints;
       /// that are allowed to be in a bound of a leaf in the tree. 
       SBTreePrimitive( const vector< GeometryPrimitive * > &_primitives,
                        unsigned int max_nr_primitives_in_leaf = 1): 
-        BBTreePrimitive( &(newInstance< SphereBound > ), _primitives, max_nr_primitives_in_leaf ) {}
+        BBTreePrimitive( &(newInstance< SphereBound > ),
+                         _primitives,
+                         max_nr_primitives_in_leaf ) {}
     };
 
 }

@@ -121,6 +121,7 @@ void GodObjectRenderer::onOnePlaneContact(
   contact.setGlobalOrigin( contact.contact_point_global );
   assert( c.haptic_shape.get() );
 
+  contact.primitive = c.primitive;
   c.haptic_shape->surface->getProxyMovement( contact );
 
   Vec3 new_proxy_pos = 
@@ -206,6 +207,7 @@ void GodObjectRenderer::onTwoPlaneContact(
 
     assert( p0.haptic_shape.get() );
 
+    contact.primitive = p0.primitive;
     // calculate the force and proxy movement for the first plane
     p0.haptic_shape->surface->getProxyMovement( contact );
     
@@ -218,6 +220,7 @@ void GodObjectRenderer::onTwoPlaneContact(
       line_dir_local;
 
     assert( p1.haptic_shape.get() );
+    contact.primitive = p1.primitive;
     // calculate the force and proxy movement for the second plane
     p1.haptic_shape->surface->getProxyMovement( contact );
 
@@ -256,8 +259,10 @@ void GodObjectRenderer::onTwoPlaneContact(
                       o );
     contact.setGlobalOrigin( o );
     
+    contact.primitive = p0.primitive;
     p0.haptic_shape->surface->getForces( contact );
     Vec3 p0_force = contact.force_global;
+    contact.primitive = p1.primitive;
     p1.haptic_shape->surface->getForces( contact );
     Vec3 p1_force = contact.force_global;
 
@@ -429,7 +434,8 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                           intersection.face == Bounds::FRONT ?
                           intersection.normal : -intersection.normal,
                           intersection.tex_coord,
-                          *i );
+                          *i,
+                          intersection.primitive );
 
       if( !has_intersection ) {
         // first shape that was intersected, and therefore also the

@@ -205,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\DepthMapHAPISurface.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\FalconHapticsDevice.cpp"
 				>
 			</File>
@@ -238,6 +242,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\HAPISurfaceObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\HAPIVariableDepthSurface.cpp"
 				>
 			</File>
 			<File
@@ -317,6 +325,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\ImageInterfaceObject.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\ParsedFunction.cpp"
 				>
 			</File>
@@ -348,6 +360,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\CollisionObjects.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\DepthMapHAPISurface.h"
 				>
 			</File>
 			<File
@@ -416,6 +432,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\HAPITypes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\HAPIVariableDepthSurface.h"
 				>
 			</File>
 			<File
@@ -492,6 +512,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\HLThread.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\ImageInterfaceObject.h"
 				>
 			</File>
 			<File

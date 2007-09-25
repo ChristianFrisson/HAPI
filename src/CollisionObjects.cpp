@@ -1056,6 +1056,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   result.tex_coord =  u*tc0 + v*tc1 + w*tc2;
   result.face = intersection_face;
   result.intersection = true;
+  result.primitive = this;
   //if( (-qp) * result.normal > 0 ) 
   //  result.normal = -result.normal;
   return true;
@@ -1954,6 +1955,7 @@ bool Bounds::Point::lineIntersect( const Vec3 &from,
       Vec3 d = from + t * ab;
       if( (position - d).lengthSqr() ) {
         result.point = position;
+        result.primitive = this;
         return true;
       }
     }
@@ -2013,6 +2015,7 @@ bool Plane::lineIntersect( const Vec3 &from,
     if( u > 1 ) u = 1;
     result.point = from + u * from_to;
     result.normal = normal;
+    result.primitive = this;
     return true;
   }
   return false;
@@ -2110,6 +2113,7 @@ bool Sphere::lineIntersect( const Vec3 &from,
   result.normal =  p + u*v;
   result.point = result.normal + center;
   result.normal.normalize();
+  result.primitive = this;
   return true;
 }
 
@@ -2740,4 +2744,27 @@ bool Triangle::getConstraint(  const Vec3 &point,
   *constraint = PlaneConstraint( closest_point, normal, 
                                  cp_tex_coord, NULL, this );
   return true;
+}
+
+void GeometryPrimitive::getTangentSpaceMatrix( const Vec3 &point,
+                           Matrix4 &result_mtx ) {}
+
+void Triangle::getTangentSpaceMatrix( const Vec3 &point,
+                                      Matrix4 &result_mtx ) {
+  //http://www.blacksmith-studios.dk/projects/downloads/tangent_matrix_derivation.php
+  //code for calculating matrix.
+
+  //calculate lineary independant basis vectors for texture space
+  Vec3 tbta = tb - ta;
+  Vec3 tcta = tc - ta;
+
+  HAPIFloat eMtex_invert = 1 / (tbta.x * tcta.y - tcta.x * tbta.y );
+  Vec3 tbase1 = eMtex_invert * ( tcta.y * ab - tbta.y * ac );
+  Vec3 tbase2 = eMtex_invert * ( -tcta.x * ab + tbta.x * ac );
+  Vec3 tbase3 = tbase1 % tbase2;
+
+  result_mtx = Matrix4( tbase1.x, tbase2.x, tbase3.x, 0,
+                        tbase1.y, tbase2.y, tbase3.y, 0,
+                        tbase1.z, tbase2.z, tbase3.z, 0,
+                               0,        0,        0, 1 ).inverse();
 }
