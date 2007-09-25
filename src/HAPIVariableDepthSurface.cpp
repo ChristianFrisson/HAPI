@@ -95,6 +95,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
                                       minimization_epsilon,
                                       max_iterations );
     HAPIFloat res_l_sqr = res.lengthSqr();
+    HAPIFloat res_l = H3DUtil::H3DSqrt( res_l_sqr );
     // If we have movement we need to calculate how friction affects it.
     if( res_l_sqr > Constants::epsilon ) {
       HAPIFloat force_res_dot = 2;
@@ -102,7 +103,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
       Vec2 res_n = res;
       if( tangent_force > Constants::epsilon ) {
         force_t_n = force_t_n / tangent_force;
-        res_n = res_n / H3DUtil::H3DSqrt( res_l_sqr );
+        res_n = res_n / res_l;
         force_res_dot = force_t_n * res_n;
       }
 
@@ -113,7 +114,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
       // a lot then use the cross product to calculate a normal direction for
       // the plane sliding along.
       if( force_res_dot < 0.3 ) {
-        HAPIFloat depth_f = func( force_t_n * H3DUtil::H3DSqrt( res_l_sqr ),
+        HAPIFloat depth_f = func( force_t_n * res_l,
                                   this );
         depth_get_lock.unlock();
         found_normal = Vec3( res.x, depth - start_depth, res.y ) %
@@ -135,7 +136,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
             ( ( local_probe.y >= 0 && depth <= local_probe.y ) ||
             ( local_probe.y < 0 && depth >= local_probe.y ) ) ) {
           HAPIFloat depth_diff_squared = depth_diff * depth_diff;
-          HAPIFloat a1_sqr_rt = H3DUtil::H3DSqrt( res_l_sqr );
+          HAPIFloat a1_sqr_rt = res_l;
           HAPIFloat a2_sqr_rt = H3DUtil::H3DSqrt( res_l_sqr +
                                                   depth_diff_squared );
           HAPIFloat y_coord = depth_diff * a1_sqr_rt / a2_sqr_rt;
@@ -179,13 +180,19 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
         velocity = 0;
         contact.proxy_movement_local = Vec2( 0, 0 ); 
       } else {
-        //HAPIFloat max_movement = velocity * 1e-3;
-        //Vec2 proxy_movement = res;
-        //// TODO: review this algorithm, is this part needed?
-        //HAPIFloat l = proxy_movement.length();
-        //if( l > max_movement ) {
-        //  proxy_movement *= max_movement / l; 
-        //}
+        // The max_movement should be in mm. The velocity gotten is calculated
+        // using forces which is in newton (since stiffness is in N/mm), this
+        // means that in order to get the maximum movement on one frame we do:
+        // max_movement = velocity * 1000 * 0.001.
+        // Where 1000 is conversion from mm to m and
+        // 0.001 is the maximum time (in seconds) of one frame. This simplifies
+        // the expression to max_movement = velocity
+        HAPIFloat max_movement = velocity;
+        
+        HAPIFloat l = res_l;
+        if( l > max_movement ) {
+          res *= max_movement / l; 
+        }
         contact.proxy_movement_local = res;
       }
     }
