@@ -33,6 +33,8 @@
 #include <HAPI.h>
 #include <Threads.h>
 
+#include <memory>
+
 namespace HAPI {
   /// HLThread is a singleton class providing an interface to the scheduler
   /// and thread running when using OpenHaptics and HD API. It is used
@@ -74,7 +76,7 @@ namespace HAPI {
     virtual void asynchronousCallback( CallbackFunc func, void *data );
   protected:
     static H3DUtil::PeriodicThread::CallbackCode setThreadId( void * _data );
-	static std::auto_ptr< HLThread > singleton;
+    static std::auto_ptr< HLThread > singleton;
     bool is_active;
   };
 
