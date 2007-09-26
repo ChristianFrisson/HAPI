@@ -44,7 +44,8 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
   func( _func ),
   max_iterations( _max_iterations ),
   minimization_epsilon( _minimization_epsilon ),
-  in_static_contact( true ) {
+  in_static_contact( true ),
+  depth_invert( false ) {
 }
 
 void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
@@ -52,6 +53,10 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
       H3DUtil::H3DAbs( dynamic_friction ) < Constants::epsilon ) {
     this_contact_info = &contact;
     Vec3 local_probe = contact.localProbePosition();
+    if( local_probe.y > 0 )
+      depth_invert = true;
+    else
+      depth_invert = false;
     Vec2 movement = Vec2( local_probe.x, local_probe.z );
     Vec2 half_movement = movement / 2;
     Vec2 v[] = { Vec2(0, 0 ), movement, half_movement +
@@ -73,6 +78,10 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
     this_contact_info = &contact;
 
     Vec3 local_probe = contact.localProbePosition();
+    if( local_probe.y > 0 )
+      depth_invert = true;
+    else
+      depth_invert = false;
     Vec2 movement = Vec2( local_probe.x, local_probe.z );
     Vec2 half_movement = movement / 2;
     Vec2 v[] = { Vec2(0, 0 ), movement, half_movement +
@@ -80,7 +89,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
     Vec2 res;
 
     depth_get_lock.lock();
-    HAPIFloat start_depth = func( Vec2(), this );
+    HAPIFloat start_depth = getDepth( Vec2());
     Vec3 force = ( Vec3( 0, start_depth, 0 ) - contact.localProbePosition() )
                   * stiffness;
     Vec2 force_t( force.x, force.z );
@@ -107,15 +116,14 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
         force_res_dot = force_t_n * res_n;
       }
 
-      HAPIFloat depth = func( res, this );
+      HAPIFloat depth = getDepth( res );
       bool normal_found = false;
       Vec3 found_normal;
       // If the direction of the force and the direction of movement differs
       // a lot then use the cross product to calculate a normal direction for
       // the plane sliding along.
       if( force_res_dot < 0.3 ) {
-        HAPIFloat depth_f = func( force_t_n * res_l,
-                                  this );
+        HAPIFloat depth_f = getDepth( force_t_n * res_l );
         depth_get_lock.unlock();
         found_normal = Vec3( res.x, depth - start_depth, res.y ) %
                        Vec3( force_t_n.x, depth_f - start_depth, force_t_n.y );
@@ -202,10 +210,12 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
 void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
   Vec3 temp_point = contact_info.globalOrigin();
   Vec3 glbl_vect = temp_point - contact_info.contact_point_global;
+  Vec3 glbl_local_probe_vector = contact_info.globalProbePosition() -
+    - contact_info.contact_point_global;
   depth_get_lock.lock();
   this_contact_info = &contact_info;
   Vec3 temp_local_vec = contact_info.vectorToLocal( glbl_vect );
-  HAPIFloat depth = func( Vec2( temp_local_vec.x, temp_local_vec.z ), this );
+  HAPIFloat depth = getDepth( Vec2( temp_local_vec.x, temp_local_vec.z ) );
   depth_get_lock.unlock();
   HAPIFloat local_probe_pos = contact_info.localProbePosition().y;
   if( ( local_probe_pos >= 0 && depth > local_probe_pos ) ||
@@ -213,6 +223,8 @@ void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
       contact_info.setGlobalForce( Vec3() );
   }
   else {
+
+    //depth = depth_invert * depth;
     Vec3 real_contact_point = temp_point + depth * contact_info.y_axis;
 
     Vec3 probe_to_origin = 
@@ -228,7 +240,7 @@ HAPIFloat HAPIVariableDepthSurface::localPtToDist( Vec2 local_point,
   if( bmhs ) {
     Vec3 glbl_vect = bmhs->this_contact_info->
       vectorToGlobal( Vec3( local_point.x, 0, local_point.y ) );
-    HAPIFloat depth = bmhs->func( local_point, bmhs );
+    HAPIFloat depth = bmhs->getDepth( local_point );
     Vec3 real_contact_point = bmhs->this_contact_info->origin_global +
                                glbl_vect + depth *
                                bmhs->this_contact_info->y_axis;
