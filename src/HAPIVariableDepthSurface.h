@@ -73,6 +73,13 @@ namespace HAPI {
     /// Function to minimize to find out where to move proxy.
     static HAPIFloat localPtToDist( Vec2 local_point, void *user_data );
 
+    inline HAPIFloat getDepth( Vec2 &local_point ) {
+      if( depth_invert )
+        return -func( local_point, this );
+      else
+        return func( local_point, this );
+    }
+
     /// Function used to calculate depth on the surface.
     /// \param local_point is a point in local coordinates around the point
     /// of contact. Transformation information is taken from ContactInfo.
@@ -88,6 +95,8 @@ namespace HAPI {
     /// Can be used by the depth function to access the current ContactInfo
     /// class.
     ContactInfo *this_contact_info;
+    //int invert_depth;
+    bool depth_invert;
 
     /// Used for static friction calculations
     bool in_static_contact;
