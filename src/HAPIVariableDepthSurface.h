@@ -73,7 +73,7 @@ namespace HAPI {
     /// Function to minimize to find out where to move proxy.
     static HAPIFloat localPtToDist( Vec2 local_point, void *user_data );
 
-    inline HAPIFloat getDepth( Vec2 &local_point ) {
+    inline HAPIFloat getDepth( const Vec2 &local_point ) {
       if( depth_invert )
         return -func( local_point, this );
       else
