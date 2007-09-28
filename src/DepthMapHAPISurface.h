@@ -61,7 +61,7 @@ namespace HAPI {
     /// the surface.
     /// \param data contains a pointer to the DepthMapHAPISurface calling this
     /// function.
-    static inline HAPIFloat scaleDepth( Vec2 &local_point, void *data ) {
+    static inline HAPIFloat scaleDepth( const Vec2 &local_point, void *data ) {
       DepthMapHAPISurface *dms = static_cast< DepthMapHAPISurface * >(data);
       Matrix4 tangent_space_mtx;
       Vec3 global_vector = dms->this_contact_info->vectorToGlobal(

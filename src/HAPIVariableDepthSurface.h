@@ -50,7 +50,7 @@ namespace HAPI {
           HAPIFloat _stiffness = 0.35,
           HAPIFloat _static_friction = 0,
           HAPIFloat _dynamic_friction = 0.5,
-          HAPIFloat (*_func)( Vec2 &local_point, void *data ) = 0,
+          HAPIFloat (*_func)( const Vec2 &local_point, void *data ) = 0,
           int _max_iterations = 35,
           HAPIFloat _minimization_epsilon = 1e-4 );
 
@@ -85,7 +85,7 @@ namespace HAPI {
     /// of contact. Transformation information is taken from ContactInfo.
     /// \param data User data, in this case a pointer to
     /// HAPIVariableDepthSurface.
-    HAPIFloat (*func)( Vec2 &local_point, void *data );
+    HAPIFloat (*func)( const Vec2 &local_point, void *data );
 
     /// Needed by amoeba minimization function
     HAPIFloat minimization_epsilon;

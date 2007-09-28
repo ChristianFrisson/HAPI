@@ -35,7 +35,7 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
         HAPIFloat _stiffness,
         HAPIFloat _static_friction,
         HAPIFloat _dynamic_friction,
-        HAPIFloat (*_func)( Vec2 &local_point, void *data ),
+        HAPIFloat (*_func)( const Vec2 &local_point, void *data ),
         int _max_iterations,
         HAPIFloat _minimization_epsilon ) :
   stiffness( _stiffness ),
@@ -247,5 +247,5 @@ HAPIFloat HAPIVariableDepthSurface::localPtToDist( Vec2 local_point,
     return ( real_contact_point -
              bmhs->this_contact_info->globalProbePosition() ).lengthSqr();
   }
-  return DBL_MAX;
+  return (std::numeric_limits< HAPIFloat >::max)();
 }
