@@ -221,6 +221,9 @@ namespace HAPI {
       friend class H3DHapticsDevice;
     }; 
 
+    /// Constructor
+    HAPISurfaceObject( bool _use_ref_count_lock = true );
+
     /// Destructor.
     virtual ~HAPISurfaceObject();
 

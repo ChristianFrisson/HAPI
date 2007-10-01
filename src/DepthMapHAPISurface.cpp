@@ -34,14 +34,16 @@ DepthMapHAPISurface::DepthMapHAPISurface( HAPIFloat _stiffness,
                                   HAPIFloat _static_friction,
                                   HAPIFloat _dynamic_friction,
                                   H3DUtil::Image * _depth_map,
-                                  HAPIFloat _depth_map_scale,
+                                  HAPIFloat _max_depth,
                                   bool _white_max,
                                   int _max_iterations,
-                                  HAPIFloat _minimization_epsilon ) :
+                                  HAPIFloat _minimization_epsilon,
+                                  bool _use_ref_count_lock ) :
   HAPIVariableDepthSurface( _stiffness, _static_friction, _dynamic_friction,
-                         scaleDepth, _max_iterations, _minimization_epsilon ),
+                            scaleDepth, _max_iterations,
+                            _minimization_epsilon, _use_ref_count_lock ),
   ImageInterfaceObject( _depth_map ),
-  depth_map_scale( _depth_map_scale ),
+  max_depth( _max_depth ),
   white_max( _white_max )
 {
   image_lock = &depth_get_lock;

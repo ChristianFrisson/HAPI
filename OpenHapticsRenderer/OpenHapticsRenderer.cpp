@@ -69,7 +69,9 @@ OpenHapticsRenderer::OpenHapticsSurface::OpenHapticsSurface(
                           HAPIFloat _static_friction,
                           HAPIFloat _dynamic_friction,
                           bool _magnetic,
-                          HAPIFloat _snap_distance ):
+                          HAPIFloat _snap_distance,
+                          bool _use_ref_count_lock ):
+  HAPISurfaceObject( _use_ref_count_lock ),
   stiffness( _stiffness ),
   damping( _damping ),
   static_friction( _static_friction ),
@@ -401,7 +403,7 @@ void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
   HAPI::Vec3 f  = HAPI::Vec3( hlforce[0], hlforce[1], hlforce[2] );
   for( Contacts::iterator i = renderer->contacts.begin();
        i != renderer->contacts.end(); i++ ) {
-    if( (*i).first.get()->shape_id == shape->shape_id ) {
+    if( (*i).first->shape_id == shape->shape_id ) {
       if( (*i).first.get() != shape ) {
         (*i).first.reset( shape );
       }
@@ -426,8 +428,15 @@ void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
   OpenHapticsRenderer *renderer = cb_data->renderer;
   HAPIHapticShape *shape = cb_data->shape.get();
 
+  vector< int >::iterator found_id = find( renderer->already_removed_id.begin(), renderer->already_removed_id.end(), shape->shape_id );
+  if( found_id == renderer->already_removed_id.end() ) {
+  
   renderer->contacts.push_back( make_pair( shape, HAPISurfaceObject::ContactInfo()) );
   OpenHapticsRenderer::motionCallback( event, object, thread, cache, userdata );
+
+  } else {
+    renderer->already_removed_id.erase( found_id );
+  }
 }
 
 void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
@@ -443,14 +452,18 @@ void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
   Contacts::iterator i;
   for( i = renderer->contacts.begin();
        i != renderer->contacts.end(); i++ ) {
-    if( (*i).first.get()->shape_id == shape->shape_id ) {
+    if( (*i).first->shape_id == shape->shape_id ) {
       to_remove = i;
       break;
     }
   }
 
-  assert( i != renderer->contacts.end() );
-  renderer->contacts.erase( i );
+  //assert( to_remove != renderer->contacts.end() );
+  // Why is untouchCallback sometimes called before touchCallback????
+  if( to_remove == renderer->contacts.end() ) {
+    renderer->already_removed_id.push_back( shape->shape_id );
+  } else
+    renderer->contacts.erase( to_remove );
 }
 
 

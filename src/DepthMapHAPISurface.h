@@ -42,13 +42,14 @@ namespace HAPI {
   public:
     /// Constructor
     DepthMapHAPISurface( HAPIFloat _stiffness = 0.35,
-                         HAPIFloat _static_friction = 0,
-                         HAPIFloat _dynamic_friction = 0.5,
+                         HAPIFloat _static_friction = 0.1,
+                         HAPIFloat _dynamic_friction = 0.4,
                          H3DUtil::Image * _depth_map = 0,
-                         HAPIFloat _depth_map_scale = 1.0,
+                         HAPIFloat _max_depth = 1.0,
                          bool _white_max = true,
                          int _max_iterations = 35,
-                         HAPIFloat _minimization_epsilon = 1e-4 );
+                         HAPIFloat _minimization_epsilon = 1e-4,
+                         bool _use_ref_count_lock = true );
 
   protected:
     /// Get the value of the texture at texture coordinate tex_coord.
@@ -74,14 +75,14 @@ namespace HAPI {
           tangent_space_mtx *
           global_vector );
       if( dms->white_max )
-        return dms->depth_map_scale * ( depth_value - 1 );
+        return dms->max_depth * ( depth_value - 1 );
       else
-        return -dms->depth_map_scale * depth_value;
+        return -dms->max_depth * depth_value;
     }
 
     /// Scale the range of the pixel values in the texture used.
-    /// The value range will be 0 - depth_map_scale
-    HAPIFloat  depth_map_scale;
+    /// The value range will be 0 - max_depth
+    HAPIFloat  max_depth;
 
     /// If true then white ( pixel value 1 ) will be considered a high
     /// point in the texture.

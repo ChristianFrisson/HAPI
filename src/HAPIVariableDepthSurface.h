@@ -48,11 +48,12 @@ namespace HAPI {
     // Constructor
     HAPIVariableDepthSurface(
           HAPIFloat _stiffness = 0.35,
-          HAPIFloat _static_friction = 0,
-          HAPIFloat _dynamic_friction = 0.5,
+          HAPIFloat _static_friction = 0.1,
+          HAPIFloat _dynamic_friction = 0.4,
           HAPIFloat (*_func)( const Vec2 &local_point, void *data ) = 0,
           int _max_iterations = 35,
-          HAPIFloat _minimization_epsilon = 1e-4 );
+          HAPIFloat _minimization_epsilon = 1e-4,
+          bool _use_ref_count_lock = true );
 
 
     virtual void getProxyMovement( ContactInfo &contact_info );

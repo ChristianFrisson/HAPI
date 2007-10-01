@@ -34,7 +34,9 @@ using namespace HAPI;
 FrictionSurface::FrictionSurface( HAPIFloat _stiffness,
                                   HAPIFloat _damping,
                                   HAPIFloat _static_friction,
-                                  HAPIFloat _dynamic_friction ) :
+                                  HAPIFloat _dynamic_friction,
+                                  bool _use_ref_count_lock ) :
+HAPISurfaceObject( _use_ref_count_lock ),
 stiffness( _stiffness ),
 damping( _damping ),
 static_friction( _static_friction ),
