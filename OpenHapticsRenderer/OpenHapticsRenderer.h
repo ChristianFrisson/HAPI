@@ -83,7 +83,8 @@ namespace HAPI {
                           HAPIFloat _static_friction = 0.1,
                           HAPIFloat _dynamic_friction = 0.4,
                           bool _magnetic = false,
-                          HAPIFloat _snap_distance = 0.01 );
+                          HAPIFloat _snap_distance = 0.01,
+                          bool _use_ref_count_lock = true );
 
       /// Renders the surface using hlMaterialf calls
       virtual void hlRender();
@@ -136,6 +137,7 @@ namespace HAPI {
       default_gl_shape( _default_shape_type ),
       default_adaptive_viewport( _default_adaptive_viewport ),
       default_haptic_camera_view( _default_haptic_camera_view ) {
+        already_removed_id.reserve( 3 );
         dummy_context = NULL;
     }
                          
@@ -310,6 +312,10 @@ namespace HAPI {
     /// A map from HAPI shape_id to HL API shape id
     typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, HLuint > IdMap;
     IdMap id_map;
+
+    /// Used because of a supposed OpenHaptics Bug when untouchCallback is
+    /// called before touchCallback for a specific shape.
+    vector< int > already_removed_id;
   };
 }
 

@@ -37,7 +37,9 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
         HAPIFloat _dynamic_friction,
         HAPIFloat (*_func)( const Vec2 &local_point, void *data ),
         int _max_iterations,
-        HAPIFloat _minimization_epsilon ) :
+        HAPIFloat _minimization_epsilon,
+        bool _use_ref_count_lock ) :
+  HAPISurfaceObject( _use_ref_count_lock ),
   stiffness( _stiffness ),
   static_friction( _static_friction ),
   dynamic_friction( _dynamic_friction ),
