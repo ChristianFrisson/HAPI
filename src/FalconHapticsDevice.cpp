@@ -41,25 +41,6 @@ using namespace HAPI;
 namespace FalconHapticsDeviceInternal {
   string libs_array[1] = {"hdl.dll"};
   list< string > falcon_device_libs(libs_array, libs_array + 1 );
-  /*
-  // Callback function that starts a new hd frame. It is used in order to 
-  // encapsulate all HD API callback function within a hdBeginFrame/hdEndFrame
-  // pair in order to only get one frame per loop.
-  HDCallbackCode HDCALLBACK beginFrameCallback( void *data ) {
-    FalconHapticsDevice *hd = static_cast< FalconHapticsDevice * >( data );
-    hdBeginFrame( hd->getDeviceHandle() );
-    return HD_CALLBACK_CONTINUE;
-  }
-
-  // Callback function that ends a hd frame. It is used in order to 
-  // encapsulate all HD API callback function within a hdBeginFrame/hdEndFrame
-  // pair in order to only get one frame per loop.
-  HDCallbackCode HDCALLBACK endFrameCallback( void *data ) {
-    FalconHapticsDevice *hd = static_cast< FalconHapticsDevice * >( data );
-    hdEndFrame( hd->getDeviceHandle() );
-    return HD_CALLBACK_CONTINUE;
-  }
-  */
 }
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
@@ -95,11 +76,9 @@ bool FalconHapticsDevice::initHapticsDevice() {
   cerr << "Ws max: " << workspace_max << endl;
   cerr << "Ws min: " << workspace_min << endl;
 
-  // TODO: threads
-
-  //HLThread *hl_thread = HLThread::getInstance();
-  //  thread = hl_thread;
-  //  hl_thread->setActive( true );
+  FalconThread *fl_thread = FalconThread::getInstance();
+  thread = fl_thread;
+  fl_thread->setActive( true );
   
   return true;
 }
@@ -109,21 +88,12 @@ bool FalconHapticsDevice::releaseHapticsDevice() {
 
   hdlMakeCurrent( device_handle );
 
-  /*  for( vector< HDCallbackCode >::iterator i = hd_handles.begin();
-       i != hd_handles.end();
-       i++ ) {
-    hdUnschedule(*i);
-    }*/
-
-  // TODO: when is the servo loop stopped.
-  //  hdStopScheduler();
   hdlUninitDevice( device_handle );
   device_handle = 0;
 
-  // TODO:
-  //  HLThread *hl_thread = static_cast< HLThread * >( thread );
-  //  hl_thread->setActive( false );
-  //  thread = NULL;
+  FalconThread *fl_thread = static_cast< FalconThread * >( thread );
+  fl_thread->setActive( false );
+  thread = NULL;
   return true;
 }
 
@@ -181,8 +151,10 @@ HDLServoOpExitCode falcon_callback( void *_data ) {
     static_cast< FalconHapticsDevice::FalconThread::CallbackFunc* >( _data );
   //FalconThread::CallbackFunc func = static_cast< FalconThread::CallbackFunc >( data[0] );
   FalconHapticsDevice::FalconThread::CallbackCode c = (*func)( data[1] );
-  if( c == FalconHapticsDevice::FalconThread::CALLBACK_DONE ) return HDL_SERVOOP_EXIT;
-  else if( c == FalconHapticsDevice::FalconThread::CALLBACK_CONTINUE ) return HDL_SERVOOP_EXIT;
+  if( c == FalconHapticsDevice::FalconThread::CALLBACK_DONE )
+    return HDL_SERVOOP_EXIT;
+  else if( c == FalconHapticsDevice::FalconThread::CALLBACK_CONTINUE )
+    return HDL_SERVOOP_CONTINUE;
   else return c;
 }
 
@@ -194,7 +166,8 @@ void FalconHapticsDevice::FalconThread::synchronousCallback(
                     true );
 }
 
-void FalconHapticsDevice::FalconThread::asynchronousCallback( CallbackFunc func, void *data ) {
+void FalconHapticsDevice::FalconThread
+  ::asynchronousCallback( CallbackFunc func, void *data ) {
   void * * param = new void * [2];
   param[0] = (void*)func;
   param[1] = data;
@@ -203,7 +176,8 @@ void FalconHapticsDevice::FalconThread::asynchronousCallback( CallbackFunc func,
                     false );
 }
 
-H3DUtil::PeriodicThread::CallbackCode FalconHapticsDevice::FalconThread::setThreadId( void * data ) {
+H3DUtil::PeriodicThread::CallbackCode FalconHapticsDevice::FalconThread
+  ::setThreadId( void * data ) {
   FalconHapticsDevice::FalconThread *thread = 
 	  static_cast< FalconHapticsDevice::FalconThread * >( data );
   thread->thread_id = H3DUtil::PeriodicThread::getCurrentThreadId();
