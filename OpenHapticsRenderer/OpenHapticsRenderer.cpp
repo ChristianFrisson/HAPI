@@ -256,9 +256,9 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           hlRenderHAPISurface( (*i)->surface.get() );
 
           HLenum touchable_face;
-          Bounds::FaceType face = (*i)->touchable_face;
-          if( face == Bounds::BACK ) touchable_face = HL_BACK;
-          else if( face == Bounds::FRONT ) touchable_face = HL_FRONT;
+          Collision::FaceType face = (*i)->touchable_face;
+          if( face == Collision::BACK ) touchable_face = HL_BACK;
+          else if( face == Collision::FRONT ) touchable_face = HL_FRONT;
           else touchable_face = HL_FRONT_AND_BACK;
           
           hlTouchableFace( touchable_face );
@@ -516,7 +516,7 @@ HLboolean HLCALLBACK OpenHapticsRenderer::intersectCallback(
   
   HAPIHapticShape* object = 
     static_cast<HAPIHapticShape*>( user_data );
-  Bounds::IntersectionInfo i;
+  Collision::IntersectionInfo i;
 
   HLboolean b = object->lineIntersect( Vec3(start_point[0], 
                                             start_point[1], 
@@ -525,12 +525,12 @@ HLboolean HLCALLBACK OpenHapticsRenderer::intersectCallback(
                                             end_point[1],
                                             end_point[2] ),
                                        i, 
-                                       Bounds::FRONT_AND_BACK );
+                                       Collision::FRONT_AND_BACK );
   intersection_point[0] = i.point.x;
   intersection_point[1] = i.point.y;
   intersection_point[2] = i.point.z;
 
-  if( b && i.face == Bounds::BACK ) {
+  if( b && i.face == Collision::BACK ) {
       i.normal = -i.normal;
   }
 
@@ -538,7 +538,7 @@ HLboolean HLCALLBACK OpenHapticsRenderer::intersectCallback(
   intersection_normal[1] = i.normal.y;
   intersection_normal[2] = i.normal.z;
 
-  *hl_face = (i.face == Bounds::FRONT ? HL_FRONT: HL_BACK );
+  *hl_face = (i.face == Collision::FRONT ? HL_FRONT: HL_BACK );
   
   return b;
 }

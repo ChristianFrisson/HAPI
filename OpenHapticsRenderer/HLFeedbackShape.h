@@ -31,7 +31,7 @@ namespace HAPI {
                                                  public OpenHapticsRenderer::HLShape  {
   public:
     //    typedef int HLint;
-    typedef Bounds::FaceType FaceType;
+    typedef Collision::FaceType FaceType;
 
     /// Constructor.
     HLFeedbackShape( HAPIGLShape *_glshape,
@@ -40,7 +40,7 @@ namespace HAPI {
                      const Matrix4 &_transform,
                      void (*_clean_up_func)( void * ) = 0,
                      int _nr_vertices = -1,
-                     FaceType _touchable_face = Bounds::FRONT_AND_BACK,
+                     FaceType _touchable_face = Collision::FRONT_AND_BACK,
                      bool _use_haptic_camera = true ):
       HAPI::HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func ),
       nr_vertices( _nr_vertices ),
