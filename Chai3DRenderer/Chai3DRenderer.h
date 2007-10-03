@@ -48,19 +48,21 @@
 
 namespace HAPI {
 
-  /// \class Chai3DRenderer
-  /// \brief Haptics renderer using the HL API part of Chai3D for the 
+  /// Chai3DRenderer
+  /// Haptics renderer using Chai3D(www.chai3d.org) for the 
   /// haptics rendering.
   class CHAI3DRENDERER_API Chai3DRenderer: public HAPIProxyBasedRenderer {
   public:
+    /// Special shape type that uses Chai3D calls to render the shape.
     class CHAI3DRENDERER_API Chai3DShape {
     public:
       virtual ~Chai3DShape() {}
       /// This function performs all the Chai3DAPI calls that are needed
-      /// to render the surface. 
+      /// to render the shape. 
       virtual void chai3dRender( HAPIHapticsDevice *hd ) = 0;
     };
 
+    /// Special shape type that uses Chai3D calls to render the surface.
     class CHAI3DRENDERER_API Chai3DSurface {
     public:
       /// Destructor.
@@ -71,24 +73,22 @@ namespace HAPI {
       virtual void chai3dMaterial( cMaterial &m ) = 0;
     };
 
-
+    
     class H3DDevice: public cGenericDevice {
     public:
-      // CONSTRUCTOR & DESTRUCTOR:
-      //! Constructor of cPhantomDevice.
+      /// Constructor.
       H3DDevice() {
         m_systemReady = true;
         m_systemAvailable = true;
       }
-      //! Destructor of cPhantomDevices.
+
+      /// Destructor.
       ~H3DDevice() {}
       
-      // METHODS:
-      //! Open connection to phantom device.
       virtual int open() { return 0; }
-      //! Close connection to phantom device.
+
       virtual int close() { return 0; }
-      //! Calibrate phantom device.
+
       virtual int initialize(const bool a_resetEncoders=false) {
         return 0;
       }
@@ -121,16 +121,6 @@ namespace HAPI {
       H3DTool(cWorld* a_world) : cGeneric3dofPointer( a_world ) {
         m_device = new H3DDevice;
       }
-    };
-
-    class CHAI3DRENDERER_API HLSurface {
-    public:
-      /// Destructor.
-      virtual ~HLSurface() {}
-      
-      /// This function performs all the HLAPI calls that are needed to render
-      /// the surface. 
-      virtual void hlRender() = 0;
     };
 
     class CHAI3DRENDERER_API Chai3DOptions: public HAPIShapeRenderOptions {
