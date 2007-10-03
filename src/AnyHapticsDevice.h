@@ -34,8 +34,7 @@
 
 namespace HAPI {
 
-  /// \class AnyHapticsDevice
-  /// \brief The AnyHapticsDevice node uses the first connected haptics
+  /// The AnyHapticsDevice node uses the first connected haptics
   /// device that it can successfully initialize.
   ///
   /// This can be used if you do not care which haptics device to

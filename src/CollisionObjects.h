@@ -53,7 +53,7 @@ class Constraints;
     class PlaneConstraint; 
 	
     
-    /// \brief The CollisionObject class is the base class for objects that 
+    /// The CollisionObject class is the base class for objects that 
     /// can be used  in collision detection.
     class HAPI_API CollisionObject : public H3DUtil::RefCountedClass {
     public:
@@ -116,7 +116,7 @@ class Constraints;
     virtual void render() {}
   };
 
-    /// \brief The BoundObject is the base class for bounding objects.
+    /// The BoundObject is the base class for bounding objects.
     class HAPI_API BoundObject: public CollisionObject {
     public:
       /// Returns true if the given point is inside the bound, and
@@ -153,7 +153,7 @@ class Constraints;
 
     };
 
-    /// \brief The BoundPrimitive class is the base class for simple bound 
+    /// The BoundPrimitive class is the base class for simple bound 
     /// primitives such as bounding spheres and bounding boxes.
     class HAPI_API BoundPrimitive: public BoundObject {
     public:
@@ -170,7 +170,7 @@ class Constraints;
       bool collided;
     };
     
-    /// \brief The GeometryPrimitive is the base class for all geometry 
+    /// The GeometryPrimitive is the base class for all geometry 
     /// primitives used in collision detection.
     class HAPI_API GeometryPrimitive: public CollisionObject {
     public:
@@ -193,7 +193,7 @@ class Constraints;
       bool collided;
     };
     
-    
+    /// The Plane class is a collision primitive for a plane.
     class HAPI_API Plane: public GeometryPrimitive {
     public:
       /// Constructor.
@@ -250,6 +250,7 @@ class Constraints;
     };
 
 
+    /// The Sphere class is a collision primitive for a sphere.
     class HAPI_API Sphere: public GeometryPrimitive {
     public:
       /// Constructor.
@@ -315,7 +316,7 @@ class Constraints;
     };
 
 
-    /// \brief The Triangle class represents a triangle primitive.
+    /// The Triangle class represents a triangle primitive.
     class HAPI_API Triangle: public GeometryPrimitive  {
     public:
       /// Default constructor.
@@ -428,7 +429,7 @@ class Constraints;
       Vec3 ac, ab;
     };
 
-    /// \brief The LineSegment class represents a line segment primitive.
+    /// The LineSegment class represents a line segment primitive.
     class HAPI_API LineSegment: public GeometryPrimitive  {
     public:
       /// Default constructor.
@@ -514,7 +515,7 @@ class Constraints;
       }
     };
 
-    /// \brief The Point class represents a point primitive.
+    /// The Point class represents a point primitive.
     class HAPI_API Point: public GeometryPrimitive  {
     public:
       /// Default constructor.
@@ -590,7 +591,7 @@ class Constraints;
       Vec3 position;
     };
     
-    /// \brief The AABoxBound class represents an axis-aligned bounding box.
+    /// The AABoxBound class represents an axis-aligned bounding box.
     class HAPI_API AABoxBound: public BoundPrimitive {
     public:
       /// Render the outlines of the object for debugging purposes.
@@ -687,7 +688,7 @@ class Constraints;
      
     };
 
-    /// \brief The OrientedBoxBound class represents an oriented bounding box.
+    /// The OrientedBoxBound class represents an oriented bounding box.
     class HAPI_API OrientedBoxBound: public AABoxBound {
     public:
       /// Render the outlines of the object for debugging purposes.
@@ -743,7 +744,7 @@ class Constraints;
     };
 
 
-    /// \brief The SphereBound class represents a bounding sphere.
+    /// The SphereBound class represents a bounding sphere.
     class HAPI_API SphereBound: public BoundPrimitive {
     public:
       /// Default constructor.
@@ -822,7 +823,7 @@ class Constraints;
       GLUquadricObj* gl_quadric;
     };
 
-    /// \brief The BinaryBoundTree class is the base class for bound objects 
+    /// The BinaryBoundTree class is the base class for bound objects 
     /// structured as a binary tree. Each node in the tree has a BoundPrimitive
     /// specifying a bound for itself and each subtree has the same.
     class HAPI_API BinaryBoundTree: public BoundObject {
@@ -852,7 +853,7 @@ class Constraints;
                        const vector< Point > &point_vector,
                        unsigned int max_nr_triangles_in_leaf = 1 );
 
-      /// \brief Returns true if the tree is a leaf, i.e. has no sub-tress
+      /// Returns true if the tree is a leaf, i.e. has no sub-tress
       /// and hence just contains triangles. false otherwise.
       inline bool isLeaf() { 
         return left.get() == NULL && right.get() == NULL; 
@@ -1012,7 +1013,7 @@ class Constraints;
     };
 
 
-    /// \brief The AABBTree is a BinaryBoundTree where the bounding primitive 
+    /// The AABBTree is a BinaryBoundTree where the bounding primitive 
     /// for each node is a AABoxBound (axis-aligned bounding box).
     class HAPI_API AABBTree: public BinaryBoundTree {
     public:
@@ -1039,7 +1040,7 @@ class Constraints;
     };
 
 
-    /// \brief The OBBTree is a BinaryBoundTree where the bounding primitive 
+    /// The OBBTree is a BinaryBoundTree where the bounding primitive 
     /// for each node is a OrientedBoxBound.
 
     class HAPI_API OBBTree: public BinaryBoundTree {
@@ -1065,7 +1066,7 @@ class Constraints;
                          max_nr_triangles_in_leaf ) {}
     };
 
-    /// \brief The SphereBoundTree is a BinaryBoundTree where the bounding 
+    /// The SphereBoundTree is a BinaryBoundTree where the bounding 
     /// primitive for each node is a SphereBound object.
 
     class HAPI_API SphereBoundTree: public BinaryBoundTree {
@@ -1093,7 +1094,8 @@ class Constraints;
     };
 
     // Primitive special kind
-    /// \brief The BBTreePrimitive class is the base class for bound objects 
+
+    /// The BBTreePrimitive class is the base class for bound objects 
     /// structured as a binary tree. Each node in the tree has a BoundPrimitive
     /// specifying a bound for itself and each subtree has the same.
     class HAPI_API BBTreePrimitive: public BoundObject {
@@ -1118,7 +1120,7 @@ class Constraints;
                        const vector< GeometryPrimitive * > &_primitives,
                        unsigned int max_nr_primitives_in_leaf = 1 );
 
-      /// \brief Returns true if the tree is a leaf, i.e. has no sub-tress
+      /// Returns true if the tree is a leaf, i.e. has no sub-tress
       /// and hence just contains triangles. false otherwise.
       inline bool isLeaf() { 
         return left.get() == NULL && right.get() == NULL; 
@@ -1252,7 +1254,7 @@ class Constraints;
     };
 
 
-    /// \brief The AABBTree is a BinaryBoundTree where the bounding primitive 
+    /// The AABBTree is a BinaryBoundTree where the bounding primitive 
     /// for each node is a AABoxBound (axis-aligned bounding box).
     class HAPI_API AABBTreePrimitive: public BBTreePrimitive {
     public:
@@ -1271,7 +1273,7 @@ class Constraints;
     };
 
 
-    /// \brief The OBBTree is a BinaryBoundTree where the bounding primitive 
+    /// The OBBTree is a BinaryBoundTree where the bounding primitive 
     /// for each node is a OrientedBoxBound.
 
     class HAPI_API OBBTreePrimitive: public BBTreePrimitive {
@@ -1289,7 +1291,7 @@ class Constraints;
                          max_nr_primitives_in_leaf ) {}
     };
 
-    /// \brief The SphereBoundTree is a BinaryBoundTree where the bounding 
+    /// The SphereBoundTree is a BinaryBoundTree where the bounding 
     /// primitive for each node is a SphereBound object.
 
     class HAPI_API SBTreePrimitive: public BBTreePrimitive {

@@ -36,11 +36,13 @@
 
 namespace HAPI {
 
-  /// \class GodObjectRenderer
-  /// \brief Haptics renderer that uses a variant of the algorithm presented
-  /// in "God object paper". 
+  /// Haptics renderer that uses a variant of the algorithm presented
+  /// in the paper "A Constraint-based God-object Method For Haptic Display"
+  /// by C. B. Zilles J. K. Salisbury.
+  ///
   /// The god object is a point that stays on the geometry's surface when the
-  /// probe penetrates the surface. 
+  /// probe penetrates the surface(which in our implementation is called 
+  /// a proxy). This renderer only allows for point proxies.  
   class HAPI_API GodObjectRenderer: public HAPIProxyBasedRenderer {
   public:
     

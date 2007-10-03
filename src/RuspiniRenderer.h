@@ -37,10 +37,11 @@
 
 namespace HAPI {
 
-  /// \class RuspiniRenderer
-  /// \brief Haptics renderer that uses a variant of the algorithm presented
-  /// by Ruspini. 
-  /// It allows for variable proxy radius.
+  /// Haptics renderer that uses a variant of the algorithm presented
+  /// in the paper "The haptic display of complex graphical environments"
+  /// by Diego C. Ruspini, Krasimir Kolarov and Oussama Khatib.
+  ///
+  /// This renderer allows for variable proxy radius, i.e. a sphere proxy.
   class HAPI_API RuspiniRenderer: public HAPIProxyBasedRenderer {
   public:
 	  typedef Collision::CollisionObject::Constraints Constraints;
