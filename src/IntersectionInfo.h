@@ -31,7 +31,7 @@
 
 namespace HAPI {
 
-  namespace Bounds {
+  namespace Collision {
 
     class GeometryPrimitive;
 

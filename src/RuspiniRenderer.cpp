@@ -334,7 +334,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   HAPIForceEffect::EffectOutput output;
   bool has_intersection = false;
   HAPIFloat d2;
-  Bounds::IntersectionInfo closest_intersection;
+  Collision::IntersectionInfo closest_intersection;
 
   constraints.clear();  
   //constraints.reserve( 3000 );
@@ -345,7 +345,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   HAPIFloat r = (proxy_radius * 2 + 
                  (input.position - proxy_position).length() ) * 1.1;
 
-  //  vector< Bounds::PlaneConstraint > constraints;
+  //  vector< Collision::PlaneConstraint > constraints;
   // get the constraints from the current shapes.
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
@@ -387,7 +387,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
 
 //  other_constraints.reserve( constraints.size() );
 
-  Bounds::IntersectionInfo intersection;
+  Collision::IntersectionInfo intersection;
 
   // find the closest constraining PlaneConstraints
   for( Constraints::iterator i = constraints.begin();
@@ -499,7 +499,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal ) {
   // to = new_proxy_pos
 
   bool has_intersection = false;
-  Bounds::IntersectionInfo intersection;
+  Collision::IntersectionInfo intersection;
   Vec3 closest_point;
   HAPIFloat d2;
 

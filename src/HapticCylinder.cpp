@@ -87,7 +87,7 @@ void HapticCylinder::hlRender( HLHapticsDevice *hd ) {
 
 bool HapticCylinder::lineIntersect( const Vec3 &from, 
                            const Vec3 &to,
-                           Bounds::IntersectionInfo &result ) {
+                           Collision::IntersectionInfo &result ) {
   Matrix4 inverse = transform.inverse();
   Vec3 local_from = inverse * from;
   Vec3 local_to = inverse * to;

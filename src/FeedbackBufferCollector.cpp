@@ -38,7 +38,7 @@ bool FeedbackBufferCollector::collecting_triangles = false;
 FeedbackBufferCollector::ErrorType 
 FeedbackBufferCollector::collectTriangles( HAPIGLShape *shape,
                                            const Matrix4 &transform,
-                                           vector< HAPI::Bounds::Triangle > &triangles ) {
+                                           vector< HAPI::Collision::Triangle > &triangles ) {
   Vec3 center, size;
   shape->getBound( center, size );
   center = transform * center;
@@ -84,9 +84,9 @@ FeedbackBufferCollector::collectTriangles( HAPIGLShape *shape,
 FeedbackBufferCollector::ErrorType 
 FeedbackBufferCollector::collectPrimitives( HAPIGLShape * shape,
                                             const Matrix4 &transform,
-                                            vector< HAPI::Bounds::Triangle > &triangles,
-                                            vector< HAPI::Bounds::LineSegment > &lines,
-                                            vector< HAPI::Bounds::Point > &points ) {
+                                            vector< HAPI::Collision::Triangle > &triangles,
+                                            vector< HAPI::Collision::LineSegment > &lines,
+                                            vector< HAPI::Collision::Point > &points ) {
   Vec3 center, size;
   shape->getBound( center, size );
   center = transform * center;
@@ -157,7 +157,7 @@ FeedbackBufferCollector::startCollecting( int max_feedback_values,
 
 FeedbackBufferCollector::ErrorType 
 FeedbackBufferCollector::endCollecting( 
-           vector< HAPI::Bounds::Triangle > &triangles ) {
+           vector< HAPI::Collision::Triangle > &triangles ) {
   if( !collecting_triangles ) return END_COLLECT_WHEN_NOT_COLLECTING;
 
   GLint nr_values = glRenderMode( GL_RENDER );
@@ -207,7 +207,7 @@ FeedbackBufferCollector::endCollecting(
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v1.x, &v1.y, &v1.z );
       i+= parseVertex( buffer, i, p, col, tc2 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
-      triangles.push_back( HAPI::Bounds::Triangle( v0, v1, v2, tc0, tc1, tc2 )) ;
+      triangles.push_back( HAPI::Collision::Triangle( v0, v1, v2, tc0, tc1, tc2 )) ;
       break;
     }
     case( GL_BITMAP_TOKEN ): 
@@ -231,9 +231,9 @@ FeedbackBufferCollector::endCollecting(
 
 FeedbackBufferCollector::ErrorType 
 FeedbackBufferCollector::endCollecting( 
-           vector< HAPI::Bounds::Triangle > &triangles,
-           vector< HAPI::Bounds::LineSegment > &lines,
-           vector< HAPI::Bounds::Point > &points ) {
+           vector< HAPI::Collision::Triangle > &triangles,
+           vector< HAPI::Collision::LineSegment > &lines,
+           vector< HAPI::Collision::Point > &points ) {
   if( !collecting_triangles ) return END_COLLECT_WHEN_NOT_COLLECTING;
 
   GLint nr_values = glRenderMode( GL_RENDER );
@@ -263,7 +263,7 @@ FeedbackBufferCollector::endCollecting(
       i+= parseVertex( buffer, i, p, col, tc );
       Vec3 pos;
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &pos.x, &pos.y, &pos.z );
-      points.push_back( HAPI::Bounds::Point( pos ) );
+      points.push_back( HAPI::Collision::Point( pos ) );
       break;
     }
     case( GL_LINE_RESET_TOKEN ):
@@ -273,7 +273,7 @@ FeedbackBufferCollector::endCollecting(
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v0.x, &v0.y, &v0.z );
       i+= parseVertex( buffer, i, p, col, tc );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v1.x, &v1.y, &v1.z );
-      lines.push_back( HAPI::Bounds::LineSegment( v0, v1 ) );
+      lines.push_back( HAPI::Collision::LineSegment( v0, v1 ) );
       break;
     }
     case( GL_POLYGON_TOKEN ): {
@@ -290,7 +290,7 @@ FeedbackBufferCollector::endCollecting(
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v1.x, &v1.y, &v1.z );
       i+= parseVertex( buffer, i, p, col, tc2 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
-      triangles.push_back( HAPI::Bounds::Triangle( v0, v1, v2, tc0, tc1, tc2 )) ;
+      triangles.push_back( HAPI::Collision::Triangle( v0, v1, v2, tc0, tc1, tc2 )) ;
       break;
     }
     case( GL_BITMAP_TOKEN ): 

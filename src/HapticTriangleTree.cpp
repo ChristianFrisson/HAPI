@@ -34,7 +34,7 @@ using namespace HAPI;
 
 void HapticTriangleTree::getConstraints( const Vec3 &point,
                                          Constraints &constraints,
-                                         Bounds::FaceType face,
+                                         Collision::FaceType face,
                                          HAPIFloat radius ) {
   if( tree ) {
     // TODO: check if transform has uniform scale
@@ -68,7 +68,7 @@ void HapticTriangleTree::getConstraints( const Vec3 &point,
     }
     
   }
-  //result.push_back( Bounds::PlaneConstraint( (radius+0.0025) * v, v ) );
+  //result.push_back( Collision::PlaneConstraint( (radius+0.0025) * v, v ) );
 }
 
 

@@ -34,8 +34,8 @@ using namespace HAPI;
 
 bool HapticBinaryTreePrimitive::lineIntersect( const Vec3 &from, 
                                        const Vec3 &to,
-                                       Bounds::IntersectionInfo &result,
-                                       Bounds::FaceType face ) { 
+                                       Collision::IntersectionInfo &result,
+                                       Collision::FaceType face ) { 
   Matrix4 inv = transform.inverse();
   Vec3 local_from = inv * from;
   Vec3 local_to = inv * to;
@@ -49,7 +49,7 @@ bool HapticBinaryTreePrimitive::lineIntersect( const Vec3 &from,
 
 void HapticBinaryTreePrimitive::getConstraints( const Vec3 &point,
                                         Constraints &constraints,
-                                        Bounds::FaceType face,
+                                        Collision::FaceType face,
                                                 HAPIFloat radius ) {
   // TODO: check if transform has uniform scale
   bool uniform_scale = true;

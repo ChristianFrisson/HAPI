@@ -161,8 +161,8 @@ void HapticPlane::hlRender( HLHapticsDevice *hd) {
 
 bool HapticPlane::lineIntersect( const Vec3 &from, 
                                  const Vec3 &to,
-                                 Bounds::IntersectionInfo &result,
-                                 Bounds::FaceType face ) {
+                                 Collision::IntersectionInfo &result,
+                                 Collision::FaceType face ) {
   Matrix4 inverse = transform.inverse();
   Vec3 local_from = inverse * from;
   Vec3 local_to = inverse * to;

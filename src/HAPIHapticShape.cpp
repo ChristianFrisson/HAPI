@@ -57,7 +57,7 @@ HAPIHapticShape::~HAPIHapticShape(){
 
 void HAPIHapticShape::getConstraints( const Vec3 &point,
                                       Constraints &constraints,
-                                      Bounds::FaceType face, 
+                                      Collision::FaceType face, 
                                       HAPIFloat radius ) {
   Vec3 cp, n, tc;
   closestPoint( point, cp, n, tc );

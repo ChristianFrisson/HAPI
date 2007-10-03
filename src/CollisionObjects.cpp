@@ -32,9 +32,9 @@
 #include <PlaneConstraint.h>
 
 using namespace HAPI;
-using namespace Bounds;
+using namespace Collision;
 
-bool Bounds::intersectSegmentCylinder( Vec3 sa, Vec3 sb,
+bool Collision::intersectSegmentCylinder( Vec3 sa, Vec3 sb,
                                        Vec3 p, Vec3 q,
                                        HAPIFloat r, 
                                        HAPIFloat & t ) {
@@ -1008,10 +1008,10 @@ bool Triangle::lineIntersect( const Vec3 &p,
 
   HAPIFloat d = qp * n;
 
-  FaceType intersection_face = Bounds::FRONT;
+  FaceType intersection_face = Collision::FRONT;
   if ( d < 0 ) {
     // line segment pointing away from triangle
-    if( face == Bounds::FRONT ) return false;
+    if( face == Collision::FRONT ) return false;
  
     // flip normal in calculations since they assume starting point is
     // in the direction of the normal
@@ -1028,8 +1028,8 @@ bool Triangle::lineIntersect( const Vec3 &p,
     tmp = ab;
     ab = ac;
     ac = tmp;
-    intersection_face = Bounds::BACK;
-  } else if( d == 0 || face == Bounds::BACK ) {
+    intersection_face = Collision::BACK;
+  } else if( d == 0 || face == Collision::BACK ) {
     return false;
   }
 
@@ -1180,7 +1180,7 @@ cerr << "FD";
   }
 
   HAPIFloat cyl_t;
-  bool intersect = Bounds::intersectSegmentCylinder(
+  bool intersect = Collision::intersectSegmentCylinder(
     from, to, a, b, radius, cyl_t );
   HAPIFloat intersection_point_t;
   if( intersect ) {
@@ -1188,7 +1188,7 @@ cerr << "FD";
     return true;
   }
 
-  if( Bounds::intersectSegmentCylinder( from, to, a, c, radius, cyl_t ) ) {
+  if( Collision::intersectSegmentCylinder( from, to, a, c, radius, cyl_t ) ) {
     if( intersect ) {
       if( cyl_t < intersection_point_t )
         intersection_point_t = cyl_t;
@@ -1200,7 +1200,7 @@ cerr << "FD";
     }
   }
 
-  if( Bounds::intersectSegmentCylinder( from, to, b, c, radius, cyl_t ) ) {
+  if( Collision::intersectSegmentCylinder( from, to, b, c, radius, cyl_t ) ) {
     if( intersect ) {
       if( cyl_t < intersection_point_t )
         intersection_point_t = cyl_t;
@@ -1628,9 +1628,9 @@ void GeometryPrimitive::getConstraints( const Vec3 &point,
   //cerr << closest_point << endl;
   Vec3 normal = point - closest_point;
 
-  if( face == Bounds::FRONT ) {
+  if( face == Collision::FRONT ) {
     if( normal * cp_normal < 0 ) return;
-  } else if( face == Bounds::BACK ) {
+  } else if( face == Collision::BACK ) {
     if( normal * cp_normal > 0 ) return;
   }
   normal.normalizeSafe();
@@ -1917,7 +1917,7 @@ void LineSegment::getConstraints( const Vec3 &point,
   end = ob;
 }
 
-void Bounds::Point::render() {
+void Collision::Point::render() {
   glDisable( GL_LIGHTING );
   if( collided )
     glColor3d( 1, 0, 0 );
@@ -1932,7 +1932,7 @@ void Bounds::Point::render() {
 }
 
 /// Detect collision between a line segment and the object.
-bool Bounds::Point::lineIntersect( const Vec3 &from, 
+bool Collision::Point::lineIntersect( const Vec3 &from, 
                                  const Vec3 &to,
                                  IntersectionInfo &result,
                                   FaceType face ) {
@@ -1964,7 +1964,7 @@ bool Bounds::Point::lineIntersect( const Vec3 &from,
 }
       
 // Detect collision between a moving sphere and the object.
-bool Bounds::Point::movingSphereIntersect( HAPIFloat radius,
+bool Collision::Point::movingSphereIntersect( HAPIFloat radius,
                                    const Vec3 &from, 
                                    const Vec3 &to ) {
   HAPIFloat r2 = radius * radius;
@@ -1975,7 +1975,7 @@ bool Bounds::Point::movingSphereIntersect( HAPIFloat radius,
   return v * v <= r2;
 }
 
-void Bounds::Point::getConstraints( const Vec3 &point,
+void Collision::Point::getConstraints( const Vec3 &point,
                                     const Matrix4 &matrix,
                                     Constraints &constraints,
                                     FaceType face,
@@ -1997,11 +1997,11 @@ bool Plane::lineIntersect( const Vec3 &from,
 
   if( denom > Constants::epsilon ) { 
     // line pointing away from normal
-    if( face == Bounds::FRONT ) return false;
-    result.face = Bounds::BACK;
+    if( face == Collision::FRONT ) return false;
+    result.face = Collision::BACK;
   } else {
-    if( face == Bounds::BACK ) return false;
-    result.face = Bounds::FRONT;
+    if( face == Collision::BACK ) return false;
+    result.face = Collision::FRONT;
   }
    
   if( denom * denom < Constants::epsilon ) {
@@ -2058,7 +2058,7 @@ bool Sphere::lineIntersect( const Vec3 &from,
   if (a0 <= 0) {
     // start_point is inside sphere
     a0 = end_point * end_point - r2;
-    if( a0 <= 0 || face == Bounds::FRONT ) {
+    if( a0 <= 0 || face == Collision::FRONT ) {
       // both start_point and end_point are inside sphere so no intersection
       return false;
     } else {
@@ -2066,11 +2066,11 @@ bool Sphere::lineIntersect( const Vec3 &from,
       // intersection.
       p = end_point;
       v = start_point - end_point;
-      result.face = Bounds::BACK;
+      result.face = Collision::BACK;
     }
   } else {
     // start_point is outside sphere
-    if( face == Bounds::BACK ) return false;
+    if( face == Collision::BACK ) return false;
 
     p = start_point;
     v = end_point - start_point;
@@ -2081,7 +2081,7 @@ bool Sphere::lineIntersect( const Vec3 &from,
       // v is pointing away from the sphere so no intersection
       return false;
     }
-    result.face = Bounds::FRONT;
+    result.face = Collision::FRONT;
   }
   // use implicit quadratic formula to find the roots
   HAPIFloat a = v.x*v.x + v.y*v.y + v.z*v.z;
@@ -2727,16 +2727,16 @@ void BBTreePrimitive::getPrimitivesIntersectedByMovingSphere(
 
 
 bool Triangle::getConstraint(  const Vec3 &point,
-                               Bounds::PlaneConstraint *constraint,
+                               Collision::PlaneConstraint *constraint,
                                FaceType face ) {
   Vec3 closest_point, cp_normal, cp_tex_coord;
   closestPoint( point, closest_point, cp_normal, cp_tex_coord );
   //cerr << closest_point << endl;
   Vec3 normal = point - closest_point;
   
-  if( face == Bounds::FRONT ) {
+  if( face == Collision::FRONT ) {
     if( normal * cp_normal < 0 ) return false;
-  } else if( face == Bounds::BACK ) {
+  } else if( face == Collision::BACK ) {
     if( normal * cp_normal > 0 ) return false;
   }
   normal.normalizeSafe();

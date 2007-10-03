@@ -54,9 +54,10 @@ namespace HAPI {
     /// to this vector.
     /// \returns SUCCESS if every thing went well. An ErrorType with the error
     /// otherwise.
-    static ErrorType collectTriangles( HAPIGLShape *shape,
-                                       const Matrix4 &transform,
-                                       vector< HAPI::Bounds::Triangle > &triangles );
+    static ErrorType collectTriangles( 
+                            HAPIGLShape *shape,
+                            const Matrix4 &transform,
+                            vector< HAPI::Collision::Triangle > &triangles );
 
     /// Collect all primitives rendered when calling the glRender() function for
     /// the given HAPIGLShape. 
@@ -71,11 +72,12 @@ namespace HAPI {
     /// to this vector.
     /// \returns SUCCESS if every thing went well. An ErrorType with the error
     /// otherwise.
-    static ErrorType collectPrimitives( HAPIGLShape *_shape,
-                                        const Matrix4 &_transform,
-                                        vector< HAPI::Bounds::Triangle > &triangles,
-                                        vector< HAPI::Bounds::LineSegment > &lines,
-                                        vector< HAPI::Bounds::Point > &points );
+    static ErrorType collectPrimitives( 
+                                HAPIGLShape *_shape,
+                                const Matrix4 &_transform,
+                                vector< HAPI::Collision::Triangle > &triangles,
+                                vector< HAPI::Collision::LineSegment > &lines,
+                                vector< HAPI::Collision::Point > &points );
 
     /// Start collecting OpenGL primitives from OpenGL calls. All OpenGL calls
     /// after running this function will not render anything to the frame buffer,
@@ -100,7 +102,7 @@ namespace HAPI {
     /// \returns SUCCESS if every thing went well. An ErrorType with the error
     /// otherwise. If your GL calls have exceeded the max_feedback_values given 
     /// in startCollecting(), NOT_ENOUGH_MEMORY_ALLOCATED will be returned. 
-    static ErrorType endCollecting( vector< HAPI::Bounds::Triangle > &triangles );
+    static ErrorType endCollecting( vector< HAPI::Collision::Triangle > &triangles );
     
     /// Get all the primitives rendered with OpenGL calls since the last call 
     /// of the startCollecting function. Also stops the collecting. Primitives
@@ -108,9 +110,10 @@ namespace HAPI {
     /// \returns SUCCESS if every thing went well. An ErrorType with the error
     /// otherwise. If your GL calls have exceeded the max_feedback_values given 
     /// in startCollecting(), NOT_ENOUGH_MEMORY_ALLOCATED will be returned. 
-    static ErrorType endCollecting( vector< HAPI::Bounds::Triangle > &triangles,
-                                    vector< HAPI::Bounds::LineSegment > &lines,
-                                    vector< HAPI::Bounds::Point > &points );
+    static ErrorType endCollecting( 
+                               vector< HAPI::Collision::Triangle > &triangles,
+                               vector< HAPI::Collision::LineSegment > &lines,
+                               vector< HAPI::Collision::Point > &points );
     
   protected:
     static int parseVertex( GLfloat *buffer, int index, 

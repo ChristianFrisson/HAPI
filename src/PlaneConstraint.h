@@ -33,7 +33,7 @@
 
 namespace HAPI {
 
-  namespace Bounds {
+  namespace Collision {
 
     class HAPI_API PlaneConstraint {
 
@@ -48,7 +48,7 @@ namespace HAPI {
 
       bool lineIntersect( const Vec3 &from, 
                           const Vec3 &to,    
-                          Bounds::IntersectionInfo &result );
+                          Collision::IntersectionInfo &result );
       Vec3 point, normal;
       Vec3 tex_coord;
       H3DUtil::AutoRef< HAPIHapticShape > haptic_shape;

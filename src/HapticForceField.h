@@ -35,10 +35,15 @@ namespace HAPI {
   /// This is a HapticForceEffect that generates a constant force.
   class HAPI_API HapticForceField: public HAPIForceEffect {
   public:
+
+    // Constructor.
+    HapticForceField( const Vec3 &_force,
+                      bool _interpolate = false );
+
     /// Constructor
     HapticForceField( const Matrix4 & _transform,
                       const Vec3 &_force,
-                      bool _interpolate );
+                      bool _interpolate = false );
     
     /// The force of the EffectOutput will be the force of the force field. 
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,

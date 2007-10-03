@@ -43,7 +43,7 @@ namespace HAPI {
   /// It allows for variable proxy radius.
   class HAPI_API RuspiniRenderer: public HAPIProxyBasedRenderer {
   public:
-	  typedef Bounds::CollisionObject::Constraints Constraints;
+	  typedef Collision::CollisionObject::Constraints Constraints;
 
     /// Constructor.
     RuspiniRenderer( HAPIFloat _proxy_radius = 2.5 );
