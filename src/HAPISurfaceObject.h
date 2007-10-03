@@ -72,7 +72,7 @@ namespace HAPI {
       Vec3 origin_global;
 
       // Contains the primitive on which the point of contact was detected.
-      Bounds::GeometryPrimitive * primitive;
+      Collision::GeometryPrimitive * primitive;
       
       // OUTPUT
 

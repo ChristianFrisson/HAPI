@@ -34,17 +34,17 @@ using namespace HAPI;
 
 bool HapticPrimitiveSet::lineIntersect( const Vec3 &from, 
                                        const Vec3 &to,
-                                       Bounds::IntersectionInfo &result,
-                                       Bounds::FaceType face ) { 
+                                       Collision::IntersectionInfo &result,
+                                       Collision::FaceType face ) { 
   Matrix4 inv = transform.inverse();
   // TODO: find closest?
   bool have_intersection = false;
-  Bounds::IntersectionInfo closest_intersection;
+  Collision::IntersectionInfo closest_intersection;
   HAPIFloat min_d2;
   Vec3 from_local = inv * from;
   Vec3 to_local = inv * to;
   for( unsigned int i = 0; i < primitives.size(); i++ ) {
-    Bounds::GeometryPrimitive *a_primitive = primitives[i];
+    Collision::GeometryPrimitive *a_primitive = primitives[i];
     if( a_primitive->lineIntersect( from_local, to_local, result, face ) )	{
       Vec3 v = result.point - from_local;
       HAPIFloat distance_sqr = v * v;
@@ -72,7 +72,7 @@ bool HapticPrimitiveSet::lineIntersect( const Vec3 &from,
 
 void HapticPrimitiveSet::getConstraints( const Vec3 &point,
                                          Constraints &constraints,
-                                         Bounds::FaceType face,
+                                         Collision::FaceType face,
                                          HAPIFloat radius ) {
   if( primitives.size() > 0 ) {
     // TODO: check if transform has uniform scale
@@ -88,7 +88,7 @@ void HapticPrimitiveSet::getConstraints( const Vec3 &point,
 
       unsigned int size = constraints.size();
       for( unsigned int i = 0; i < primitives.size(); i++ ) {
-        Bounds::GeometryPrimitive *a_primitive = primitives[i];
+        Collision::GeometryPrimitive *a_primitive = primitives[i];
         a_primitive->getConstraints( p, constraints, face, r );
       }
 
@@ -103,7 +103,7 @@ void HapticPrimitiveSet::getConstraints( const Vec3 &point,
       // TODO: fix this
       unsigned int size = constraints.size();
       for( unsigned int i = 0; i < primitives.size(); i++ ) {
-        Bounds::GeometryPrimitive *a_primitive = primitives[i];
+        Collision::GeometryPrimitive *a_primitive = primitives[i];
         a_primitive->getConstraints( point, constraints, face /*r*/);
       }
       for( unsigned int i = size; i < constraints.size(); i ++ ) {

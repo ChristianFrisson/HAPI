@@ -160,8 +160,8 @@ void HapticCone::hlRender( HLHapticsDevice *hd) {
 
 bool HapticCone::lineIntersect( const Vec3 &from, 
                                 const Vec3 &to,
-                                Bounds::IntersectionInfo &result,
-                                Bounds::FaceType face ) {
+                                Collision::IntersectionInfo &result,
+                                Collision::FaceType face ) {
   return false;
 }
 

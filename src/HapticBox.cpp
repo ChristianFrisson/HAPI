@@ -161,8 +161,8 @@ void HapticBox::hlRender( HLHapticsDevice *hd) {
 
 bool HapticBox::lineIntersect( const Vec3 &from, 
                                const Vec3 &to,
-                               Bounds::IntersectionInfo &result,
-                               Bounds::FaceType face ) {
+                               Collision::IntersectionInfo &result,
+                               Collision::FaceType face ) {
   HAPIFloat tmin = 0.0f;
   HAPIFloat tmax = 1.0f;
   Matrix4 inverse = transform.inverse();

@@ -34,19 +34,19 @@ using namespace HAPI;
 
 bool HapticTriangleSet::lineIntersect( const Vec3 &from, 
                                        const Vec3 &to,
-                                       Bounds::IntersectionInfo &result,
-                                       Bounds::FaceType face ) { 
+                                       Collision::IntersectionInfo &result,
+                                       Collision::FaceType face ) { 
   Matrix4 inv = transform.inverse();
   // TODO: find closest?
   bool have_intersection = false;
-  Bounds::IntersectionInfo closest_intersection;
+  Collision::IntersectionInfo closest_intersection;
   HAPIFloat min_d2;
   Vec3 from_local = inv * from;
   Vec3 to_local = inv * to;
-   for( vector< Bounds::Triangle >::iterator i = triangles.begin();
+   for( vector< Collision::Triangle >::iterator i = triangles.begin();
              i != triangles.end(); ++i ) {
           //unsigned int i = 0; i < triangles.size(); i++ ) {
-          Bounds::Triangle &t = (*i); //*triangles[i];
+          Collision::Triangle &t = (*i); //*triangles[i];
     if( t.lineIntersect( from_local, to_local, result, face ) )	{
       Vec3 v = result.point - from_local;
       HAPIFloat distance_sqr = v * v;
@@ -56,9 +56,9 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
         closest_intersection = result;
         // if we have a convex shape we only have one intersection
         if( ( convex == CONVEX_FRONT && 
-              result.face == Bounds::FRONT ) ||
+              result.face == Collision::FRONT ) ||
             ( convex == CONVEX_BACK && 
-              result.face == Bounds::BACK ) ) {
+              result.face == Collision::BACK ) ) {
           break;
         }
         min_d2 = distance_sqr;
@@ -81,7 +81,7 @@ bool HapticTriangleSet::lineIntersect( const Vec3 &from,
 
 void HapticTriangleSet::getConstraints( const Vec3 &point,
                                         Constraints &constraints,
-                                        Bounds::FaceType face,
+                                        Collision::FaceType face,
                                         HAPIFloat radius ) {
   if( triangles.size() > 0 ) {
     // TODO: check if transform has uniform scale
@@ -93,18 +93,18 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
       unsigned int size = constraints.size();
 
       if( ( convex == CONVEX_FRONT && 
-            face == Bounds::FRONT ) ||
+            face == Collision::FRONT ) ||
           ( convex == CONVEX_BACK && 
-            face == Bounds::BACK ) ) {
+            face == Collision::BACK ) ) {
         PlaneConstraint constraint;
         PlaneConstraint best;
         HAPIFloat best_sqr_dist = 0;
         bool first_constraint = true;
 
-        for( vector< Bounds::Triangle >::iterator i = triangles.begin();
+        for( vector< Collision::Triangle >::iterator i = triangles.begin();
              i != triangles.end(); ++i ) {
           //unsigned int i = 0; i < triangles.size(); i++ ) {
-          Bounds::Triangle &t = (*i); //*triangles[i];
+          Collision::Triangle &t = (*i); //*triangles[i];
           
           if( t.getConstraint( p, &constraint, face ) ) {
             if( first_constraint ) {
@@ -130,7 +130,7 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
         HAPIFloat r = radius * s.x;
 
         for( unsigned int i = 0; i < triangles.size(); i++ ) {
-          Bounds::Triangle &t = triangles[i];
+          Collision::Triangle &t = triangles[i];
           t.getConstraints( p, constraints, face, r  );
         }
       }
@@ -148,7 +148,7 @@ void HapticTriangleSet::getConstraints( const Vec3 &point,
       //      Vec3 s = inverse.getScalePart();
       //      HAPIFloat r = radius * max( s.x, max( s.y, s.z ) );
       for( unsigned int i = 0; i < triangles.size(); i++ ) {
-        Bounds::Triangle &t = triangles[i];
+        Collision::Triangle &t = triangles[i];
         t.getConstraints( point, constraints, face, radius );
       }
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
@@ -173,7 +173,7 @@ void HapticTriangleSet::glRender() {
   glMultMatrixd( vt );
   glBegin( GL_TRIANGLES );
   for( unsigned int i = 0; i < triangles.size(); i++ ) {
-    HAPI::Bounds::Triangle &t = triangles[i];
+    HAPI::Collision::Triangle &t = triangles[i];
     glVertex3d( t.a.x, t.a.y, t.a.z );
     glVertex3d( t.b.x, t.b.y, t.b.z );
     glVertex3d( t.c.x, t.c.y, t.c.z );

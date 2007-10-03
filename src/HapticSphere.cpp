@@ -161,8 +161,8 @@ void HapticSphere::hlRender( HLHapticsDevice *hd) {
 
 bool HapticSphere::lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
-                                  Bounds::IntersectionInfo &result,
-                                  Bounds::FaceType face ) {
+                                  Collision::IntersectionInfo &result,
+                                  Collision::FaceType face ) {
   Matrix4 inverse = transform.inverse();
   Vec3 local_from = inverse * from;
   Vec3 local_to = inverse * to;
@@ -188,7 +188,7 @@ void HapticSphere::closestPoint( const Vec3 &p, Vec3 &cp, Vec3 &n, Vec3 &tc ) {
 
 void HapticSphere::getConstraints( const Vec3 &point,
                                       Constraints &constraints,
-                                      Bounds::FaceType face, 
+                                      Collision::FaceType face, 
                                       HAPIFloat radius ) {
   Vec3 cp, n, tc;
   closestPoint( point, cp, n, tc );

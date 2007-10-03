@@ -41,14 +41,14 @@ namespace HAPI {
   class HAPI_API HapticTriangle: public HAPIHapticShape {
   public:
     /// Constructor.
-    HapticTriangle( const Bounds::Triangle &_triangle,
+    HapticTriangle( const Collision::Triangle &_triangle,
                     void *_userdata,
                     HAPISurfaceObject *_surface,
                     const Matrix4 & _transform,
                     void (*_clean_up_func)( void * ) = 0,
                     int _shape_id = -1,
-                    Bounds::FaceType _touchable_face = 
-                    Bounds::FRONT_AND_BACK ):
+                    Collision::FaceType _touchable_face = 
+                    Collision::FRONT_AND_BACK ):
       HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func,
                        _shape_id, _touchable_face  ),
       triangle( _triangle ) {}
@@ -75,9 +75,9 @@ namespace HAPI {
     /// \returns true if intersected, false otherwise.
     inline virtual bool lineIntersect( const Vec3 &from, 
                                        const Vec3 &to,
-                                       Bounds::IntersectionInfo &result,
-                                       Bounds::FaceType face = 
-                                       Bounds::FRONT_AND_BACK ) {
+                                       Collision::IntersectionInfo &result,
+                                       Collision::FaceType face = 
+                                       Collision::FRONT_AND_BACK ) {
       return triangle.lineIntersect( from, to, result, face );
     }
 
@@ -102,7 +102,7 @@ namespace HAPI {
       return 1;
     }
   protected:
-    Bounds::Triangle triangle; 
+    Collision::Triangle triangle; 
   };
 }
 

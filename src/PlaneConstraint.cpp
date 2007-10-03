@@ -31,11 +31,11 @@
 #include <PlaneConstraint.h>
 
 using namespace HAPI;
-using namespace Bounds;
+using namespace Collision;
 
 bool PlaneConstraint::lineIntersect( const Vec3 &from, 
                                      const Vec3 &to,
-                                     Bounds::IntersectionInfo &result ) {
+                                     Collision::IntersectionInfo &result ) {
       Vec3 from_to = to - from;
       if( normal * from_to > Constants::epsilon ) { 
         /*if( result.normal.z == 0.5 ) {

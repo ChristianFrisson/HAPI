@@ -53,7 +53,7 @@ namespace HAPI {
   /// has a Surface object associated to it that defines the properties of the
   /// surface, e.g. stiffness and friction properties.
   class HAPI_API HAPIHapticShape: public HAPIHapticObject,
-                                  public Bounds::CollisionObject,
+                                  public Collision::CollisionObject,
                                   public HAPIGLShape {
   public:
 
@@ -64,9 +64,9 @@ namespace HAPI {
                      const Matrix4 & _transform,
                      void (*_clean_up_func)( void * ) = 0,
                      int _shape_id = -1,
-                     Bounds::FaceType _touchable_face = 
-                     Bounds::FRONT_AND_BACK  ):
-                  Bounds::CollisionObject( true ),
+                     Collision::FaceType _touchable_face = 
+                     Collision::FRONT_AND_BACK  ):
+                  Collision::CollisionObject( true ),
                   HAPIHapticObject( _transform ),
                   clean_up_func( _clean_up_func ),
                   surface( _surface ),
@@ -82,8 +82,8 @@ namespace HAPI {
 
     virtual bool lineIntersect( const Vec3 &from, 
                                 const Vec3 &to,
-                                Bounds::IntersectionInfo &result,
-                                Bounds::FaceType face ) { 
+                                Collision::IntersectionInfo &result,
+                                Collision::FaceType face ) { 
       return false;
     }
 
@@ -95,7 +95,7 @@ namespace HAPI {
 
     virtual void getConstraints( const Vec3 &point,
                                  Constraints &constraints,
-                                 Bounds::FaceType face = Bounds::FRONT_AND_BACK,
+                                 Collision::FaceType face = Collision::FRONT_AND_BACK,
                                  HAPIFloat radius = -1 );
     
     static int genShapeId();
@@ -140,7 +140,7 @@ namespace HAPI {
     void *userdata;
 
     int shape_id;
-    Bounds::FaceType touchable_face;
+    Collision::FaceType touchable_face;
 
     static int current_max_id;
     static list< int > free_ids;

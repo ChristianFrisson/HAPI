@@ -42,7 +42,7 @@
 
 namespace HAPI {
 class Constraints;
-  namespace Bounds {
+  namespace Collision {
     /// Intersect segment S(t)=sa+t(sb-sa), 0<=t<=1 against cylinder 
     /// specified by p, q and r. The segment finds the first along the segment.
     bool intersectSegmentCylinder( Vec3 sa, Vec3 sb, 
@@ -63,18 +63,18 @@ class Constraints;
       CollisionObject( bool _use_lock ) :
         H3DUtil::RefCountedClass( _use_lock ){};
          
-      //typedef HAPI::Constraints Constraints;
-      typedef vector< Bounds::PlaneConstraint > Constraints;
+      typedef HAPI::Constraints Constraints;
+      //typedef vector< Collision::PlaneConstraint > Constraints;
 
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 ) {}
       
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 ) {}
       
       /// Get the closest point and normal on the object to the given point p.
@@ -100,7 +100,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK ){
+                                  FaceType face = Collision::FRONT_AND_BACK ){
         return false; }// = 0;
 
       /// Detect collision between a moving sphere and the object.
@@ -176,7 +176,7 @@ class Constraints;
     public:
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
       /// Returns a point representing the primitive. Is used for example when
@@ -234,7 +234,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK );
+                                  FaceType face = Collision::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -298,7 +298,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK );
+                                  FaceType face = Collision::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -337,8 +337,8 @@ class Constraints;
       }
 
       bool getConstraint(  const Vec3 &point,
-                           Bounds::PlaneConstraint *constraint,
-                           FaceType face = Bounds::FRONT_AND_BACK );
+                           Collision::PlaneConstraint *constraint,
+                           FaceType face = Collision::FRONT_AND_BACK );
 
       /// Calculates a matrix transforming a vector from global space
       /// to texture space.
@@ -370,7 +370,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK );
+                                  FaceType face = Collision::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -406,7 +406,7 @@ class Constraints;
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 ) {
         GeometryPrimitive::getConstraints( point, constraints, face, radius );
       }
@@ -414,7 +414,7 @@ class Constraints;
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
       /// The corners of the triangle.
@@ -441,7 +441,7 @@ class Constraints;
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 ) {
         GeometryPrimitive::getConstraints( point, constraints, face, radius );
       }
@@ -449,7 +449,7 @@ class Constraints;
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
       /// Get the closest point and normal on the object to the given point p.
@@ -481,7 +481,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK );
+                                  FaceType face = Collision::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -527,7 +527,7 @@ class Constraints;
       /// WTF?? Why is this needed. VC complains if not present
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 ) {
         GeometryPrimitive::getConstraints( point, constraints, face, radius );
       }
@@ -535,7 +535,7 @@ class Constraints;
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
       /// Get the closest point and normal on the object to the given point p.
@@ -566,7 +566,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK );
+                                  FaceType face = Collision::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -625,7 +625,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK ) {
+                                  FaceType face = Collision::FRONT_AND_BACK ) {
         return boundIntersect( from, to );
       }
 
@@ -716,7 +716,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK ) {
+                                  FaceType face = Collision::FRONT_AND_BACK ) {
         return boundIntersect( from, to );
       }
 
@@ -791,7 +791,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK );
+                                  FaceType face = Collision::FRONT_AND_BACK );
 
       /// The boundIntersect returns true if the line segment intersects the
       /// bound or if the line segment is totally inside the bound.
@@ -860,13 +860,13 @@ class Constraints;
 
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
       virtual void getTrianglesWithinRadius( const Vec3 &p,
@@ -933,7 +933,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK );
+                                  FaceType face = Collision::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -1126,13 +1126,13 @@ class Constraints;
 
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
       virtual void getConstraints( const Vec3 &point,
                                    const Matrix4 &matrix,
                                    Constraints &constraints,
-                                   FaceType face = Bounds::FRONT_AND_BACK,
+                                   FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
       virtual void getPrimitivesWithinRadius( const Vec3 &p,
@@ -1184,7 +1184,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Bounds::FRONT_AND_BACK );
+                                  FaceType face = Collision::FRONT_AND_BACK );
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -1309,7 +1309,7 @@ class Constraints;
     };
 
 }
-  using Bounds::PlaneConstraint;
+  using Collision::PlaneConstraint;
 }
 
 #endif

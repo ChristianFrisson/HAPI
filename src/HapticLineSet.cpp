@@ -34,17 +34,17 @@ using namespace HAPI;
 
 bool HapticLineSet::lineIntersect( const Vec3 &from, 
                                        const Vec3 &to,
-                                       Bounds::IntersectionInfo &result,
-                                       Bounds::FaceType face ) { 
+                                       Collision::IntersectionInfo &result,
+                                       Collision::FaceType face ) { 
   Matrix4 inv = transform.inverse();
   // TODO: find closest?
   bool have_intersection = false;
-  Bounds::IntersectionInfo closest_intersection;
+  Collision::IntersectionInfo closest_intersection;
   HAPIFloat min_d2;
   Vec3 from_local = inv * from;
   Vec3 to_local = inv * to;
   for( unsigned int i = 0; i < lines.size(); i++ ) {
-    Bounds::LineSegment &l = lines[i];
+    Collision::LineSegment &l = lines[i];
     if( l.lineIntersect( from_local, to_local, result, face ) )	{
       Vec3 v = result.point - from_local;
       HAPIFloat distance_sqr = v * v;
@@ -72,7 +72,7 @@ bool HapticLineSet::lineIntersect( const Vec3 &from,
 
 void HapticLineSet::getConstraints( const Vec3 &point,
                                     Constraints &constraints,
-                                    Bounds::FaceType face,
+                                    Collision::FaceType face,
                                     HAPIFloat radius ) {
   if( lines.size() > 0 ) {
     // TODO: check if transform has uniform scale
@@ -87,7 +87,7 @@ void HapticLineSet::getConstraints( const Vec3 &point,
       HAPIFloat r = radius * s.x;
       unsigned int size = constraints.size();
       for( unsigned int i = 0; i < lines.size(); i++ ) {
-        Bounds::LineSegment &l = lines[i];
+        Collision::LineSegment &l = lines[i];
         l.getConstraints( p, constraints, face, r );
       }
 
@@ -102,7 +102,7 @@ void HapticLineSet::getConstraints( const Vec3 &point,
       // TODO: fix this
       unsigned int size = constraints.size();
       for( unsigned int i = 0; i < lines.size(); i++ ) {
-        Bounds::LineSegment &l = lines[i];
+        Collision::LineSegment &l = lines[i];
         l.getConstraints( point, constraints, face /*r */ );
       }
       for( unsigned int i = size; i < constraints.size(); i ++ ) {
@@ -128,7 +128,7 @@ void HapticLineSet::glRender() {
   glMultMatrixd( vt );
   glBegin( GL_LINES );
   for( unsigned int i = 0; i < lines.size(); i++ ) {
-    HAPI::Bounds::LineSegment &l = lines[i];
+    HAPI::Collision::LineSegment &l = lines[i];
     glVertex3d( l.start.x, l.start.y, l.start.z );
     glVertex3d( l.end.x, l.end.y, l.end.z );
   

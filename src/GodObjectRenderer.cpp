@@ -415,7 +415,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   bool has_intersection = false;
     
   HAPIFloat d2;
-  Bounds::IntersectionInfo closest_intersection;
+  Collision::IntersectionInfo closest_intersection;
   
   // the intersections that are closest to the user (several if the 
   // intersections are in the same point)
@@ -425,13 +425,13 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
        i++ ) {
-    Bounds::IntersectionInfo intersection;
+    Collision::IntersectionInfo intersection;
     if( (*i)->lineIntersect( proxy_pos, input.position, intersection,
                              (*i)->touchable_face) ){
       // shape is intersected, create a plane constraint at the
       // intersection point
       PlaneConstraint pc( intersection.point, 
-                          intersection.face == Bounds::FRONT ?
+                          intersection.face == Collision::FRONT ?
                           intersection.normal : -intersection.normal,
                           intersection.tex_coord,
                           *i,
@@ -545,7 +545,7 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
   point = to;
 
   HAPIFloat d2;
-  Bounds::IntersectionInfo closest_intersection;
+  Collision::IntersectionInfo closest_intersection;
 
   while( have_new_goal ) {
     have_new_goal = false;
@@ -555,7 +555,7 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
     for( HapticShapeVector::const_iterator i = shapes.begin();
          i != shapes.end();
          i++ ) {
-      Bounds::IntersectionInfo intersection;
+      Collision::IntersectionInfo intersection;
       if( (*i)->lineIntersect( from_point, to_point, intersection,
                                (*i)->touchable_face) ){
         if( !has_intersection ) {
@@ -576,7 +576,7 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
         
     if( has_intersection ) {
       Vec3 normal = 
-        closest_intersection.face == Bounds::FRONT ?
+        closest_intersection.face == Collision::FRONT ?
         closest_intersection.normal : -closest_intersection.normal;
       from_point = closest_intersection.point + normal * min_distance;
       
