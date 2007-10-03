@@ -118,8 +118,6 @@ namespace HAPI {
 
     class H3DTool : public cGeneric3dofPointer {
     public:
-      // CONSTRUCTOR & DESTRUCTOR:
-      //! Constructor of cPhantom3dofPointer.
       H3DTool(cWorld* a_world) : cGeneric3dofPointer( a_world ) {
         m_device = new H3DDevice;
       }
