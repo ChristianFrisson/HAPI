@@ -35,9 +35,12 @@ namespace HAPI {
 
   namespace Collision {
 
+    /// A representation of a plane constraining the proxy during calculations
+    /// in GodObjectRenderer and RuspiniRenderer.
     class HAPI_API PlaneConstraint {
 
     public:
+      /// Constructor.
       PlaneConstraint( const Vec3 &p = Vec3(), 
                        const Vec3 &n = Vec3(1, 0, 0), 
                        const Vec3 &tc = Vec3(), 
@@ -46,6 +49,8 @@ namespace HAPI {
       point( p ), normal( n ), tex_coord( tc ), 
         haptic_shape( shape ), primitive( _primitive )  {}
 
+      /// Test for interection with the line segment from "from" to "to".
+      /// \returns true on intersection, false otherwise.
       bool lineIntersect( const Vec3 &from, 
                           const Vec3 &to,    
                           Collision::IntersectionInfo &result );
@@ -56,8 +61,12 @@ namespace HAPI {
     };
   }
   
+  /// Similar to vector< PlaneConstraint > this class has many of the same
+  /// functions, but does some optimizations to avoid reallocation of memory
+  /// when used in RuspiniRenderer.
   class Constraints {
   public:
+    /// Constructor.
 	  Constraints( unsigned int size = 3000 ) {
       constraints = new PlaneConstraint[size];
 	    //constraints = (PlaneConstraint *) malloc( sizeof( PlaneConstraint ) * size );
@@ -66,10 +75,12 @@ namespace HAPI {
       nr_constraints = 0;
 	  }
     
+    /// Destructor.
     ~Constraints() {
       delete [] constraints;
     }
     
+    /// The iterator class for Constraints.
     class iterator {
     public:
       const static unsigned int end_value = 1929294;

@@ -41,11 +41,10 @@ namespace HAPI {
         FRONT_AND_BACK
       } FaceType;
 
-    /// \brief The IntersectionInfo struct contains information about an 
-    /// intersection.
+    /// The IntersectionInfo struct contains information about an 
+    /// intersection point in collision detection routines.
     struct IntersectionInfo {
      
-
       /// Constructor.
       IntersectionInfo( const Vec3 &_point = Vec3(), 
                         const Vec3 &_normal = Vec3(),

@@ -33,7 +33,7 @@
 
 namespace HAPI {
 
-  /// \brief Base class for haptic shapes render options, i.e. classes that
+  /// Base class for haptic shapes render options, i.e. classes that
   /// can be set in order to give shape specific options to a 
   /// HAPIHapticsRenderer of how to render a certain shape.
 

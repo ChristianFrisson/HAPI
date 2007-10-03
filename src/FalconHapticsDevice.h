@@ -38,8 +38,7 @@
 
 namespace HAPI {
 
-  /// \class FalconHapticsDevice
-  /// \brief Interface the Falcon haptics device from Novint.
+  /// Interface the Falcon haptics device from Novint.
   class HAPI_API FalconHapticsDevice: public HAPIHapticsDevice {
   public:
   /// FalconThread is a singleton class providing an interface to the scheduler

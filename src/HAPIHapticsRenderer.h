@@ -43,8 +43,7 @@ namespace HAPI {
   // forward declaration
   class HAPIHapticsDevice;
 
-  /// \class HAPIHapticsRenderer
-  /// \brief Base class for all haptics renderers in HAPI. The purpose of a
+  /// Base class for all haptics renderers in HAPI. The purpose of a
   /// haptics renderer is, given a set of geometries and the current
   /// values of a haptics device, to generate a force and a torque to
   /// send to the haptics device to render. Subclasses must define the

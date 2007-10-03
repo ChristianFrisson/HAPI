@@ -41,8 +41,8 @@
 
 namespace HAPI {
 
-  /// \class QuanserHapticsDevice
-  /// \brief Interface to haptics devices from Quanser Inc.
+
+  /// Interface to haptics devices from Quanser Inc.
   /// See www.quanser.com for more info on the devices. 
   class QuanserHapticsDevice: public HAPIHapticsDevice {
   public:
