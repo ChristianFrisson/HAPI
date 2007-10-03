@@ -117,7 +117,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
       if( tri_set ) {
         
         int index = 0;
-        for( vector< Bounds::Triangle >::iterator i = 
+        for( vector< Collision::Triangle >::iterator i = 
                tri_set->triangles.begin();
              i != tri_set->triangles.end(); i++ ) {
           Vec3 a = tri_set->transform * (*i).a;
