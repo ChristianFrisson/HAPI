@@ -50,13 +50,17 @@
 
 namespace HAPI {
 
-  /// \class OpenHapticsRenderer
-  /// \brief Haptics renderer using the HL API part of OpenHaptics for the 
-  /// haptics rendering.
-  class OPENHAPTICSRENDERER_API OpenHapticsRenderer: public HAPI::HAPIProxyBasedRenderer {
+  /// Haptics renderer using the HL API part of OpenHaptics for the 
+  /// haptics rendering. 
+  class OPENHAPTICSRENDERER_API OpenHapticsRenderer: 
+    public HAPI::HAPIProxyBasedRenderer {
   public:
+
+    /// Special shape type that allows for hl api specific rendering calls
+    /// using the hlRender function.
     class OPENHAPTICSRENDERER_API HLShape {
     public:
+      /// Destructor.
       virtual ~HLShape() {}
       /// This function performs all the HLAPI calls that are needed to render
       /// the surface. 
@@ -64,6 +68,8 @@ namespace HAPI {
                              HLuint shape_id ) = 0;
     };
 
+    /// Special surface type that allows for hl api specific rendering calls
+    /// using the hlRender function.
     class OPENHAPTICSRENDERER_API HLSurface {
     public:
       /// Destructor.
@@ -74,17 +80,22 @@ namespace HAPI {
       virtual void hlRender() = 0;
     };
 
+    /// The OpenHapticsSurface is a HAPISurfaceObject that sets its parameters
+    /// through OpenHaptics calls. It can only be used with OpenHapticsRenderer.
     class OPENHAPTICSRENDERER_API OpenHapticsSurface: public HAPISurfaceObject,
       public HLSurface
     {
     public:
-      OpenHapticsSurface( HAPIFloat _stiffness = 0.5,
-                          HAPIFloat _damping = 0,
-                          HAPIFloat _static_friction = 0.1,
-                          HAPIFloat _dynamic_friction = 0.4,
-                          bool _magnetic = false,
-                          HAPIFloat _snap_distance = 0.01,
-                          bool _use_ref_count_lock = true );
+      // TODO: use_ref_count_lock??
+
+      /// Constructor. 
+      OpenHapticsSurface( HAPIFloat stiffness = 0.5,
+                          HAPIFloat damping = 0,
+                          HAPIFloat static_friction = 0.1,
+                          HAPIFloat dynamic_friction = 0.4,
+                          bool magnetic = false,
+                          HAPIFloat snap_distance = 0.01,
+                          bool use_ref_count_lock = true );
 
       /// Renders the surface using hlMaterialf calls
       virtual void hlRender();
@@ -94,6 +105,7 @@ namespace HAPI {
       bool magnetic;
     };
 
+    /// Options for what OpenHaptics parameters to use when rendering a shape.
     class OPENHAPTICSRENDERER_API OpenHapticsOptions: public HAPI::HAPIShapeRenderOptions {
     public:
       typedef enum {
@@ -102,6 +114,7 @@ namespace HAPI {
         CUSTOM 
       } ShapeType;
 
+      /// Constructor.
       OpenHapticsOptions( ShapeType _shape_type = FEEDBACK_BUFFER,
                           bool _use_adaptive_viewport = true,
                           bool _use_haptic_camera_view = true ):
