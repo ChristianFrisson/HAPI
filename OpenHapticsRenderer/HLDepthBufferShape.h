@@ -33,7 +33,7 @@ namespace HAPI {
                         HAPI::HAPISurfaceObject *_surface,
                         const Matrix4 &_transform,
                         void (*_clean_up_func)( void * ) = 0,
-                        Bounds::FaceType _touchable_face = Bounds::FRONT_AND_BACK,
+                        Collision::FaceType _touchable_face = Collision::FRONT_AND_BACK,
                         bool _use_haptic_camera = true,
                         bool _use_adaptive_viewport = true ):
       HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func ),
@@ -48,7 +48,7 @@ namespace HAPI {
                            HLuint id );
 
     /// Which sides of the faces are touchable.
-    Bounds::FaceType touchable_face;
+    Collision::FaceType touchable_face;
     
     /// Enable HL_HAPTIC_CAMERA_VIEW or not
     bool use_haptic_camera;

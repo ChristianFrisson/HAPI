@@ -39,9 +39,9 @@ void HLFeedbackShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     glScalef( 1e3f, 1e3f, 1e3f ); 
     glMultMatrixd( vt );
     OpenHapticsRenderer::hlRenderHAPISurface( surface.get() );
-    if( touchable_face == Bounds::BACK ) hlTouchableFace( HL_BACK );
-    else if( touchable_face == Bounds::FRONT ) hlTouchableFace( HL_FRONT );
-    else if( touchable_face == Bounds::FRONT_AND_BACK )
+    if( touchable_face == Collision::BACK ) hlTouchableFace( HL_BACK );
+    else if( touchable_face == Collision::FRONT ) hlTouchableFace( HL_FRONT );
+    else if( touchable_face == Collision::FRONT_AND_BACK )
       hlTouchableFace( HL_FRONT_AND_BACK );
 
     if( use_haptic_camera )
