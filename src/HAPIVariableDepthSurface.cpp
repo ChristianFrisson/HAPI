@@ -28,11 +28,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "HAPIVariableDepthSurface.h"
 #include <ExtremaFindingAlgorithms.h>
+#include <HAPIHapticsDevice.h>
 
 using namespace HAPI;
 
 HAPIVariableDepthSurface::HAPIVariableDepthSurface(
         HAPIFloat _stiffness,
+        HAPIFloat _damping,
         HAPIFloat _static_friction,
         HAPIFloat _dynamic_friction,
         HAPIFloat (*_func)( const Vec2 &local_point, void *data ),
@@ -41,6 +43,7 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
         bool _use_ref_count_lock ) :
   HAPISurfaceObject( _use_ref_count_lock ),
   stiffness( _stiffness ),
+  damping( _damping ),
   static_friction( _static_friction ),
   dynamic_friction( _dynamic_friction ),
   func( _func ),
@@ -231,7 +234,12 @@ void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
 
     Vec3 probe_to_origin = 
       real_contact_point - contact_info.globalProbePosition();
-    contact_info.setGlobalForce(  probe_to_origin * stiffness );
+    Vec3 n_probe_to_origin = probe_to_origin;
+    n_probe_to_origin.normalizeSafe();
+    contact_info.setGlobalForce(  probe_to_origin * stiffness +
+                                  ( n_probe_to_origin *
+                                    contact_info.hd->getVelocity() *
+                                    damping ) * n_probe_to_origin );
   }
 }
 

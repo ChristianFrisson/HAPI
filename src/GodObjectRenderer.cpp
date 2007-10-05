@@ -491,6 +491,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   Vec3 new_proxy_pos, new_force;
 
   HAPISurfaceObject::ContactInfo contact;
+  contact.hd = hd;
 
   // fill in contact information
   contact.contact_point_global = closest_intersection.point;

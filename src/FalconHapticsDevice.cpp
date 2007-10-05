@@ -111,9 +111,7 @@ void FalconHapticsDevice::updateDeviceValues( DeviceValues &dv,
   hdlToolPosition( v ); 
   dv.position = 1e3 * Vec3( v[0], v[1], v[2] );
 
-  // TODO: calculate velocity
-  //hdGetDoublev( HD_CURRENT_VELOCITY, v ); 
-  //dv.velocity = Vec3( v[0], v[1], v[2] );
+  calculateVelocity( dv, dt );
 
   hdlToolOrientation_SQ( v );
   dv.orientation = Rotation( Matrix3( v[0], v[4], v[8],

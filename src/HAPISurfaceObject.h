@@ -36,6 +36,8 @@
 
 namespace HAPI {
 
+  class HAPIHapticsDevice;
+
   /// The HAPISurfaceObject is the base class of all surfaces in HAPI.
   /// A surface is responsible for defining the forces and proxy movements
   /// to use when in contact with a shape, depending on penetration depth,
@@ -106,7 +108,7 @@ namespace HAPI {
       Matrix4 inverse;
 
       // The haptics device that has made the contact.
-      // HAPIHapticsDevice *hd;
+      HAPIHapticsDevice *hd;
 
       // Set the origin of the local coordinate system.
       inline void setGlobalOrigin( const Vec3 &o ) {

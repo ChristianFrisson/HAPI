@@ -455,6 +455,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   Vec3 new_proxy_pos, new_force;
 
   HAPISurfaceObject::ContactInfo contact;
+  contact.hd = hd;
 
   contact.contact_point_global = closest_intersection.point;
   contact.probe_position_global = input.position;
