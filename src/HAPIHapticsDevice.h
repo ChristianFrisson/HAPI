@@ -776,7 +776,14 @@ namespace HAPI {
 
     /// Updates the current_device_values member to contain
     /// current values.
-    void updateDeviceValues();
+    void updateDeviceValues( HAPITime dt );
+    
+    /// Calculates instant velocity using current_raw_device_values
+    /// and the device values sent as input.
+    inline void calculateVelocity( DeviceValues &dv,
+                                   HAPITime dt ) {
+      dv.velocity = ( dv.position - current_raw_device_values.position ) / dt;
+    }
 
     /// Sends the data in the output member to be rendered at
     /// the haptics device.

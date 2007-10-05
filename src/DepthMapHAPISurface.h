@@ -42,6 +42,7 @@ namespace HAPI {
   public:
     /// Constructor
     DepthMapHAPISurface( HAPIFloat _stiffness = 0.35,
+                         HAPIFloat _damping = 0,
                          HAPIFloat _static_friction = 0.1,
                          HAPIFloat _dynamic_friction = 0.4,
                          H3DUtil::Image * _depth_map = 0,

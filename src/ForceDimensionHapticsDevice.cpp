@@ -98,10 +98,10 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
   if( device_id != -1 ) {
     com_lock.lock();
     dv.position = current_values.position;
-    dv.velocity = current_values.velocity;
     dv.orientation = current_values.orientation;
     dv.button_status = current_values.button_status;
     com_lock.unlock();
+    calculateVelocity( dv, dt );
   }
 }
 

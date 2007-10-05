@@ -48,6 +48,7 @@ namespace HAPI {
     // Constructor
     HAPIVariableDepthSurface(
           HAPIFloat _stiffness = 0.35,
+          HAPIFloat _damping = 0,
           HAPIFloat _static_friction = 0.1,
           HAPIFloat _dynamic_friction = 0.4,
           HAPIFloat (*_func)( const Vec2 &local_point, void *data ) = 0,
@@ -62,6 +63,8 @@ namespace HAPI {
 
     /// The stiffness of the surface.
     HAPIFloat stiffness;
+    /// The damping of the surface
+    HAPIFloat damping;
     /// The static friction of the surface.
     HAPIFloat static_friction;
     /// The dynamic friction of the surface.

@@ -65,7 +65,7 @@ H3DUtil::PeriodicThread::CallbackCode HAPIHapticsDevice::hapticRenderingCallback
   TimeStamp dt = start_time - hd->last_loop_time;
   hd->last_loop_time = start_time;
 
-  hd->updateDeviceValues();
+  hd->updateDeviceValues( dt );
   
   HAPIForceEffect::EffectOutput output;
   
@@ -168,10 +168,10 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice() {
   return SUCCESS;
 }
 
-void HAPIHapticsDevice::updateDeviceValues() {
+void HAPIHapticsDevice::updateDeviceValues( HAPITime dt ) {
   if( device_state == ENABLED ) {
     DeviceValues dv;
-    updateDeviceValues( dv, 0 );
+    updateDeviceValues( dv, dt );
     
     device_values_lock.lock();
     last_device_values = current_device_values;

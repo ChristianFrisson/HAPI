@@ -28,6 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "FrictionSurface.h"
+#include "HAPIHapticsDevice.h"
 
 using namespace HAPI;
 
@@ -101,5 +102,11 @@ void FrictionSurface::getProxyMovement( ContactInfo &contact_info ) {
 void FrictionSurface::getForces( ContactInfo &contact_info ) {
   Vec3 probe_to_origin = 
     contact_info.globalOrigin() - contact_info.globalProbePosition();
-  contact_info.setGlobalForce(  probe_to_origin * stiffness );
+
+  Vec3 n_probe_to_origin = probe_to_origin;
+  n_probe_to_origin.normalizeSafe();
+  contact_info.setGlobalForce(  probe_to_origin * stiffness +
+                                ( n_probe_to_origin *
+                                  contact_info.hd->getVelocity() *
+                                  damping ) * n_probe_to_origin );
 }

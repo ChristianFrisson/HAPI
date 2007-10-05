@@ -31,6 +31,7 @@
 using namespace HAPI;
 
 DepthMapHAPISurface::DepthMapHAPISurface( HAPIFloat _stiffness,
+                                  HAPIFloat _damping,
                                   HAPIFloat _static_friction,
                                   HAPIFloat _dynamic_friction,
                                   H3DUtil::Image * _depth_map,
@@ -39,7 +40,8 @@ DepthMapHAPISurface::DepthMapHAPISurface( HAPIFloat _stiffness,
                                   int _max_iterations,
                                   HAPIFloat _minimization_epsilon,
                                   bool _use_ref_count_lock ) :
-  HAPIVariableDepthSurface( _stiffness, _static_friction, _dynamic_friction,
+  HAPIVariableDepthSurface( _stiffness, _damping,
+                            _static_friction, _dynamic_friction,
                             scaleDepth, _max_iterations,
                             _minimization_epsilon, _use_ref_count_lock ),
   ImageInterfaceObject( _depth_map ),

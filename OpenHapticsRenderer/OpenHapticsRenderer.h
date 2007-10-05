@@ -86,8 +86,6 @@ namespace HAPI {
       public HLSurface
     {
     public:
-      // TODO: use_ref_count_lock??
-
       /// Constructor. 
       OpenHapticsSurface( HAPIFloat stiffness = 0.5,
                           HAPIFloat damping = 0,
