@@ -57,11 +57,16 @@ void FrictionSurface::getProxyMovement( ContactInfo &contact_info ) {
     contact_info.setLocalProxyMovement( Vec2( local_probe.x , local_probe.z ) );
   } else {
     // FrictionalSurface
+    // Friction model calculation modeled after the information in
+    // section 4 of "Haptic Ineraction in Virtual Environments" by
+    // Diego C. Ruspini, Krasimir Kolarov and Oussama Khatib.
+    // Published 1997.
     Vec3 local_probe = contact_info.localProbePosition();
     Vec3 force = local_probe * -stiffness;
     Vec2 force_t( force.x, force.z );
 
     if( in_static_contact ) {
+      // Determine if the movement should start.
       if( force_t.length() <= static_friction *  force.y ) {
         contact_info.setLocalProxyMovement(Vec2( 0, 0 ));
       } else {
