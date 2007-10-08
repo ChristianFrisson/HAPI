@@ -21,36 +21,36 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticBinaryTreePrimitive.cpp
-/// \brief cpp file for HapticBinaryTreePrimitive
+/// \file HapticPrimitiveTree.cpp
+/// \brief cpp file for HapticPrimitiveTree
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HapticBinaryTreePrimitive.h>
+#include <HapticPrimitiveTree.h>
 #include <PlaneConstraint.h>
 
 using namespace HAPI;
 
-bool HapticBinaryTreePrimitive::lineIntersectShape( const Vec3 &from, 
+bool HapticPrimitiveTree::lineIntersectShape( const Vec3 &from, 
                                           const Vec3 &to,
                                           Collision::IntersectionInfo &result,
                                           Collision::FaceType face ) {
   return tree->lineIntersect( from, to, result, face );
 }
 
-void HapticBinaryTreePrimitive::closestPointOnShape( const Vec3 &p, Vec3 &cp, 
+void HapticPrimitiveTree::closestPointOnShape( const Vec3 &p, Vec3 &cp, 
                                            Vec3 &n, Vec3 &tc ) {
   tree->closestPoint( p, cp, n, tc );
 }
 
-bool HapticBinaryTreePrimitive::movingSphereIntersectShape( HAPIFloat radius,
+bool HapticPrimitiveTree::movingSphereIntersectShape( HAPIFloat radius,
                                                   const Vec3 &from, 
                                                   const Vec3 &to ) {
   return tree->movingSphereIntersect( radius, from, to );
 }
 
-void HapticBinaryTreePrimitive::getConstraintsOfShape( const Vec3 &point,
+void HapticPrimitiveTree::getConstraintsOfShape( const Vec3 &point,
                                              Constraints &constraints,
                                              Collision::FaceType face,
                                              HAPIFloat radius ) {
@@ -62,7 +62,7 @@ void HapticBinaryTreePrimitive::getConstraintsOfShape( const Vec3 &point,
   }
 }
 
-void HapticBinaryTreePrimitive::glRenderShape() {
+void HapticPrimitiveTree::glRenderShape() {
 // TODO: fix 
 //  return tree->render();
 }
