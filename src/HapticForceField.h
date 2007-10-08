@@ -40,15 +40,11 @@ namespace HAPI {
     HapticForceField( const Vec3 &_force,
                       bool _interpolate = false );
 
-    /// Constructor
-    HapticForceField( const Matrix4 & _transform,
-                      const Vec3 &_force,
-                      bool _interpolate = false );
     
     /// The force of the EffectOutput will be the force of the force field. 
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
                                           HAPITime dt ) {
-      return EffectOutput( transform.getRotationPart() * force );
+      return EffectOutput( force );
     }
     
   protected:

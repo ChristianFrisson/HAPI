@@ -44,11 +44,11 @@ namespace HAPI {
     /// Constructor
     /// ownership of the pointer in the parameters x_function, y_function and
     /// z_function are transferred to the HapticFunctionEffect.
-    HapticPositionFunctionEffect( const Matrix4 & _transform,
-                          bool _interpolate,
+    HapticPositionFunctionEffect( 
                           HAPIFunctionObject *_x_function,
                           HAPIFunctionObject *_y_function,
-                          HAPIFunctionObject *_z_function );
+                          HAPIFunctionObject *_z_function,
+                          bool _interpolate = false );
     
     /// The force of the EffectOutput is calculated from the provided functions
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,

@@ -32,15 +32,14 @@
 using namespace HAPI;
 
 HapticTimeFunctionEffect::HapticTimeFunctionEffect(
-                          const Matrix4 & _transform,
-                          bool _interpolate,
-                          HAPIFunctionObject *_x_function,
-                          HAPIFunctionObject *_y_function,
-                          HAPIFunctionObject *_z_function,
-                          const HAPITime &_x_zero_time,
-                          const HAPITime &_y_zero_time,
-                          const HAPITime &_z_zero_time ):
-  HAPIForceEffect( _transform, _interpolate ),
+                           HAPIFunctionObject *_x_function,
+                           HAPIFunctionObject *_y_function,
+                           HAPIFunctionObject *_z_function,
+                           const HAPITime &_x_zero_time,
+                           const HAPITime &_y_zero_time,
+                           const HAPITime &_z_zero_time,
+                           bool _interpolate ):
+  HAPIForceEffect( _interpolate ),
   x_function( _x_function ),
   y_function( _y_function ),
   z_function( _z_function ),

@@ -38,10 +38,9 @@ namespace HAPI {
   class HAPI_API HapticShapeConstraint: public HAPIForceEffect {
   public:
     /// Constructor
-    HapticShapeConstraint( const Matrix4 & _transform,
-                          bool _interpolate,
-                          HAPIHapticShape *_shape,
-                          const HAPIFloat &_spring_constant);
+    HapticShapeConstraint( HAPIHapticShape *_shape,
+                           const HAPIFloat &_spring_constant,
+                           bool _interpolate = false );
     
     /// The force of the EffectOutput is a spring force from the current
     /// position of the haptics device towards the closest point on the

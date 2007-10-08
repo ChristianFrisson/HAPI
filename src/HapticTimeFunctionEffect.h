@@ -44,14 +44,13 @@ namespace HAPI {
     /// Constructor
     /// ownership of the pointer in the parameters x_function, y_function and
     /// z_function are transferred to the HapticFunctionEffect.
-    HapticTimeFunctionEffect( const Matrix4 & _transform,
-                          bool _interpolate,
-                          HAPIFunctionObject *_x_function,
-                          HAPIFunctionObject *_y_function,
-                          HAPIFunctionObject *_z_function,
-                          const HAPITime &_x_zero_time,
-                          const HAPITime &_y_zero_time,
-                          const HAPITime &_z_zero_time );
+    HapticTimeFunctionEffect( HAPIFunctionObject *_x_function,
+                              HAPIFunctionObject *_y_function,
+                              HAPIFunctionObject *_z_function,
+                              const HAPITime &_x_zero_time,
+                              const HAPITime &_y_zero_time,
+                              const HAPITime &_z_zero_time,
+                              bool _interpolate = false );
     
     /// The force of the EffectOutput is calculated from the provided functions
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,

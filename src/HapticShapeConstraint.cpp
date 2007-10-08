@@ -32,11 +32,10 @@
 using namespace HAPI;
 
 HapticShapeConstraint::HapticShapeConstraint(
-                          const Matrix4 & _transform,
-                          bool _interpolate,
                           HAPIHapticShape *_shape,
-                          const HAPIFloat &_spring_constant ):
-  HAPIForceEffect( _transform, _interpolate ),
+                          const HAPIFloat &_spring_constant,
+                          bool _interpolate ):
+  HAPIForceEffect( _interpolate ),
   shape( _shape ),
   spring_constant( _spring_constant ){
 }
@@ -45,8 +44,8 @@ HAPIForceEffect::EffectOutput HapticShapeConstraint::calculateForces(
                               HAPIHapticsDevice *hd,
                               HAPITime dt ) {
   Vec3 closest_point = Vec3(), temp;
-  Vec3 hd_pos = transform.inverse() * hd->getPosition();
+  Vec3 hd_pos = hd->getPosition();
   shape->closestPoint( hd_pos, closest_point, temp, temp );
   Vec3 the_force = spring_constant * (closest_point - hd_pos);
-  return EffectOutput( transform.getRotationPart() * the_force );
+  return EffectOutput( the_force );
 }

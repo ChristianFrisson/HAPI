@@ -40,64 +40,52 @@ namespace HAPI {
   class HAPI_API HapticSpring: public HAPIForceEffect {
   public:
     /// Constructor
-    HapticSpring ( const Matrix4 & _transform,
-                   bool _interpolate ):
-      HAPIForceEffect( _transform, _interpolate ),
+    HapticSpring ( bool _interpolate ):
+      HAPIForceEffect( _interpolate ),
       position( Vec3( 0, 0, 0 ) ),
       spring_constant( 0 ) { }
     
     /// Constructor
-    HapticSpring( const Matrix4 & _transform,
-                  const Vec3 &_position,
+    HapticSpring( const Vec3 &_position,
                   HAPIFloat _spring_constant,
-                  bool _interpolate );
+                  bool _interpolate = false );
     
     /// The force of the EffectOutput will be the force of the force field. 
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
                                           HAPITime dt ) {
-      //lock.lock();
-      Vec3 local_pos = transform.inverse() * hd->getPosition();
-      Vec3 local_force = ( position - local_pos ) * spring_constant;
-      force = local_force;
-      //lock.unlock();
-      return EffectOutput( transform.getRotationPart() * local_force );
+      force = ( position - hd->getPosition() ) * spring_constant;
+      return EffectOutput( force );
     }
 
     // set position
     inline void setPosition( const Vec3 &_position ) { 
-      //lock.lock();
       position = _position;
-      //lock.unlock();
-    }
-
-    // set velocity
-    inline void setVelocity( const Vec3 &_velocity ) {
-      //lock.lock();
-      velocity = _velocity;
-      //lock.unlock();
-    }
-
-    // set velocity
-    inline void setSpringConstant( const HAPIFloat &_sc ) { 
-      //lock.lock();
-      spring_constant = _sc;
-      //lock.unlock();
     }
     
-    // get and reset force
-    inline Vec3 getLatestForce() {
-      //lock.lock();
-      Vec3 f(force);
-      //lock.unlock();
-      return f;
+    // set velocity
+    inline void setSpringConstant( const HAPIFloat &_sc ) { 
+      spring_constant = _sc;
+    }
+
+    // get position
+    inline const Vec3 &getPosition() { 
+      return position;
+    }
+
+    // get spring constant
+    inline HAPIFloat setSpringConstant() { 
+      return spring_constant;
+    }
+
+    // get last force
+    inline const Vec3 &getLatestForce() { 
+      return force;
     }
     
   protected:
-    Vec3 position;
-    Vec3 velocity;
     Vec3 force;
+    Vec3 position;
     HAPIFloat spring_constant;
-    //MutexLock lock;
   };
 }
 

@@ -32,21 +32,18 @@
 
 using namespace HAPI;
 
-bool HapticPointSet::lineIntersect( const Vec3 &from, 
-                                       const Vec3 &to,
-                                       Collision::IntersectionInfo &result,
-                                       Collision::FaceType face ) { 
-  Matrix4 inv = transform.inverse();
+bool HapticPointSet::lineIntersectShape( const Vec3 &from, 
+                                         const Vec3 &to,
+                                         Collision::IntersectionInfo &result,
+                                         Collision::FaceType face ) { 
   // TODO: find closest?
   bool have_intersection = false;
   Collision::IntersectionInfo closest_intersection;
   HAPIFloat min_d2;
-  Vec3 from_local = inv * from;
-  Vec3 to_local = inv * to;
   for( unsigned int i = 0; i < points.size(); i++ ) {
     Collision::Point &p = points[i];
-    if( p.lineIntersect( from_local, to_local, result, face ) )	{
-      Vec3 v = result.point - from_local;
+    if( p.lineIntersect( from, to, result, face ) )	{
+      Vec3 v = result.point - from;
       HAPIFloat distance_sqr = v * v;
        
       if( !have_intersection ) {
@@ -63,70 +60,35 @@ bool HapticPointSet::lineIntersect( const Vec3 &from,
   }
   
   if( have_intersection ) {
-    result.point = transform * closest_intersection.point;
-    result.normal = transform.getRotationPart() * closest_intersection.normal;
+    result.point = closest_intersection.point;
+    result.normal = closest_intersection.normal;
     result.face = closest_intersection.face;
   }
   return have_intersection;
 }
 
-void HapticPointSet::getConstraints( const Vec3 &point,
-                                     Constraints &constraints,
-                                     Collision::FaceType face,
-                                     HAPIFloat radius ) {
+void HapticPointSet::getConstraintsOfShape( const Vec3 &point,
+                                            Constraints &constraints,
+                                            Collision::FaceType face,
+                                            HAPIFloat radius ) {
   if( points.size() > 0 ) {
-    // TODO: check if transform has uniform scale
-    bool uniform_scale = true;
-
-    if( uniform_scale ) {
-      Matrix4 inverse =  transform.inverse();
-      Vec3 p = inverse * point;
-
-      Vec3 s = inverse.getScalePart();
-        // uniform scaling so use any component
-      HAPIFloat r = radius * s.x;
-
-      unsigned int size = constraints.size();
-      for( unsigned int i = 0; i < points.size(); i++ ) {
-        Collision::Point &temp_p = points[i];
-        temp_p.getConstraints( p, constraints, face, r );
-      }
-
-      for( unsigned int i = size; i < constraints.size(); i ++ ) {
-        PlaneConstraint &pc = constraints[i];
-        pc.normal = transform.getScaleRotationPart() * pc.normal;
-        pc.normal.normalizeSafe();
-        pc.point = transform * pc.point;
-        pc.haptic_shape.reset(this);
-      }
-    } else {
-      // TODO: fix this
-      unsigned int size = constraints.size();
-      for( unsigned int i = 0; i < points.size(); i++ ) {
-        Collision::Point &p = points[i];
-        p.getConstraints( point, constraints, face /* r */ );
-      }
-      for( unsigned int i = size; i < constraints.size(); i ++ ) {
-        PlaneConstraint &pc = constraints[i];
-        pc.point = pc.point;
-        pc.haptic_shape.reset(this);
-      }
+    unsigned int size = constraints.size();
+    for( unsigned int i = 0; i < points.size(); i++ ) {
+      Collision::Point &temp_p = points[i];
+      temp_p.getConstraints( point, constraints, face, radius );
+    }
+    
+    for( unsigned int i = size; i < constraints.size(); i ++ ) {
+      PlaneConstraint &pc = constraints[i];
+      pc.haptic_shape.reset(this);
     }
   }
 }
 
-void HapticPointSet::glRender() {
-  glMatrixMode( GL_MODELVIEW );
-  glPushMatrix();
+void HapticPointSet::glRenderShape() {
   glPushAttrib( GL_POINT_BIT | GL_LIGHTING_BIT );
   glDisable( GL_CULL_FACE );
   glDisable( GL_LIGHTING );
-  const Matrix4 &m = transform;
-  GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
-                    m[0][1], m[1][1], m[2][1], 0,
-                    m[0][2], m[1][2], m[2][2], 0,
-                    m[0][3], m[1][3], m[2][3], 1 };
-  glMultMatrixd( vt );
   glBegin( GL_POINTS );
   for( unsigned int i = 0; i < points.size(); i++ ) {
     HAPI::Collision::Point &p = points[i];
@@ -134,25 +96,23 @@ void HapticPointSet::glRender() {
   }
   glEnd();
   glPopAttrib();
-  glPopMatrix();
 }
 
-void HapticPointSet::closestPoint( const Vec3 &p,
-                                      Vec3 &cp,
-                                      Vec3 &n,
-                                      Vec3 &tc ) {
+void HapticPointSet::closestPointOnShape( const Vec3 &p,
+                                          Vec3 &cp,
+                                          Vec3 &n,
+                                          Vec3 &tc ) {
   Vec3 temp_cp, temp_n;
-  Vec3 local_pos = transform.inverse() * p;
   HAPIFloat distance, temp_distance;
   for( unsigned int i = 0; i < points.size(); i++ ) {
     temp_cp = points[i].position;
     if( i == 0 ) {
       cp = temp_cp;
-      distance = (cp - local_pos).lengthSqr();
-      n = local_pos - temp_cp;
+      distance = (cp - p).lengthSqr();
+      n = p - temp_cp;
     }
     else {
-      temp_n = local_pos - temp_cp;
+      temp_n = p - temp_cp;
       temp_distance = temp_n.lengthSqr();
       if( temp_distance < distance ) {
         cp = temp_cp;
@@ -164,6 +124,13 @@ void HapticPointSet::closestPoint( const Vec3 &p,
       }
     }
   }
-  n = transform.getRotationPart() * n;
-  cp = transform * cp;
+}
+
+bool HapticPointSet::movingSphereIntersectShape( HAPIFloat radius,
+                                                const Vec3 &from, 
+                                                const Vec3 &to ) {
+  for( unsigned int i = 0; i < points.size(); i++ ) {
+    if( points[i].movingSphereIntersect( radius, from, to ) ) return true;
+  }
+  return false;
 }

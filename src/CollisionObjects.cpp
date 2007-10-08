@@ -82,10 +82,8 @@ bool Collision::intersectSegmentCylinder( Vec3 sa, Vec3 sb,
 
 void AABoxBound::render() {
   glDisable( GL_LIGHTING );
-  if( collided )
-    glColor3d( 1, 0, 0 );
-  else
-    glColor3d( 1, 1, 0 );
+
+  glColor3d( 1, 1, 0 );
   glBegin( GL_LINE_STRIP );
   glVertex3d( min.x, min.y, min.z );
   glVertex3d( min.x, max.y, min.z );
@@ -246,10 +244,7 @@ void SphereBound::render( ) {
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glTranslated( center.x, center.y, center.z );
-  if( collided )
-    glColor3d( 1, 0, 0 );
-  else
-    glColor3d( 1, 1, 0 );
+  glColor3d( 1, 1, 0 );
   glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
   gluSphere( gl_quadric, radius, 10, 10 );
   glPopMatrix();
@@ -651,14 +646,9 @@ void BinaryBoundTree::render() {
 }
 
 void Triangle::render() {
-//  if( !collided ) return;
-  glDisable( GL_LIGHTING );
-  if( collided )
-    glColor3d( 1, 0, 0 );
-  else {
-    glColor3d( 0, 0, 1 );
-  }
 
+  glDisable( GL_LIGHTING );
+  glColor3d( 0, 0, 1 );
   glBegin( GL_LINE_STRIP );
   glVertex3d( a.x, a.y, a.z );
   glVertex3d( b.x, b.y, b.z );
@@ -927,7 +917,6 @@ bool Triangle::lineIntersect( const Vec3 &from,
     return false;
   }
 
-  collided = true;
   result.point = p;
 
   if( dir * normal > 0 ) 
@@ -1259,24 +1248,6 @@ cerr << "FD";
   return intersect;
 }
 
-
-void BinaryBoundTree::clearCollidedFlag() {
-  if( !isLeaf() ) {
-    bound->collided = false;
-    left->clearCollidedFlag();
-    right->clearCollidedFlag();
-  } else {
-    for( unsigned int i = 0; i < triangles.size(); i++ )
-      triangles[i].collided = false;
-    for( unsigned int i = 0; i < linesegments.size(); i++ )
-      linesegments[i].collided = false;
-    for( unsigned int i = 0; i < points.size(); i++ )
-      points[i].collided = false;
-  }
-}
-
-
-
 bool BinaryBoundTree::lineIntersect( const Vec3 &from, 
                                      const Vec3 &to,
                                      IntersectionInfo &result,
@@ -1327,7 +1298,6 @@ bool BinaryBoundTree::lineIntersect( const Vec3 &from,
 	}	else 	{
 		if ( bound->boundIntersect( from, to ) )	{
 			bool overlap = false;
-      bound->collided = true;
 			
 			if (left.get()) overlap |= left->lineIntersect( from, to, result, face );
 			if (right.get()) overlap |= right->lineIntersect( from, to, result, face );
@@ -1361,7 +1331,6 @@ bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
 	}	else 	{
 		if ( bound->boundMovingSphereIntersect( radius, from, to ) )	{
 			bool overlap = false;
-      bound->collided = true;
 			
 			if (left.get()) {
         overlap = left->movingSphereIntersect( radius, from, to );
@@ -1580,10 +1549,7 @@ void OrientedBoxBound::render( ) {
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glDisable( GL_LIGHTING );
-  if( collided )
-    glColor3d( 1, 0, 0 );
-  else
-    glColor3d( 1, 1, 0 );
+  glColor3d( 1, 1, 0 );
   glTranslated( center.x, center.y, center.z );
   glRotated( -orientation.angle *180 / H3DUtil::Constants::pi, 
              orientation.axis.x, orientation.axis.y, orientation.axis.z );
@@ -1641,23 +1607,6 @@ void GeometryPrimitive::getConstraints( const Vec3 &point,
                                              cp_tex_coord, NULL, this ) );
 }
 
-void Triangle::getConstraints( const Vec3 &point,
-                               const Matrix4 &matrix,
-                               Constraints &constraints,
-                               FaceType face,
-                               HAPIFloat radius ) {
-  Vec3 oa = a;
-  Vec3 ob = b;
-  Vec3 oc = c;
-  a = (matrix * a);
-  b = (matrix * b);
-  c = (matrix * c);
-  Triangle::getConstraints( point, constraints, face, radius );
-  a = oa;
-  b = ob;
-  c = oc;
-}
-
 
 void BinaryBoundTree::getConstraints( const Vec3 &point,
                                       Constraints &constraints,
@@ -1683,26 +1632,6 @@ void BinaryBoundTree::getConstraints( const Vec3 &point,
     
   }
 }
-
-void BinaryBoundTree::getConstraints( const Vec3 &point,
-                                      const Matrix4 &matrix,
-                                      Constraints &constraints,
-                                      FaceType face,
-                                      HAPIFloat radius ) {
-  if ( isLeaf() )	{
-    for( unsigned int i = 0; i < triangles.size(); i++ ) {
-      Triangle &t = triangles[i];
-      t.getConstraints( point, matrix, constraints, face, radius );
-		}
-	}	else 	{
-		//if ( bound->boundIntersect( from, to ) )	{
-    if (left.get()) left->getConstraints( point, matrix, 
-                                          constraints, face, radius );
-    if (right.get()) right->getConstraints( point, matrix, 
-                                            constraints, face, radius );
-  }
-}
-
 
 void BinaryBoundTree::getTrianglesWithinRadius( const Vec3 &p,
                                                 HAPIFloat radius,
@@ -1770,12 +1699,7 @@ void BinaryBoundTree::getPrimitivesWithinRadius( const Vec3 &p,
 
 void LineSegment::render() {
   glDisable( GL_LIGHTING );
-  if( collided )
-    glColor3d( 1, 0, 0 );
-  else {
-    glColor3d( 0, 0, 1 );
-  }
-
+  glColor3d( 0, 0, 1 );
   glBegin( GL_LINES );
   glVertex3d( start.x, start.y, start.z );
   glVertex3d( end.x, end.y, end.z );
@@ -1900,31 +1824,9 @@ HAPIFloat LineSegment::closestPointOnLine( const Vec3 &from, const Vec3 &to,
   return v * v;
 }
   
-void LineSegment::getConstraints( const Vec3 &point,
-                                  const Matrix4 &matrix,
-                                  Constraints &constraints,
-                                  FaceType face,
-                                  HAPIFloat radius
-                                  ) {
-  Vec3 oa = start;
-  Vec3 ob = end;
-
-  start = (matrix * start);
-  end = (matrix * end);
-
-  getConstraints( point, constraints, face, radius );
-  start = oa;
-  end = ob;
-}
-
 void Collision::Point::render() {
   glDisable( GL_LIGHTING );
-  if( collided )
-    glColor3d( 1, 0, 0 );
-  else {
-    glColor3d( 0, 0, 1 );
-  }
-
+  glColor3d( 0, 0, 1 );
   glBegin( GL_POINTS );
   glVertex3d( position.x, position.y, position.z );
   glEnd();
@@ -1973,17 +1875,6 @@ bool Collision::Point::movingSphereIntersect( HAPIFloat radius,
                                         tmp, tmp );
   Vec3 v = position - closest_point;
   return v * v <= r2;
-}
-
-void Collision::Point::getConstraints( const Vec3 &point,
-                                    const Matrix4 &matrix,
-                                    Constraints &constraints,
-                                    FaceType face,
-                                    HAPIFloat radius ) {
-  Vec3 oa = position;
-  position = (matrix * position);
-  getConstraints( point, constraints, face, radius );
-  position = oa;
 }
 
 
@@ -2313,10 +2204,10 @@ Vec3 OrientedBoxBound::longestAxis() const {
 
 
 struct StackElementPrimitive {
-  BBTreePrimitive *tree;
+  BBPrimitiveTree *tree;
   vector< int > primitives;
 }; 
-BBTreePrimitive::BBTreePrimitive(
+BBPrimitiveTree::BBPrimitiveTree(
             BoundNewFunc func, 
             const vector< GeometryPrimitive * > &primitive_vector,
             unsigned int max_nr_primitives_in_leaf ):
@@ -2346,7 +2237,7 @@ BBTreePrimitive::BBTreePrimitive(
   //	BUILD TREE
 	while( !stack.empty() ) {
 		const std::vector< int > &stack_primitives = stack.top().primitives;
-		BBTreePrimitive* stack_tree = stack.top().tree;
+		BBPrimitiveTree* stack_tree = stack.top().tree;
 
 	  if (max_nr_primitives_in_leaf < 0 ||
         stack_primitives.size() <= max_nr_primitives_in_leaf ) {
@@ -2462,7 +2353,7 @@ BBTreePrimitive::BBTreePrimitive(
 
     //	do recurse
 		if ( left.size() != 0) {
-      stack_tree->left.reset( new BBTreePrimitive );
+      stack_tree->left.reset( new BBPrimitiveTree );
 			
 			StackElementPrimitive element;
 			element.tree = stack_tree->left.get();
@@ -2471,7 +2362,7 @@ BBTreePrimitive::BBTreePrimitive(
 		}
 		
 		if ( right.size() != 0) {
-			stack_tree->right.reset( new BBTreePrimitive );
+			stack_tree->right.reset( new BBPrimitiveTree );
 			
 			StackElementPrimitive element;
 			element.tree = stack_tree->right.get();
@@ -2481,7 +2372,7 @@ BBTreePrimitive::BBTreePrimitive(
 	}
 }
 
-void BBTreePrimitive::getConstraints(
+void BBPrimitiveTree::getConstraints(
                                   const Vec3 &point,
                                   Constraints &constraints,
                                   FaceType face,
@@ -2499,26 +2390,7 @@ void BBTreePrimitive::getConstraints(
   }
 }
 
-void BBTreePrimitive::getConstraints(
-                                  const Vec3 &point,
-                                  const Matrix4 &matrix,
-                                  Constraints &constraints,
-                                  FaceType face,
-                                  HAPIFloat radius ) {
- // if ( isLeaf() )	{
- //   for( unsigned int i = 0; i < primitives.size(); i++ ) {
- //     GeometryPrimitive *gp = primitives[i];
- //     gp->getConstraints( point, matrix, constraints, face );
-	//	}
-	//}	else 	{
-	//	//if ( bound->boundIntersect( from, to ) )	{
- //   if (left.get()) left->getConstraints( point, matrix, constraints, face );
- //   if (right.get()) right->getConstraints( point, matrix, constraints, face );
- // }
-}
-
-
-void BBTreePrimitive::getPrimitivesWithinRadius(
+void BBPrimitiveTree::getPrimitivesWithinRadius(
                                     const Vec3 &p,
                                     HAPIFloat radius,
                                     vector< GeometryPrimitive * > &result ) {
@@ -2543,7 +2415,7 @@ void BBTreePrimitive::getPrimitivesWithinRadius(
   }
 }
 
-void BBTreePrimitive::closestPoint( const Vec3 &p,
+void BBPrimitiveTree::closestPoint( const Vec3 &p,
                                     Vec3 &closest_point,
                                     Vec3 &closest_normal,
                                     Vec3 &tex_coord ) {
@@ -2597,7 +2469,7 @@ void BBTreePrimitive::closestPoint( const Vec3 &p,
   }
 }
 
-void BBTreePrimitive::getAllPrimitives( vector< GeometryPrimitive * > &prim ) {
+void BBPrimitiveTree::getAllPrimitives( vector< GeometryPrimitive * > &prim ) {
   if ( isLeaf() )	{
     prim.insert( prim.end(), primitives.begin(), primitives.end() );
 	}	else 	{
@@ -2606,20 +2478,7 @@ void BBTreePrimitive::getAllPrimitives( vector< GeometryPrimitive * > &prim ) {
   }
 }
 
-void BBTreePrimitive::clearCollidedFlag() {
-  if( !isLeaf() ) {
-    bound->collided = false;
-    left->clearCollidedFlag();
-    right->clearCollidedFlag();
-  } else {
-    for( unsigned int i = 0; i < primitives.size(); i++ )
-      primitives[i]->collided = false;
-  }
-}
-
-
-
-bool BBTreePrimitive::lineIntersect( const Vec3 &from, 
+bool BBPrimitiveTree::lineIntersect( const Vec3 &from, 
                                      const Vec3 &to,
                                      IntersectionInfo &result,
                                      FaceType face ) {
@@ -2643,7 +2502,6 @@ bool BBTreePrimitive::lineIntersect( const Vec3 &from,
 	}	else 	{
 		if ( bound->boundIntersect( from, to ) )	{
 			bool overlap = false;
-      bound->collided = true;
 			
 			if (left.get()) overlap |=
         left->lineIntersect( from, to, result, face );
@@ -2656,7 +2514,7 @@ bool BBTreePrimitive::lineIntersect( const Vec3 &from,
 	}
 }
 
-bool BBTreePrimitive::movingSphereIntersect( HAPIFloat radius,
+bool BBPrimitiveTree::movingSphereIntersect( HAPIFloat radius,
                                              const Vec3 &from, 
                                              const Vec3 &to ) {
   if ( isLeaf() )	{
@@ -2669,7 +2527,6 @@ bool BBTreePrimitive::movingSphereIntersect( HAPIFloat radius,
 	}	else 	{
 		if ( bound->boundMovingSphereIntersect( radius, from, to ) )	{
 			bool overlap = false;
-      bound->collided = true;
 			
 			if (left.get()) {
         overlap = left->movingSphereIntersect( radius, from, to );
@@ -2684,11 +2541,11 @@ bool BBTreePrimitive::movingSphereIntersect( HAPIFloat radius,
 	}
 }
 
-void BBTreePrimitive::render() {
+void BBPrimitiveTree::render() {
   render( 0 );
 }
 
-void BBTreePrimitive::render( int depth) {
+void BBPrimitiveTree::render( int depth) {
   if( !isLeaf() ) {
     if( depth == 0 ) {
       bound->render();
@@ -2703,7 +2560,7 @@ void BBTreePrimitive::render( int depth) {
   }
 }
 
-void BBTreePrimitive::getPrimitivesIntersectedByMovingSphere(
+void BBPrimitiveTree::getPrimitivesIntersectedByMovingSphere(
                                       HAPIFloat radius,
                                       Vec3 from,
                                       Vec3 to,

@@ -57,22 +57,24 @@ class Constraints;
     /// can be used  in collision detection.
     class HAPI_API CollisionObject : public H3DUtil::RefCountedClass {
     public:
-
+      /// Constructor.
       CollisionObject(){};
-
+      
       CollisionObject( bool _use_lock ) :
         H3DUtil::RefCountedClass( _use_lock ){};
          
       typedef HAPI::Constraints Constraints;
       //typedef vector< Collision::PlaneConstraint > Constraints;
 
+      /// Get constraint planes of the object. A proxy of a haptics renderer
+      /// will always stay above any constraints added.
+      /// \param point Point to constrain.
+      /// \param constraints Where to add the constraints.
+      /// \param face Determines which faces of the shape will be seen as
+      /// constraining.
+      /// \param radius Only add constraints within this radius. If set to -1
+      /// all constraints will be added.
       virtual void getConstraints( const Vec3 &point,
-                                   Constraints &constraints,
-                                   FaceType face = Collision::FRONT_AND_BACK,
-                                   HAPIFloat radius = -1 ) {}
-      
-      virtual void getConstraints( const Vec3 &point,
-                                   const Matrix4 &matrix,
                                    Constraints &constraints,
                                    FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 ) {}
@@ -158,7 +160,7 @@ class Constraints;
     class HAPI_API BoundPrimitive: public BoundObject {
     public:
       /// Constructor.
-      BoundPrimitive() : collided( false ) {}
+      BoundPrimitive() {}
 
       /// Update the bound primitive to contain all the given points.
       virtual void fitAroundPoints( const vector< Vec3 >&points ) = 0;
@@ -166,14 +168,20 @@ class Constraints;
       /// Returns a Vec3 specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
       virtual Vec3 longestAxis() const = 0;
-      
-      bool collided;
     };
     
     /// The GeometryPrimitive is the base class for all geometry 
     /// primitives used in collision detection.
     class HAPI_API GeometryPrimitive: public CollisionObject {
     public:
+      /// Get constraint planes of the shape. A proxy of a haptics renderer
+      /// will always stay above any constraints added.
+      /// \param point Point to constrain.
+      /// \param constraints Where to add the constraints.
+      /// \param face Determines which faces of the shape will be seen as
+      /// constraining.
+      /// \param radius Only add constraints within this radius. If set to -1
+      /// all constraints will be added.
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
                                    FaceType face = Collision::FRONT_AND_BACK,
@@ -190,13 +198,15 @@ class Constraints;
       virtual void getTangentSpaceMatrix( const Vec3 &point,
                                           Matrix4 &result_mtx );
 
-      bool collided;
     };
     
-    /// The Plane class is a collision primitive for a plane.
+    /// The Plane class is a collision primitive for a plane. The plane is
+    /// defined by a point and a normal.
     class HAPI_API Plane: public GeometryPrimitive {
     public:
       /// Constructor.
+      /// \params p A point in the plane.
+      /// \params n The normal of the plane.
       Plane( const Vec3 &p, const Vec3 &n ):
         point( p ), normal( n ) {}
       
@@ -311,7 +321,10 @@ class Constraints;
                                           const Vec3 &to );
 
 
+      /// The coordinate of the center of the sphere.
       Vec3 center;
+
+      /// The radius of the sphere.
       HAPIFloat radius;
     };
 
@@ -323,7 +336,7 @@ class Constraints;
       Triangle() {}
 
       /// Constructor.
-      /// a, b and are the coordinates for each vertex
+      /// a, b and c are the coordinates for each vertex
       /// ta, tb, and tc are the texture coordinates for each vertex.
       Triangle( const Vec3& a_, const Vec3& b_, const Vec3& c_,
                 const Vec3& ta_ = Vec3(), 
@@ -404,20 +417,6 @@ class Constraints;
       
       
     public:
-      /// WTF?? Why is this needed. VC complains if not present
-      virtual void getConstraints( const Vec3 &point,
-                                   Constraints &constraints,
-                                   FaceType face = Collision::FRONT_AND_BACK,
-                                   HAPIFloat radius = -1 ) {
-        GeometryPrimitive::getConstraints( point, constraints, face, radius );
-      }
-
-      virtual void getConstraints( const Vec3 &point,
-                                   const Matrix4 &matrix,
-                                   Constraints &constraints,
-                                   FaceType face = Collision::FRONT_AND_BACK,
-                                   HAPIFloat radius = -1 );
-
       /// The corners of the triangle.
       Vec3 a,b,c;
 
@@ -438,20 +437,6 @@ class Constraints;
       /// Constructor.
       LineSegment( const Vec3& _start, const Vec3& _end) : 
         start( _start ), end( _end ) {}
-
-      /// WTF?? Why is this needed. VC complains if not present
-      virtual void getConstraints( const Vec3 &point,
-                                   Constraints &constraints,
-                                   FaceType face = Collision::FRONT_AND_BACK,
-                                   HAPIFloat radius = -1 ) {
-        GeometryPrimitive::getConstraints( point, constraints, face, radius );
-      }
-
-      virtual void getConstraints( const Vec3 &point,
-                                   const Matrix4 &matrix,
-                                   Constraints &constraints,
-                                   FaceType face = Collision::FRONT_AND_BACK,
-                                   HAPIFloat radius = -1 );
 
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
@@ -524,20 +509,6 @@ class Constraints;
       /// Constructor.
       Point( const Vec3& _p ) : 
         position( _p ) {}
-
-      /// WTF?? Why is this needed. VC complains if not present
-      virtual void getConstraints( const Vec3 &point,
-                                   Constraints &constraints,
-                                   FaceType face = Collision::FRONT_AND_BACK,
-                                   HAPIFloat radius = -1 ) {
-        GeometryPrimitive::getConstraints( point, constraints, face, radius );
-      }
-
-      virtual void getConstraints( const Vec3 &point,
-                                   const Matrix4 &matrix,
-                                   Constraints &constraints,
-                                   FaceType face = Collision::FRONT_AND_BACK,
-                                   HAPIFloat radius = -1 );
 
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
@@ -825,7 +796,9 @@ class Constraints;
 
     /// The BinaryBoundTree class is the base class for bound objects 
     /// structured as a binary tree. Each node in the tree has a BoundPrimitive
-    /// specifying a bound for itself and each subtree has the same.
+    /// specifying a bound for itself and each subtree has the same. Each leaf
+    /// in the tree contains triangle, line and point primitives contained
+    /// within its parent bound.
     class HAPI_API BinaryBoundTree: public BoundObject {
     public: 
       /// A function type for creating a bound primitive for a node in the tree.
@@ -859,34 +832,43 @@ class Constraints;
         return left.get() == NULL && right.get() == NULL; 
       }
 
+      /// Get constraint planes of the shape. A proxy of a haptics renderer
+      /// will always stay above any constraints added.
+      /// \param point Point to constrain.
+      /// \param constraints Where to add the constraints.
+      /// \param face Determines which faces of the shape will be seen as
+      /// constraining.
+      /// \param radius Only add constraints within this radius. If set to -1
+      /// all constraints will be added.
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
                                    FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
-      virtual void getConstraints( const Vec3 &point,
-                                   const Matrix4 &matrix,
-                                   Constraints &constraints,
-                                   FaceType face = Collision::FRONT_AND_BACK,
-                                   HAPIFloat radius = -1 );
-
+      /// Adds the triangles found in the tree that are within the distance 
+      /// radius from p to the triangles vector.
       virtual void getTrianglesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
                                              vector< Triangle > &triangles);
 
+      /// Adds the triangles, lines and points found in the tree that are 
+      /// within the distance radius from p to their respective vector.
       virtual void getPrimitivesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
                                              vector< Triangle > &triangles,
                                              vector< LineSegment > &lines,
                                              vector< Point > &points );
 
-
+      /// Adds the triangles that are intersected by the volume swept by a
+      /// sphere when moving from "from" to "to".
       virtual void getTrianglesIntersectedByMovingSphere(
                     HAPIFloat radius,
                     Vec3 from,
                     Vec3 to,
                     vector< Triangle > &triangles);
 
+      /// Adds the triangles, lines and points that are intersected by 
+      /// the volume swept by a sphere when moving from "from" to "to".
       virtual void getPrimitivesIntersectedByMovingSphere(
                     HAPIFloat radius,
                     Vec3 from,
@@ -992,13 +974,6 @@ class Constraints;
                                     vector< LineSegment > &lines,
                                     vector< Point > &points );
 
-      void clearCollidedFlag();
-
-      /*union {
-        struct { AutoRef< BoundPrimitive > bound; };
-        struct { vector< Triangle > triangles; };
-        };*/
-
       H3DUtil::AutoRef< BoundPrimitive > bound;
       vector< Triangle > triangles;
       vector< LineSegment > linesegments;
@@ -1041,8 +1016,7 @@ class Constraints;
 
 
     /// The OBBTree is a BinaryBoundTree where the bounding primitive 
-    /// for each node is a OrientedBoxBound.
-
+    /// for each node is an OrientedBoxBound.
     class HAPI_API OBBTree: public BinaryBoundTree {
     public:
       /// Default constructor.
@@ -1068,7 +1042,6 @@ class Constraints;
 
     /// The SphereBoundTree is a BinaryBoundTree where the bounding 
     /// primitive for each node is a SphereBound object.
-
     class HAPI_API SphereBoundTree: public BinaryBoundTree {
     public:
       /// Default constructor.
@@ -1093,12 +1066,11 @@ class Constraints;
                          max_nr_triangles_in_leaf ) {}
     };
 
-    // Primitive special kind
-
-    /// The BBTreePrimitive class is the base class for bound objects 
+    /// The BBPrimitiveTree class is the base class for bound objects 
     /// structured as a binary tree. Each node in the tree has a BoundPrimitive
-    /// specifying a bound for itself and each subtree has the same.
-    class HAPI_API BBTreePrimitive: public BoundObject {
+    /// specifying a bound for itself and each subtree has the same. The leaf
+    /// nodes can contain any GeometryPrimitive objects.
+    class HAPI_API BBPrimitiveTree: public BoundObject {
     public: 
       /// A function type for creating a bound primitive for a node in the tree.
       typedef BoundPrimitive *( *BoundNewFunc)(); 
@@ -1108,7 +1080,7 @@ class Constraints;
       static BoundPrimitive *newInstance() { return new N; };
 
       /// Default constructor.
-      BBTreePrimitive(  ): left( NULL ), right( NULL ), new_func( NULL ) {}
+      BBPrimitiveTree(  ): left( NULL ), right( NULL ), new_func( NULL ) {}
 
       /// Constructor.
       /// Builds a binary tree from a vector of GeometryPrimitive pointers.
@@ -1116,7 +1088,7 @@ class Constraints;
       /// wanted type in each tree node. max_nr_primitives_in_leaf specifies
       /// the maximum number of primitives that are allowed to be in a bound
       /// of a leaf in the tree. 
-      BBTreePrimitive( BoundNewFunc func, 
+      BBPrimitiveTree( BoundNewFunc func, 
                        const vector< GeometryPrimitive * > &_primitives,
                        unsigned int max_nr_primitives_in_leaf = 1 );
 
@@ -1126,21 +1098,27 @@ class Constraints;
         return left.get() == NULL && right.get() == NULL; 
       }
 
+      /// Get constraint planes of the object. A proxy of a haptics renderer
+      /// will always stay above any constraints added.
+      /// \param point Point to constrain.
+      /// \param constraints Where to add the constraints.
+      /// \param face Determines which faces of the shape will be seen as
+      /// constraining.
+      /// \param radius Only add constraints within this radius. If set to -1
+      /// all constraints will be added.
       virtual void getConstraints( const Vec3 &point,
                                    Constraints &constraints,
                                    FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
-      virtual void getConstraints( const Vec3 &point,
-                                   const Matrix4 &matrix,
-                                   Constraints &constraints,
-                                   FaceType face = Collision::FRONT_AND_BACK,
-                                   HAPIFloat radius = -1 );
-
+      /// Adds the primitives found in the tree that are 
+      /// within the distance radius from p to the vector. 
       virtual void getPrimitivesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
                                     vector< GeometryPrimitive * > &primitives);
 
+      /// Adds the primitives found in the tree that are 
+      /// within the distance radius from p to the vector.
       virtual void getPrimitivesIntersectedByMovingSphere(
                       HAPIFloat radius,
                       Vec3 from,
@@ -1240,72 +1218,68 @@ class Constraints;
       virtual void getAllPrimitives(
         vector< GeometryPrimitive * > &primitives );
 
-      void clearCollidedFlag();
-
       H3DUtil::AutoRef< BoundPrimitive > bound;
       H3DUtil::AutoRefVector< GeometryPrimitive > primitives;
 
       /// The left subtree.
-      H3DUtil::AutoRef< BBTreePrimitive > left;
+      H3DUtil::AutoRef< BBPrimitiveTree > left;
       /// The right subtree.
-      H3DUtil::AutoRef< BBTreePrimitive > right;
+      H3DUtil::AutoRef< BBPrimitiveTree > right;
       /// The function to create new bounding primitives in for a tree node.
       BoundNewFunc new_func;
     };
 
 
-    /// The AABBTree is a BinaryBoundTree where the bounding primitive 
-    /// for each node is a AABoxBound (axis-aligned bounding box).
-    class HAPI_API AABBTreePrimitive: public BBTreePrimitive {
+    /// The AABBPrimitiveTree is a BBPrimitiveTree where the bounding 
+    /// primitive for each node is a AABoxBound (axis-aligned bounding box).
+    class HAPI_API AABBPrimitiveTree: public BBPrimitiveTree {
     public:
       /// Default constructor.
-      AABBTreePrimitive(): BBTreePrimitive( ) {}
+      AABBPrimitiveTree(): BBPrimitiveTree( ) {}
 
       /// Constructor.
       /// Builds a binary tree from a vector of primitives. 
       /// max_nr_primitives_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      AABBTreePrimitive( const vector< GeometryPrimitive * > &_primitives,
+      AABBPrimitiveTree( const vector< GeometryPrimitive * > &_primitives,
                 unsigned int max_nr_primitives_in_leaf = 1 ):
-        BBTreePrimitive( &(newInstance< AABoxBound >),
+        BBPrimitiveTree( &(newInstance< AABoxBound >),
                          _primitives,
                          max_nr_primitives_in_leaf ) {}
     };
 
 
-    /// The OBBTree is a BinaryBoundTree where the bounding primitive 
+    /// The OBBPrimitiveTree is a BBPrimitiveTree where the bounding primitive 
     /// for each node is a OrientedBoxBound.
-
-    class HAPI_API OBBTreePrimitive: public BBTreePrimitive {
+    class HAPI_API OBBPrimitiveTree: public BBPrimitiveTree {
     public:
       /// Default constructor.
-      OBBTreePrimitive(): BBTreePrimitive( ) {}
+      OBBPrimitiveTree(): BBPrimitiveTree( ) {}
 
       /// Constructor.
       /// Builds a binary tree from a vector of primitives. 
       /// max_nr_primitives_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      OBBTreePrimitive( const vector< GeometryPrimitive * > &_primitives,
+      OBBPrimitiveTree( const vector< GeometryPrimitive * > &_primitives,
                unsigned int max_nr_primitives_in_leaf = 1 ):
-        BBTreePrimitive( &(newInstance< OrientedBoxBound >), _primitives, 
+        BBPrimitiveTree( &(newInstance< OrientedBoxBound >), _primitives, 
                          max_nr_primitives_in_leaf ) {}
     };
 
-    /// The SphereBoundTree is a BinaryBoundTree where the bounding 
+    /// The SBPrimitiveTree is a BBPrimitiveTree where the bounding 
     /// primitive for each node is a SphereBound object.
-
-    class HAPI_API SBTreePrimitive: public BBTreePrimitive {
+    class HAPI_API SBPrimitiveTree: public BBPrimitiveTree {
     public:
       /// Default constructor.
-      SBTreePrimitive(): BBTreePrimitive() {}
+      SBPrimitiveTree(): BBPrimitiveTree() {}
 
       /// Constructor.
       /// Builds a binary tree from a vector of primitives. 
       /// max_nr_primitives_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      SBTreePrimitive( const vector< GeometryPrimitive * > &_primitives,
+      SBPrimitiveTree( const vector< GeometryPrimitive * > &_primitives,
                        unsigned int max_nr_primitives_in_leaf = 1): 
-        BBTreePrimitive( &(newInstance< SphereBound > ),
+        BBPrimitiveTree( &(newInstance< SphereBound > ),
                          _primitives,
                          max_nr_primitives_in_leaf ) {}
     };

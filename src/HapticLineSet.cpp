@@ -32,21 +32,18 @@
 
 using namespace HAPI;
 
-bool HapticLineSet::lineIntersect( const Vec3 &from, 
-                                       const Vec3 &to,
-                                       Collision::IntersectionInfo &result,
-                                       Collision::FaceType face ) { 
-  Matrix4 inv = transform.inverse();
+bool HapticLineSet::lineIntersectShape( const Vec3 &from, 
+                                        const Vec3 &to,
+                                        Collision::IntersectionInfo &result,
+                                        Collision::FaceType face ) { 
   // TODO: find closest?
   bool have_intersection = false;
   Collision::IntersectionInfo closest_intersection;
   HAPIFloat min_d2;
-  Vec3 from_local = inv * from;
-  Vec3 to_local = inv * to;
   for( unsigned int i = 0; i < lines.size(); i++ ) {
     Collision::LineSegment &l = lines[i];
-    if( l.lineIntersect( from_local, to_local, result, face ) )	{
-      Vec3 v = result.point - from_local;
+    if( l.lineIntersect( from, to, result, face ) )	{
+      Vec3 v = result.point - from;
       HAPIFloat distance_sqr = v * v;
        
       if( !have_intersection ) {
@@ -63,69 +60,35 @@ bool HapticLineSet::lineIntersect( const Vec3 &from,
   }
   
   if( have_intersection ) {
-    result.point = transform * closest_intersection.point;
-    result.normal = transform.getRotationPart() * closest_intersection.normal;
+    result.point = closest_intersection.point;
+    result.normal = closest_intersection.normal;
     result.face = closest_intersection.face;
   }
   return have_intersection;
 }
 
-void HapticLineSet::getConstraints( const Vec3 &point,
-                                    Constraints &constraints,
-                                    Collision::FaceType face,
-                                    HAPIFloat radius ) {
+void HapticLineSet::getConstraintsOfShape( const Vec3 &point,
+                                           Constraints &constraints,
+                                           Collision::FaceType face,
+                                           HAPIFloat radius ) {
   if( lines.size() > 0 ) {
-    // TODO: check if transform has uniform scale
-    bool uniform_scale = true;
+    unsigned int size = constraints.size();
+    for( unsigned int i = 0; i < lines.size(); i++ ) {
+      Collision::LineSegment &l = lines[i];
+      l.getConstraints( point, constraints, face, radius );
+    }
 
-    if( uniform_scale ) {
-      Matrix4 inverse =  transform.inverse();
-      Vec3 p = inverse * point;
-
-      Vec3 s = inverse.getScalePart();
-        // uniform scaling so use any component
-      HAPIFloat r = radius * s.x;
-      unsigned int size = constraints.size();
-      for( unsigned int i = 0; i < lines.size(); i++ ) {
-        Collision::LineSegment &l = lines[i];
-        l.getConstraints( p, constraints, face, r );
-      }
-
-      for( unsigned int i = size; i < constraints.size(); i ++ ) {
-        PlaneConstraint &pc = constraints[i];
-        pc.normal = transform.getScaleRotationPart() * pc.normal;
-        pc.normal.normalizeSafe();
-        pc.point = transform * pc.point;
-        pc.haptic_shape.reset(this);
-      }
-    } else {
-      // TODO: fix this
-      unsigned int size = constraints.size();
-      for( unsigned int i = 0; i < lines.size(); i++ ) {
-        Collision::LineSegment &l = lines[i];
-        l.getConstraints( point, constraints, face /*r */ );
-      }
-      for( unsigned int i = size; i < constraints.size(); i ++ ) {
-        PlaneConstraint &pc = constraints[i];
-        pc.point = pc.point;
-        pc.haptic_shape.reset(this);
-      }
+    for( unsigned int i = size; i < constraints.size(); i ++ ) {
+      PlaneConstraint &pc = constraints[i];
+      pc.haptic_shape.reset(this);
     }
   }
 }
 
-void HapticLineSet::glRender() {
-  glMatrixMode( GL_MODELVIEW );
-  glPushMatrix();
+void HapticLineSet::glRenderShape() {
   glPushAttrib( GL_LINE_BIT | GL_LIGHTING_BIT );
   glDisable( GL_CULL_FACE );
   glDisable( GL_LIGHTING );
-  const Matrix4 &m = transform;
-  GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
-                    m[0][1], m[1][1], m[2][1], 0,
-                    m[0][2], m[1][2], m[2][2], 0,
-                    m[0][3], m[1][3], m[2][3], 1 };
-  glMultMatrixd( vt );
   glBegin( GL_LINES );
   for( unsigned int i = 0; i < lines.size(); i++ ) {
     HAPI::Collision::LineSegment &l = lines[i];
@@ -135,26 +98,24 @@ void HapticLineSet::glRender() {
   }
   glEnd();
   glPopAttrib();
-  glPopMatrix();
 }
 
-void HapticLineSet::closestPoint( const Vec3 &p,
-                                      Vec3 &cp,
-                                      Vec3 &n,
-                                      Vec3 &tc ) {
+void HapticLineSet::closestPointOnShape( const Vec3 &p,
+                                         Vec3 &cp,
+                                         Vec3 &n,
+                                         Vec3 &tc ) {
   Vec3 temp_cp, temp_n, temp_tc;
-  Vec3 local_pos = transform.inverse() * p;
   HAPIFloat distance, temp_distance;
   for( unsigned int i = 0; i < lines.size(); i++ ) {
-    lines[i].closestPoint( local_pos, temp_cp, temp_n, temp_tc );
+    lines[i].closestPoint( p, temp_cp, temp_n, temp_tc );
     if( i == 0 ) {
       cp = temp_cp;
-      distance = (cp - local_pos).lengthSqr();
+      distance = (cp - p).lengthSqr();
       n = temp_n;
       tc = temp_tc;
     }
     else {
-      temp_distance = (temp_cp - local_pos).lengthSqr();
+      temp_distance = (temp_cp - p).lengthSqr();
       if( temp_distance < distance ) {
         cp = temp_cp;
         distance = temp_distance;
@@ -163,6 +124,14 @@ void HapticLineSet::closestPoint( const Vec3 &p,
       }
     }
   }
-  n = transform.getRotationPart() * n;
-  cp = transform * cp;
+}
+
+
+bool HapticLineSet::movingSphereIntersectShape( HAPIFloat radius,
+                                                const Vec3 &from, 
+                                                const Vec3 &to ) {
+  for( unsigned int i = 0; i < lines.size(); i++ ) {
+    if( lines[i].movingSphereIntersect( radius, from, to ) ) return true;
+  }
+  return false;
 }

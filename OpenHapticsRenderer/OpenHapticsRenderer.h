@@ -241,6 +241,7 @@ namespace HAPI {
 
   protected:
 
+    /// \internal
     class OPENHAPTICSRENDERER_API OpenHapticsWorkAroundToCleanUpHLContext :
     public WorkAroundToCleanUpHLContext {
     public:

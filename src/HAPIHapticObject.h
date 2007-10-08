@@ -40,15 +40,8 @@ namespace HAPI {
   
   class HAPI_API HAPIHapticObject {
   public:
-    /// Constructor
-    HAPIHapticObject( const Matrix4 & _transform ):
-      transform( _transform ) {}
-
     /// Destructor. Virtual to make HapticObject a polymorphic type.
     virtual ~HAPIHapticObject() {}
-
-    /// Matrix transforming from local space to global space.
-    Matrix4 transform;
   };
 }
 

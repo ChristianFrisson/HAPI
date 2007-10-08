@@ -42,40 +42,78 @@ namespace HAPI {
   public:
     /// Constructor.
     HapticTriangleTree( Collision::BinaryBoundTree *triangle_tree,
-                        void *_userdata,
-                        HAPISurfaceObject *_surface,
-                        const Matrix4 & _transform,
-                        void (*_clean_up_func)( void * ) = 0,
-                        int _shape_id = -1,
+                        HAPISurfaceObject *_surface, 
                         Collision::FaceType _touchable_face = 
-                        Collision::FRONT_AND_BACK ):
-      HAPIHapticShape( _userdata, _surface, _transform,
-                       _clean_up_func,
-                       _shape_id, _touchable_face ),
+                        Collision::FRONT_AND_BACK,
+                        void *_userdata = NULL,
+                        int _shape_id = -1, 
+                        void (*_clean_up_func)( void * ) = 0 ):
+      HAPIHapticShape( _surface, _touchable_face, _userdata,
+                       _shape_id, _clean_up_func ),
       tree( triangle_tree ) {}
 
     ~HapticTriangleTree() {
       delete tree;
     }
     
-    virtual bool lineIntersect( const Vec3 &from, 
-                                const Vec3 &to,
-                                Collision::IntersectionInfo &result,
-                                Collision::FaceType face = Collision::FRONT_AND_BACK  ) { 
-      Matrix4 inv = transform.inverse();
-      bool intersect = tree->lineIntersect( inv * from, inv * to, 
-                                            result, face );
-      if( intersect ) {
-        result.point = transform * result.point;
-        result.normal = transform.getRotationPart() * result.normal;
-      }
-      return intersect;
-    }
+  protected:
 
-    virtual void getConstraints( const Vec3 &point,
-                                 Constraints &constraints,
-                                 Collision::FaceType face = Collision::FRONT_AND_BACK,
-                                 HAPIFloat radius = -1 );
+    /// Detect collision between a line segment and the object.
+    /// \param from The start of the line segment(in local coords).
+    /// \param to The end of the line segment(in local coords).
+    /// \param result Contains info about closest intersection, if 
+    /// line intersects object(in local coords).
+    /// \param face The sides of the object that can be intersected. E.g.
+    /// if FRONT, intersections will be reported only if they occur from
+    /// the front side, i.e. the side in which the normal points. 
+    /// \returns true if intersected, false otherwise.
+    virtual bool lineIntersectShape( const Vec3 &from, 
+                                     const Vec3 &to,
+                                     Collision::IntersectionInfo &result,
+                                     Collision::FaceType face = 
+                                     Collision::FRONT_AND_BACK); 
+
+    /// Get the closest point and normal on the object to the given point p.
+    /// \param p The point to find the closest point to(in local coords).
+    /// \param closest_point Return parameter for closest point
+    /// (in local coords)
+    /// \param normal Return parameter for normal at closest point
+    /// (in local coords).
+    /// \param tex_coord Return paramater for texture coordinate at closest 
+    /// point.
+    virtual void closestPointOnShape( const Vec3 &p, Vec3 &cp, 
+                                      Vec3 &n, Vec3 &tc );
+
+    /// Detect collision between a moving sphere and the object.
+    /// \param radius The radius of the sphere
+    /// \param from The start position of the sphere
+    /// \param to The end position of the sphere.
+    /// \returns true if intersected, false otherwise.
+    virtual bool movingSphereIntersectShape( HAPIFloat radius,
+                                             const Vec3 &from, 
+                                             const Vec3 &to );
+
+    /// Get constraint planes of the shape. A proxy of a haptics renderer
+    /// will always stay above any constraints added.
+    ///
+    /// \param point Point to constrain(in local coords).
+    /// \param constraints Where to add the constraints.
+    /// \param face Determines which faces of the shape will be seen as
+    /// constraining.
+    /// \param radius Only add constraints within this radius. If set to -1
+    /// all constraints will be added.
+    virtual void getConstraintsOfShape( const Vec3 &point,
+                                        Constraints &constraints,
+                                        Collision::FaceType face = 
+                                        Collision::FRONT_AND_BACK,
+                                        HAPIFloat radius = -1 );
+
+    /// Render a graphical representation of the shape using OpenGL. This
+    /// is used by the OpenHapticsRenderer when using feedback or depth
+    /// buffer shapes. The rendering should be done in local space of the 
+    /// shape, i.e. ignoring the transform matrix in the shape.
+    virtual void glRenderShape();
+
     
     /// The Surface object describing the properties of the surface of the 
     /// HapticShape.

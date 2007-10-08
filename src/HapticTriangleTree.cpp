@@ -32,44 +32,39 @@
 
 using namespace HAPI;
 
-void HapticTriangleTree::getConstraints( const Vec3 &point,
-                                         Constraints &constraints,
-                                         Collision::FaceType face,
-                                         HAPIFloat radius ) {
-  if( tree ) {
-    // TODO: check if transform has uniform scale
-    bool uniform_scale = true;
 
-    if( uniform_scale ) {
-      Matrix4 inverse =  transform.inverse();
-      Vec3 p = inverse * point;
-
-      Vec3 s = inverse.getScalePart();
-        // uniform scaling so use any component
-      HAPIFloat r = radius * s.x;
-
-      unsigned int size = constraints.size();
-      tree->getConstraints( p, constraints, face, r );
-      for( unsigned int i = size; i < constraints.size(); i ++ ) {
-        PlaneConstraint &pc = constraints[i];
-        pc.normal = transform.getScaleRotationPart() * pc.normal;
-        pc.normal.normalizeSafe();
-        pc.point = transform * pc.point;
-        pc.haptic_shape.reset(this);
-      }
-    } else {
-      unsigned int size = constraints.size();
-      tree->getConstraints( point, transform, constraints, face /* r */);
-      for( unsigned int i = size; i < constraints.size(); i ++ ) {
-        PlaneConstraint &pc = constraints[i];
-        pc.point = pc.point;
-        pc.haptic_shape.reset(this);
-      }
-    }
-    
-  }
-  //result.push_back( Collision::PlaneConstraint( (radius+0.0025) * v, v ) );
+bool HapticTriangleTree::lineIntersectShape( const Vec3 &from, 
+                                          const Vec3 &to,
+                                          Collision::IntersectionInfo &result,
+                                          Collision::FaceType face ) {
+  return tree->lineIntersect( from, to, result, face );
 }
 
+void HapticTriangleTree::closestPointOnShape( const Vec3 &p, Vec3 &cp, 
+                                           Vec3 &n, Vec3 &tc ) {
+  tree->closestPoint( p, cp, n, tc );
+}
 
+bool HapticTriangleTree::movingSphereIntersectShape( HAPIFloat radius,
+                                                  const Vec3 &from, 
+                                                  const Vec3 &to ) {
+  return tree->movingSphereIntersect( radius, from, to );
+}
+
+void HapticTriangleTree::getConstraintsOfShape( const Vec3 &point,
+                                             Constraints &constraints,
+                                             Collision::FaceType face,
+                                             HAPIFloat radius ) {
+  unsigned int size = constraints.size();
+  tree->getConstraints( point, constraints, face, radius );
+  for( unsigned int i = size; i < constraints.size(); ++i ) {
+    PlaneConstraint &pc = constraints[i];
+    pc.haptic_shape.reset(this);
+  }
+}
+
+void HapticTriangleTree::glRenderShape() {
+// TODO: fix 
+//  return tree->render();
+}
 

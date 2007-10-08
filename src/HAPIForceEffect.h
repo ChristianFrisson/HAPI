@@ -38,18 +38,15 @@ namespace HAPI {
   class HAPIHapticsDevice;
 
   /// The base class for force effects. A HAPIForceEffect is a class that 
-  /// generates force and torque based on the position and orientation 
-  /// of the haptics device (and possibly velocity). It is a good choice to use
-  /// to create global effects such as force fields. This class works in
-  /// the real-time loop and has to be added in the traversal of the 
-  /// scene-graph (traverseSG()) to the TraverseInfo structure in order
-  /// to be rendered. By setting the HAPIForceEffect to be interpolated
+  /// generates force and torque based values of the haptics device such
+  /// as position, orientation and velocity. It is a good choice to use
+  /// to create global effects such as force fields, springs, recoil
+  /// effects and wind. By setting the HAPIForceEffect to be interpolated
   /// the HAPIForceEffect will be interpolated with the HAPIForceEffect
   /// added in the last scene-graph loop in order to avoid haptic rendering
   /// artifacts.
-  ///
   class HAPI_API HAPIForceEffect: public HAPIHapticObject, 
-                                    public H3DUtil::RefCountedClass {
+                                  public H3DUtil::RefCountedClass {
   public:
     /// The output from a HAPIForceEffect.
     struct HAPI_API EffectOutput {
@@ -87,9 +84,7 @@ namespace HAPI {
     };
     
     /// Constructor.
-    HAPIForceEffect( const Matrix4 & _transform,
-                     bool _interpolate ):
-      HAPIHapticObject( _transform ),
+    HAPIForceEffect( bool _interpolate = false ):
       interpolate( _interpolate ){}
     
     /// The function that calculates the forces given by this 

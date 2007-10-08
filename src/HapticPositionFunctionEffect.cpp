@@ -32,12 +32,11 @@
 using namespace HAPI;
 
 HapticPositionFunctionEffect::HapticPositionFunctionEffect(
-                          const Matrix4 & _transform,
-                          bool _interpolate,
                           HAPIFunctionObject *_x_function,
                           HAPIFunctionObject *_y_function,
-                          HAPIFunctionObject *_z_function ):
-  HAPIForceEffect( _transform, _interpolate ),
+                          HAPIFunctionObject *_z_function,
+                          bool _interpolate ):
+  HAPIForceEffect( _interpolate ),
   x_function( _x_function ),
   y_function( _y_function ),
   z_function( _z_function ) {
@@ -46,8 +45,8 @@ HapticPositionFunctionEffect::HapticPositionFunctionEffect(
 HAPIForceEffect::EffectOutput HapticPositionFunctionEffect::calculateForces(
                               HAPIHapticsDevice *hd,
                               HAPITime dt ) {
-  Vec3 local_pos = transform.inverse() * hd->getPosition();
-  HAPIFloat pos [] = { local_pos.x, local_pos.y, local_pos.z };
+  Vec3 position = hd->getPosition();
+  HAPIFloat pos [] = { position.x, position.y, position.z };
   Vec3 force = Vec3( x_function->evaluate( pos ),
                      y_function->evaluate( pos ),
                      z_function->evaluate( pos ) );
