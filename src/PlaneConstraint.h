@@ -80,7 +80,7 @@ namespace HAPI {
       delete [] constraints;
     }
     
-    /// The iterator class for Constraints.
+    // The iterator class for Constraints.
     class iterator {
     public:
       const static unsigned int end_value = 1929294;

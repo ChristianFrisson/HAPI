@@ -32,67 +32,37 @@
 
 using namespace HAPI;
 
-bool HapticBinaryTreePrimitive::lineIntersect( const Vec3 &from, 
-                                       const Vec3 &to,
-                                       Collision::IntersectionInfo &result,
-                                       Collision::FaceType face ) { 
-  Matrix4 inv = transform.inverse();
-  Vec3 local_from = inv * from;
-  Vec3 local_to = inv * to;
-  if( tree->lineIntersect( local_from, local_to, result, face ) ) {
-    result.point = transform * result.point;
-    result.normal = transform.getRotationPart() * result.normal;
-    return true;
-  }
-  return false;
+bool HapticBinaryTreePrimitive::lineIntersectShape( const Vec3 &from, 
+                                          const Vec3 &to,
+                                          Collision::IntersectionInfo &result,
+                                          Collision::FaceType face ) {
+  return tree->lineIntersect( from, to, result, face );
 }
 
-void HapticBinaryTreePrimitive::getConstraints( const Vec3 &point,
-                                        Constraints &constraints,
-                                        Collision::FaceType face,
-                                                HAPIFloat radius ) {
-  // TODO: check if transform has uniform scale
-  bool uniform_scale = true;
+void HapticBinaryTreePrimitive::closestPointOnShape( const Vec3 &p, Vec3 &cp, 
+                                           Vec3 &n, Vec3 &tc ) {
+  tree->closestPoint( p, cp, n, tc );
+}
 
-  if( uniform_scale ) {
-    Matrix4 inverse =  transform.inverse();
-    Vec3 p = inverse * point;
-    Vec3 s = inverse.getScalePart();
-    // uniform scaling so use any component
-    HAPIFloat r = radius * s.x;
+bool HapticBinaryTreePrimitive::movingSphereIntersectShape( HAPIFloat radius,
+                                                  const Vec3 &from, 
+                                                  const Vec3 &to ) {
+  return tree->movingSphereIntersect( radius, from, to );
+}
 
-    unsigned int size = constraints.size();
-    tree->getConstraints( p, constraints, face, r );
-
-    for( unsigned int i = size; i < constraints.size(); i ++ ) {
-      PlaneConstraint &pc = constraints[i];
-      pc.normal = transform.getScaleRotationPart() * pc.normal;
-      pc.normal.normalizeSafe();
-      pc.point = transform * pc.point;
-      pc.haptic_shape.reset(this);
-    }
-  } else {
-    // TODO: fix this
-    unsigned int size = constraints.size();
-    tree->getConstraints( point, constraints, face /*r */ );
-
-    for( unsigned int i = size; i < constraints.size(); i ++ ) {
-      PlaneConstraint &pc = constraints[i];
-      pc.point = pc.point;
-      pc.haptic_shape.reset(this);
-    }
+void HapticBinaryTreePrimitive::getConstraintsOfShape( const Vec3 &point,
+                                             Constraints &constraints,
+                                             Collision::FaceType face,
+                                             HAPIFloat radius ) {
+  unsigned int size = constraints.size();
+  tree->getConstraints( point, constraints, face, radius );
+  for( unsigned int i = size; i < constraints.size(); ++i ) {
+    PlaneConstraint &pc = constraints[i];
+    pc.haptic_shape.reset(this);
   }
 }
 
-void HapticBinaryTreePrimitive::glRender() {
-}
-
-void HapticBinaryTreePrimitive::closestPoint( const Vec3 &p,
-                                      Vec3 &cp,
-                                      Vec3 &n,
-                                      Vec3 &tc ) {
-  Vec3 local_pos = transform.inverse() * p;
-  tree->closestPoint( local_pos, cp, n, tc );
-  n = transform.getRotationPart() * n;
-  cp = transform * cp;
+void HapticBinaryTreePrimitive::glRenderShape() {
+// TODO: fix 
+//  return tree->render();
 }

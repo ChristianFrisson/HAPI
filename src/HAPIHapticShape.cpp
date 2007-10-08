@@ -59,9 +59,127 @@ void HAPIHapticShape::getConstraints( const Vec3 &point,
                                       Constraints &constraints,
                                       Collision::FaceType face, 
                                       HAPIFloat radius ) {
+  if( have_transform ) {
+    unsigned int nr_constraints = constraints.size();
+    Vec3 scale = inverse.getScalePart();
+    HAPIFloat s = max( scale.x, max( scale.y, scale.z ) );    
+    getConstraintsOfShape( inverse * point, constraints, face, radius * s );
+    for( unsigned int i = nr_constraints; i < constraints.size(); ++i ) {
+      PlaneConstraint &pc = constraints[i];
+      pc.normal = transform.getRotationPart() * pc.normal;
+      pc.point = transform * pc.point;
+    }
+  } else {
+    getConstraintsOfShape( point, constraints, face, radius );
+  }
+}
+
+void HAPIHapticShape::getConstraintsOfShape( const Vec3 &point,
+                                             Constraints &constraints,
+                                             Collision::FaceType face, 
+                                             HAPIFloat radius ) {
   Vec3 cp, n, tc;
-  closestPoint( point, cp, n, tc );
+  closestPointOnShape( point, cp, n, tc );
   Vec3 v = cp - point;
   if( radius < 0 || v * v <= radius * radius )
     constraints.push_back( PlaneConstraint( cp, n, tc, this ) );
+}
+
+
+void HAPIHapticShape::closestPoint( const Vec3 &p, Vec3 &cp, 
+                                    Vec3 &n, Vec3 &tc ) {
+  if( have_transform ) {
+    closestPointOnShape( inverse * p, cp, n, tc );
+    Matrix4 inv = inverse;
+    cp = transform * cp;
+    n = transform.getRotationPart() * n;
+  } else {
+    closestPointOnShape( p, cp, n, tc );
+  }
+}
+
+bool HAPIHapticShape::lineIntersect( const Vec3 &from, 
+                                     const Vec3 &to,
+                                     Collision::IntersectionInfo &result,
+                                     Collision::FaceType face ) { 
+  if( have_transform ) {
+    bool have_intersection;
+    Vec3 local_from = inverse * from;
+    Vec3 local_to = inverse * to;
+    have_intersection = 
+      lineIntersectShape( local_from, local_to, result, face );
+    if( have_intersection ) {
+      result.point = transform * result.point;
+      result.normal = transform.getRotationPart() * result.normal;
+    }
+    return have_intersection;
+  } else {
+    return lineIntersectShape( from, to, result, face );
+  }
+}
+
+bool HAPIHapticShape::movingSphereIntersect( HAPIFloat radius,
+                                             const Vec3 &from, 
+                                             const Vec3 &to ) { 
+  if( have_transform ) {
+    Vec3 scale = inverse.getScalePart();
+    Vec3 local_from =  inverse * from;
+    Vec3 local_to = inverse * to;
+    HAPIFloat s = max( scale.x, max( scale.y, scale.z ) );
+    return movingSphereIntersectShape( radius * s,
+                                       local_from,
+                                       local_to ); 
+  } else {
+    return movingSphereIntersectShape( radius, from, to ); 
+  }
+}
+
+void HAPIHapticShape::glRender() {
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  const Matrix4 &m = transform;
+  GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
+                    m[0][1], m[1][1], m[2][1], 0,
+                    m[0][2], m[1][2], m[2][2], 0,
+                    m[0][3], m[1][3], m[2][3], 1 };
+  glMultMatrixd( vt );
+  glRenderShape();
+  glPopMatrix();
+}
+
+/// Scale object uniformly on all axis by the given scaling factor.
+void HAPIHapticShape::scale( HAPIFloat s ) {
+  have_transform = true;
+  have_inverse = false;
+
+  transform[0][0] *= s;
+  transform[0][1] *= s;
+  transform[0][2] *= s;
+  transform[0][3] *= s;
+
+  transform[1][0] *= s;
+  transform[1][1] *= s;
+  transform[1][2] *= s;  
+  transform[1][3] *= s;
+  
+  transform[2][0] *= s;
+  transform[2][1] *= s;
+  transform[2][2] *= s;
+  transform[2][3] *= s;
+}
+
+/// Translate object.
+void HAPIHapticShape::translate( const Vec3 &t ) {
+  have_transform = true;
+  have_inverse = false;
+  transform[0][3] += t.x;
+  transform[1][3] += t.y;
+  transform[2][3] += t.z;
+}
+
+/// Rotate object.
+void HAPIHapticShape::rotate( const Rotation &r ) {
+  have_transform = true;
+  have_inverse = false;
+  transform  = ((Matrix4)r) * transform; 
 }

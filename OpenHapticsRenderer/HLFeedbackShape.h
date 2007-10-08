@@ -35,16 +35,19 @@ namespace HAPI {
 
     /// Constructor.
     HLFeedbackShape( HAPIGLShape *_glshape,
-                     void *_userdata,
-                     HAPI::HAPISurfaceObject *_surface,
                      const Matrix4 &_transform,
-                     void (*_clean_up_func)( void * ) = 0,
+                     HAPISurfaceObject *_surface,
+                     Collision::FaceType _touchable_face = 
+                     Collision::FRONT_AND_BACK,
+                     bool _use_haptic_camera = true,
+                     bool _use_adaptive_viewport = true,
                      int _nr_vertices = -1,
-                     FaceType _touchable_face = Collision::FRONT_AND_BACK,
-                     bool _use_haptic_camera = true ):
-      HAPI::HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func ),
+                     void *_userdata = NULL,
+                     int _shape_id = -1,
+                     void (*_clean_up_func)( void * ) = 0 ):
+      HAPI::HAPIHapticShape( _transform, _surface, _touchable_face, _userdata,
+                             _shape_id, _clean_up_func  ),
       nr_vertices( _nr_vertices ),
-      touchable_face( _touchable_face ),
       use_haptic_camera( _use_haptic_camera ),
 	  gl_shape( _glshape) {}
     
@@ -53,13 +56,37 @@ namespace HAPI {
     virtual void hlRender( HAPI::HAPIHapticsDevice *hd,
                            HLuint shape_id );
   protected:
+    virtual bool lineIntersectShape( const Vec3 &from, 
+                                     const Vec3 &to,
+                                     Collision::IntersectionInfo &result,
+                                     Collision::FaceType face = 
+                                     Collision::FRONT_AND_BACK  ) {
+      return false;
+    }
+    
+    virtual void getConstraintsOfShape( const Vec3 &point,
+                                        Constraints &constraints,
+                                        Collision::FaceType face = 
+                                        Collision::FRONT_AND_BACK ,
+                                        HAPIFloat radius = -1 ) {}
+
+    virtual void closestPointOnShape( const Vec3 &p, Vec3 &cp, 
+                                      Vec3 &n, Vec3 &tc ) {}
+
+    virtual bool movingSphereIntersectShape( HAPIFloat radius,
+                                             const Vec3 &from, 
+                                             const Vec3 &to ) {
+      return false;
+    }
+
+    virtual void glRenderShape() {}
+
+
     /// A upper bound on the number of triangles that will be rendered.
     /// Negative values will use the system default value.
     int nr_vertices;
     
-    /// Which sides of the faces are touchable.
-    FaceType touchable_face;
-    
+
     /// Enable HL_HAPTIC_CAMERA_VIEW or not
     bool use_haptic_camera;
 

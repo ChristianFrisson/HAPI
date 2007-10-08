@@ -38,11 +38,10 @@ namespace HAPI {
   class HAPI_API HapticViscosity: public HAPIForceEffect {
   public:
     /// Constructor
-    HapticViscosity( const Matrix4 & _transform,
-                      const HAPIFloat &_viscosity,
-                      const HAPIFloat &_radius,
-                      const HAPIFloat &_damping_factor,
-                      bool _interpolate );
+    HapticViscosity( const HAPIFloat &_viscosity,
+                     const HAPIFloat &_radius,
+                     const HAPIFloat &_damping_factor,
+                     bool _interpolate = false );
     
     /// The force of the EffectOutput will be calculated using stokes law
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,

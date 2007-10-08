@@ -29,19 +29,47 @@ namespace HAPI {
   public:
     /// Constructor.
     HLDepthBufferShape( HAPIGLShape *_glshape,
-                        void *_userdata,
-                        HAPI::HAPISurfaceObject *_surface,
                         const Matrix4 &_transform,
-                        void (*_clean_up_func)( void * ) = 0,
-                        Collision::FaceType _touchable_face = Collision::FRONT_AND_BACK,
+                        HAPISurfaceObject *_surface,
+                        Collision::FaceType _touchable_face = 
+                        Collision::FRONT_AND_BACK,
                         bool _use_haptic_camera = true,
-                        bool _use_adaptive_viewport = true ):
-      HAPIHapticShape( _userdata, _surface, _transform, _clean_up_func ),
-      touchable_face( _touchable_face ),
+                        bool _use_adaptive_viewport = true,
+                        void *_userdata = NULL,
+                        int _shape_id = -1,
+                        void (*_clean_up_func)( void * ) = 0 ):
+      HAPIHapticShape( _transform, _surface, _touchable_face, _userdata,
+                       _shape_id, _clean_up_func ),
       use_haptic_camera( _use_haptic_camera ),
       use_adaptive_viewport( _use_adaptive_viewport ),
       gl_shape( _glshape ) {}
     
+   virtual bool lineIntersectShape( const Vec3 &from, 
+                                     const Vec3 &to,
+                                     Collision::IntersectionInfo &result,
+                                     Collision::FaceType face = 
+                                     Collision::FRONT_AND_BACK  ) {
+      return false;
+    }
+    
+    virtual void getConstraintsOfShape( const Vec3 &point,
+                                        Constraints &constraints,
+                                        Collision::FaceType face = 
+                                        Collision::FRONT_AND_BACK ,
+                                        HAPIFloat radius = -1 ) {}
+
+    virtual void closestPointOnShape( const Vec3 &p, Vec3 &cp, 
+                                      Vec3 &n, Vec3 &tc ) {}
+
+    virtual bool movingSphereIntersectShape( HAPIFloat radius,
+                                             const Vec3 &from, 
+                                             const Vec3 &to ) {
+      return false;
+    }
+
+    virtual void glRenderShape() {}
+
+
     /// This function performs all the HLAPI calls that are needed to render
     /// the shape. Uses HL_SHAPE_FEEDBACK_BUFFER to render the object.     
     virtual void hlRender( HAPI::HAPIHapticsDevice *hd,

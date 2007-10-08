@@ -562,19 +562,13 @@ Vec3 RuspiniRenderer::tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal ) {
       plane_intersected = true;
       constraints.clear();
       PlaneConstraint pc = *i;
-      const Matrix4 &transform = (*i).haptic_shape->transform;
-      // transform point to primitive local coordinate system
-      Vec3 p = transform.inverse() * intersection.point;
+      Vec3 p = intersection.point;
       // get updated constraint
       (*i).primitive->getConstraints( p, constraints, 
                                       (*i).haptic_shape->touchable_face );
       if( !constraints.empty() )
         *i = constraints.front();
-      // transform constraint to global space and move it out in the normal
-      // direction by the proxy_radius
-      (*i).normal = transform.getScaleRotationPart() * (*i).normal;
-      (*i).normal.normalizeSafe();
-      (*i).point = transform * (*i).point;
+
       (*i).point += (*i).normal * proxy_radius;
       (*i).haptic_shape = pc.haptic_shape;
       

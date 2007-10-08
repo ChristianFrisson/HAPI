@@ -59,6 +59,10 @@
 /// HaptikDevice will not be usable.
 //#define HAVE_HAPTIK_LIBRARY 
 
+/// Undef if you do not the APIs required for supporting Quanser devices.
+/// www.quanser.com
+//#define HAVE_QUANSERAPI
+
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL
 // are compiled with the HAPI_EXPORTS symbol defined on the command

@@ -31,12 +31,11 @@
 
 using namespace HAPI;
 
-HapticViscosity::HapticViscosity( const Matrix4 & _transform,
-                                    const HAPIFloat &_viscosity,
-                                    const HAPIFloat &_radius,
-                                    const HAPIFloat &_damping_factor,
-                                    bool _interpolate ):
-  HAPIForceEffect( _transform, _interpolate ),
+HapticViscosity::HapticViscosity( const HAPIFloat &_viscosity,
+                                  const HAPIFloat &_radius,
+                                  const HAPIFloat &_damping_factor,
+                                  bool _interpolate ):
+  HAPIForceEffect( _interpolate ),
   viscosity( _viscosity ),
   radius( _radius ){
   // constant calculated from stokes law.
@@ -47,8 +46,7 @@ HapticViscosity::HapticViscosity( const Matrix4 & _transform,
 HAPIForceEffect::EffectOutput HapticViscosity::calculateForces(
                                                 HAPIHapticsDevice *hd,
                                                HAPITime dt ) {
-  H3DUtil::Matrix4d transform_inverse = transform.inverse();
-  Vec3 hd_vel = transform_inverse.getRotationPart() * hd->getVelocity();
-  Vec3 the_force = transform.getRotationPart() * (the_constant * hd_vel);
+  Vec3 hd_vel = hd->getVelocity();
+  Vec3 the_force = the_constant * hd_vel;
   return EffectOutput( the_force );
 }

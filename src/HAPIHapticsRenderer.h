@@ -169,6 +169,7 @@ namespace HAPI {
     // constructor resets the auto_ptr to 0 eventhough the 
     // registrated_file_reader has been initilazed, and therefore
     // cause an error making it imposible to use the standard auto_ptr.
+    /// \internal
     template<class T>
     class local_auto_ptr{
     private:
@@ -249,6 +250,7 @@ namespace HAPI {
     Contacts contacts;
     static bool initialized;
 
+    /// \internal
     class HAPI_API WorkAroundToCleanUpHLContext {
     public:
 	  virtual ~WorkAroundToCleanUpHLContext() {}
