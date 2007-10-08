@@ -21,13 +21,13 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticBinaryTreePrimitive.h
-/// \brief Header file for HapticBinaryTreePrimitive
+/// \file HapticPrimitiveTree.h
+/// \brief Header file for HapticPrimitiveTree
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __HAPTICBINARYTREEPRIMITIVE_H__
-#define __HAPTICBINARYTREEPRIMITIVE_H__
+#ifndef __HAPTICPRIMITIVETREE_H__
+#define __HAPTICPRIMITIVETREE_H__
 
 #include <HAPIHapticShape.h>
 #include <AutoRefVector.h>
@@ -35,10 +35,10 @@
 namespace HAPI {
 
   /// A shape defined by a set of primitives.
-  class HAPI_API HapticBinaryTreePrimitive: public HAPIHapticShape {
+  class HAPI_API HapticPrimitiveTree: public HAPIHapticShape {
   public:
     /// Constructor.
-    HapticBinaryTreePrimitive( 
+    HapticPrimitiveTree( 
               const vector< Collision::GeometryPrimitive * > &_primitives,
               HAPISurfaceObject *_surface, 
               Collision::FaceType _touchable_face = 
@@ -54,7 +54,7 @@ namespace HAPI {
     }
 
     template< class Iterator >
-    HapticBinaryTreePrimitive( Iterator begin,
+    HapticPrimitiveTree( Iterator begin,
                                Iterator end,
               HAPISurfaceObject *_surface, 
               Collision::FaceType _touchable_face = 

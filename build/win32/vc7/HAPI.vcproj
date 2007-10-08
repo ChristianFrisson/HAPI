@@ -176,9 +176,6 @@
 				RelativePath="..\..\..\src\HAPIVariableDepthSurface.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticBinaryTreePrimitive.cpp">
-			</File>
-			<File
 				RelativePath="..\..\..\src\HapticForceField.cpp">
 			</File>
 			<File
@@ -195,6 +192,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticPrimitiveSet.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HapticPrimitiveTree.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticShapeConstraint.cpp">
@@ -316,22 +316,10 @@
 				RelativePath="..\..\..\src\HAPIVariableDepthSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticBinaryTreePrimitive.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\HapticBox.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\HapticCylinder.h">
-			</File>
-			<File
 				RelativePath="..\..\..\src\HapticForceField.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticLineSet.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\HapticPlane.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticPointSet.h">
@@ -343,19 +331,16 @@
 				RelativePath="..\..\..\src\HapticPrimitiveSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticShapeConstraint.h">
+				RelativePath="..\..\..\src\HapticPrimitiveTree.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticSphere.h">
+				RelativePath="..\..\..\src\HapticShapeConstraint.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticSpring.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticTimeFunctionEffect.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\HapticTriangle.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticTriangleSet.h">
