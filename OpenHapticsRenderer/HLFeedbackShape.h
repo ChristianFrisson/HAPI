@@ -13,10 +13,10 @@
 
 #include <Config.h>
 
-#include <HAPIHapticShape.h>
+#include <HAPI/HAPIHapticShape.h>
 #include <OpenHapticsRenderer.h>
-#include <HAPIGLShape.h>
-#include <CollisionObjects.h>
+#include <HAPI/HAPIGLShape.h>
+#include <HAPI/CollisionObjects.h>
 
 #ifdef HAVE_OPENHAPTICS
 

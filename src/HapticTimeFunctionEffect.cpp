@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HapticTimeFunctionEffect.h> 
+#include <HAPI/HapticTimeFunctionEffect.h> 
 
 using namespace HAPI;
 

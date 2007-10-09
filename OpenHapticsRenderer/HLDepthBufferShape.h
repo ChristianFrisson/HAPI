@@ -13,7 +13,7 @@
 
 #include <Config.h>
 
-#include <HAPIHapticShape.h>
+#include <HAPI/HAPIHapticShape.h>
 #include <OpenHapticsRenderer.h>
 
 #ifdef HAVE_OPENHAPTICS

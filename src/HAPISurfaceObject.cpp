@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HAPISurfaceObject.h>
+#include <HAPI/HAPISurfaceObject.h>
 
 using namespace HAPI;
 

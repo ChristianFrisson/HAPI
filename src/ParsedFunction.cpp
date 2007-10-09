@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ParsedFunction.h> 
+#include <HAPI/ParsedFunction.h> 
 
 #ifdef HAVE_FPARSER
 // H3DUtil include

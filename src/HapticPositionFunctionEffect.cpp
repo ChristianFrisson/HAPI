@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HapticPositionFunctionEffect.h> 
+#include <HAPI/HapticPositionFunctionEffect.h> 
 
 using namespace HAPI;
 

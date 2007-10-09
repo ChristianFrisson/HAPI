@@ -32,8 +32,8 @@
 #define __CHAI3DRENDERER_H__
 
 // HAPI includes
-#include <HAPIProxyBasedRenderer.h>
-#include <HAPIHapticShape.h>
+#include <HAPI/HAPIProxyBasedRenderer.h>
+#include <HAPI/HAPIHapticShape.h>
 
 #include <Chai3DRendererConfig.h>
 

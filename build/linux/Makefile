@@ -12,7 +12,7 @@ H3DUTIL_HOME          = ../../../H3DUtil
 
 CXX        = g++ -Wall
 SHARED     = -shared -export-dynamic
-INCLUDES   = -I$(HAPI_HOME)/src
+INCLUDES   = -I$(HAPI_HOME)/include
 CXXFLAGS   = -g -Wall $(INCLUDES)
 LDFLAGS    = 
 

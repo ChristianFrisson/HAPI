@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HAPIHapticsDevice.h>
+#include <HAPI/HAPIHapticsDevice.h>
 
 using namespace HAPI;
 

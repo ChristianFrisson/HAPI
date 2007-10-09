@@ -28,10 +28,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <PhantomHapticsDevice.h>
+#include <HAPI/PhantomHapticsDevice.h>
 
 #ifdef HAVE_OPENHAPTICS
-#include <HLThread.h>
+#include <HAPI/HLThread.h>
 #include <sstream>
 
 using namespace HAPI;

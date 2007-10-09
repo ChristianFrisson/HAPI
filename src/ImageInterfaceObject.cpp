@@ -26,7 +26,7 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "ImageInterfaceObject.h"
+#include <HAPI/ImageInterfaceObject.h>
 
 using namespace HAPI;
 

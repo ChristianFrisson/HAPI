@@ -33,8 +33,8 @@
 
 #include <Config.h>
 
-#include <HAPIProxyBasedRenderer.h>
-#include <HAPIHapticShape.h>
+#include <HAPI/HAPIProxyBasedRenderer.h>
+#include <HAPI/HAPIHapticShape.h>
 #include <AutoPtrVector.h>
 #include <Threads.h>
 

@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HAPIHapticsRenderer.h>
+#include <HAPI/HAPIHapticsRenderer.h>
 
 using namespace HAPI;
 

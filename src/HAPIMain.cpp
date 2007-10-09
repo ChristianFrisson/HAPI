@@ -1,6 +1,6 @@
 #include <AnyHapticsDevice.h>
 #include <HapticForceField.h>
-#include <HapticLineConstraint.h>
+/*#include <HapticLineConstraint.h>
 #include <HapticGeometryConstraint.h>
 #include <HapticViscosity.h>
 #include <HapticShapeConstraint.h>
@@ -9,12 +9,18 @@
 #include <HapticTimeFunctionEffect.h>
 #include <HapticPositionFunctionEffect.h>
 #include <ParsedFunction.h>
+*/
 
+#include <FalconHapticsDevice.h>
 using namespace HAPI;
-
+#ifdef _MSC_VER
+#pragma comment( lib, "hdl.lib" )
+#endif
 int main(int argc, char* argv[]) {
-  AnyHapticsDevice hd;
+  hdlInitDevice( HDL_DEFAULT_DEVICE_ID );
 
+  FalconHapticsDevice hd( "Default PHANToM" );
+#if 0
   HapticForceField *force_field = new HapticForceField( Matrix4(),
                                                         Vec3( 1, 0, 0 ),
                                                         false );
@@ -26,14 +32,14 @@ int main(int argc, char* argv[]) {
   //                            Vec3( 1000, 0, 0),
   //                            0.3 );
 
-  vector< Bounds::Triangle > tris;
-  tris.push_back( Bounds::Triangle( Vec3( 0, 0, 0 ),
+  vector< Collision::Triangle > tris;
+  tris.push_back( Collision::Triangle( Vec3( 0, 0, 0 ),
                                     Vec3( 50, 0, 0 ),
                                     Vec3( 50, 50, 0 ) ) );
-  tris.push_back( Bounds::Triangle( Vec3( 50, 50, 0 ),
+  tris.push_back( Collision::Triangle( Vec3( 50, 50, 0 ),
                                     Vec3( 0, 50, 0 ),
                                     Vec3( 0, 0, 0 ) ) );
-  tris.push_back( Bounds::Triangle( Vec3( -50, 50, 30 ),
+  tris.push_back( Collision::Triangle( Vec3( -50, 50, 30 ),
                                     Vec3( -50, 0, -30 ),
                                     Vec3( 0, 0, 0 ) ) );
  /* HapticGeometryConstraint *haptic_geometry_constraint =
@@ -62,7 +68,8 @@ int main(int argc, char* argv[]) {
 
   HapticPositionFunctionEffect * haptic_spatial_function_effect =
     new HapticPositionFunctionEffect( Matrix4(), false, parsed_function,
-                                     parsed_function2, parsed_function2 );
+                                     parsed_function2, parsed_function2 ); *
+#endif
 
   if( hd.initDevice() != HAPIHapticsDevice::SUCCESS ) {
     cerr << hd.getLastErrorMsg() << endl;
@@ -76,7 +83,7 @@ int main(int argc, char* argv[]) {
   //hd.addEffect( haptic_viscosity );
   //hd.addEffect( haptic_shape_constraint );
   //hd.addEffect( haptic_time_function_effect );
-  hd.addEffect( haptic_spatial_function_effect );
+//  hd.addEffect( haptic_spatial_function_effect );
   
   while( true ) {
    // hd.renderHapticsOneStep();

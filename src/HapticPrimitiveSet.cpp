@@ -27,8 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HapticPrimitiveSet.h>
-#include <PlaneConstraint.h>
+#include <HAPI/HapticPrimitiveSet.h>
+#include <HAPI/PlaneConstraint.h>
 
 using namespace HAPI;
 

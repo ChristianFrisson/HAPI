@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "QuanserHapticsDevice.h"
+#include <HAPI/QuanserHapticsDevice.h>
 
 #if defined (HAVE_QUANSERAPI)
 
