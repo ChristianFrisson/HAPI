@@ -137,7 +137,7 @@
 				RelativePath="..\..\..\src\CollisionObjects.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DepthMapHAPISurface.cpp">
+				RelativePath="..\..\..\src\DepthMapSurface.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\FalconHapticsDevice.cpp">
@@ -250,7 +250,7 @@
 				RelativePath="..\..\..\src\CollisionObjects.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DepthMapHAPISurface.h">
+				RelativePath="..\..\..\include\Hapi\DepthMapSurface.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\FalconHapticsDevice.h">

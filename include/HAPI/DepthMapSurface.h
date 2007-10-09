@@ -21,27 +21,27 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file DepthMapHAPISurface.h
-/// \brief Header file for DepthMapHAPISurface
+/// \file DepthMapSurface.h
+/// \brief Header file for DepthMapSurface
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __DEPTHMAPHAPISURFACE_H__
-#define __DEPTHMAPHAPISURFACE_H__
+#ifndef __HAPI_DEPTHMAPSURFACE_H__
+#define __HAPI_DEPTHMAPSURFACE_H__
 
 #include <HAPI/HAPIVariableDepthSurface.h>
 #include <HAPI/ImageInterfaceObject.h>
 
 namespace HAPI {
-  /// \class DepthMapHAPISurface
+  /// \class DepthMapSurface
   /// A HAPIVariableDepthSurface using a texture to calculate depth.
   /// For OpenHapticsRenderer this surface will not work.
-  class HAPI_API DepthMapHAPISurface: public HAPIVariableDepthSurface,
+  class HAPI_API DepthMapSurface: public HAPIVariableDepthSurface,
                                       public ImageInterfaceObject {
 
   public:
     /// Constructor
-    DepthMapHAPISurface( HAPIFloat _stiffness = 0.35,
+    DepthMapSurface( HAPIFloat _stiffness = 0.35,
                          HAPIFloat _damping = 0,
                          HAPIFloat _static_friction = 0.1,
                          HAPIFloat _dynamic_friction = 0.4,
@@ -61,10 +61,10 @@ namespace HAPI {
     /// Function used as function parameter to HAPIVariableDepthSurface.
     /// \param local_point point in local coordinate of the contact on the
     /// the surface.
-    /// \param data contains a pointer to the DepthMapHAPISurface calling this
+    /// \param data contains a pointer to the DepthMapSurface calling this
     /// function.
     static inline HAPIFloat scaleDepth( const Vec2 &local_point, void *data ) {
-      DepthMapHAPISurface *dms = static_cast< DepthMapHAPISurface * >(data);
+      DepthMapSurface *dms = static_cast< DepthMapSurface * >(data);
       Matrix4 tangent_space_mtx;
       Vec3 global_vector = dms->this_contact_info->vectorToGlobal(
                             Vec3( local_point.x, 0, local_point.y ) );

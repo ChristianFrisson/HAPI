@@ -21,16 +21,16 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file DepthMapHAPISurface.cpp
-/// \brief cpp file for DepthMapHAPISurface
+/// \file DepthMapSurface.cpp
+/// \brief cpp file for DepthMapSurface
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <HAPI/DepthMapHAPISurface.h>
+#include <HAPI/DepthMapSurface.h>
 
 using namespace HAPI;
 
-DepthMapHAPISurface::DepthMapHAPISurface( HAPIFloat _stiffness,
+DepthMapSurface::DepthMapSurface( HAPIFloat _stiffness,
                                   HAPIFloat _damping,
                                   HAPIFloat _static_friction,
                                   HAPIFloat _dynamic_friction,
@@ -51,7 +51,7 @@ DepthMapHAPISurface::DepthMapHAPISurface( HAPIFloat _stiffness,
   image_lock = &depth_get_lock;
 }
 
-HAPIFloat DepthMapHAPISurface::getDepthMapValue( Vec3 tex_coord ) {
+HAPIFloat DepthMapSurface::getDepthMapValue( Vec3 tex_coord ) {
 
   // still need to normalize the texture coordinates in a better way.
   if( tex_coord.x < 0.0 )
