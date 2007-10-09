@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HapticForceField.h> 
+#include <HAPI/HapticForceField.h> 
 
 using namespace HAPI;
 

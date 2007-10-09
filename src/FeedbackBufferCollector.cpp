@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <FeedbackBufferCollector.h>
+#include <HAPI/FeedbackBufferCollector.h>
 
 using namespace HAPI;
 

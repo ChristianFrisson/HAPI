@@ -27,12 +27,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "OpenHapticsRenderer.h"
-#include "H3DMath.h"
+#include <OpenHapticsRenderer.h>
+#include <H3DMath.h>
 
-#include "PhantomHapticsDevice.h"
-#include "AnyHapticsDevice.h"
-#include <FrictionSurface.h>
+#include <HAPI/PhantomHapticsDevice.h>
+#include <HAPI/AnyHapticsDevice.h>
+#include <HAPI/FrictionSurface.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <HD/hd.h>

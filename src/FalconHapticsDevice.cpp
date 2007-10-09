@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <FalconHapticsDevice.h>
+#include <HAPI/FalconHapticsDevice.h>
 
 #ifdef HAVE_FALCONAPI
 

@@ -28,9 +28,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include "HLCustomObject.h"
-#include "HAPIHapticShape.h"
-#include "OpenHapticsRenderer.h"
+#include <HLCustomObject.h>
+#include <HAPI/HAPIHapticShape.h>
+#include <OpenHapticsRenderer.h>
 
 #ifdef HAVE_OPENHAPTICS
 

@@ -27,7 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <AnyHapticsDevice.h>
+#include <HAPI/AnyHapticsDevice.h>
+
 #include <sstream>
 #include <DynamicLibrary.h>
 

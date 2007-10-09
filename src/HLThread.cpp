@@ -26,7 +26,7 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <HLThread.h>
+#include <HAPI/HLThread.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <HD/hd.h>

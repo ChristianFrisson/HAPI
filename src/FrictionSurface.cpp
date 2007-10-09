@@ -27,8 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "FrictionSurface.h"
-#include "HAPIHapticsDevice.h"
+#include <HAPI/FrictionSurface.h>
+#include <HAPI/HAPIHapticsDevice.h>
 
 using namespace HAPI;
 

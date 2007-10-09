@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HapticShapeConstraint.h> 
+#include <HAPI/HapticShapeConstraint.h> 
 
 using namespace HAPI;
 

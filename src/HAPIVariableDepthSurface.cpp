@@ -26,9 +26,10 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "HAPIVariableDepthSurface.h"
+#include <HAPI/HAPIVariableDepthSurface.h>
+#include <HAPI/HAPIHapticsDevice.h>
+
 #include <ExtremaFindingAlgorithms.h>
-#include <HAPIHapticsDevice.h>
 
 using namespace HAPI;
 

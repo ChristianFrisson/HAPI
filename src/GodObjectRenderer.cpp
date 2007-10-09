@@ -27,10 +27,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <GodObjectRenderer.h>
+#include <HAPI/GodObjectRenderer.h>
+#include <HAPI/HAPIHapticsDevice.h>
+#include <HAPI/PlaneConstraint.h>
+
 #include <H3DMath.h>
-#include <HAPIHapticsDevice.h>
-#include <PlaneConstraint.h>
 
 using namespace HAPI;
 

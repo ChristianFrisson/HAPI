@@ -32,9 +32,9 @@
 #include <H3DMath.h>
 //#include "DeviceInfo.h"
 
-#include <HapticTriangleSet.h>
-#include <HAPIHapticsDevice.h>
-#include <FrictionSurface.h>
+#include <HAPI/HapticTriangleSet.h>
+#include <HAPI/HAPIHapticsDevice.h>
+#include <HAPI/FrictionSurface.h>
 
 // Chai3D includes
 #include <CVector3d.h>

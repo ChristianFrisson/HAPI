@@ -26,7 +26,7 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "DepthMapHAPISurface.h"
+#include <HAPI/DepthMapHAPISurface.h>
 
 using namespace HAPI;
 

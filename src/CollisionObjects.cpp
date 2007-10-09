@@ -27,9 +27,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <CollisionObjects.h>
+#include <HAPI/CollisionObjects.h>
+#include <HAPI/PlaneConstraint.h>
+
 #include <stack>
-#include <PlaneConstraint.h>
 
 using namespace HAPI;
 using namespace Collision;

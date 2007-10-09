@@ -29,7 +29,7 @@
 
 
 
-#include <ForceDimensionHapticsDevice.h>
+#include <HAPI/ForceDimensionHapticsDevice.h>
 
 #ifdef HAVE_DHDAPI
 #include <sstream>
