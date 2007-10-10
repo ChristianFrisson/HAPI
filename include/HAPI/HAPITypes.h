@@ -27,8 +27,8 @@
 #ifndef __HAPITYPES_H__
 #define __HAPITYPES_H__
 
-#include <LinAlgTypes.h>
-#include <TimeStamp.h>
+#include <H3DUtil/LinAlgTypes.h>
+#include <H3DUtil/TimeStamp.h>
 
 #include <HAPI/HAPI.h>
 

@@ -31,7 +31,7 @@
 #define __GODOBJECTRENDERER_H__
 
 #include <HAPI/HAPIProxyBasedRenderer.h>
-#include <Threads.h>
+#include <H3DUtil/Threads.h>
 #include <map>
 
 namespace HAPI {

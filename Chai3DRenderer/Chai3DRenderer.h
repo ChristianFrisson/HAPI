@@ -38,8 +38,8 @@
 #include <Chai3DRendererConfig.h>
 
 // H3DUtil includes
-#include <AutoPtrVector.h>
-#include <Threads.h>
+#include <H3DUtil/AutoPtrVector.h>
+#include <H3DUtil/Threads.h>
 
 // Chai3D includes
 #include <CGenericDevice.h>

@@ -20,7 +20,7 @@ LDFLAGS    =
 
 #H3DUtil
 CXXLIBS   += -lH3DUtil
-INCLUDES  += -I$(H3DUTIL_HOME)/src
+INCLUDES  += -I$(H3DUTIL_HOME)/include
 INCLUDES  += -I$(HAPI_HOME)/OpenHapticsRenderer
 
 # OpenGL etc

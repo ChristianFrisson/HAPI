@@ -30,7 +30,7 @@
 #define __HAPTICPRIMITIVETREE_H__
 
 #include <HAPI/HAPIHapticShape.h>
-#include <AutoRefVector.h>
+#include <H3DUtil/AutoRefVector.h>
 
 namespace HAPI {
 

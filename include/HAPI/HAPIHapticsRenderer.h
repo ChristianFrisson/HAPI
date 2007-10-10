@@ -33,8 +33,8 @@
 #include <HAPI/HAPI.h>
 #include <HAPI/HAPIHapticShape.h>
 #include <HAPI/HAPIForceEffect.h>
-#include <AutoRefVector.h>
-#include <Threads.h>
+#include <H3DUtil/AutoRefVector.h>
+#include <H3DUtil/Threads.h>
 #include <list>
 #include <map>
 

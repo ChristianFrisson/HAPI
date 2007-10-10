@@ -34,8 +34,8 @@
 #include <HAPI/HAPIHapticShape.h>
 #include <HAPI/HAPIHapticsRenderer.h>
 #include <HAPI/HAPIForceEffect.h>
-#include <Threads.h>
-#include <AutoRefVector.h>
+#include <H3DUtil/Threads.h>
+#include <H3DUtil/AutoRefVector.h>
 
 namespace HAPI {
 

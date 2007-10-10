@@ -37,8 +37,8 @@
 #include <HAPI/CollisionObjects.h>
 
 // H3D Util includes
-#include <AutoPtrVector.h>
-#include <RefCountedClass.h>
+#include <H3DUtil/AutoPtrVector.h>
+#include <H3DUtil/RefCountedClass.h>
 
 // stl includes
 #include <vector>

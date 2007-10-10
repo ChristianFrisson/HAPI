@@ -30,8 +30,8 @@
 #define __HAPIFORCEEFFECT_H__
 
 #include <HAPI/HAPIHapticObject.h> 
-#include <RefCountedClass.h>
-#include <TimeStamp.h>
+#include <H3DUtil/RefCountedClass.h>
+#include <H3DUtil/TimeStamp.h>
 
 namespace HAPI {
   // forward declaration

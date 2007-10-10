@@ -30,7 +30,7 @@
 #include <HAPI/AnyHapticsDevice.h>
 
 #include <sstream>
-#include <DynamicLibrary.h>
+#include <H3DUtil/DynamicLibrary.h>
 
 using namespace HAPI;
 

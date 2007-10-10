@@ -30,7 +30,7 @@
 #include <HAPI/RuspiniRenderer.h>
 #include <HAPI/HAPIHapticsDevice.h>
 #include <HAPI/PlaneConstraint.h>
-#include <H3DMath.h>
+#include <H3DUtil/H3DMath.h>
 
 using namespace HAPI;
 

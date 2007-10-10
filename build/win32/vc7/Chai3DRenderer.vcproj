@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;..\..\..\Chai3DRenderer;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;..\..\..\include;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;..\..\..\Chai3DRenderer;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;..\..\..\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;CHAI3DRENDERER_EXPORTS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -76,7 +76,7 @@
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;..\..\..\Chai3DRenderer;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;..\..\..\include;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;..\..\..\Chai3DRenderer;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;..\..\..\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;CHAI3DRENDERER_EXPORTS"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"

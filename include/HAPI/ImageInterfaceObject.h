@@ -29,8 +29,8 @@
 #ifndef __IMAGEINTERFACEOBJECT_H__
 #define __IMAGEINTERFACEOBJECT_H__
 
-#include <Image.h>
-#include <AutoRef.h>
+#include <H3DUtil/Image.h>
+#include <H3DUtil/AutoRef.h>
 #include <HAPI/HAPI.h>
 #include <HAPI/HAPITypes.h>
 

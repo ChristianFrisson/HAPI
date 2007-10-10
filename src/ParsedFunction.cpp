@@ -31,7 +31,7 @@
 
 #ifdef HAVE_FPARSER
 // H3DUtil include
-#include <Console.h>
+#include <H3DUtil/Console.h>
 
 using namespace HAPI;
 
