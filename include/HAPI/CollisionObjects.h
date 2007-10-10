@@ -37,9 +37,9 @@
 #include <GL/glew.h>
 #include <vector>
 #include <assert.h>
-#include <RefCountedClass.h>
-#include <AutoRef.h>
-#include <AutoRefVector.h>
+#include <H3DUtil/RefCountedClass.h>
+#include <H3DUtil/AutoRef.h>
+#include <H3DUtil/AutoRefVector.h>
 
 namespace HAPI {
 class Constraints;

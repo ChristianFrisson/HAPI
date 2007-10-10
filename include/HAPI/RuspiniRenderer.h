@@ -33,7 +33,7 @@
 #include <HAPI/HAPIProxyBasedRenderer.h>
 #include <HAPI/PlaneConstraint.h>
 
-#include <Threads.h>
+#include <H3DUtil/Threads.h>
 #include <map>
 
 namespace HAPI {

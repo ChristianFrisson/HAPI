@@ -33,7 +33,7 @@
 #include <HAPI/HAPITypes.h>
 #include <HAPI/CollisionObjects.h>
 
-#include <RefCountedClass.h>
+#include <H3DUtil/RefCountedClass.h>
 
 namespace HAPI {
 

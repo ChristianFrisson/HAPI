@@ -29,7 +29,7 @@
 #include <HAPI/HAPIVariableDepthSurface.h>
 #include <HAPI/HAPIHapticsDevice.h>
 
-#include <ExtremaFindingAlgorithms.h>
+#include <H3DUtil/ExtremaFindingAlgorithms.h>
 
 using namespace HAPI;
 

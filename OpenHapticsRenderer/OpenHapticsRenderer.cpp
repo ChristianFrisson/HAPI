@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <OpenHapticsRenderer.h>
-#include <H3DMath.h>
+#include <H3DUtil/H3DMath.h>
 
 #include <HAPI/PhantomHapticsDevice.h>
 #include <HAPI/AnyHapticsDevice.h>

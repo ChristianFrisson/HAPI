@@ -35,8 +35,8 @@
 
 #include <HAPI/HAPIProxyBasedRenderer.h>
 #include <HAPI/HAPIHapticShape.h>
-#include <AutoPtrVector.h>
-#include <Threads.h>
+#include <H3DUtil/AutoPtrVector.h>
+#include <H3DUtil/Threads.h>
 
 #include <map>
 

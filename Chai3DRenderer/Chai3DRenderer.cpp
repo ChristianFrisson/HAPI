@@ -29,7 +29,7 @@
 
 #include <Chai3DRenderer.h>
 
-#include <H3DMath.h>
+#include <H3DUtil/H3DMath.h>
 //#include "DeviceInfo.h"
 
 #include <HAPI/HapticTriangleSet.h>

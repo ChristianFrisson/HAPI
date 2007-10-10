@@ -30,8 +30,8 @@
 #define __HAPIVARIABLEDEPTHSURFACE_H__
 
 #include <HAPI/HAPISurfaceObject.h>
-#include <Image.h>
-#include <AutoRef.h>
+#include <H3DUtil/Image.h>
+#include <H3DUtil/AutoRef.h>
 
 namespace HAPI {
   /// \ingroup HAPINodes

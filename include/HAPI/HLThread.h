@@ -31,7 +31,7 @@
 #define __HLTHREADS_H__
 
 #include <HAPI/HAPI.h>
-#include <Threads.h>
+#include <H3DUtil/Threads.h>
 
 #include <memory>
 
