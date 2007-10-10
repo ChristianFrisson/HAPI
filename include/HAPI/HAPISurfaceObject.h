@@ -50,9 +50,10 @@ namespace HAPI {
 
     /// Structure that contains information about a contact.
     struct HAPI_API ContactInfo {
-      ContactInfo(): has_inverse( false ),
+      /// Default constructor.
+      ContactInfo(): primitive( 0 ),
                      proxy_radius( 0 ),
-                     primitive( 0 ) {}
+                     has_inverse( false ) {}
       //    protected:
     public:
       // INPUT

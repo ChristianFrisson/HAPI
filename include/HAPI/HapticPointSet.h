@@ -75,7 +75,7 @@ namespace HAPI {
                     int _shape_id = -1, 
                     void (*_clean_up_func)( void * ) = 0
                     ):
-      HAPIHapticShape( _transform, _surface, _touchable_face, _userdata,
+      HAPIHapticShape( _surface, _touchable_face, _userdata,
                        _shape_id, _clean_up_func ),
       points( begin, end ) {}
 

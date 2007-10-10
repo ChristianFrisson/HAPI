@@ -68,8 +68,9 @@ namespace HAPI {
                      int _shape_id = -1,
                      void (*_clean_up_func)( void * ) = 0
                      ):
-      Collision::CollisionObject( true ),
       HAPIHapticObject( ),
+      Collision::CollisionObject( true ),
+
       clean_up_func( _clean_up_func ),
       surface( _surface ),
       userdata( _userdata ),
@@ -89,8 +90,8 @@ namespace HAPI {
                      int _shape_id = -1,
                      void (*_clean_up_func)( void * ) = 0
                      ):
-      Collision::CollisionObject( true ),
       HAPIHapticObject( ),
+      Collision::CollisionObject( true ),
       clean_up_func( _clean_up_func ),
       surface( _surface ),
       userdata( _userdata ),

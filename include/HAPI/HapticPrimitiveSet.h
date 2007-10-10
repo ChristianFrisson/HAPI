@@ -63,7 +63,7 @@ namespace HAPI {
                         void (*_clean_up_func)( void * ) = 0
                         ):
       HAPIHapticShape( _surface, _touchable_face, _userdata,
-                       _shape_id, _clean_up_func ),,
+                       _shape_id, _clean_up_func ),
       primitives( begin, end ) {}
 
   protected:

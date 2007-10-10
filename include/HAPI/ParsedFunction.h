@@ -34,7 +34,7 @@
 #ifdef HAVE_FPARSER
 
 // fparser includes
-#include <fparser.hh>
+#include <HAPI/fparser.hh>
 
 namespace HAPI {
   /// \class ParsedFunction
