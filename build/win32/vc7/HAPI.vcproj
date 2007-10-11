@@ -244,139 +244,142 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\..\src\AnyHapticsDevice.h">
+				RelativePath="..\..\..\include\Hapi\AnyHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\CollisionObjects.h">
+				RelativePath="..\..\..\include\Hapi\CollisionObjects.h">
 			</File>
 			<File
 				RelativePath="..\..\..\include\Hapi\DepthMapSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FalconHapticsDevice.h">
+				RelativePath="..\..\..\include\Hapi\FalconHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FeedbackBufferCollector.h">
+				RelativePath="..\..\..\include\Hapi\FeedbackBufferCollector.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ForceDimensionHapticsDevice.h">
+				RelativePath="..\..\..\include\Hapi\ForceDimensionHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\fparser.hh">
+				RelativePath="..\..\..\include\Hapi\fparser.hh">
 			</File>
 			<File
-				RelativePath="..\..\..\src\fpconfig.hh">
+				RelativePath="..\..\..\include\Hapi\fpconfig.hh">
 			</File>
 			<File
-				RelativePath="..\..\..\src\fptypes.hh">
+				RelativePath="..\..\..\include\Hapi\fptypes.hh">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FrictionSurface.h">
+				RelativePath="..\..\..\include\Hapi\FrictionSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GodObjectRenderer.h">
+				RelativePath="..\..\..\include\Hapi\GodObjectRenderer.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPI.h">
+				RelativePath="..\..\..\include\Hapi\HAPI.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIForceEffect.h">
+				RelativePath="..\..\..\include\Hapi\HAPIForceEffect.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIFunctionObject.h">
+				RelativePath="..\..\..\include\Hapi\HAPIFunctionObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIGLShape.h">
+				RelativePath="..\..\..\include\Hapi\HAPIGLShape.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIHapticObject.h">
+				RelativePath="..\..\..\include\Hapi\HAPIHapticObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIHapticsDevice.h">
+				RelativePath="..\..\..\include\Hapi\HAPIHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIHapticShape.h">
+				RelativePath="..\..\..\include\Hapi\HAPIHapticShape.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIHapticsRenderer.h">
+				RelativePath="..\..\..\include\Hapi\HAPIHapticsRenderer.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIProxyBasedRenderer.h">
+				RelativePath="..\..\..\include\Hapi\HAPIProxyBasedRenderer.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIShapeRenderOptions.h">
+				RelativePath="..\..\..\include\Hapi\HAPIShapeRenderOptions.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPISurfaceObject.h">
+				RelativePath="..\..\..\include\Hapi\HAPISurfaceObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPITypes.h">
+				RelativePath="..\..\..\include\Hapi\HAPITypes.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HAPIVariableDepthSurface.h">
+				RelativePath="..\..\..\include\Hapi\HAPIVariableDepthSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticForceField.h">
+				RelativePath="..\..\..\include\Hapi\HapticForceField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticLineSet.h">
+				RelativePath="..\..\..\include\Hapi\HapticLineSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticPointSet.h">
+				RelativePath="..\..\..\include\Hapi\HapticPointSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticPositionFunctionEffect.h">
+				RelativePath="..\..\..\include\Hapi\HapticPositionFunctionEffect.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticPrimitiveSet.h">
+				RelativePath="..\..\..\include\Hapi\HapticPrimitive.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticPrimitiveTree.h">
+				RelativePath="..\..\..\include\Hapi\HapticPrimitiveSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticShapeConstraint.h">
+				RelativePath="..\..\..\include\Hapi\HapticPrimitiveTree.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticSpring.h">
+				RelativePath="..\..\..\include\Hapi\HapticShapeConstraint.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticTimeFunctionEffect.h">
+				RelativePath="..\..\..\include\Hapi\HapticSpring.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticTriangleSet.h">
+				RelativePath="..\..\..\include\Hapi\HapticTimeFunctionEffect.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticTriangleTree.h">
+				RelativePath="..\..\..\include\Hapi\HapticTriangleSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticViscosity.h">
+				RelativePath="..\..\..\include\Hapi\HapticTriangleTree.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HaptikDevice.h">
+				RelativePath="..\..\..\include\Hapi\HapticViscosity.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HLThread.h">
+				RelativePath="..\..\..\include\Hapi\HaptikDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ImageInterfaceObject.h">
+				RelativePath="..\..\..\include\Hapi\HLThread.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IntersectionInfo.h">
+				RelativePath="..\..\..\include\Hapi\ImageInterfaceObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ParsedFunction.h">
+				RelativePath="..\..\..\include\Hapi\IntersectionInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PhantomHapticsDevice.h">
+				RelativePath="..\..\..\include\Hapi\ParsedFunction.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PlaneConstraint.h">
+				RelativePath="..\..\..\include\Hapi\PhantomHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\QuanserHapticsDevice.h">
+				RelativePath="..\..\..\include\Hapi\PlaneConstraint.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\RuspiniRenderer.h">
+				RelativePath="..\..\..\include\Hapi\QuanserHapticsDevice.h">
+			</File>
+			<File
+				RelativePath="..\..\..\include\Hapi\RuspiniRenderer.h">
 			</File>
 		</Filter>
 	</Files>

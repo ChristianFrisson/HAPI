@@ -67,7 +67,7 @@ void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c,
   assert( c.haptic_shape.get() );
 
   contact.primitive = c.primitive;
-  c.haptic_shape->surface->getProxyMovement( contact );
+  c.haptic_shape->getSurface()->getProxyMovement( contact );
 
   Vec3 new_proxy_pos =  
     contact.contact_point_global + 
@@ -78,7 +78,7 @@ void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c,
                                               new_proxy_pos, c.normal ) );
   
   // call the surface to determine forces and proxy movement
-  c.haptic_shape->surface->getForces( contact );
+  c.haptic_shape->getSurface()->getForces( contact );
   
   // add a contact
   tmp_contacts.push_back( make_pair( c.haptic_shape, contact ) );
@@ -139,7 +139,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
 
     contact.primitive = p0.primitive;
     // calculate the force and proxy movement for the first plane
-    p0.haptic_shape->surface->getProxyMovement( contact );
+    p0.haptic_shape->getSurface()->getProxyMovement( contact );
     
     // constrain the proxy movement to the intersection between 
     // the two planes
@@ -153,7 +153,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
 
     contact.primitive = p1.primitive;
     // calculate the force and proxy movement for the second plane
-    p1.haptic_shape->surface->getProxyMovement( contact );
+    p1.haptic_shape->getSurface()->getProxyMovement( contact );
 
     // constrain the proxy movement to the intersection between 
     // the two planes
@@ -180,10 +180,10 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
                                              new_proxy_pos, contact.y_axis ) );
 
     contact.primitive = p0.primitive;
-    p0.haptic_shape->surface->getForces( contact );
+    p0.haptic_shape->getSurface()->getForces( contact );
     Vec3 p0_force = contact.force_global;
     contact.primitive = p1.primitive;
-    p1.haptic_shape->surface->getForces( contact );
+    p1.haptic_shape->getSurface()->getForces( contact );
     Vec3 p1_force = contact.force_global;
 
     contact.force_global = p0_force * weight + p1_force * ( 1 - weight );
@@ -279,17 +279,17 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
 
     // calculate the force and proxy movement for the first plane
     assert( p0.haptic_shape.get() );
-    p0.haptic_shape->surface->getForces( contact );
+    p0.haptic_shape->getSurface()->getForces( contact );
     Vec3 p0_force = contact.force_global;
     
     // calculate the force and proxy movement for the second plane
     assert( p1.haptic_shape.get() );
-    p1.haptic_shape->surface->getForces( contact );
+    p1.haptic_shape->getSurface()->getForces( contact );
     Vec3 p1_force = contact.force_global;
 
     // calculate the force and proxy movement for the third plane
     assert( p2.haptic_shape.get() );
-    p2.haptic_shape->surface->getForces( contact );
+    p2.haptic_shape->getSurface()->getForces( contact );
     Vec3 p2_force = contact.force_global;
     
     // proxy is constrained by three planes and cannot move in any 
@@ -350,7 +350,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
        i++ ) {
-    (*i)->getConstraints( proxy_pos, constraints, (*i)->touchable_face, r );
+    (*i)->getConstraints( proxy_pos, constraints, (*i)->getTouchableFace(), r );
   }
   
   // move them out by the proxy radius in the direction of the normal. 
@@ -565,7 +565,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal ) {
       Vec3 p = intersection.point;
       // get updated constraint
       (*i).primitive->getConstraints( p, constraints, 
-                                      (*i).haptic_shape->touchable_face );
+                                      (*i).haptic_shape->getTouchableFace() );
       if( !constraints.empty() )
         *i = constraints.front();
 

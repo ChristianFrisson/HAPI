@@ -101,9 +101,9 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     
     HAPIHapticShape *shape = (*s);
     Chai3DSurface *chai3d_surface = 
-      dynamic_cast< Chai3DSurface * >( shape->surface.get() );
+      dynamic_cast< Chai3DSurface * >( shape->getSurface() );
     FrictionSurface *friction_surface = 
-      dynamic_cast< FrictionSurface * >( shape->surface.get() );
+      dynamic_cast< FrictionSurface * >( shape->getSurface() );
 
     if( chai3d_surface || friction_surface ) {
       cMesh *mesh = new cMesh(world);
@@ -114,15 +114,17 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
       HapticTriangleSet *tri_set = 
         dynamic_cast< HapticTriangleSet * >( shape );
       
+      Matrix4 transform = tri_set->getTransform();
+
       if( tri_set ) {
         
         int index = 0;
         for( vector< Collision::Triangle >::iterator i = 
                tri_set->triangles.begin();
              i != tri_set->triangles.end(); i++ ) {
-          Vec3 a = tri_set->transform * (*i).a;
-          Vec3 b = tri_set->transform * (*i).b;
-          Vec3 c = tri_set->transform * (*i).c;
+          Vec3 a = transform * (*i).a;
+          Vec3 b = transform * (*i).b;
+          Vec3 c = transform * (*i).c;
           mesh->newVertex( a.z, a.x, a.y );
           mesh->newVertex( b.z, b.x, b.y );
           mesh->newVertex( c.z, c.x, c.y );
