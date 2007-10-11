@@ -128,12 +128,16 @@ namespace HAPI {
     }
 
     /// Get the transformation matrix from local to global space.
-    inline const Matrix4 &getTransform( const Matrix4 &t ) {
+    inline const Matrix4 &getTransform() {
       return transform;
     }
 
     /// Get the transformation matrix from global to local space.
-    inline const Matrix4 &getInverse( const Matrix4 &t ) {
+    inline const Matrix4 &getInverse() {
+     if( !have_inverse ) {
+        inverse = transform.inverse();
+        have_inverse = true;
+      }
       return inverse;
     }
 
@@ -194,9 +198,6 @@ namespace HAPI {
     /// it for reuse.
     static void delShapeId( int id );
 
-    /// The Surface object describing the properties of the surface.
-    H3DUtil::AutoRef< HAPISurfaceObject > surface;
-
     /// Add an HAPIShapeRenderOptions instance with options on how how
     /// to render this shape haptically.
     inline void addRenderOption( HAPIShapeRenderOptions *o ) {
@@ -234,6 +235,43 @@ namespace HAPI {
       option = NULL;
     } 
 
+    /// Get the HAPISurfaceObject used by this shape.
+    HAPISurfaceObject *getSurface() {
+      return surface.get();
+    }
+
+    /// Set the HAPISurfaceObject used by this shape.
+    void setSurface(  HAPISurfaceObject *s ) {
+      surface.reset( s );
+    }
+
+    /// Get the face of the shape that is currently touchable.
+    Collision::FaceType getTouchableFace() {
+      return touchable_face;
+    }
+
+    /// Set which side/s of the shape that are to be touchable.
+    void setTouchableFace( Collision::FaceType tf ) {
+      touchable_face = tf;
+    }
+
+    /// Get the userdata of this shape.
+    void *getUserData() {
+      return userdata;
+    }
+
+    /// Get the id of the shape. -1 means that no id has been assigned to
+    /// the shape.
+    int getShapeId() {
+      return shape_id;
+    }
+
+    /// Set the id of the shape. 
+    void setShapeId( int id) {
+      shape_id = id;
+    }
+
+  protected:
     H3DUtil::AutoPtrVector< HAPIShapeRenderOptions > options;
 
     void *userdata;
@@ -243,6 +281,9 @@ namespace HAPI {
 
     static int current_max_id;
     static list< int > free_ids;
+  
+  /// The Surface object describing the properties of the surface.
+    H3DUtil::AutoRef< HAPISurfaceObject > surface;
 
     bool have_transform;
     bool have_inverse;
@@ -250,7 +291,7 @@ namespace HAPI {
     Matrix4 transform;
     Matrix4 inverse;
     
-  protected:
+
     void (*clean_up_func)( void * );
 
     /// Get the closest point and normal on the object to the given point p.

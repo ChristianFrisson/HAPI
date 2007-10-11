@@ -233,7 +233,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     if( hl ) {    
       hl->hlRender( hd, hl_shape_id );
     } else {
-      if( surfaceSupported( (*i)->surface.get() ) ) {
+      if( surfaceSupported( (*i)->getSurface() ) ) {
         OpenHapticsOptions::ShapeType shape_type = default_gl_shape;
         bool camera_view = default_haptic_camera_view;
         bool adaptive_viewport = default_adaptive_viewport;
@@ -253,10 +253,10 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 #endif
 
           glLoadIdentity();
-          hlRenderHAPISurface( (*i)->surface.get() );
+          hlRenderHAPISurface( (*i)->getSurface() );
 
           HLenum touchable_face;
-          Collision::FaceType face = (*i)->touchable_face;
+          Collision::FaceType face = (*i)->getTouchableFace();
           if( face == Collision::BACK ) touchable_face = HL_BACK;
           else if( face == Collision::FRONT ) touchable_face = HL_FRONT;
           else touchable_face = HL_FRONT_AND_BACK;
@@ -273,7 +273,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           else
             hlDisable( HL_HAPTIC_CAMERA_VIEW );
           
-          Matrix3 m3 = (*i)->transform.getScaleRotationPart();
+          Matrix3 m3 = (*i)->getTransform().getScaleRotationPart();
           GLint front_face;
           
           bool negative_scaling = 
@@ -403,7 +403,7 @@ void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
   HAPI::Vec3 f  = HAPI::Vec3( hlforce[0], hlforce[1], hlforce[2] );
   for( Contacts::iterator i = renderer->contacts.begin();
        i != renderer->contacts.end(); i++ ) {
-    if( (*i).first->shape_id == shape->shape_id ) {
+    if( (*i).first->getShapeId() == shape->getShapeId() ) {
       if( (*i).first.get() != shape ) {
         (*i).first.reset( shape );
       }
@@ -428,7 +428,7 @@ void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
   OpenHapticsRenderer *renderer = cb_data->renderer;
   HAPIHapticShape *shape = cb_data->shape.get();
 
-  vector< int >::iterator found_id = find( renderer->already_removed_id.begin(), renderer->already_removed_id.end(), shape->shape_id );
+  vector< int >::iterator found_id = find( renderer->already_removed_id.begin(), renderer->already_removed_id.end(), shape->getShapeId() );
   if( found_id == renderer->already_removed_id.end() ) {
   
   renderer->contacts.push_back( make_pair( shape, HAPISurfaceObject::ContactInfo()) );
@@ -452,7 +452,7 @@ void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
   Contacts::iterator i;
   for( i = renderer->contacts.begin();
        i != renderer->contacts.end(); i++ ) {
-    if( (*i).first->shape_id == shape->shape_id ) {
+    if( (*i).first->getShapeId() == shape->getShapeId() ) {
       to_remove = i;
       break;
     }
@@ -461,7 +461,7 @@ void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
   //assert( to_remove != renderer->contacts.end() );
   // Why is untouchCallback sometimes called before touchCallback????
   if( to_remove == renderer->contacts.end() ) {
-    renderer->already_removed_id.push_back( shape->shape_id );
+    renderer->already_removed_id.push_back( shape->getShapeId() );
   } else
     renderer->contacts.erase( to_remove );
 }
@@ -469,7 +469,7 @@ void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
 
 HLuint OpenHapticsRenderer::getHLShapeId( HAPIHapticShape *hs,
                                           HAPIHapticsDevice *hd ) {
-  pair< int, HAPIHapticsDevice * > key = make_pair( hs->shape_id, hd );
+  pair< int, HAPIHapticsDevice * > key = make_pair( hs->getShapeId(), hd );
 
   if( id_map.find( key ) == id_map.end() ) {
     HLuint hl_shape_id = hlGenShapes(1);
@@ -497,7 +497,7 @@ HLuint OpenHapticsRenderer::getHLShapeId( HAPIHapticShape *hs,
                         cb_data );
   } else {
     for( unsigned int i = 0; i < callback_data.size(); i++ ) {
-      if( callback_data[i]->shape->shape_id == hs->shape_id
+      if( callback_data[i]->shape->getShapeId() == hs->getShapeId()
           && callback_data[i]->renderer == this ) {
         callback_data[i]->shape.reset( hs );
       }
