@@ -85,14 +85,75 @@ Chai3DRenderer::renderHapticsOneStep(
   mesh_change_lock.lock();
   chai3d_tool->computeForces();
   mesh_change_lock.unlock();
+
   cVector3d f = chai3d_tool->m_lastComputedGlobalForce;
+  
+  Contacts new_contacts;
+
+  // set the contacts
+  cProxyPointForceAlgo *p = chai3d_tool->getProxy();
+  if( p ) {
+    cTriangle *t0, *t1, *t2;
+
+    cVector3d cp =  p->getContactPoint();
+ 
+    unsigned int nr_contacts = p->getContacts( t0, t1, t2 );
+    if( nr_contacts > 0 ) {
+      HAPISurfaceObject::ContactInfo ci;
+      
+      // using normal for vertex0 as normal. should be ok since no smooth
+      // haptics rendering is done.
+      cVector3d n =  t0->getVertex0()->getNormal();
+      ci.y_axis = Vec3( n.y, n.z, n.x );
+      ci.contact_point_global = Vec3( cp.y, cp.z, cp.x );
+      ci.force_global = Vec3( f.y, f.z, f.x );
+      map< cMesh *, HAPIHapticShape * >::iterator i = 
+        mesh_map.find( t0->getParent() );
+      if( i != mesh_map.end() ) {
+        new_contacts.push_back( make_pair( (*i).second, ci ) );
+      }
+
+      if( nr_contacts > 1 ) {
+        HAPISurfaceObject::ContactInfo ci;
+        cVector3d n =  t1->getVertex0()->getNormal();
+        ci.y_axis = Vec3( n.y, n.z, n.x );
+        ci.contact_point_global = Vec3( cp.y, cp.z, cp.x );
+        ci.force_global = Vec3( f.y, f.z, f.x );
+        map< cMesh *, HAPIHapticShape * >::iterator i = 
+          mesh_map.find( t1->getParent() );
+        if( i != mesh_map.end() && t1->getParent() != t0->getParent() ) {
+          new_contacts.push_back( make_pair( (*i).second, ci ) );
+        }
+
+        if( nr_contacts > 2 ) {
+          HAPISurfaceObject::ContactInfo ci;
+          cVector3d n =  t2->getVertex0()->getNormal();
+          ci.y_axis = Vec3( n.y, n.z, n.x );
+          ci.contact_point_global = Vec3( cp.y, cp.z, cp.x );
+          ci.force_global = Vec3( f.y, f.z, f.x );
+          map< cMesh *, HAPIHapticShape * >::iterator i = 
+            mesh_map.find( t2->getParent() );
+          if( i != mesh_map.end() && 
+              t2->getParent() != t0->getParent() &&
+              t2->getParent() != t1->getParent()) {
+            new_contacts.push_back( make_pair( (*i).second, ci ) );
+          }
+        }
+      }
+    }
+  }
+
+  contacts_lock.lock();
+  contacts.swap( new_contacts );
+  contacts_lock.unlock();
+
   return HAPIForceEffect::EffectOutput( Vec3( f.y, f.z, f.x ) );
 }
 
 
 void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
                                        const HapticShapeVector &shapes ) {
-  
+  std::map< cMesh *, HAPIHapticShape * > new_mesh_map;
   vector< cMesh * > new_meshes( shapes.size() );
   new_meshes.clear();
 
@@ -109,6 +170,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
       cMesh *mesh = new cMesh(world);
       
       new_meshes.push_back( mesh );
+      new_mesh_map[mesh] = shape;
       
       // TODO: fix for other shape types
       HapticTriangleSet *tri_set = 
@@ -152,6 +214,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     world->addChild(new_meshes[i]);
   }
   meshes.swap( new_meshes );
+  mesh_map.swap( new_mesh_map );
   mesh_change_lock.unlock();
 }
 

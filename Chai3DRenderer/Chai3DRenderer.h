@@ -183,6 +183,7 @@ namespace HAPI {
     cWorld *world;
     H3DUtil::AutoPtrVector< cMesh > meshes; 
     H3DUtil::MutexLock mesh_change_lock;
+    std::map< cMesh *, HAPIHapticShape * > mesh_map;
   };
 }
 
