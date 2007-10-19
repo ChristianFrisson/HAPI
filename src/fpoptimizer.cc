@@ -14,7 +14,7 @@
 */
 
 
-#include "fpconfig.hh"
+#include "HAPI/fpconfig.hh"
 
 #ifdef SUPPORT_OPTIMIZER
 
