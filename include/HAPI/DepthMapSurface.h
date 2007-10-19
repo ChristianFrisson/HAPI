@@ -68,11 +68,11 @@ namespace HAPI {
       Matrix4 tangent_space_mtx;
       Vec3 global_vector = dms->this_contact_info->vectorToGlobal(
                             Vec3( local_point.x, 0, local_point.y ) );
-      dms->this_contact_info->primitive->getTangentSpaceMatrix(
+      dms->this_contact_info->primitive()->getTangentSpaceMatrix(
         dms->this_contact_info->globalOrigin() + global_vector,
         tangent_space_mtx );
       HAPIFloat depth_value = dms->getDepthMapValue(
-          dms->this_contact_info->tex_coord +
+          dms->this_contact_info->contactPointTexCoord() +
           tangent_space_mtx *
           global_vector );
       if( dms->white_max )

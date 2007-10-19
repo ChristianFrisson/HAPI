@@ -79,7 +79,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
                                       max_iterations );
     depth_get_lock.unlock();
     
-    contact.proxy_movement_local = res;
+    contact.setLocalProxyMovement( res );
   } else {
     this_contact_info = &contact;
 
@@ -176,7 +176,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
 
     if( in_static_contact ) {
       if( tangent_force <= static_friction * normal_force ) {
-        contact.proxy_movement_local = Vec2( 0, 0 );
+        contact.setLocalProxyMovement( Vec2( 0, 0 ) );
       } else {
         in_static_contact = false;
       }
@@ -192,7 +192,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
       if( velocity < Constants::epsilon ) {
         in_static_contact = true;
         velocity = 0;
-        contact.proxy_movement_local = Vec2( 0, 0 ); 
+        contact.setLocalProxyMovement( Vec2( 0, 0 ) ); 
       } else {
         // The max_movement should be in mm. The velocity gotten is calculated
         // using forces which is in newton (since stiffness is in N/mm), this
@@ -207,7 +207,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
         if( l > max_movement ) {
           res *= max_movement / l; 
         }
-        contact.proxy_movement_local = res;
+        contact.setLocalProxyMovement( res );
       }
     }
   }
@@ -215,9 +215,9 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
 
 void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
   Vec3 temp_point = contact_info.globalOrigin();
-  Vec3 glbl_vect = temp_point - contact_info.contact_point_global;
+  Vec3 glbl_vect = temp_point - contact_info.globalContactPoint();
   Vec3 glbl_local_probe_vector = contact_info.globalProbePosition() -
-    - contact_info.contact_point_global;
+    - contact_info.globalContactPoint();
   depth_get_lock.lock();
   this_contact_info = &contact_info;
   Vec3 temp_local_vec = contact_info.vectorToLocal( glbl_vect );
@@ -231,7 +231,7 @@ void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
   else {
 
     //depth = depth_invert * depth;
-    Vec3 real_contact_point = temp_point + depth * contact_info.y_axis;
+    Vec3 real_contact_point = temp_point + depth * contact_info.yAxis();
 
     Vec3 probe_to_origin = 
       real_contact_point - contact_info.globalProbePosition();
@@ -239,7 +239,7 @@ void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
     n_probe_to_origin.normalizeSafe();
     contact_info.setGlobalForce(  probe_to_origin * stiffness +
                                   ( n_probe_to_origin *
-                                    contact_info.hd->getVelocity() *
+                                    contact_info.hapticsDevice()->getVelocity() *
                                     damping ) * n_probe_to_origin );
   }
 }
@@ -252,9 +252,9 @@ HAPIFloat HAPIVariableDepthSurface::localPtToDist( Vec2 local_point,
     Vec3 glbl_vect = bmhs->this_contact_info->
       vectorToGlobal( Vec3( local_point.x, 0, local_point.y ) );
     HAPIFloat depth = bmhs->getDepth( local_point );
-    Vec3 real_contact_point = bmhs->this_contact_info->origin_global +
+    Vec3 real_contact_point = bmhs->this_contact_info->globalOrigin() +
                                glbl_vect + depth *
-                               bmhs->this_contact_info->y_axis;
+                               bmhs->this_contact_info->yAxis();
     return ( real_contact_point -
              bmhs->this_contact_info->globalProbePosition() ).lengthSqr();
   }
