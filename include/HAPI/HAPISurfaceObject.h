@@ -51,11 +51,10 @@ namespace HAPI {
     /// Structure that contains information about a contact.
     struct HAPI_API ContactInfo {
       /// Default constructor.
-      ContactInfo(): primitive( 0 ),
+      ContactInfo(): geom_primitive( 0 ),
                      proxy_radius( 0 ),
                      has_inverse( false ) {}
-      //    protected:
-    public:
+    protected:
       // INPUT
 
       // The point of contact in global coordinates.
@@ -76,7 +75,7 @@ namespace HAPI {
       Vec3 origin_global;
 
       // Contains the primitive on which the point of contact was detected.
-      Collision::GeometryPrimitive * primitive;
+      Collision::GeometryPrimitive * geom_primitive;
       
       // OUTPUT
 
@@ -91,6 +90,8 @@ namespace HAPI {
 
       // The proxy movement in local coordinates.
       Vec2 proxy_movement_local;
+
+      ///////////////////////////////////////////////////
 
       // The proxy radius(if applicable, -1 if the proxy radius does 
       // not make sense for the used haptics renderer)
@@ -120,15 +121,70 @@ namespace HAPI {
 
       // Update the inverse member.
       inline void updateInverse() {
-        inverse = 
-          Matrix4( x_axis.x, y_axis.x, z_axis.x, origin_global.x,
-                   x_axis.y, y_axis.y, z_axis.y, origin_global.y,
-                   x_axis.z, y_axis.z, z_axis.z, origin_global.z,
-                   0,0,0,1 ).transformInverse();
+        inverse = localToGlobalMatrix().transformInverse();
         has_inverse = true;
       }
 
     public:
+
+      /// Get the force currently assigned to the contact.
+      inline Vec3 globalForce() {
+        return force_global;
+      }
+
+      /// Get the torque currently assigned to the contact.
+      inline Vec3 globalTorque() {
+        return torque_global;
+      }
+
+      /// Get the transformation matrix from local surface space to global
+      /// space.
+      inline Matrix4 localToGlobalMatrix() {
+        return  Matrix4( x_axis.x, y_axis.x, z_axis.x, origin_global.x,
+                         x_axis.y, y_axis.y, z_axis.y, origin_global.y,
+                         x_axis.z, y_axis.z, z_axis.z, origin_global.z,
+                         0,0,0,1 );
+      }
+
+      /// Get the transformation matrix from global surface space to local
+      /// space.
+      inline Matrix4 globalToLocalMatrix() {
+        if( !has_inverse ) updateInverse();
+        return  inverse;
+      }
+
+      /// Get the texture coordinate of the contact point.
+      inline Vec3 contactPointTexCoord() {
+        return tex_coord;
+      }
+
+      /// Returns the haptics device that is in contact.
+      inline HAPIHapticsDevice *hapticsDevice() {
+        return hd;
+      }
+
+      /// Returns the GeometryPrimitive that the contact occurs on.
+      inline Collision::GeometryPrimitive *primitive() {
+        return geom_primitive;
+      }
+
+      /// Returns the x-axis of the local coordinate system in global
+      /// coordinates.
+      inline Vec3 xAxis() {
+        return x_axis;
+      }
+
+      /// Returns the y-axis of the local coordinate system in global
+      /// coordinates.
+      inline Vec3 yAxis() {
+        return y_axis;
+      }
+
+      /// Returns the z-axis of the local coordinate system in global
+      /// coordinates.
+      inline Vec3 zAxis() {
+        return z_axis;
+      }
 
       /// Transform a point from local to global space.
       inline Vec3 pointToGlobal( const Vec3 &p ) { 
@@ -214,6 +270,7 @@ namespace HAPI {
         torque_global = t;
       }
       
+      /// Set the proxy movement in local surface space.
       inline void setLocalProxyMovement( const Vec2 &pm ) {
         proxy_movement_local = pm;
       }
@@ -222,7 +279,6 @@ namespace HAPI {
       friend class GodObjectRenderer;
       friend class OpenHapticsRenderer;
       friend class Chai3DRenderer;
-      friend class H3DHapticsDevice;
     }; 
 
     /// Constructor
@@ -233,15 +289,17 @@ namespace HAPI {
 
     /// This function should be overridden by all subclasses. It determines
     /// the proxy movement of a contact. The function should set the proxy
-    /// movement in the contact_info struct before returning. During the 
+    /// movement in the contact_info struct before returning using the
+    /// setLocalProxyMovement function. During the 
     /// call to this function the origin of the local coordinate system is
     /// the proxy position/contact point.
     virtual void getProxyMovement( ContactInfo &contact_info ) {}
 
     /// This function should be overridden by all subclasses. It determines
-    /// the forces generated at a contact. During the call to this function
-    /// the origin of the local coordinate system is the proxy position
-    /// after proxy movement.
+    /// the forces generated at a contact by using the setLocalForce or
+    /// setGlobalForce functions in the ContactInfo struct. 
+    /// During the call to this function the origin of the local coordinate
+    /// system is the proxy position after proxy movement.
     virtual void getForces( ContactInfo &contact_info ) {}
 
   };
