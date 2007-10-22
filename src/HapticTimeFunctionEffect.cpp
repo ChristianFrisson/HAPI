@@ -37,9 +37,7 @@ HapticTimeFunctionEffect::HapticTimeFunctionEffect(
                            HAPIFunctionObject *_z_function,
                            const HAPITime &_x_zero_time,
                            const HAPITime &_y_zero_time,
-                           const HAPITime &_z_zero_time,
-                           bool _interpolate ):
-  HAPIForceEffect( _interpolate ),
+                           const HAPITime &_z_zero_time ):
   x_function( _x_function ),
   y_function( _y_function ),
   z_function( _z_function ),

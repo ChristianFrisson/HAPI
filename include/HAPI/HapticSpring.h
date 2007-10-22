@@ -40,15 +40,13 @@ namespace HAPI {
   class HAPI_API HapticSpring: public HAPIForceEffect {
   public:
     /// Constructor
-    HapticSpring ( bool _interpolate ):
-      HAPIForceEffect( _interpolate ),
+    HapticSpring():
       position( Vec3( 0, 0, 0 ) ),
       spring_constant( 0 ) { }
     
     /// Constructor
     HapticSpring( const Vec3 &_position,
-                  HAPIFloat _spring_constant,
-                  bool _interpolate = false );
+                  HAPIFloat _spring_constant );
     
     /// The force of the EffectOutput will be the force of the force field. 
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,

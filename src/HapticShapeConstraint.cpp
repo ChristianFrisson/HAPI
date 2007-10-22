@@ -33,9 +33,7 @@ using namespace HAPI;
 
 HapticShapeConstraint::HapticShapeConstraint(
                           HAPIHapticShape *_shape,
-                          const HAPIFloat &_spring_constant,
-                          bool _interpolate ):
-  HAPIForceEffect( _interpolate ),
+                          const HAPIFloat &_spring_constant ):
   shape( _shape ),
   spring_constant( _spring_constant ){
 }
