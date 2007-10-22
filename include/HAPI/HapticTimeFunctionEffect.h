@@ -49,8 +49,7 @@ namespace HAPI {
                               HAPIFunctionObject *_z_function,
                               const HAPITime &_x_zero_time,
                               const HAPITime &_y_zero_time,
-                              const HAPITime &_z_zero_time,
-                              bool _interpolate = false );
+                              const HAPITime &_z_zero_time );
     
     /// The force of the EffectOutput is calculated from the provided functions
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,

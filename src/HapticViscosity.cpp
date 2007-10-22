@@ -33,9 +33,7 @@ using namespace HAPI;
 
 HapticViscosity::HapticViscosity( const HAPIFloat &_viscosity,
                                   const HAPIFloat &_radius,
-                                  const HAPIFloat &_damping_factor,
-                                  bool _interpolate ):
-  HAPIForceEffect( _interpolate ),
+                                  const HAPIFloat &_damping_factor ):
   viscosity( _viscosity ),
   radius( _radius ){
   // constant calculated from stokes law.

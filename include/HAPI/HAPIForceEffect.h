@@ -84,8 +84,7 @@ namespace HAPI {
     };
     
     /// Constructor.
-    HAPIForceEffect( bool _interpolate = false ):
-      interpolate( _interpolate ){}
+    HAPIForceEffect(){}
     
     /// The function that calculates the forces given by this 
     /// HAPIForceEffect.
@@ -94,14 +93,6 @@ namespace HAPI {
     
     /// Destructor. Virtual to make HAPIForceEffect a polymorphic type.
     virtual ~HAPIForceEffect() {}
-
-    /// Returns if the HAPIForceEffect should be interpolated or not.
-    bool isInterpolated() {
-      return interpolate;
-    }
-
-  protected:
-    bool interpolate;
   };
 }
 

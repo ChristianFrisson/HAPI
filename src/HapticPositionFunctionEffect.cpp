@@ -34,9 +34,7 @@ using namespace HAPI;
 HapticPositionFunctionEffect::HapticPositionFunctionEffect(
                           HAPIFunctionObject *_x_function,
                           HAPIFunctionObject *_y_function,
-                          HAPIFunctionObject *_z_function,
-                          bool _interpolate ):
-  HAPIForceEffect( _interpolate ),
+                          HAPIFunctionObject *_z_function ):
   x_function( _x_function ),
   y_function( _y_function ),
   z_function( _z_function ) {

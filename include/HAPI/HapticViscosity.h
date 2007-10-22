@@ -40,8 +40,7 @@ namespace HAPI {
     /// Constructor
     HapticViscosity( const HAPIFloat &_viscosity,
                      const HAPIFloat &_radius,
-                     const HAPIFloat &_damping_factor,
-                     bool _interpolate = false );
+                     const HAPIFloat &_damping_factor );
     
     /// The force of the EffectOutput will be calculated using stokes law
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,

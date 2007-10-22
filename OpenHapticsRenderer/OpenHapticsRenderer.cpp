@@ -621,7 +621,7 @@ void OpenHapticsRenderer::hlRenderRelative( HAPIFloat stiffness,
   hlMaterialf(HL_FRONT_AND_BACK, HL_DYNAMIC_FRICTION, (HLfloat)dynamic_friction );
   hlMaterialf(HL_FRONT_AND_BACK, HL_STATIC_FRICTION, (HLfloat)static_friction );
   // convert to millimeters
-  hlTouchModelf( HL_SNAP_DISTANCE, snap_distance );
+  hlTouchModelf( HL_SNAP_DISTANCE, (HLfloat)snap_distance );
 }
 
 /// Sets up the surface parameters for HL API. 

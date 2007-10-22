@@ -100,7 +100,8 @@ namespace HAPI {
       device_state( UNINITIALIZED ),
       delete_thread( false ),
       time_in_last_loop( 0 ),
-      setup_haptic_rendering_callback( true ) {
+      setup_haptic_rendering_callback( true ),
+      switching_effects( false ) {
       setHapticsRenderer( NULL );
       haptic_rendering_callback_data = this;
     }
@@ -247,16 +248,35 @@ namespace HAPI {
 
     /// Add a HapticForceEffect to be rendered.
     /// \param objects The haptic shapes to render.
-    inline void addEffect( HAPIForceEffect *effect ) {
+    inline void addEffect( HAPIForceEffect *effect,
+                           HAPITime fade_in_time = 0 ) {
       force_effect_lock.lock();
       current_force_effects.push_back( effect );
+      if( fade_in_time > Constants::epsilon ) {
+        current_add_rem_effect_map[ current_force_effects.size() - 1 ] =
+          PhaseInOut( fade_in_time, TimeStamp() );
+      }
       force_effect_lock.unlock();
     }
 
     /// Set the HapticForceEffects to be rendered.
     /// \param objects The haptic shapes to render.
-    inline void setEffects( const HapticEffectVector &effects ) {
+    inline void setEffects( const HapticEffectVector &effects,
+                            HAPITime _switch_effects_duration = 0 ) {
       force_effect_lock.lock();
+      if( _switch_effects_duration > Constants::epsilon ) {
+        last_add_rem_effect_map.clear();
+        last_add_rem_effect_map.swap( current_add_rem_effect_map );
+        last_force_effects.swap( current_force_effects );
+        switch_effects_duration = _switch_effects_duration;
+        last_force_effect_change = TimeStamp();
+        switching_effects = true;
+      } else {
+        last_force_effects.clear();
+        current_add_rem_effect_map.clear();
+        last_add_rem_effect_map.clear();
+        switching_effects = false;
+      }
       current_force_effects = effects;
       force_effect_lock.unlock();
     }
@@ -269,11 +289,41 @@ namespace HAPI {
     }
 
     /// Remove a force effect so that it is not rendered any longer.
-    inline void removeEffect( HAPIForceEffect *effect ) {
+    void removeEffect( HAPIForceEffect *effect, HAPITime fade_out_time = 0 ) {
       force_effect_lock.lock();
+      if( fade_out_time > Constants::epsilon ) {
+        unsigned int i = 0;
+        for( HapticEffectVector::const_iterator j =
+               current_force_effects.begin();
+             j != current_force_effects.end(); j++, i++ )
+          if( effect == (*j) )
+            break;
+        if( i < current_force_effects.size() ) {
+          PhaseInOut temp_phase_in_out( fade_out_time, TimeStamp(), false );
+          IndexTimeMap::iterator found = current_add_rem_effect_map.find( i );
+          if( found != current_add_rem_effect_map.end() ) {
+            temp_phase_in_out.setMaxFraction(
+              (*found).second.getMaxFraction() );
+            current_add_rem_effect_map.erase( found );
+            for( unsigned int k = i + 1;
+                 k < current_force_effects.size(); k++ ) {
+              found = current_add_rem_effect_map.find( k );
+              if( found != current_add_rem_effect_map.end() ) {
+                current_add_rem_effect_map[ k - 1 ] =
+                  current_add_rem_effect_map[ k ];
+                current_add_rem_effect_map.erase( k );
+              }
+            }
+          }
+          last_add_rem_effect_map[ last_force_effects.size() ] =
+            temp_phase_in_out;
+          last_force_effects.push_back( effect );
+        }
+      }
       current_force_effects.erase( effect );
       force_effect_lock.unlock();
     }
+
 
     /// Add all effects between [begin, end)
     template< class InputIterator > 
@@ -285,8 +335,24 @@ namespace HAPI {
 
     /// Swap the vector of effects currently being rendered with the
     /// given vector, replacing all effects being rendered.
-    inline void swapEffects( HapticEffectVector &effects ) {
+    /// Note that if _switch_effects_duration is above zero the input variable
+    /// effects will NOT contain the force effects that were rendered before.
+    inline void swapEffects( HapticEffectVector &effects,
+                             HAPITime _switch_effects_duration = 0 ) {
       force_effect_lock.lock();
+      if( _switch_effects_duration > Constants::epsilon ) {
+        last_add_rem_effect_map.clear();
+        last_add_rem_effect_map.swap( current_add_rem_effect_map );
+        last_force_effects.swap( current_force_effects );
+        switch_effects_duration = _switch_effects_duration;
+        last_force_effect_change = TimeStamp();
+        switching_effects = true;
+      } else {
+        last_force_effects.clear();
+        current_add_rem_effect_map.clear();
+        last_add_rem_effect_map.clear();
+        switching_effects = false;
+      }
       current_force_effects.swap( effects );
       force_effect_lock.unlock();
     }
@@ -295,6 +361,10 @@ namespace HAPI {
     inline void clearEffects() {
       force_effect_lock.lock();
       current_force_effects.clear();
+      last_force_effects.clear();
+      current_add_rem_effect_map.clear();
+      last_add_rem_effect_map.clear();
+      switching_effects = false;
       force_effect_lock.unlock();
     }
     
@@ -830,8 +900,93 @@ namespace HAPI {
     // use the renderEffects function to set the effects.
     HapticEffectVector current_force_effects;
 
-    // the force effects that was current in the last scene graph loop.
+    // The forces to interpolate with if interpolation should be done.
     HapticEffectVector last_force_effects;
+
+    // Flag used to know if interpolation should be done between
+    // current_force_effects and last_force_effects. Set by setForceEffects
+    // and swapForceEffects.
+    bool switching_effects;
+
+    // The time it takes to fully switch to the new force effects when
+    // using setForceEffects or swapForceEffects.
+    HAPITime switch_effects_duration;
+
+    // The time of the last call to setForceEffects or swapForceEffects.
+    // Only set if switching_effects is true.
+    HAPITime last_force_effect_change;
+
+    // Struct used to calculate fractions when adding or removing effects
+    // with the addEffect and removeEffect functions.
+    struct HAPI_API PhaseInOut {
+    public:
+      // Default Constructor
+      PhaseInOut(){};
+
+      // Constructor.
+      PhaseInOut( HAPITime _duration,
+                  HAPITime _start_time,
+                  bool _phase_in = true,
+                  bool _set_max_fraction = false,
+                  HAPIFloat _max_fraction = 0 ) :
+      duration( _duration ),
+      start_time( _start_time ),
+      phase_in( _phase_in ),
+      set_max_fraction( _set_max_fraction ),
+      max_fraction( _max_fraction ) {}
+
+      /// returns a fraction to use for interpolation. The return value
+      /// is not normalized and could be bigger than 1 and smaller than 0.
+      inline HAPIFloat getFraction( HAPITime now_time ) {
+        HAPITime fraction = ( now_time - start_time ) / duration;
+        if( phase_in ) {
+          if( !set_max_fraction )
+            set_max_fraction = true;
+          max_fraction = fraction;
+          return fraction;
+        }
+        else {
+          fraction = 1 - fraction;
+          if( set_max_fraction && fraction > max_fraction )
+            return max_fraction;
+          else return fraction;
+        }
+      }
+
+      // Get max_fraction.
+      inline HAPIFloat getMaxFraction() { return max_fraction; }
+
+      // Set max_fraction;
+      inline void setMaxFraction( HAPIFloat _max_fraction ) {
+        max_fraction = _max_fraction;
+        set_max_fraction = true;
+      }
+
+    protected:
+      // The time it should take to reach fraction 1.
+      HAPITime duration;
+
+      // The time of creation.
+      HAPITime start_time;
+
+      // Determines whether to phase in or out. This means that getFraction
+      // will return "fraction" or "1 - fraction" depending on this flag.
+      bool phase_in;
+
+      // Maximum fraction number that have been set when phasing in.
+      // Used to determine the maximum value value when phasing out.
+      HAPIFloat max_fraction;
+      // true if a max_fraction is set.
+      bool set_max_fraction;
+    };
+
+    typedef map< int, PhaseInOut > IndexTimeMap;
+    // map to keep track of which force effects in current_force_effects that
+    // are phased in.
+    IndexTimeMap current_add_rem_effect_map;
+    // map to keep track of which force effects in last_force_effects that
+    // are phased in our out.
+    IndexTimeMap last_add_rem_effect_map;
 
     // the shapes that are currently being rendered in the realtime loop.
     // One HapticEffectVector for each layer.
@@ -875,7 +1030,8 @@ namespace HAPI {
     string device_name;
 
     /// Callback function to render force effects.
-    static H3DUtil::PeriodicThread::CallbackCode hapticRenderingCallback( void *data );
+    static H3DUtil::PeriodicThread::CallbackCode
+      hapticRenderingCallback( void *data );
 
     /// If true then set up hapticRenderingCallback as its own callback.
     /// If false the hapticRenderingCallback functions has to be called
@@ -890,7 +1046,8 @@ namespace HAPI {
 
     /// Callback function to transfer haptic objects to render to the 
     /// haptics loop.
-    static H3DUtil::PeriodicThread::CallbackCode transferObjectsCallback( void *data );
+    static H3DUtil::PeriodicThread::CallbackCode
+      transferObjectsCallback( void *data );
 
     friend class AnyHapticsDevice;
 
