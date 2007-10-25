@@ -21,7 +21,8 @@ class WidgetsPageInfo;
 
 #include "wx/panel.h"
 
-#include <AnyHapticsDevice.h>
+#include <HAPI/AnyHapticsDevice.h>
+
 class WidgetsPage : public wxPanel
 {
 public:

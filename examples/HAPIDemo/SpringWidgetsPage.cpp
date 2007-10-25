@@ -141,7 +141,7 @@ void SpringWidgetsPage::createForceEffect( ) {
     spring_constant = val / 1000;
   }
 
-  force_effect.reset( new HapticSpring( Matrix4(),
+  force_effect.reset( new HapticSpring( 
     position,
     spring_constant,
     interpolate ) );

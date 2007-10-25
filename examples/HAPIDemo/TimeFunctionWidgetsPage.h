@@ -36,8 +36,8 @@
 
 #include "HAPIDemo.h"
 
-#include "HapticTimeFunctionEffect.h"
-#include "ParsedFunction.h"
+#include <HAPI/HapticTimeFunctionEffect.h>
+#include <HAPI/ParsedFunction.h>
 
 class TimeFunctionWidgetsPage : public WidgetsPage
 {

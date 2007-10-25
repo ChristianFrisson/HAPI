@@ -1,7 +1,7 @@
-#include <AnyHapticsDevice.h>
-#include <HapticSphere.h>
-#include <FrictionSurface.h>
-#include <GodObjectRenderer.h>
+#include <HAPI/AnyHapticsDevice.h>
+#include <HAPI/HapticPrimitive.h>
+#include <HAPI/FrictionSurface.h>
+#include <HAPI/GodObjectRenderer.h>
 
 using namespace HAPI;
 
@@ -9,8 +9,8 @@ int main(int argc, char* argv[]) {
   AnyHapticsDevice hd;
 
   HAPISurfaceObject * my_surface = new FrictionSurface();
-  HapticSphere *my_haptic_sphere =
-    new HapticSphere( 50, 0, my_surface, Matrix4() );
+  HapticPrimitive *my_haptic_sphere =
+	  new HapticPrimitive( new Collision::Sphere( Vec3( 0, 0, 0 ), 50 ), my_surface );
 
   hd.setHapticsRenderer( new GodObjectRenderer() );
   if( hd.initDevice() != HAPIHapticsDevice::SUCCESS ) {

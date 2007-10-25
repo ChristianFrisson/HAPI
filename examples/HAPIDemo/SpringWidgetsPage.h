@@ -36,7 +36,7 @@
 
 #include "HAPIDemo.h"
 
-#include "HapticSpring.h"
+#include <HAPI/HapticSpring.h>
 
 class SpringWidgetsPage : public WidgetsPage
 {

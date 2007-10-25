@@ -125,7 +125,7 @@ void ForceFieldWidgetsPage::createForceEffect( ) {
     force.z = val;
   }
 
-  force_effect.reset( new HapticForceField( Matrix4(),
+  force_effect.reset( new HapticForceField( 
     force,
     interpolate ) );
     hd->addEffect( force_effect.get() );

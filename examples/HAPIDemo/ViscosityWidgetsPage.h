@@ -36,7 +36,7 @@
 
 #include "HAPIDemo.h"
 
-#include "HapticViscosity.h"
+#include <HAPI/HapticViscosity.h>
 
 class ViscosityWidgetsPage : public WidgetsPage
 {

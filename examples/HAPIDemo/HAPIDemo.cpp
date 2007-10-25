@@ -29,7 +29,7 @@
 
 #include "HAPIDemo.h"
 
-#include <HAPIForceEffect.h>
+#include <HAPI/HAPIForceEffect.h>
 
 // ----------------------------------------------------------------------------
 // constants
