@@ -202,6 +202,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   glPushMatrix();
   glLoadIdentity();
   glClear(GL_DEPTH_BUFFER_BIT);   
+  hlMakeCurrent( haptic_context );
   hlMatrixMode( HL_VIEWTOUCH );
   hlLoadIdentity();
   hlMatrixMode( HL_TOUCHWORKSPACE );
@@ -220,7 +221,6 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   // apply calibration matrix
   hlMultMatrixd( m );
   
-  hlMakeCurrent( haptic_context );  
   hlBeginFrame();
   hlCheckEvents();
   
