@@ -36,8 +36,8 @@
 
 #include "HAPIDemo.h"
 
-#include "HapticPositionFunctionEffect.h"
-#include "ParsedFunction.h"
+#include <HAPI/HapticPositionFunctionEffect.h>
+#include <HAPI/ParsedFunction.h>
 
 class PositionFunctionWidgetsPage : public WidgetsPage
 {

@@ -125,7 +125,7 @@ void ViscosityWidgetsPage::createForceEffect( ) {
     damping_factor = val;
   }
 
-  force_effect.reset( new HapticViscosity( Matrix4(),
+  force_effect.reset( new HapticViscosity( 
     viscosity,
     radius,
     damping_factor,

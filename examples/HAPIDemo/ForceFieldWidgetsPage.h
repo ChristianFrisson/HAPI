@@ -31,12 +31,12 @@
     #include "wx/textctrl.h"
 #endif
 
-#include "wx/artprov.h"
-#include "wx/sizer.h"
+#include <wx/artprov.h>
+#include <wx/sizer.h>
 
 #include "HAPIDemo.h"
 
-#include "HapticForceField.h"
+#include <HAPI/HapticForceField.h>
 
 class ForceFieldWidgetsPage : public WidgetsPage
 {

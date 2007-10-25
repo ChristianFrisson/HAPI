@@ -1,5 +1,5 @@
-#include <HapticSpring.h>
-#include <AnyHapticsDevice.h>
+#include <HAPI/HapticSpring.h>
+#include <HAPI/AnyHapticsDevice.h>
 
 using namespace HAPI;
 
@@ -42,10 +42,8 @@ int main(int argc, char* argv[]) {
     cout << "The spring constant used is: " << stm_constant.str() << endl;
     cout << "Any faulty input number will be replaced by 0" << endl << endl;
 
-    HapticSpring *spring_effect = new HapticSpring( Matrix4(),
-      Vec3( x, y, z ),
-      spring_constant,
-      false );
+    HapticSpring *spring_effect = new HapticSpring( Vec3( x, y, z ),
+                                                    spring_constant );
     hd.addEffect( spring_effect );
 
     cout << "Type q and then ENTER to exit, any other input and then ";

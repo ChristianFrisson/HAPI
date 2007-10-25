@@ -36,7 +36,7 @@
 
 #include "HAPIDemo.h"
 
-#include "HapticShapeConstraint.h"
+#include <HAPI/HapticShapeConstraint.h>
 
 class HapticShapeConstraintWidgetsPage : public WidgetsPage
 {
@@ -115,15 +115,15 @@ protected:
 
     wxPanel *lineSet_panel;
     wxTextCtrl *m_txt_line_set_points;
-    vector< HAPI::Bounds::LineSegment > line_set_lines;
+    vector< HAPI::Collision::LineSegment > line_set_lines;
 
     wxPanel *pointSet_panel;
     wxTextCtrl *m_txt_point_set_points;
-    vector< HAPI::Bounds::Point > point_set_points;
+    vector< HAPI::Collision::Point > point_set_points;
 
     wxPanel *triangleSet_panel;
     wxTextCtrl *m_txt_triangle_set_triangles;
-    vector< HAPI::Bounds::Triangle > triangle_set_triangles;
+    vector< HAPI::Collision::Triangle > triangle_set_triangles;
 
     H3DUtil::AutoRef<HAPI::HapticShapeConstraint> force_effect;
 

@@ -1,15 +1,10 @@
 #include "HapticShapeConstraintWidgetsPage.h"
 #include <wx/tokenzr.h>
 #include <wx/msgdlg.h>
-#include "HapticSphere.h"
-#include "HapticBox.h"
-//#include "HapticCone.h"
-#include "HapticCylinder.h"
-#include "HapticTriangle.h"
-#include "HapticLineSet.h"
-#include "HapticPointSet.h"
-#include "HapticTriangleSet.h"
-#include "HapticPlane.h"
+#include <HAPI/HapticPrimitive.h>
+#include <HAPI/HapticLineSet.h>
+#include <HAPI/HapticPointSet.h>
+#include <HAPI/HapticTriangleSet.h>
 using namespace HAPI;
 
 enum
@@ -488,19 +483,19 @@ void HapticShapeConstraintWidgetsPage::Reset()
     m_txt_line_set_points->SetValue("-0.1 0 0, 0.1 0 0");
     if( !line_set_lines.empty() )
       line_set_lines.clear();
-    line_set_lines.push_back( Bounds::LineSegment( Vec3( -0.1 * 1000, 0, 0 ), Vec3( 0.1 * 1000, 0, 0 ) ) );
+    line_set_lines.push_back( Collision::LineSegment( Vec3( -0.1 * 1000, 0, 0 ), Vec3( 0.1 * 1000, 0, 0 ) ) );
 
     m_txt_point_set_points->SetValue("-0.05 0 0, 0.05 0 0");
     if( !point_set_points.empty() )
       point_set_points.clear();
-    point_set_points.push_back( Bounds::Point( Vec3( -0.05 * 1000, 0, 0 ) ) );
-    point_set_points.push_back( Bounds::Point( Vec3( 0.05 * 1000, 0, 0 ) ) );
+    point_set_points.push_back( Collision::Point( Vec3( -0.05 * 1000, 0, 0 ) ) );
+    point_set_points.push_back( Collision::Point( Vec3( 0.05 * 1000, 0, 0 ) ) );
 
     m_txt_triangle_set_triangles->SetValue("-0.05 0 0, 0.05 0 0, 0 0 -0.05, -0.05 0 0, 0.05 0 0, 0 0.05 0");
     if( !triangle_set_triangles.empty() )
       triangle_set_triangles.clear();
-    triangle_set_triangles.push_back( Bounds::Triangle( Vec3( -0.05 * 1000, 0, 0 ), Vec3( 0.05 * 1000, 0, 0 ), Vec3( 0, 0, -0.05 ) ) );
-    triangle_set_triangles.push_back( Bounds::Triangle( Vec3( -0.05 * 1000, 0, 0 ), Vec3( 0.05 * 1000, 0, 0 ), Vec3( 0, 0.05 * 1000, 0 ) ) );
+    triangle_set_triangles.push_back( Collision::Triangle( Vec3( -0.05 * 1000, 0, 0 ), Vec3( 0.05 * 1000, 0, 0 ), Vec3( 0, 0, -0.05 ) ) );
+    triangle_set_triangles.push_back( Collision::Triangle( Vec3( -0.05 * 1000, 0, 0 ), Vec3( 0.05 * 1000, 0, 0 ), Vec3( 0, 0.05 * 1000, 0 ) ) );
 
 
     m_txt_plane_pointX->SetValue( _T("0.0") );
@@ -703,10 +698,10 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       if( m_txt_sphere_radius->GetValue().ToDouble(&val) ) {
         sphere_radius = val * 1000;
       }
-      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticSphere( sphere_radius, 0, 0, Matrix4() ), spring_constant ) );
+	  force_effect.reset( new HapticShapeConstraint( new Collision::Sphere( Vec3( 0, 0, 0 ), sphere_radius ), spring_constant, interpolate ) );
       break;
     }
-    case Button_box: {
+    /*case Button_box: {
       if( m_txt_box_sizeX->GetValue().ToDouble(&val) ) {
         box_size.x = val * 1000;
       }
@@ -719,7 +714,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticBox( box_size, 0, 0, Matrix4() ), spring_constant ) );
       break;
     }
-   /* case Button_cone: {
+     case Button_cone: {
       if( m_txt_cone_bottomRadius->GetValue().ToDouble(&val) ) {
         cone_bottom_radius = val * 1000;
       }
@@ -728,7 +723,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       }
       force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticCone( cone_bottom_radius, cone_height, false, 0, 0, Matrix4() ), spring_constant ) );
       break;
-    }*/
+    }
     case Button_cylinder: {
       if( m_txt_cylinder_radius->GetValue().ToDouble(&val) ) {
         cylinder_radius = val * 1000;
@@ -768,10 +763,10 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       if( m_txt_triangle_3Z->GetValue().ToDouble(&val) ) {
         triangle_vertex3.z = val * 1000;
       }
-      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticTriangle( Bounds::Triangle( triangle_vertex1, triangle_vertex2, triangle_vertex3 ), 0, 0, Matrix4() ), spring_constant ) );
+      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticTriangle( Collision::Triangle( triangle_vertex1, triangle_vertex2, triangle_vertex3 ), 0, 0, Matrix4() ), spring_constant ) );
       break;
     }
-
+*/
     case Button_LineSet: {
       wxString temp_string = m_txt_line_set_points->GetValue();
       wxStringTokenizer tkz( temp_string, wxT(","), wxTOKEN_STRTOK );
@@ -792,12 +787,12 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         line_set_lines.clear();
         for( unsigned int i = 0; i < line_values.size(); i += 3 ) {
           if( line_values.size() - i > 5 ) {
-            line_set_lines.push_back( Bounds::LineSegment( Vec3( line_values[i] * 1000, line_values[i+1] * 1000, line_values[i+2] * 1000 ), Vec3( line_values[i+3] * 1000, line_values[i+4] * 1000, line_values[i+5] * 1000 ) ) );
+            line_set_lines.push_back( Collision::LineSegment( Vec3( line_values[i] * 1000, line_values[i+1] * 1000, line_values[i+2] * 1000 ), Vec3( line_values[i+3] * 1000, line_values[i+4] * 1000, line_values[i+5] * 1000 ) ) );
           }
         }
       }
 
-      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticLineSet( line_set_lines, 0, 0, Matrix4() ), spring_constant ) );
+      force_effect.reset( new HapticShapeConstraint( new HapticLineSet( line_set_lines, 0 ), spring_constant, interpolate ) );
       break;
     }
 
@@ -821,12 +816,12 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         point_set_points.clear();
         for( unsigned int i = 0; i < point_values.size(); i += 3 ) {
           if( point_values.size() - i > 2 ) {
-            point_set_points.push_back( Bounds::Point( Vec3( point_values[i] * 1000, point_values[i+1] * 1000, point_values[i+2] * 1000 ) ) );
+            point_set_points.push_back( Collision::Point( Vec3( point_values[i] * 1000, point_values[i+1] * 1000, point_values[i+2] * 1000 ) ) );
           }
         }
       }
 
-      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticPointSet( point_set_points, 0, 0, Matrix4() ), spring_constant ) );
+      force_effect.reset( new HapticShapeConstraint( new HapticPointSet( point_set_points, 0 ), spring_constant, interpolate ) );
       break;
     }
 
@@ -850,14 +845,14 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         triangle_set_triangles.clear();
         for( unsigned int i = 0; i < triangle_values.size(); i += 9 ) {
           if( triangle_values.size() - i > 8 ) {
-            triangle_set_triangles.push_back( Bounds::Triangle( Vec3( triangle_values[i] * 1000, triangle_values[i+1] * 1000, triangle_values[i+2] * 1000 ),
+            triangle_set_triangles.push_back( Collision::Triangle( Vec3( triangle_values[i] * 1000, triangle_values[i+1] * 1000, triangle_values[i+2] * 1000 ),
                                                                 Vec3( triangle_values[i+3] * 1000, triangle_values[i+4] * 1000, triangle_values[i+5] * 1000 ),
                                                                 Vec3( triangle_values[i+6] * 1000, triangle_values[i+7] * 1000, triangle_values[i+8] * 1000 ) ) );
           }
         }
       }
 
-      force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticTriangleSet( triangle_set_triangles, 0, 0, Matrix4() ), spring_constant ) );
+      force_effect.reset( new HapticShapeConstraint( new HapticTriangleSet( triangle_set_triangles, 0 ), spring_constant, interpolate ) );
       break;
     }
 
@@ -884,7 +879,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       plane_normal.normalizeSafe();
 
       if( plane_normal.lengthSqr() > Constants::epsilon )
-        force_effect.reset( new HapticShapeConstraint( Matrix4(), interpolate, new HapticPlane( plane_point, plane_normal, 0, 0, Matrix4() ), spring_constant ) );
+		  force_effect.reset( new HapticShapeConstraint( new Collision::Plane( plane_point, plane_normal ), spring_constant, interpolate ) );
       break;
     }
   }
