@@ -219,8 +219,7 @@ void TimeFunctionWidgetsPage::createForceEffect( ) {
     z_function,
     x_zero_time,
     y_zero_time,
-    z_zero_time,
-	interpolate ) );
+    z_zero_time ) );
     hd->addEffect( force_effect.get() );
     hd->clearEffects();
     hd->addEffect( force_effect.get() );

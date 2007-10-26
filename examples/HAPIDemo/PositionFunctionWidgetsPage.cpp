@@ -130,8 +130,7 @@ void PositionFunctionWidgetsPage::createForceEffect( ) {
   force_effect.reset( new HapticPositionFunctionEffect(
     x_function,
     y_function,
-    z_function,
-	interpolate ) );
+    z_function ) );
     hd->addEffect( force_effect.get() );
     hd->clearEffects();
     hd->addEffect( force_effect.get() );

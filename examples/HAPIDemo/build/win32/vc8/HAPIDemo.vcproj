@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\..\src;..\..\..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\include;..\..\..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;_DEBUG"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\..\..\src;..\..\..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\include;..\..\..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"

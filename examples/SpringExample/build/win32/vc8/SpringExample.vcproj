@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\..\..\src;..\..\..\..\..\..\H3DUtil\src"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\..\..\include;..\..\..\..\..\..\H3DUtil\include"
 				PreprocessorDefinitions="_CONSOLE;WIN32;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -128,7 +128,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\..\..\src;..\..\..\..\..\..\H3DUtil\src"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\..\..\include;..\..\..\..\..\..\H3DUtil\include"
 				PreprocessorDefinitions="_DEBUG;_CONSOLE;WIN32;_WINDOWS"
 				RuntimeLibrary="3"
 				DisableLanguageExtensions="false"
