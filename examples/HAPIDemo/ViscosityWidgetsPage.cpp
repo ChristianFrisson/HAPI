@@ -128,8 +128,7 @@ void ViscosityWidgetsPage::createForceEffect( ) {
   force_effect.reset( new HapticViscosity( 
     viscosity,
     radius,
-    damping_factor,
-    interpolate ) );
+    damping_factor ) );
     hd->addEffect( force_effect.get() );
     hd->clearEffects();
     hd->addEffect( force_effect.get() );

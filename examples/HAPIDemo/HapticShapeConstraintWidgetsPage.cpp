@@ -698,7 +698,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       if( m_txt_sphere_radius->GetValue().ToDouble(&val) ) {
         sphere_radius = val * 1000;
       }
-	  force_effect.reset( new HapticShapeConstraint( new Collision::Sphere( Vec3( 0, 0, 0 ), sphere_radius ), spring_constant, interpolate ) );
+	  force_effect.reset( new HapticShapeConstraint( new HapticPrimitive( Matrix4(), new Collision::Sphere( Vec3( 0, 0, 0 ), sphere_radius ), 0 ), spring_constant ) );
       break;
     }
     /*case Button_box: {
@@ -792,7 +792,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         }
       }
 
-      force_effect.reset( new HapticShapeConstraint( new HapticLineSet( line_set_lines, 0 ), spring_constant, interpolate ) );
+      force_effect.reset( new HapticShapeConstraint( new HapticLineSet( line_set_lines, 0 ), spring_constant ) );
       break;
     }
 
@@ -821,7 +821,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         }
       }
 
-      force_effect.reset( new HapticShapeConstraint( new HapticPointSet( point_set_points, 0 ), spring_constant, interpolate ) );
+      force_effect.reset( new HapticShapeConstraint( new HapticPointSet( point_set_points, 0 ), spring_constant ) );
       break;
     }
 
@@ -852,7 +852,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         }
       }
 
-      force_effect.reset( new HapticShapeConstraint( new HapticTriangleSet( triangle_set_triangles, 0 ), spring_constant, interpolate ) );
+      force_effect.reset( new HapticShapeConstraint( new HapticTriangleSet( triangle_set_triangles, 0 ), spring_constant ) );
       break;
     }
 
@@ -879,7 +879,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       plane_normal.normalizeSafe();
 
       if( plane_normal.lengthSqr() > Constants::epsilon )
-		  force_effect.reset( new HapticShapeConstraint( new Collision::Plane( plane_point, plane_normal ), spring_constant, interpolate ) );
+		  force_effect.reset( new HapticShapeConstraint( new HapticPrimitive( Matrix4(), new Collision::Plane( plane_point, plane_normal ), 0 ), spring_constant ) );
       break;
     }
   }

@@ -143,8 +143,7 @@ void SpringWidgetsPage::createForceEffect( ) {
 
   force_effect.reset( new HapticSpring( 
     position,
-    spring_constant,
-    interpolate ) );
+    spring_constant ) );
     hd->addEffect( force_effect.get() );
     hd->clearEffects();
     hd->addEffect( force_effect.get() );
