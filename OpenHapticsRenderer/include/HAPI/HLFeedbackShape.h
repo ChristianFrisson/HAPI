@@ -11,10 +11,10 @@
 #ifndef __HLFEEDBACKSHAPE_H__
 #define __HLFEEDBACKSHAPE_H__
 
-#include <Config.h>
+#include <HAPI/Config.h>
 
 #include <HAPI/HAPIHapticShape.h>
-#include <OpenHapticsRenderer.h>
+#include <HAPI/OpenHapticsRenderer.h>
 #include <HAPI/HAPIGLShape.h>
 #include <HAPI/CollisionObjects.h>
 

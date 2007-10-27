@@ -30,8 +30,8 @@
 #ifndef __HLCUSTOMOBJECT_H__
 #define __HLCUSTOMOBJECT_H__
 
-#include <Config.h>
-#include <OpenHapticsRenderer.h>
+#include <HAPI/Config.h>
+#include <HAPI/OpenHapticsRenderer.h>
 
 #ifdef HAVE_OPENHAPTICS
 
