@@ -35,7 +35,7 @@
 #include <HAPI/HAPIProxyBasedRenderer.h>
 #include <HAPI/HAPIHapticShape.h>
 
-#include <Chai3DRendererConfig.h>
+#include <HAPI/Chai3DRendererConfig.h>
 
 // H3DUtil includes
 #include <H3DUtil/AutoPtrVector.h>
