@@ -31,7 +31,7 @@
 #ifndef __OPENHAPTICSRENDERER_H__
 #define __OPENHAPTICSRENDERER_H__
 
-#include <Config.h>
+#include <HAPI/Config.h>
 
 #include <HAPI/HAPIProxyBasedRenderer.h>
 #include <HAPI/HAPIHapticShape.h>

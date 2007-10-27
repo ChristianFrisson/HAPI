@@ -9,8 +9,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "HLFeedbackShape.h"
-#include "GL/glew.h"
+#include <HAPI/HLFeedbackShape.h>
+#include <GL/glew.h>
 
 #ifdef HAVE_OPENHAPTICS
 

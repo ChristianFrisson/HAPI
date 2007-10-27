@@ -9,8 +9,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "HLDepthBufferShape.h"
-#include "GL/glew.h"
+#include <HAPI/HLDepthBufferShape.h>
+#include <GL/glew.h>
 
 #ifdef HAVE_OPENHAPTICS
 
