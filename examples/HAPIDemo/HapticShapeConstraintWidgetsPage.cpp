@@ -698,7 +698,9 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       if( m_txt_sphere_radius->GetValue().ToDouble(&val) ) {
         sphere_radius = val * 1000;
       }
-	  force_effect.reset( new HapticShapeConstraint( new HapticPrimitive( Matrix4(), new Collision::Sphere( Vec3( 0, 0, 0 ), sphere_radius ), 0 ), spring_constant ) );
+
+      force_effect.reset( new HapticShapeConstraint( new Collision::Sphere( Vec3( 0, 0, 0 ), sphere_radius ), spring_constant ) );
+
       break;
     }
     /*case Button_box: {
