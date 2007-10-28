@@ -1,12 +1,12 @@
 # The name of our project is "HELLO".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
 # to the root binary directory of the project as ${HELLO_BINARY_DIR}.
-project (HAPIDemo)
+project (SpringExample)
 
 # Create a library called "Hello" which includes the source file "hello.cxx".
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(.. HAPIDemo_SRCS)
+AUX_SOURCE_DIRECTORY(.. SpringExample_SRCS)
 
 INCLUDE_DIRECTORIES( .. )
 
@@ -30,19 +30,9 @@ IF(HAPI_FOUND)
   SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
 ENDIF(HAPI_FOUND)
 
-SET(wxWidgets_USE_LIBS base core)
+ADD_EXECUTABLE(SpringExample ${SpringExample_SRCS})
 
-FIND_PACKAGE(wxWidgets REQUIRED)
-IF(wxWidgets_FOUND)
-  INCLUDE(${wxWidgets_USE_FILE})
-  SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
-ENDIF(wxWidgets_FOUND)
+TARGET_LINK_LIBRARIES( SpringExample ${requiredLibs} ${optionalLibs} )
 
-ADD_EXECUTABLE(HAPIDemo MACOSX_BUNDLE ${HAPIDemo_SRCS})
 
-TARGET_LINK_LIBRARIES( HAPIDemo ${requiredLibs} ${optionalLibs} )
-
-#INSTALL( TARGETS HAPIDemo
-#	 LIBRARY DESTINATION lib
-#	 RUNTIME DESTINATION bin )
 
