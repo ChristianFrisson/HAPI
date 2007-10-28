@@ -32,7 +32,7 @@
 using namespace HAPI;
 
 HapticShapeConstraint::HapticShapeConstraint(
-                          HAPIHapticShape *_shape,
+                          Collision::CollisionObject *_shape,
                           const HAPIFloat &_spring_constant ):
   shape( _shape ),
   spring_constant( _spring_constant ){
