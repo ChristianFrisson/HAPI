@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\include;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\OpenHapticsRenderer;..\..\..\include"
+				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\include;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\OpenHapticsRenderer\include;..\..\..\include"
 				PreprocessorDefinitions="_CRTDBG_MAP_ALLOC ;WIN32;_DEBUG;_WINDOWS;_USRDLL;OPENHAPTICSRENDERER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -128,7 +128,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\include;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\OpenHapticsRenderer;..\..\..\include"
+				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\include;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;..\..\..\OpenHapticsRenderer\include;..\..\..\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;OPENHAPTICSRENDERER_EXPORTS"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -197,19 +197,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\OpenHapticsRenderer\HLCustomObject.cpp"
+				RelativePath="..\..\..\OpenHapticsRenderer\src\HLCustomObject.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\OpenHapticsRenderer\HLDepthBufferShape.cpp"
+				RelativePath="..\..\..\OpenHapticsRenderer\src\HLDepthBufferShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\OpenHapticsRenderer\HLFeedbackShape.cpp"
+				RelativePath="..\..\..\OpenHapticsRenderer\src\HLFeedbackShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\OpenHapticsRenderer\OpenHapticsRenderer.cpp"
+				RelativePath="..\..\..\OpenHapticsRenderer\src\OpenHapticsRenderer.cpp"
 				>
 			</File>
 		</Filter>
@@ -219,23 +219,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\..\OpenHapticsRenderer\Config.h"
+				RelativePath="..\..\..\OpenHapticsRenderer\include\HAPI\Config.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\OpenHapticsRenderer\HLCustomObject.h"
+				RelativePath="..\..\..\OpenHapticsRenderer\include\HAPI\HLCustomObject.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\OpenHapticsRenderer\HLDepthBufferShape.h"
+				RelativePath="..\..\..\OpenHapticsRenderer\include\HAPI\HLDepthBufferShape.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\OpenHapticsRenderer\HLFeedbackShape.h"
+				RelativePath="..\..\..\OpenHapticsRenderer\include\HAPI\HLFeedbackShape.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\OpenHapticsRenderer\OpenHapticsRenderer.h"
+				RelativePath="..\..\..\OpenHapticsRenderer\include\HAPI\OpenHapticsRenderer.h"
 				>
 			</File>
 		</Filter>
