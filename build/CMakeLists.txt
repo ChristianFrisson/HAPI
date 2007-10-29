@@ -30,7 +30,7 @@ IF(WIN32)
   SET(requiredLibs ${requiredLibs} winmm.lib )
 ENDIF(WIN32)
 
-SET(CMAKE_MODULE_PATH "Modules/")
+SET(CMAKE_MODULE_PATH "modules/")
 
 FIND_PACKAGE(PTHREAD REQUIRED)
 
