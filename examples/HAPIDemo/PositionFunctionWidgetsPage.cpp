@@ -121,11 +121,11 @@ void PositionFunctionWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSED(eve
 void PositionFunctionWidgetsPage::createForceEffect( ) {
 
   x_function = new ParsedFunction();
-  x_function->setFunctionString( (string)(m_txt_x_function->GetValue()), "x,y,z" );
+  x_function->setFunctionString( HAPIDemo::toStr(m_txt_x_function->GetValue()), "x,y,z" );
   y_function = new ParsedFunction();
-  y_function->setFunctionString( (string)(m_txt_y_function->GetValue()), "x,y,z" );
+  y_function->setFunctionString( HAPIDemo::toStr(m_txt_y_function->GetValue()), "x,y,z" );
   z_function = new ParsedFunction();
-  z_function->setFunctionString( (string)(m_txt_z_function->GetValue()), "x,y,z" );
+  z_function->setFunctionString( HAPIDemo::toStr(m_txt_z_function->GetValue()), "x,y,z" );
 
   force_effect.reset( new HapticPositionFunctionEffect(
     x_function,

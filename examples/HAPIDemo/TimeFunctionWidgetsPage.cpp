@@ -207,11 +207,11 @@ void TimeFunctionWidgetsPage::createForceEffect( ) {
     z_zero_time = current_time;
 
   x_function = new ParsedFunction();
-  x_function->setFunctionString( (string)(m_txt_x_function->GetValue()), "t" );
+  x_function->setFunctionString( HAPIDemo::toStr(m_txt_x_function->GetValue()), "t" );
   y_function = new ParsedFunction();
-  y_function->setFunctionString( (string)(m_txt_y_function->GetValue()), "t" );
+  y_function->setFunctionString( HAPIDemo::toStr(m_txt_y_function->GetValue()), "t" );
   z_function = new ParsedFunction();
-  z_function->setFunctionString( (string)(m_txt_z_function->GetValue()), "t" );
+  z_function->setFunctionString( HAPIDemo::toStr(m_txt_z_function->GetValue()), "t" );
 
   force_effect.reset( new HapticTimeFunctionEffect(
     x_function,
