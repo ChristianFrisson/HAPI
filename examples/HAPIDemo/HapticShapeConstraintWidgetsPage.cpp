@@ -480,18 +480,18 @@ void HapticShapeConstraintWidgetsPage::Reset()
     m_txt_triangle_3Z->SetValue( _T("0.01") );
     triangle_vertex3.z = 0.01 * 1000;
 
-    m_txt_line_set_points->SetValue("-0.1 0 0, 0.1 0 0");
+    m_txt_line_set_points->SetValue(_T("-0.1 0 0, 0.1 0 0"));
     if( !line_set_lines.empty() )
       line_set_lines.clear();
     line_set_lines.push_back( Collision::LineSegment( Vec3( -0.1 * 1000, 0, 0 ), Vec3( 0.1 * 1000, 0, 0 ) ) );
 
-    m_txt_point_set_points->SetValue("-0.05 0 0, 0.05 0 0");
+    m_txt_point_set_points->SetValue(_T("-0.05 0 0, 0.05 0 0"));
     if( !point_set_points.empty() )
       point_set_points.clear();
     point_set_points.push_back( Collision::Point( Vec3( -0.05 * 1000, 0, 0 ) ) );
     point_set_points.push_back( Collision::Point( Vec3( 0.05 * 1000, 0, 0 ) ) );
 
-    m_txt_triangle_set_triangles->SetValue("-0.05 0 0, 0.05 0 0, 0 0 -0.05, -0.05 0 0, 0.05 0 0, 0 0.05 0");
+    m_txt_triangle_set_triangles->SetValue(_T("-0.05 0 0, 0.05 0 0, 0 0 -0.05, -0.05 0 0, 0.05 0 0, 0 0.05 0"));
     if( !triangle_set_triangles.empty() )
       triangle_set_triangles.clear();
     triangle_set_triangles.push_back( Collision::Triangle( Vec3( -0.05 * 1000, 0, 0 ), Vec3( 0.05 * 1000, 0, 0 ), Vec3( 0, 0, -0.05 ) ) );

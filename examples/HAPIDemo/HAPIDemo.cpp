@@ -142,7 +142,9 @@ bool WidgetsApp::OnInit()
 
     if( frame->hd.initDevice() != HAPI::HAPIHapticsDevice::SUCCESS ) {
       wxString msg;
-      msg.Printf( _T(frame->hd.getLastErrorMsg().c_str()) );
+      wstringstream m;
+      m << frame->hd.getLastErrorMsg().c_str();
+      msg.Printf( m.str().c_str() );
       wxMessageBox( msg, _T("hd-problem"), wxOK | wxICON_INFORMATION, frame );
       return false;
     }
