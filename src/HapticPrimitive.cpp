@@ -66,3 +66,14 @@ void HapticPrimitive::glRenderShape() {
 // TODO: fix so that can choose solid or not.
   return primitive->render();
 }
+
+void HapticPrimitive::getTangentSpaceMatrix( const Vec3 &point,
+                                             Matrix4 &result_mtx ) {
+  if( have_transform ) {
+    Vec3 local_point = getInverse() * point;
+    primitive->getTangentSpaceMatrix( local_point, result_mtx );
+    result_mtx = result_mtx * getInverse();
+  } else {
+    primitive->getTangentSpaceMatrix( point, result_mtx );
+  }
+}

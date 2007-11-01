@@ -135,3 +135,39 @@ bool HapticLineSet::movingSphereIntersectShape( HAPIFloat radius,
   }
   return false;
 }
+
+void HapticLineSet::getTangentSpaceMatrix( const Vec3 &point,
+                                                Matrix4 &result_mtx ) {
+  Vec3 local_point = point;
+  if( have_transform ) {
+    local_point = getInverse() * local_point;
+  }
+
+  int closest_primitive = -1;
+  if( lines.size() == 1 ) {
+    closest_primitive = 0;
+  } else {
+    Vec3 temp_cp, temp_n;
+    HAPIFloat distance, temp_distance;
+    for( unsigned int i = 0; i < lines.size(); i++ ) {
+      lines[i].closestPoint( local_point, temp_cp, temp_n, temp_n );
+      if( i == 0 ) {
+        distance = ( temp_cp - local_point).lengthSqr();
+        closest_primitive = i;
+      }
+      else {
+        temp_distance = (temp_cp - local_point).lengthSqr();
+        if( temp_distance < distance ) {
+          closest_primitive = i;
+          distance = temp_distance;
+        }
+      }
+    }
+  }
+
+  if( closest_primitive != -1 ) {
+    lines[closest_primitive].getTangentSpaceMatrix( local_point, result_mtx );
+  }
+  if( have_transform )
+    result_mtx = result_mtx * getInverse();
+}
