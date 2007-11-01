@@ -2004,9 +2004,47 @@ bool Sphere::lineIntersect( const Vec3 &from,
   // calculate the intersection point and normal
   result.normal =  p + u*v;
   result.point = result.normal + center;
+  //TODO: is this the tex_coord we should use?
+  HAPIFloat phi = H3DUtil::H3DAcos( result.normal.y / radius );
+  //HAPIFloat theta = H3DUtil::H3DAtan( -result.normal.x / -result.normal.z );
+  HAPIFloat theta = H3DUtil::H3DAtan2( -result.normal.x, -result.normal.z );
+  if( theta < 0 )
+    theta = 2 * H3DUtil::Constants::pi + theta;
+  result.tex_coord = Vec3( theta / (2 * H3DUtil::Constants::pi ),
+                           1 - phi / H3DUtil::Constants::pi,
+                           0 );
   result.normal.normalize();
   result.primitive = this;
   return true;
+}
+
+void Sphere::closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord ) {
+  Vec3 dir = p - center;
+  HAPIFloat normal_y = 0;
+  if( dir * dir < Constants::epsilon ) {
+    closest_point = center + Vec3( radius, 0, 0 ); 
+    normal = Vec3( 1, 0, 0 );
+  }
+  else {
+    normal_y = dir.y;
+    dir.normalize();
+    closest_point = center + dir * radius;
+    normal = dir;
+  }
+  // todo: defualt tex coord
+  //tex_coord = Vec3();
+  //TODO: is this the tex_coord we should use?
+  HAPIFloat phi = H3DUtil::H3DAcos( closest_point.y / radius );
+  //HAPIFloat theta = H3DUtil::H3DAtan( -result.normal.x / -result.normal.z );
+  HAPIFloat theta = H3DUtil::H3DAtan2( -closest_point.x, -closest_point.z );
+  if( theta < 0 )
+    theta = 2 * H3DUtil::Constants::pi + theta;
+  tex_coord = Vec3( theta / (2 * H3DUtil::Constants::pi ),
+                    1 - phi / H3DUtil::Constants::pi,
+                    0 );
 }
 
 bool Sphere::movingSphereIntersect( HAPIFloat r,
@@ -2613,6 +2651,8 @@ void Triangle::getTangentSpaceMatrix( const Vec3 &point,
   //code for calculating matrix.
 
   //calculate lineary independant basis vectors for texture space
+  // The third texture coordinate will not be transformed correctly by this
+  // matrix because there is to little information in a triangle.
   Vec3 tbta = tb - ta;
   Vec3 tcta = tc - ta;
 
@@ -2625,4 +2665,77 @@ void Triangle::getTangentSpaceMatrix( const Vec3 &point,
                         tbase1.y, tbase2.y, tbase3.y, 0,
                         tbase1.z, tbase2.z, tbase3.z, 0,
                                0,        0,        0, 1 ).inverse();
+}
+
+namespace CollisionInternal {
+  HAPIFloat pi_inv = 1 / H3DUtil::Constants::pi;
+  HAPIFloat two_pi_inv = pi_inv / 2;
+}
+
+void Sphere::getTangentSpaceMatrix( const Vec3 &point,
+                                     Matrix4 &result_mtx ) {
+  // Calculated a jacobian with
+  // s = arctan( -x/-z) / 2pi,
+  // t = 1 - arccos( y / sqrt(x^2 + y^2 + z^2 ) ) / pi,
+  // u = 0
+  // Created a third vector from a cross product of the other two only to get
+  // the calculated matrix invertable, this might be introducting errors but
+  // they should be small enough to be neglectable.
+  HAPIFloat length_sqr_inv = 1 / Vec3( point ).lengthSqr();
+  HAPIFloat x2_z2 = point.x * point.x + point.z * point.z;
+  HAPIFloat x2_z2_inv = 1 / x2_z2;
+  HAPIFloat sqrt_x2_z2_inv = H3DUtil::H3DSqrt( x2_z2_inv );
+
+#if 1
+  // This part is only done to get an invertable matrix.
+  Vec3 ds_tangent = Vec3( point.z * CollisionInternal::two_pi_inv * x2_z2_inv,
+                          0.0f,
+                          -point.x * CollisionInternal::two_pi_inv
+                          * x2_z2_inv );
+  Vec3 dt_tangent = Vec3( -point.x * point.y * CollisionInternal::pi_inv *
+                          sqrt_x2_z2_inv * length_sqr_inv,
+                          -CollisionInternal::pi_inv * x2_z2 * sqrt_x2_z2_inv *
+                          length_sqr_inv * length_sqr_inv,
+                          -point.y * point.z * CollisionInternal::pi_inv *
+                          sqrt_x2_z2_inv * length_sqr_inv );
+  Vec3 du_tangent = ds_tangent % dt_tangent;
+
+  result_mtx[0][0] = ds_tangent.x;
+  result_mtx[0][1] = ds_tangent.y;
+  result_mtx[0][2] = ds_tangent.z;
+  result_mtx[0][3] = 0.0f;
+  result_mtx[1][0] = dt_tangent.x;
+  result_mtx[1][1] = dt_tangent.y;
+  result_mtx[1][2] = dt_tangent.z;
+  result_mtx[1][3] = 0.0f;
+  result_mtx[2][0] = du_tangent.x;
+  result_mtx[2][1] = du_tangent.y;
+  result_mtx[2][2] = du_tangent.z;
+  result_mtx[2][3] = 0.0f;
+  result_mtx[3][0] = 0.0f;
+  result_mtx[3][1] = 0.0f;
+  result_mtx[3][2] = 0.0f;
+  result_mtx[3][3] = 1.0f;
+#else
+  // Saved in case we want to change back to non invertable matrix
+  result_mtx[0][0] = point.z * CollisionInternal::two_pi_inv * x2_z2_inv;
+  result_mtx[0][1] = 0.0f;
+  result_mtx[0][2] = -point.x * CollisionInternal::two_pi_inv * x2_z2_inv;
+  result_mtx[0][3] = 0.0f;
+  result_mtx[1][0] = -point.x * point.y * CollisionInternal::pi_inv *
+                      sqrt_x2_z2_inv * length_sqr_inv;
+  result_mtx[1][1] = -CollisionInternal::pi_inv * x2_z2 * sqrt_x2_z2_inv *
+                      length_sqr_inv * length_sqr_inv;
+  result_mtx[1][2] = -point.y * point.z * CollisionInternal::pi_inv *
+                      sqrt_x2_z2_inv * length_sqr_inv;
+  result_mtx[1][3] = 0.0f;
+  result_mtx[2][0] = 0.0f;
+  result_mtx[2][1] = 0.0f;
+  result_mtx[2][2] = 0.0f;
+  result_mtx[2][3] = 0.0f;
+  result_mtx[3][0] = 0.0f;
+  result_mtx[3][1] = 0.0f;
+  result_mtx[3][2] = 0.0f;
+  result_mtx[3][3] = 1.0f;
+#endif
 }

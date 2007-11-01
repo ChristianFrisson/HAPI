@@ -38,6 +38,7 @@
 namespace HAPI {
 
   class HAPIHapticsDevice;
+  class HAPIHapticShape;
 
   /// The HAPISurfaceObject is the base class of all surfaces in HAPI.
   /// A surface is responsible for defining the forces and proxy movements
@@ -52,6 +53,7 @@ namespace HAPI {
     struct HAPI_API ContactInfo {
       /// Default constructor.
       ContactInfo(): geom_primitive( 0 ),
+                     haptic_shape( 0 ),
                      proxy_radius( 0 ),
                      has_inverse( false ) {}
     protected:
@@ -76,6 +78,10 @@ namespace HAPI {
 
       // Contains the primitive on which the point of contact was detected.
       Collision::GeometryPrimitive * geom_primitive;
+
+      // Contains a pointer to the HAPIHapticShape on which the point of
+      // contact was detected
+      HAPIHapticShape *haptic_shape;
       
       // OUTPUT
 
@@ -166,6 +172,10 @@ namespace HAPI {
       /// Returns the GeometryPrimitive that the contact occurs on.
       inline Collision::GeometryPrimitive *primitive() {
         return geom_primitive;
+      }
+
+      inline HAPIHapticShape *hapticShape() {
+        return haptic_shape;
       }
 
       /// Returns the x-axis of the local coordinate system in global

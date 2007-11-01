@@ -31,6 +31,7 @@
 
 #include <HAPI/HAPIVariableDepthSurface.h>
 #include <HAPI/ImageInterfaceObject.h>
+#include <HAPI/HAPIHapticShape.h>
 
 namespace HAPI {
   /// \class DepthMapSurface
@@ -64,17 +65,31 @@ namespace HAPI {
     /// \param data contains a pointer to the DepthMapSurface calling this
     /// function.
     static inline HAPIFloat scaleDepth( const Vec2 &local_point, void *data ) {
+      // The local point needs to be transformed into coordinate space
+      // of the shape. Otherwise there will be wrong depth values.
       DepthMapSurface *dms = static_cast< DepthMapSurface * >(data);
       Matrix4 tangent_space_mtx;
       Vec3 global_vector = dms->this_contact_info->vectorToGlobal(
                             Vec3( local_point.x, 0, local_point.y ) );
-      dms->this_contact_info->primitive()->getTangentSpaceMatrix(
-        dms->this_contact_info->globalOrigin() + global_vector,
-        tangent_space_mtx );
+
+      if( dms->this_contact_info->primitive() ) {
+        dms->this_contact_info->primitive()->getTangentSpaceMatrix(
+          dms->this_contact_info->hapticShape()->getInverse() *
+          ( dms->this_contact_info->globalOrigin() + global_vector ),
+          tangent_space_mtx );
+        tangent_space_mtx = tangent_space_mtx *
+          dms->this_contact_info->hapticShape()->getInverse();
+      } else {
+        dms->this_contact_info->hapticShape()->getTangentSpaceMatrix(
+          dms->this_contact_info->globalOrigin() + global_vector,
+          tangent_space_mtx );
+      }
+
       HAPIFloat depth_value = dms->getDepthMapValue(
-          dms->this_contact_info->contactPointTexCoord() +
-          tangent_space_mtx *
-          global_vector );
+        dms->this_contact_info->contactPointTexCoord() +
+        tangent_space_mtx.getScaleRotationPart() *
+        global_vector );
+
       if( dms->white_max )
         return dms->max_depth * ( depth_value - 1 );
       else

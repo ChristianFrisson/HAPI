@@ -66,3 +66,43 @@ void HapticPrimitiveTree::glRenderShape() {
 // TODO: fix 
 //  return tree->render();
 }
+
+void HapticPrimitiveTree::getTangentSpaceMatrix( const Vec3 &point,
+                                                Matrix4 &result_mtx ) {
+  vector< Collision::GeometryPrimitive * > primitives;
+  tree->getPrimitivesWithinRadius( point, Constants::epsilon * 10, primitives );
+  if( !primitives.empty() ) {
+    Vec3 local_point = point;
+    if( have_transform )
+      local_point = getInverse() * point;
+    if( primitives.size() == 1 ) {
+      primitives[0]->getTangentSpaceMatrix( local_point, result_mtx );
+    } else {
+      Vec3 temp_cp, temp_n;
+      int closest_primitive = -1;
+      HAPIFloat distance, temp_distance;
+      for( unsigned int i = 0; i < primitives.size(); i++ ) {
+        primitives[i]->closestPoint( local_point, temp_cp, temp_n, temp_n );
+        if( i == 0 ) {
+          distance = ( temp_cp - local_point).lengthSqr();
+          closest_primitive = i;
+        }
+        else {
+          temp_distance = (temp_cp - local_point).lengthSqr();
+          if( temp_distance < distance ) {
+            closest_primitive = i;
+            distance = temp_distance;
+          }
+        }
+      }
+
+      if( closest_primitive != -1 ) {
+        primitives[closest_primitive]->
+          getTangentSpaceMatrix( local_point, result_mtx );
+      }
+    }
+
+    if( have_transform )
+      result_mtx = result_mtx * getInverse();
+  }
+}

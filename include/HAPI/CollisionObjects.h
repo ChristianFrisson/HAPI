@@ -192,8 +192,7 @@ class Constraints;
       /// building BinaryTreeBound.
       virtual Vec3 pointRepresentation() const { return Vec3(); }
 
-      /// Calculates a matrix transforming a vector from global space
-      /// to texture space.
+      /// Calculates a matrix transforming from local space to texture space.
       /// \param point The point at which to find the tangent vectors
       /// \param result_mtx Where the result is stored.
       virtual void getTangentSpaceMatrix( const Vec3 &point,
@@ -273,6 +272,12 @@ class Constraints;
       inline virtual Vec3 pointRepresentation() const {
         return center;
       }
+
+      /// Calculates a matrix transforming from local space to texture space.
+      /// \param point The point at which to find the tangent vectors
+      /// \param result_mtx Where the result is stored.
+      virtual void getTangentSpaceMatrix( const Vec3 &point,
+                                          Matrix4 &result_mtx );
       
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
@@ -283,20 +288,7 @@ class Constraints;
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
                                  Vec3 &normal,
-                                 Vec3 &tex_coord ) {
-        Vec3 dir = p - center;
-        if( dir * dir < Constants::epsilon ) {
-          closest_point = center + Vec3( radius, 0, 0 ); 
-          normal = Vec3( 1, 0, 0 );
-        }
-        else {
-          dir.normalize();
-          closest_point = center + dir * radius;
-          normal = dir;
-        }
-        // todo: defualt tex coord
-        tex_coord = Vec3();
-      }
+                                 Vec3 &tex_coord );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -355,8 +347,7 @@ class Constraints;
                            Collision::PlaneConstraint *constraint,
                            FaceType face = Collision::FRONT_AND_BACK );
 
-      /// Calculates a matrix transforming a vector from global space
-      /// to texture space.
+      /// Calculates a matrix transforming from local space to texture space.
       /// \param point The point at which to find the tangent vectors
       /// \param result_mtx Where the result is stored.
       virtual void getTangentSpaceMatrix( const Vec3 &point,

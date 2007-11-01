@@ -122,6 +122,7 @@ void GodObjectRenderer::onOnePlaneContact(
   contact.setGlobalOrigin( contact.contact_point_global );
   assert( c.haptic_shape.get() );
 
+  contact.haptic_shape = c.haptic_shape.get();
   contact.geom_primitive = c.primitive;
   c.haptic_shape->getSurface()->getProxyMovement( contact );
 
@@ -208,6 +209,7 @@ void GodObjectRenderer::onTwoPlaneContact(
 
     assert( p0.haptic_shape.get() );
 
+    contact.haptic_shape = p0.haptic_shape.get();
     contact.geom_primitive = p0.primitive;
     // calculate the force and proxy movement for the first plane
     p0.haptic_shape->getSurface()->getProxyMovement( contact );
@@ -221,6 +223,7 @@ void GodObjectRenderer::onTwoPlaneContact(
       line_dir_local;
 
     assert( p1.haptic_shape.get() );
+    contact.haptic_shape = p1.haptic_shape.get();
     contact.geom_primitive = p1.primitive;
     // calculate the force and proxy movement for the second plane
     p1.haptic_shape->getSurface()->getProxyMovement( contact );
@@ -260,9 +263,11 @@ void GodObjectRenderer::onTwoPlaneContact(
                       o );
     contact.setGlobalOrigin( o );
     
+    contact.haptic_shape = p0.haptic_shape.get();
     contact.geom_primitive = p0.primitive;
     p0.haptic_shape->getSurface()->getForces( contact );
     Vec3 p0_force = contact.force_global;
+    contact.haptic_shape = p1.haptic_shape.get();
     contact.geom_primitive = p1.primitive;
     p1.haptic_shape->getSurface()->getForces( contact );
     Vec3 p1_force = contact.force_global;

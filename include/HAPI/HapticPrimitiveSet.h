@@ -66,6 +66,13 @@ namespace HAPI {
                        _shape_id, _clean_up_func ),
       primitives( begin, end ) {}
 
+    /// Calculates a matrix transforming a vector from global space
+    /// to texture space of the shape.
+    /// \param point The point at which to find the tangent vectors
+    /// \param result_mtx Where the result is stored.
+    virtual void getTangentSpaceMatrix( const Vec3 &point,
+                                        Matrix4 &result_mtx );
+
   protected:
     /// Detect collision between a line segment and the object.
     /// \param from The start of the line segment(in local coords).
