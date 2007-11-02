@@ -284,16 +284,22 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
 
     // calculate the force and proxy movement for the first plane
     assert( p0.haptic_shape.get() );
+    contact.haptic_shape = p0.haptic_shape.get();
+    contact.geom_primitive = p0.primitive;
     p0.haptic_shape->getSurface()->getForces( contact );
     Vec3 p0_force = contact.force_global;
     
     // calculate the force and proxy movement for the second plane
     assert( p1.haptic_shape.get() );
+    contact.haptic_shape = p1.haptic_shape.get();
+    contact.geom_primitive = p1.primitive;
     p1.haptic_shape->getSurface()->getForces( contact );
     Vec3 p1_force = contact.force_global;
 
     // calculate the force and proxy movement for the third plane
     assert( p2.haptic_shape.get() );
+    contact.haptic_shape = p2.haptic_shape.get();
+    contact.geom_primitive = p2.primitive;
     p2.haptic_shape->getSurface()->getForces( contact );
     Vec3 p2_force = contact.force_global;
     
