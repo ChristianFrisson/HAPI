@@ -156,6 +156,12 @@ HDLServoOpExitCode falcon_callback( void *_data ) {
   else return c;
 }
 
+namespace FalconThreadInternals {
+  H3DUtil::MutexLock callback_handles_lock;
+  typedef std::list< std::pair< int, HDLOpHandle > > CallbackHandleList;
+  CallbackHandleList callback_handles;
+}
+
 void FalconHapticsDevice::FalconThread::synchronousCallback( 
                 CallbackFunc func, void *data ) {
   void * param[] = { (void*)func, data };
@@ -164,14 +170,39 @@ void FalconHapticsDevice::FalconThread::synchronousCallback(
                     true );
 }
 
-void FalconHapticsDevice::FalconThread
+int FalconHapticsDevice::FalconThread
   ::asynchronousCallback( CallbackFunc func, void *data ) {
   void * * param = new void * [2];
   param[0] = (void*)func;
   param[1] = data;
-  hdlCreateServoOp( falcon_callback,
-                    param,
-                    false );
+  HDLOpHandle falcon_cb_handle =
+    hdlCreateServoOp( falcon_callback,
+                      param,
+                      false );
+  FalconThreadInternals::callback_handles_lock.lock();
+  int cb_handle = genCallbackId();
+  FalconThreadInternals::callback_handles.push_back(
+    std::make_pair( cb_handle, falcon_cb_handle ) );
+  FalconThreadInternals::callback_handles_lock.unlock();
+  return cb_handle;
+}
+
+bool FalconHapticsDevice::FalconThread::
+  removeAsynchronousCallback( int callback_handle ) {
+  FalconThreadInternals::callback_handles_lock.lock();
+  for( FalconThreadInternals::CallbackHandleList::iterator i =
+         FalconThreadInternals::callback_handles.begin();
+       i != FalconThreadInternals::callback_handles.end(); i++ ) {
+    if( (*i).first == callback_handle ) {
+      free_ids.push_back( callback_handle );
+      hdlDestroyServoOp( (*i).second );
+       FalconThreadInternals::callback_handles.erase( i );
+      FalconThreadInternals::callback_handles_lock.unlock();
+      return true;
+    }
+  }
+  FalconThreadInternals::callback_handles_lock.unlock();
+  return false;
 }
 
 H3DUtil::PeriodicThread::CallbackCode FalconHapticsDevice::FalconThread

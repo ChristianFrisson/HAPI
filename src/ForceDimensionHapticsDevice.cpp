@@ -70,7 +70,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice() {
   com_thread = new H3DUtil::PeriodicThread( 20, 1000 );
 #endif
 
-  com_thread->asynchronousCallback( com_func, this );
+  com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
 
   return true;
 }
@@ -79,6 +79,8 @@ bool ForceDimensionHapticsDevice::releaseHapticsDevice() {
   HAPIHapticsDevice::disableDevice();
   if( device_id != -1 ) {
     if( com_thread ) {
+      if( com_func_cb_handle != -1 )
+        com_thread->removeAsynchronousCallback( com_func_cb_handle );
       delete com_thread;
       com_thread = NULL;
     }

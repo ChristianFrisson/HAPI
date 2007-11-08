@@ -101,7 +101,8 @@ namespace HAPI {
       delete_thread( false ),
       time_in_last_loop( 0 ),
       setup_haptic_rendering_callback( true ),
-      switching_effects( false ) {
+      switching_effects( false ),
+      haptic_rendering_cb_handle( -1 ) {
       setHapticsRenderer( NULL );
       haptic_rendering_callback_data = this;
     }
@@ -155,6 +156,9 @@ namespace HAPI {
           haptics_renderers[i]->cleanUpStuff( this );
         }
       }
+
+      if( thread && haptic_rendering_cb_handle != -1 )
+        thread->removeAsynchronousCallback( haptic_rendering_cb_handle );
 
       if( thread && delete_thread ) {
         delete thread;
@@ -980,6 +984,13 @@ namespace HAPI {
       bool set_max_fraction;
     };
 
+    // TODO: evaluate whether a change to list< pair< int, PhaseInOut > > would
+    // be a better solution. The shifted part may go faster. The search
+    // function that needs to be implemented could use an extra variable that
+    // tells where to start the search. Because of the way things are added
+    // the index part (int) is added in increasing order. So no need to start
+    // searching from the beginning each time, maybe only need to go one step.
+    // Need to check that.
     typedef map< int, PhaseInOut > IndexTimeMap;
     // map to keep track of which force effects in current_force_effects that
     // are phased in.
@@ -1037,6 +1048,10 @@ namespace HAPI {
     /// If false the hapticRenderingCallback functions has to be called
     /// explicity from somewhere.
     bool setup_haptic_rendering_callback;
+
+    /// Callback handle to hapticRenderingCallback function
+    /// -1 if not set.
+    int haptic_rendering_cb_handle;
 
     /// Use this to send to hapticRenderingCallback when
     /// setup_haptic_rendering_callback is false. Needed to have
