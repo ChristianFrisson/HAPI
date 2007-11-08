@@ -219,10 +219,7 @@ H3DUtil::PeriodicThread::CallbackCode
 
   hd->time_in_last_loop = TimeStamp() - start_time;
 
-  if( hd->device_state == UNINITIALIZED )
-    return H3DUtil::PeriodicThread::CALLBACK_DONE;
-  else
-    return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
+  return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
 
 void HAPIHapticsDevice::transferObjects() {
@@ -237,7 +234,6 @@ void HAPIHapticsDevice::transferObjects() {
 
   }
 }
-
 
 HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice() {
   if( device_state == UNINITIALIZED ) {
@@ -264,8 +260,9 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice() {
       delete_thread = true;
     }
     if( setup_haptic_rendering_callback ) {
-      thread->asynchronousCallback( hapticRenderingCallback,
-                                    this );
+      haptic_rendering_cb_handle =
+        thread->asynchronousCallback( hapticRenderingCallback,
+                                      this );
     }
     
   }

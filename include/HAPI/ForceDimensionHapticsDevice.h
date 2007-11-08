@@ -46,7 +46,8 @@ namespace HAPI {
     /// Constructor.
     ForceDimensionHapticsDevice():
       device_id( -1 ),
-      com_thread( NULL ) {
+      com_thread( NULL ),
+      com_func_cb_handle( -1 ) {
     }
 
     /// Destructor.
@@ -121,6 +122,9 @@ namespace HAPI {
 
     /// Callback function for communication thread
     static H3DUtil::PeriodicThread::CallbackCode com_func( void *data );
+
+    /// Callback handle to the com_func callback that is set up
+    int com_func_cb_handle;
 
     /// Thread used to do communication with the haptics device
     H3DUtil::PeriodicThread *com_thread;

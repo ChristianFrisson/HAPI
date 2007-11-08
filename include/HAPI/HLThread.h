@@ -72,8 +72,18 @@ namespace HAPI {
 
     /// Add a callback function to be executed in this thread. The calling
     /// thread will continue executing after adding the callback and will 
-    /// not wait for the callback function to execute. 
-    virtual void asynchronousCallback( CallbackFunc func, void *data );
+    /// not wait for the callback function to execute.
+    /// Returns a handle to the callback that can be used to remove
+    /// the callback.
+    virtual int asynchronousCallback( CallbackFunc func, void *data );
+
+    /// Attempts to remove a callback. returns true if succeded. returns
+    /// false if the callback does not exist. This function should be handled
+    /// with care. It can remove the wrong callback if the callback that
+    /// returned the callback_handle id is removed and a new callback is added.
+    /// Callbacks are removed if they return CALLBACK_DONE or a call to this
+    /// function is made.
+    virtual bool removeAsynchronousCallback( int callback_handle );
   protected:
     static H3DUtil::PeriodicThread::CallbackCode setThreadId( void * _data );
     static std::auto_ptr< HLThread > singleton;

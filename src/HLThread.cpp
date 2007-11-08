@@ -38,6 +38,12 @@ using namespace HAPI;
 
 std::auto_ptr< HLThread > HLThread::singleton( new HLThread );
 
+namespace HLThreadInternals {
+  H3DUtil::MutexLock callback_handles_lock;
+  typedef std::list< std::pair< int, HDSchedulerHandle > > CallbackHandleList;
+  CallbackHandleList callback_handles;
+}
+
 #ifdef HAVE_OPENHAPTICS
 HDCallbackCode HDCALLBACK hdCallback( void *_data ) {
   void * * data = static_cast< void * * >( _data );
@@ -59,15 +65,42 @@ void HLThread::synchronousCallback( CallbackFunc func, void *data ) {
 #endif
 }
 
-void HLThread::asynchronousCallback( CallbackFunc func, void *data ) {
+int HLThread::asynchronousCallback( CallbackFunc func, void *data ) {
+  int cb_handle = -1;
 #ifdef HAVE_OPENHAPTICS
   void * * param = new void * [2];
   param[0] = (void*)func;
   param[1] = data;
-  hdScheduleAsynchronous( hdCallback,
-                          param,
-                          HD_DEFAULT_SCHEDULER_PRIORITY );
+  HDSchedulerHandle hd_callback_handle = 
+    hdScheduleAsynchronous( hdCallback,
+                            param,
+                            HD_DEFAULT_SCHEDULER_PRIORITY );
+  HLThreadInternals::callback_handles_lock.lock();
+  cb_handle = genCallbackId();
+  HLThreadInternals::callback_handles.push_back(
+    std::make_pair( cb_handle, hd_callback_handle ) );
+  HLThreadInternals::callback_handles_lock.unlock();
 #endif
+  return cb_handle;
+}
+
+bool HLThread::removeAsynchronousCallback( int callback_handle )  {
+#ifdef HAVE_OPENHAPTICS
+  HLThreadInternals::callback_handles_lock.lock();
+  for( HLThreadInternals::CallbackHandleList::iterator i =
+       HLThreadInternals::callback_handles.begin();
+       i != HLThreadInternals::callback_handles.end(); i++ ) {
+    if( (*i).first == callback_handle ) {
+      free_ids.push_back( callback_handle );
+      hdUnschedule( (*i).second );
+      HLThreadInternals::callback_handles.erase( i );
+      HLThreadInternals::callback_handles_lock.unlock();
+      return true;
+    }
+  }
+  HLThreadInternals::callback_handles_lock.unlock();
+#endif
+  return false;
 }
 
 H3DUtil::PeriodicThread::CallbackCode HLThread::setThreadId( void * data ) {
