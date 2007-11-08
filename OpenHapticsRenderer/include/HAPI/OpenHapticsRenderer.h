@@ -302,9 +302,13 @@ namespace HAPI {
 
     struct CallbackData {
       CallbackData( OpenHapticsRenderer *r, 
-                    HAPI::HAPIHapticShape *s ): renderer( r ), shape( s ) {}
+                    HAPI::HAPIHapticShape *s,
+                    HHLRC hc ): renderer( r ),
+                                shape( s ),
+                                haptic_context( hc ) {}
       OpenHapticsRenderer *renderer;
       H3DUtil::AutoRef< HAPI::HAPIHapticShape > shape;
+      HHLRC haptic_context;
     };
     
     
@@ -328,6 +332,14 @@ namespace HAPI {
     /// Used because of a supposed OpenHaptics Bug when untouchCallback is
     /// called before touchCallback for a specific shape.
     vector< int > already_removed_id;
+
+    /// Used in order to know when motionCallback will create a
+    /// HL_INVALID_VALUE error. At the moment the error is caught, not printed
+    /// and ignored. In reality there should be a fix to prevent this problem.
+    /// The bug does not actually cause any rendering artifacts or problems
+    /// since the shape will be untouched the frame after.
+    // TODO: Implement an actual solution to the bug.
+    list< HLuint > last_hlFrame_id;
   };
 }
 
