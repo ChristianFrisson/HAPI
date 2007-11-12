@@ -329,17 +329,59 @@ namespace HAPI {
     typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, HLuint > IdMap;
     IdMap id_map;
 
+    /// A map from HAPI shape_id to index in the callback_data vector
+    typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, unsigned int >
+      IdCbMap;
+    IdCbMap id_cb_map;
+
+    /// List used to manage adding and removing of event callbacks.
+    typedef list< pair< int, HAPI::HAPIHapticsDevice * > > ShapeIdList;
+    ShapeIdList previous_shape_ids;
+    ShapeIdList previous_shape_ids_copy;
+
+    /// Add HL_EVENT_MOTION, HL_EVENT_TOUCH and HL_EVENT_UNTOUCH callbacks
+    /// to HL_CLIENT_THREAD.
+    inline void addHLEventCallbacks( HLuint hl_id, CallbackData * cbd ) {
+      hlEventd(  HL_EVENT_MOTION_LINEAR_TOLERANCE, 0 );
+      hlAddEventCallback( HL_EVENT_MOTION, 
+                          hl_id,
+                          HL_CLIENT_THREAD,
+                          &motionCallback,
+                          cbd );
+      hlAddEventCallback( HL_EVENT_TOUCH, 
+                          hl_id,
+                          HL_CLIENT_THREAD,
+                          &touchCallback,
+                          cbd );
+      hlAddEventCallback( HL_EVENT_UNTOUCH, 
+                          hl_id,
+                          HL_CLIENT_THREAD,
+                          &untouchCallback,
+                          cbd );
+    }
+
+    /// Remove HL_EVENT_MOTION, HL_EVENT_TOUCH and HL_EVENT_UNTOUCH callbacks
+    /// from HL_CLIENT_THREAD.
+    inline void removeHLEventCallbacks( HLuint hl_id ) {
+      hlRemoveEventCallback( HL_EVENT_MOTION, 
+                             hl_id,
+                             HL_CLIENT_THREAD,
+                             &motionCallback );
+      hlRemoveEventCallback( HL_EVENT_TOUCH, 
+                             hl_id,
+                             HL_CLIENT_THREAD,
+                             &touchCallback );
+      hlRemoveEventCallback( HL_EVENT_UNTOUCH, 
+                             hl_id,
+                             HL_CLIENT_THREAD,
+                             &untouchCallback );
+    }
+
     /// Used because of a supposed OpenHaptics Bug when untouchCallback is
     /// called before touchCallback for a specific shape.
+    // TODO: confirm that it is indeed a OpenHaptics Bug by setting up a simple
+    // example that gives the same result.
     vector< int > already_removed_id;
-
-    /// Used in order to know when motionCallback will create a
-    /// HL_INVALID_VALUE error. At the moment the error is caught, not printed
-    /// and ignored. In reality there should be a fix to prevent this problem.
-    /// The bug does not actually cause any rendering artifacts or problems
-    /// since the shape will be untouched the frame after.
-    // TODO: Implement an actual solution to the bug.
-    list< HLuint > last_hlFrame_id;
   };
 }
 
