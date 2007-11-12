@@ -136,38 +136,26 @@ bool HapticLineSet::movingSphereIntersectShape( HAPIFloat radius,
   return false;
 }
 
-void HapticLineSet::getTangentSpaceMatrix( const Vec3 &point,
+void HapticLineSet::getTangentSpaceMatrixShape( const Vec3 &point,
                                                 Matrix4 &result_mtx ) {
-  Vec3 local_point = point;
-  if( have_transform ) {
-    local_point = getInverse() * local_point;
-  }
-
-  int closest_primitive = -1;
-  if( lines.size() == 1 ) {
-    closest_primitive = 0;
-  } else {
-    Vec3 temp_cp, temp_n;
-    HAPIFloat distance, temp_distance;
-    for( unsigned int i = 0; i < lines.size(); i++ ) {
-      lines[i].closestPoint( local_point, temp_cp, temp_n, temp_n );
-      if( i == 0 ) {
-        distance = ( temp_cp - local_point).lengthSqr();
-        closest_primitive = i;
-      }
-      else {
-        temp_distance = (temp_cp - local_point).lengthSqr();
+  if( !lines.empty() ) {
+    if( lines.size() == 1 ) {
+      lines[0].getTangentSpaceMatrix( point, result_mtx );
+    } else {
+      Vec3 temp_cp, temp_n;
+      unsigned int closest_line = 0;
+      lines[0].closestPoint( point, temp_cp, temp_n, temp_n );
+      HAPIFloat distance = ( temp_cp - point).lengthSqr();
+      HAPIFloat temp_distance;
+      for( unsigned int i = 1; i < lines.size(); i++ ) {
+        lines[i].closestPoint( point, temp_cp, temp_n, temp_n );
+        temp_distance = (temp_cp - point).lengthSqr();
         if( temp_distance < distance ) {
-          closest_primitive = i;
+          closest_line = i;
           distance = temp_distance;
         }
+        lines[closest_line].getTangentSpaceMatrix( point, result_mtx );
       }
     }
   }
-
-  if( closest_primitive != -1 ) {
-    lines[closest_primitive].getTangentSpaceMatrix( local_point, result_mtx );
-  }
-  if( have_transform )
-    result_mtx = result_mtx * getInverse();
 }
