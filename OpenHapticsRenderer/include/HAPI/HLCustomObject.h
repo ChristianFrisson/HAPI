@@ -146,6 +146,9 @@ namespace HAPI {
 
       return b;
     }
+
+    virtual void getTangentSpaceMatrixShape( const Vec3 &point,
+                                             Matrix4 &result_mtx ) {}
   };
 }
 

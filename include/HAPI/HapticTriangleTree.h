@@ -55,13 +55,6 @@ namespace HAPI {
     ~HapticTriangleTree() {
       delete tree;
     }
-
-    /// Calculates a matrix transforming a vector from global space
-    /// to texture space of the shape.
-    /// \param point The point at which to find the tangent vectors
-    /// \param result_mtx Where the result is stored.
-    virtual void getTangentSpaceMatrix( const Vec3 &point,
-                                        Matrix4 &result_mtx );
     
   protected:
 
@@ -114,6 +107,14 @@ namespace HAPI {
                                         Collision::FaceType face = 
                                         Collision::FRONT_AND_BACK,
                                         HAPIFloat radius = -1 );
+
+    /// Calculates a matrix transforming a vector from local space of the shape
+    /// to texture space of the shape.
+    /// \param point The point at which to find the tangent vectors
+    /// in local coordinates
+    /// \param result_mtx Stores the calculated matrix
+    virtual void getTangentSpaceMatrixShape( const Vec3 &point,
+                                             Matrix4 &result_mtx );
 
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth

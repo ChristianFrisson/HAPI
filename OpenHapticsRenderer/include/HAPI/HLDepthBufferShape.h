@@ -67,6 +67,9 @@ namespace HAPI {
       return false;
     }
 
+    virtual void getTangentSpaceMatrixShape( const Vec3 &point,
+                                             Matrix4 &result_mtx ) {}
+
     virtual void glRenderShape() {}
 
 

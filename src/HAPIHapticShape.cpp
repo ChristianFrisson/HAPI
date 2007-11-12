@@ -134,6 +134,17 @@ bool HAPIHapticShape::movingSphereIntersect( HAPIFloat radius,
   }
 }
 
+void HAPIHapticShape::getTangentSpaceMatrix( const Vec3 &point,
+                                             Matrix4 &result_mtx ) {
+  if( have_transform ) {
+    Vec3 local_point = getInverse() * local_point;
+    getTangentSpaceMatrixShape( local_point, result_mtx );
+    result_mtx = result_mtx * getInverse();
+  } else {
+    getTangentSpaceMatrixShape( point, result_mtx );
+  }
+}
+
 void HAPIHapticShape::glRender() {
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();

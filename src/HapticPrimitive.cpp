@@ -67,13 +67,7 @@ void HapticPrimitive::glRenderShape() {
   return primitive->render();
 }
 
-void HapticPrimitive::getTangentSpaceMatrix( const Vec3 &point,
-                                             Matrix4 &result_mtx ) {
-  if( have_transform ) {
-    Vec3 local_point = getInverse() * point;
-    primitive->getTangentSpaceMatrix( local_point, result_mtx );
-    result_mtx = result_mtx * getInverse();
-  } else {
-    primitive->getTangentSpaceMatrix( point, result_mtx );
-  }
+void HapticPrimitive::getTangentSpaceMatrixShape( const Vec3 &point,
+                                                  Matrix4 &result_mtx ) {
+  primitive->getTangentSpaceMatrix( point, result_mtx );
 }

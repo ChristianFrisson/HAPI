@@ -68,44 +68,35 @@ void HapticTriangleTree::glRenderShape() {
 //  return tree->render();
 }
 
-void HapticTriangleTree::getTangentSpaceMatrix( const Vec3 &point,
-                                                Matrix4 &result_mtx ) {
+void HapticTriangleTree::getTangentSpaceMatrixShape( const Vec3 &point,
+                                                     Matrix4 &result_mtx ) {
   vector< Collision::Triangle > triangles;
   vector< Collision::LineSegment > lines;
   vector< Collision::Point > points;
-  tree->getPrimitivesWithinRadius( point, Constants::epsilon * 10, triangles, lines, points );
+  tree->getPrimitivesWithinRadius( point,
+                                   Constants::epsilon * 10,
+                                   triangles, lines,
+                                   points );
   if( !triangles.empty() ) {
-    Vec3 local_point = point;
-    if( have_transform )
-      local_point = getInverse() * point;
     if( triangles.size() == 1 ) {
-      triangles[0].getTangentSpaceMatrix( local_point, result_mtx );
+      triangles[0].getTangentSpaceMatrix( point, result_mtx );
     } else {
+      unsigned int closest_triangle = 0;
       Vec3 temp_cp, temp_n;
-      int closest_primitive = -1;
-      HAPIFloat distance, temp_distance;
-      for( unsigned int i = 0; i < triangles.size(); i++ ) {
-        triangles[i].closestPoint( local_point, temp_cp, temp_n, temp_n );
-        if( i == 0 ) {
-          distance = ( temp_cp - local_point).lengthSqr();
-          closest_primitive = i;
-        }
-        else {
-          temp_distance = (temp_cp - local_point).lengthSqr();
-          if( temp_distance < distance ) {
-            closest_primitive = i;
-            distance = temp_distance;
-          }
+      triangles[0].closestPoint( point, temp_cp, temp_n, temp_n );
+      HAPIFloat distance = ( temp_cp - point).lengthSqr(); 
+      HAPIFloat temp_distance;
+      for( unsigned int i = 1; i < triangles.size(); i++ ) {
+        triangles[i].closestPoint( point, temp_cp, temp_n, temp_n );
+        temp_distance = (temp_cp - point).lengthSqr();
+        if( temp_distance < distance ) {
+          closest_triangle = i;
+          distance = temp_distance;
         }
       }
-
-      if( closest_primitive != -1 ) {
-        triangles[closest_primitive].
-          getTangentSpaceMatrix( local_point, result_mtx );
-      }
+      
+      triangles[closest_triangle].
+        getTangentSpaceMatrix( point, result_mtx );
     }
-
-    if( have_transform )
-      result_mtx = result_mtx * getInverse();
   }
 }
