@@ -131,18 +131,7 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
        i++ ) {
     HLuint hl_shape_id = (*i).second; 
     hlDeleteShapes( hl_shape_id, 1 );
-    hlRemoveEventCallback( HL_EVENT_MOTION, 
-                           hl_shape_id,
-                           HL_CLIENT_THREAD,
-                           &motionCallback );
-    hlRemoveEventCallback( HL_EVENT_TOUCH, 
-                           hl_shape_id,
-                           HL_CLIENT_THREAD,
-                           &touchCallback );
-    hlRemoveEventCallback( HL_EVENT_UNTOUCH, 
-                           hl_shape_id,
-                           HL_CLIENT_THREAD,
-                           &untouchCallback );
+    removeHLEventCallbacks( hl_shape_id );
   }
 
   if( i != context_map.end() ) {
@@ -155,6 +144,9 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   if( !contacts.empty() ) {
     contacts.clear();
   }
+  id_cb_map.clear();
+  previous_shape_ids.clear();
+  previous_shape_ids_copy.clear();
 }
 
 HAPIForceEffect::EffectOutput 
@@ -227,13 +219,18 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   hlCheckEvents();
   hlMakeCurrent( haptic_context );
   
-  last_hlFrame_id.clear();
+  // Need previous_shape_ids is used for knowing when to remove and add
+  // eventcallbacks to shapes. Only those shapes that are rendered in a
+  // specific frame are allowed to have callbacks set up. The reason for this
+  // is because of OpenHaptics, see HL API documentation for hlGetShapeDoublev.
+  // Without this there will be a number of HL_INVALID_VALUE erros when using
+  // multiple devices.
+  previous_shape_ids_copy = previous_shape_ids;
+  previous_shape_ids.clear();
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
          i++ ) {
     HLuint hl_shape_id = getHLShapeId( *i, hd );
-
-    last_hlFrame_id.push_back( hl_shape_id );
     
     HLShape *hl = dynamic_cast< HLShape * >( *i );
     if( hl ) {    
@@ -329,6 +326,13 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
       }
     } 
   }
+
+  for( ShapeIdList::iterator i = previous_shape_ids_copy.begin();
+       i != previous_shape_ids_copy.end(); i++ ) {
+    HLuint hl_shape_id = id_map[*i];
+    removeHLEventCallbacks( hl_shape_id );
+    callback_data[ id_cb_map[*i] ]->shape.reset( NULL );
+  }
   glMatrixMode( GL_MODELVIEW );
   glPopMatrix();
 
@@ -405,16 +409,6 @@ void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
   HLdouble hlforce[3];
 
   hlGetShapeDoublev( object, HL_REACTION_FORCE, hlforce );
-  // hlGetShapeDoublev will cause a HL_INVALID_VALUE error if
-  // the shape with id "object" was not rendered in the last
-  // hlframe of the device for which this callback is set up.
-  if( find( renderer->last_hlFrame_id.begin(),
-            renderer->last_hlFrame_id.end(),
-            object ) == renderer->last_hlFrame_id.end() ) {
-    HLerror error;
-    if( HL_ERROR(error = hlGetError() ) )
-      OpenHapticsRendererInternals::getHLErrorString( error );
-  } else {
 
   HAPI::Vec3 cp = HAPI::Vec3( p[0], p[1], p[2] );
   HAPI::Vec3 cn = HAPI::Vec3( n[0], n[1], n[2] );
@@ -434,7 +428,6 @@ void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
   }
   // should always have a contact with the shape
   assert( 0 );
-  }
 }
 
 void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
@@ -499,32 +492,25 @@ HLuint OpenHapticsRenderer::getHLShapeId( HAPIHapticShape *hs,
   
     CallbackData *cb_data = new CallbackData( this, hs, context_map[hd] );
     callback_data.push_back( cb_data );
-    hlEventd(  HL_EVENT_MOTION_LINEAR_TOLERANCE, 0 );
-    
-    
-    hlAddEventCallback( HL_EVENT_MOTION, 
-                        hl_shape_id,
-                        HL_CLIENT_THREAD,
-                        &motionCallback,
-                        cb_data );
-    hlAddEventCallback( HL_EVENT_TOUCH, 
-                        hl_shape_id,
-                        HL_CLIENT_THREAD,
-                        &touchCallback,
-                        cb_data );
-    hlAddEventCallback( HL_EVENT_UNTOUCH, 
-                        hl_shape_id,
-                        HL_CLIENT_THREAD,
-                        &untouchCallback,
-                        cb_data );
+
+    addHLEventCallbacks( hl_shape_id, cb_data );
+
+    id_cb_map[ key ] = callback_data.size() - 1;
   } else {
-    for( unsigned int i = 0; i < callback_data.size(); i++ ) {
-      if( callback_data[i]->shape->getShapeId() == hs->getShapeId()
-          && callback_data[i]->renderer == this ) {
-        callback_data[i]->shape.reset( hs );
-      }
+    unsigned int index = id_cb_map[ key ];
+    callback_data[ index ]->shape.reset( hs );
+    callback_data[ index ]->haptic_context = context_map[ hd ];
+
+    ShapeIdList::iterator found = find( previous_shape_ids_copy.begin(),
+                                        previous_shape_ids_copy.end(), key );
+    if( found != previous_shape_ids_copy.end() ) {
+      previous_shape_ids_copy.erase( found );
+    } else {
+      HLuint hl_shape_id = id_map[ key ];
+      addHLEventCallbacks( hl_shape_id, callback_data[ index ] );
     }
   }
+  previous_shape_ids.push_back( key );
   return id_map[ key ];
 }
 
