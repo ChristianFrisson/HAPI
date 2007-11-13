@@ -194,8 +194,8 @@ void GodObjectRenderer::onTwoPlaneContact(
       weight = local_pos.x / sum;
     
     // create a local coordinate system with the PlaneConstraint normal
-    // as y-axis
-    contact.y_axis = p0.normal * local_pos.x + p1.normal * local_pos.y;
+    // as y-axis. The y-axis should point towards the proxy.
+    contact.y_axis = -( p0.normal * local_pos.x + p1.normal * local_pos.y );
     contact.y_axis.normalizeSafe();
     
     Vec3 a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
@@ -466,7 +466,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         if( (closest_intersection.point - intersection.point).lengthSqr()
             < length_sqr_point_epsilon ) {
           // intersection point is the same as previous intersections,
-          // check if the normal is the same as a previous untersection.
+          // check if the normal is the same as a previous intersection.
           // if it is the new intersection is discarded.
           bool unique_constraint = true;
           for( vector< PlaneConstraint >::iterator j = 
