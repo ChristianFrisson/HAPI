@@ -147,8 +147,32 @@ namespace HAPI {
       return b;
     }
 
+    virtual void closestPointOnShape( const Vec3 &p, Vec3 &cp, 
+                                      Vec3 &n, Vec3 &tc ){}
+
+    virtual bool lineIntersectShape( const Vec3 &from, 
+                                     const Vec3 &to,
+                                     Collision::IntersectionInfo &result,
+                                     Collision::FaceType face ) {
+      return false;
+    }
+
+    virtual bool movingSphereIntersectShape( HAPIFloat radius,
+                                             const Vec3 &from, 
+                                             const Vec3 &to ) {
+      return false;
+    }
+
+    virtual void getConstraintsOfShape( const Vec3 &point,
+                                        Constraints &constraints,
+                                        Collision::FaceType face = 
+                                        Collision::FRONT_AND_BACK,
+                                        HAPIFloat radius = -1 ){}
+
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
-                                             Matrix4 &result_mtx ) {}
+                                             Matrix4 &result_mtx ){}
+
+    virtual void glRenderShape(){}
   };
 }
 
