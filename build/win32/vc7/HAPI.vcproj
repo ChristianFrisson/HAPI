@@ -182,6 +182,9 @@
 				RelativePath="..\..\..\src\HapticLineSet.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HapticMasterDevice.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HapticPointSet.cpp">
 			</File>
 			<File

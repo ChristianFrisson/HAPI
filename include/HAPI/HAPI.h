@@ -55,6 +55,10 @@
 /// Required for the ParsedFunction class
 #define HAVE_FPARSER
 
+/// Undef if you do not have the C-API wrapper for the HapticMaster
+/// library. HapticMaster devices will then not be supported.
+#define HAVE_HAPTIC_MASTER_API
+
 /// Undef if you do not have Haptik(www.haptiklibrary.org) installed. 
 /// HaptikDevice will not be usable.
 //#define HAVE_HAPTIK_LIBRARY 
