@@ -79,6 +79,11 @@ namespace HAPI {
                        _shape_id, _clean_up_func ),
       points( begin, end ) {}
 
+    /// Returns the number of points in the point set.
+    inline virtual int nrPoints() {
+      return points.size();
+    }
+
   protected:
     /// Detect collision between a line segment and the object.
     /// \param from The start of the line segment(in local coords).
@@ -141,11 +146,6 @@ namespace HAPI {
     /// \param result_mtx Stores the calculated matrix
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx );
-
-    /// Returns the number of points in the point set.
-    inline virtual int nrPoints() {
-      return points.size();
-    }
 
     /// The triangles.
     vector< Collision::Point > points;

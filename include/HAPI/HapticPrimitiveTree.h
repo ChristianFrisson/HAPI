@@ -67,6 +67,30 @@ namespace HAPI {
       primitives( begin, end ) {
       }
 
+    /// An upper bound on how many triangles are renderered.
+    virtual int nrTriangles() {
+      // todo: decide if there is useful to traverse the tree,
+      // it will take a lot of time to traverse ( O(n) ).
+      // Also a bunch of push_backs.
+      return -1;
+    }
+
+    /// An upper bound on how many points are renderered.
+    virtual int nrPoints() {
+      // todo: decide if there is useful to traverse the tree,
+      // it will take a lot of time to traverse ( O(n) ).
+      // Also a bunch of push_backs.
+      return -1;
+    }
+
+    /// An upper bound on how many lines are renderered.
+    virtual int nrLines() {
+      // todo: decide if there is useful to traverse the tree,
+      // it will take a lot of time to traverse ( O(n) ).
+      // Also a bunch of push_backs.
+      return -1;
+    }
+
   protected:
 
     /// Detect collision between a line segment and the object.
