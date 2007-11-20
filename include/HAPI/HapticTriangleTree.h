@@ -55,6 +55,13 @@ namespace HAPI {
     ~HapticTriangleTree() {
       delete tree;
     }
+
+    /// An upper bound on how many triangles are renderered.
+    virtual int nrTriangles() {
+      // todo: Perhaps implement a counting variabel in the tree.
+      // getalltriangles and then size feels a bit unneccesary.
+      return -1;
+    }
     
   protected:
 
@@ -125,8 +132,7 @@ namespace HAPI {
     
     /// The Surface object describing the properties of the surface of the 
     /// HapticShape.
-    Collision::BinaryBoundTree *tree;
-      
+    Collision::BinaryBoundTree *tree;      
   };
 }
 

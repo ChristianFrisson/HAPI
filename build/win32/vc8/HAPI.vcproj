@@ -257,6 +257,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\HapticMasterDevice.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\HapticPointSet.cpp"
 				>
 			</File>
@@ -428,6 +432,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\include\HAPI\HapticLineSet.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\HAPI\HapticMasterDevice.h"
 				>
 			</File>
 			<File

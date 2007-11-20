@@ -30,7 +30,8 @@
 #include <HAPI/HapticMasterDevice.h>
 
 #ifdef HAVE_HAPTIC_MASTER_API
-#include <HapticMasterDriver.h>
+// This header file was empty, so we skip including it.
+//#include <HapticMasterDriver.h>
 #include <fstream>
 
 using namespace HAPI;

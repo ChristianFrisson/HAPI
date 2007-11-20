@@ -65,6 +65,39 @@ namespace HAPI {
                        _shape_id, _clean_up_func ),
       primitive( _primitive ) {}
 
+    /// An upper bound on how many triangles are renderered.
+    virtual int nrTriangles() {
+      if( dynamic_cast< Collision::Triangle * >( primitive.get() ) )
+        return 1;
+      else if( dynamic_cast< Collision::LineSegment * >( primitive.get() ) ||
+               dynamic_cast< Collision::Point * >( primitive.get() ) )
+        return 0;
+      // GeometryPrimitive sphere and plane
+      return -1;
+    }
+
+    /// An upper bound on how many points are renderered.
+    virtual int nrPoints() {
+      if( dynamic_cast< Collision::Point * >( primitive.get() ) )
+        return 1;
+      else if( dynamic_cast< Collision::Triangle * >( primitive.get() ) ||
+               dynamic_cast< Collision::LineSegment * >( primitive.get() ) )
+        return 0;
+      // GeometryPrimitive sphere and plane
+      return -1;
+    }
+
+    /// An upper bound on how many lines are renderered.
+    virtual int nrLines() {
+      if( dynamic_cast< Collision::LineSegment * >( primitive.get() ) )
+        return 1;
+      else if( dynamic_cast< Collision::Triangle * >( primitive.get() ) ||
+               dynamic_cast< Collision::Point * >( primitive.get() ) )
+        return 0;
+      // GeometryPrimitive sphere and plane
+      return -1;
+    }
+
   protected:
 
     /// Detect collision between a line segment and the object.
@@ -131,7 +164,7 @@ namespace HAPI {
     /// shape, i.e. ignoring the transform matrix in the shape.
     virtual void glRenderShape();
 
-    auto_ptr< Collision::GeometryPrimitive > primitive;
+    H3DUtil::AutoRef< Collision::GeometryPrimitive > primitive;
 
   };
 }

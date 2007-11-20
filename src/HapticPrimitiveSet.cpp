@@ -149,3 +149,28 @@ void HapticPrimitiveSet::getTangentSpaceMatrixShape( const Vec3 &point,
     }
   }
 }
+
+void HapticPrimitiveSet::countNrOfPrimitives() {
+  // If I did not miss anything we can do this because the
+  // primitives vector will not change so that a primitive
+  // changes to a primitive of another type or the size
+  // of the vector is changed.
+  nr_triangles = 0;
+  nr_points = 0;
+  nr_lines = 0;
+  for( PrimitiveVector::const_iterator i = primitives.begin();
+    i != primitives.end(); i++ ) {
+      if( dynamic_cast< Collision::LineSegment * >( *i ) )
+        nr_lines++;
+      else if( dynamic_cast< Collision::Triangle * >( *i ) )
+        nr_triangles++;
+      else if( dynamic_cast< Collision::Point * >( *i ) )
+        nr_points++;
+  }
+  if( nr_triangles == 0 && nr_points == 0 && nr_lines == 0 ) {
+    // to indicate that we have no idea how many of each there is.
+    nr_triangles = -1;
+    nr_points = -1;
+    nr_lines = -1;
+  }
+}

@@ -37,6 +37,7 @@ namespace HAPI {
   /// A shape defined by a set of primitives.
   class HAPI_API HapticPrimitiveSet: public HAPIHapticShape {
   public:
+
     /// Constructor.
     HapticPrimitiveSet( 
               const vector< Collision::GeometryPrimitive * > &_primitives,
@@ -49,7 +50,8 @@ namespace HAPI {
               ):
       HAPIHapticShape( _surface, _touchable_face, _userdata,
                        _shape_id, _clean_up_func ),
-      primitives(_primitives){
+      primitives(_primitives) {
+        countNrOfPrimitives();
       }
 
     template< class Iterator >
@@ -64,7 +66,24 @@ namespace HAPI {
                         ):
       HAPIHapticShape( _surface, _touchable_face, _userdata,
                        _shape_id, _clean_up_func ),
-      primitives( begin, end ) {}
+      primitives( begin, end ) {
+        countNrOfPrimitives();
+      }
+
+    /// An upper bound on how many triangles are renderered.
+    virtual int nrTriangles() {
+      return nr_triangles;
+    }
+
+    /// An upper bound on how many points are renderered.
+    virtual int nrPoints() {
+      return nr_points;
+    }
+
+    /// An upper bound on how many lines are renderered.
+    virtual int nrLines() {
+      return nr_lines;
+    }
 
   protected:
     /// Detect collision between a line segment and the object.
@@ -131,11 +150,19 @@ namespace HAPI {
     /// buffer shapes. 
     virtual void glRenderShape();
 
-
+    typedef H3DUtil::AutoRefVector< Collision::GeometryPrimitive >
+      PrimitiveVector;
 
     /// The primitives
-    H3DUtil::AutoRefVector< Collision::GeometryPrimitive > primitives;
-      
+    PrimitiveVector primitives;
+
+    /// set the nr_triangles, nr_points and nr_lines 
+    void countNrOfPrimitives();
+
+    // Stores an upper bound on the number of triangles, points and lines in
+    // the primitive set. All of them are -1 if there is no way to know an
+    // upper bound.
+    int nr_triangles, nr_points, nr_lines;
   };
 }
 
