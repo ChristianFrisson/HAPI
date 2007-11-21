@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Chai3DRenderer.h>
+#include <HAPI/Chai3DRenderer.h>
 
 #include <H3DUtil/H3DMath.h>
 //#include "DeviceInfo.h"
