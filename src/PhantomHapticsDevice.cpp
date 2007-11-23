@@ -78,7 +78,7 @@ PhantomHapticsDevice::device_registration(
 bool PhantomHapticsDevice::restart_scheduler = false;
 bool PhantomHapticsDevice::scheduler_started = false;
 
-bool PhantomHapticsDevice::initHapticsDevice() {
+bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device_handle = hdInitDevice( device_name == "" ? 
                                 HD_DEFAULT_DEVICE : device_name.c_str() );
   HDErrorInfo error = hdGetError();
@@ -161,7 +161,8 @@ bool PhantomHapticsDevice::initHapticsDevice() {
   thread = hl_thread;
   hl_thread->setActive( true );
   restart_scheduler = true;
-  
+  if( !scheduler_started )
+    hdSetSchedulerRate( (HDulong)_thread_frequency );
   return true;
 }
 

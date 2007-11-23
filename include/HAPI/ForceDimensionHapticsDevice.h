@@ -111,8 +111,13 @@ namespace HAPI {
     virtual void sendOutput( DeviceOutput &dv,
                              HAPITime dt );
 
-    /// Implementation of initHapticsDevice using HD API.
-    virtual bool initHapticsDevice();
+    /// Initialize the haptics device. Use the HapticThread class in Threads.h
+    /// as the thread for haptic rendering.
+    /// \param _thread_frequency is the desired haptic frequency. 
+    /// 1000 is the maximum allowed frequency that can be specified. Setting
+    /// this parameter to -1 means run as fast as possible. It is recommended
+    /// to use the default value for most users.
+    virtual bool initHapticsDevice( int _thread_frequency = 1000 );
 
     /// Releases all resources allocated in initHapticsDevice. 
     virtual bool releaseHapticsDevice();

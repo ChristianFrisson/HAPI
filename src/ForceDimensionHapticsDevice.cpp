@@ -53,7 +53,7 @@ ForceDimensionHapticsDevice::device_registration(
                     ForceDimensionHapticsDeviceInternal::force_dimension_libs
                             );
 
-bool ForceDimensionHapticsDevice::initHapticsDevice() {
+bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device_id = dhdOpen();
   if( device_id == -1 ) {
     stringstream s;

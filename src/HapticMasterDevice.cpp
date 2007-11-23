@@ -79,7 +79,7 @@ HapticMasterDevice::device_registration(
 H3DUtil::DynamicLibrary::LIBHANDLE HapticMasterDevice::dll_handle;
 unsigned int HapticMasterDevice::dll_references = 0;
 
-bool HapticMasterDevice::initHapticsDevice() {
+bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
   if (dll_references == 0 ) {
     // Load the DLL library in memory
 	dll_handle = H3DUtil::DynamicLibrary::load("HapticMasterDriver.dll");

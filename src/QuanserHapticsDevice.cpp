@@ -40,7 +40,7 @@ QuanserHapticsDevice::device_registration(
                             );
 
 
-bool QuanserHapticsDevice::initHapticsDevice() 
+bool QuanserHapticsDevice::initHapticsDevice( int _thread_frequency ) 
 {
     // initialize device, set success to true if 
 

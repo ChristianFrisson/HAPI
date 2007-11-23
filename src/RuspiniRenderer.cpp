@@ -530,7 +530,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal ) {
     // the case by updating the constraint plane until the normal does not change/*
     if( (*i).lineIntersect( from_point, 
                             to_point, intersection ) ) {
-      const Matrix4 &transform = (*i).haptic_shape->transform;
+      const Matrix4 &transform = (*i).haptic_shape->getTransform();
       const Matrix4 &inv = transform.inverse();
       Vec3 s = inv.getScalePart();
       HAPIFloat scale = max( s.x, max( s.y, s.z ) ); 
@@ -538,7 +538,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal ) {
       Vec3 f = from_point;/* + normal * 1e-3;*/
       Vec3 t = to_point;/* + normal * 1e-3;*/
 
-      if( true || (*i).geom_primitive->movingSphereIntersect( proxy_radius * scale,
+      if( true || (*i).primitive->movingSphereIntersect( proxy_radius * scale,
                                                  inv * f, 
                                                  inv * t ) ) {
         

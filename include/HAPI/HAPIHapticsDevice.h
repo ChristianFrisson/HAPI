@@ -43,13 +43,13 @@ namespace HAPI {
   /// \brief Base class for all haptics devices.
   /// 
   /// The functions that should be implemented by all subclasses are:
-  /// - bool initHapticsDevice()
+  /// - bool initHapticsDevice( int _thread_frequency = 1000 )
   /// - bool releaseHapticsDevice()
   /// - void updateDeviceValues( DeviceValues &dv, HAPITime dt )
   /// - void sendOutput( DeviceOutput &dv, HAPITime dt )
   ///
   /// In order to use a haptics device two things have to be done. \n
-  /// 1. Initialize the device (initDevice()). \n
+  /// 1. Initialize the device (initDevice( _thread_frequency = 1000 )). \n
   /// 2. Enable the device (enableDevice()) \n
   ///
   /// When a device has been initialized it will be ready to start receiving
@@ -116,7 +116,10 @@ namespace HAPI {
 
     /// Does all the initialization needed for the device before starting to
     /// use it.
-    virtual ErrorCode initDevice();
+    /// \param _thread_frequency is the desired haptic frequency. Check
+    /// comment for the function initHapticsDevice() for each haptics device
+    /// class to know what the values might do for that class.
+    virtual ErrorCode initDevice( int _thread_frequency = 1000 );
 
     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {
@@ -144,7 +147,8 @@ namespace HAPI {
 
     /// Perform cleanup and let go of all device resources that are allocated.
     /// After a call to this function no haptic rendering can be performed on
-    /// the device until the initDevice() function has been called again.
+    /// the device until the initDevice( _thread_frequency = 1000 ) function
+    /// has been called again.
     inline virtual ErrorCode releaseDevice() {
       if( device_state == UNINITIALIZED ) {
         return NOT_INITIALIZED;
@@ -891,7 +895,13 @@ namespace HAPI {
                              HAPITime dt ) = 0;
 
     /// Initialize the haptics device.
-    virtual bool initHapticsDevice() = 0;
+    /// \param _thread_frequency is the desired haptic frequency. Check
+    /// comment for the function initHapticsDevice() for each haptics device
+    /// class to know what values can be set. By default
+    /// 1000 is the maximum allowed frequency that can be specified. Setting
+    /// this parameter to -1 means run as fast as possible. It is recommended
+    /// to use the default value for most users.
+    virtual bool initHapticsDevice( int _thread_frequency = 1000 ) = 0;
 
     /// Release all resources allocated to the haptics device.
     virtual bool releaseHapticsDevice() = 0;
