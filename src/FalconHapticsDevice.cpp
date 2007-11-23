@@ -50,7 +50,7 @@ FalconHapticsDevice::device_registration(
                             FalconHapticsDeviceInternal::falcon_device_libs
                             );
 
-bool FalconHapticsDevice::initHapticsDevice() {
+bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device_handle = hdlInitDevice( HDL_DEFAULT_DEVICE_ID );
 	//device_handle = hdlInitNamedDevice( device_name.c_str() );
   HDLError error = hdlGetError();

@@ -191,7 +191,13 @@ namespace HAPI {
                              HAPITime dt );
 
     /// Implementation of initHapticsDevice using HD API.
-    virtual bool initHapticsDevice();
+    /// PCI and EPP support 500, 1000, and 2000 Hz.
+    /// Firewire supports 500, 1000, 1600 Hz, plus some increments in between
+    /// based on the following expression: floor(8000/N + 0.5).
+    /// The first successful initialization of PhantomHapticsDevice will decide
+    /// the haptics thread rate since only one scheduler is used by
+    /// OpenHaptics even for dual device configurations.
+    virtual bool initHapticsDevice( int _thread_frequency = 1000 );
 
     /// Releases all resources allocated in initHapticsDevice. 
     virtual bool releaseHapticsDevice();

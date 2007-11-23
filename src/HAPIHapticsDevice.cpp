@@ -235,11 +235,12 @@ void HAPIHapticsDevice::transferObjects() {
   }
 }
 
-HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice() {
+HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice(
+                               int _thread_frequency ) {
   if( device_state == UNINITIALIZED ) {
     last_device_values = current_device_values = DeviceValues();
     last_raw_device_values = current_raw_device_values = DeviceValues();
-    if( !initHapticsDevice() ) {
+    if( !initHapticsDevice( _thread_frequency ) ) {
       return FAIL;
     }
     device_state = INITIALIZED;
@@ -253,9 +254,10 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice() {
     if( !thread ) {
           // create a new thread to run the haptics in
 #ifdef WIN32
-     thread = new H3DUtil::HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+     thread = new H3DUtil::HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL,
+                                          _thread_frequency );
 #else
-      thread = new H3DUtil::HapticThread( 20, 1000 );
+      thread = new H3DUtil::HapticThread( 20, _thread_frequency );
 #endif
       delete_thread = true;
     }

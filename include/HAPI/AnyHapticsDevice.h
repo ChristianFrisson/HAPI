@@ -83,8 +83,8 @@ namespace HAPI {
       if( hd.get() ) hd->sendOutput( dv, dt );
     }
 
-    /// Implementation of initHapticsDevice using HD API.
-    virtual bool initHapticsDevice();
+    /// Calls initHapticsDevice of the contained device.
+    virtual bool initHapticsDevice( int _thread_frequency = 1000 );
 
     /// Releases all resources allocated in initHapticsDevice. 
     virtual bool releaseHapticsDevice() {

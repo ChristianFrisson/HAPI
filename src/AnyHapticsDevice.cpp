@@ -42,7 +42,7 @@ AnyHapticsDevice::device_registration(
                             any_device_libs_list
                             );
 
-bool AnyHapticsDevice::initHapticsDevice() {
+bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   hd.reset( NULL );
   for( list< HapticsDeviceRegistration >::iterator i = 
          registered_devices->begin(); 
@@ -61,7 +61,7 @@ bool AnyHapticsDevice::initHapticsDevice() {
       if( all_libs_ok ) {
 #endif
       HAPIHapticsDevice *device = ((*i).create_func)();
-      if( device->initHapticsDevice() ) {
+      if( device->initHapticsDevice( _thread_frequency ) ) {
         hd.reset( device );
         hd->device_state = HAPIHapticsDevice::INITIALIZED;
         setup_haptic_rendering_callback = hd->setup_haptic_rendering_callback;
