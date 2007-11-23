@@ -36,6 +36,11 @@
 
 using namespace HAPI;
 
+namespace HapticMasterDeviceInternal {
+  string libs_array[2] = {"HapticAPI.dll", "HapticMasterDriver.dll"};
+  list< string > haptic_master_device_libs(libs_array, libs_array + 2 );
+}
+
 enum FCSSTATE
 {
    FCSSTATE_UNKNOWN,
@@ -71,10 +76,10 @@ LPFNDLLSetState					SetState;
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
 HapticMasterDevice::device_registration(
-                            "HapticMaster",
-                            &(newInstance< HapticMasterDevice >),
-                            list< string >()
-                            );
+                       "HapticMaster",
+                       &(newInstance< HapticMasterDevice >),
+                       HapticMasterDeviceInternal::haptic_master_device_libs
+                                        );
 
 H3DUtil::DynamicLibrary::LIBHANDLE HapticMasterDevice::dll_handle;
 unsigned int HapticMasterDevice::dll_references = 0;
