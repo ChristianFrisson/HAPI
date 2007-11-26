@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(NOVINT_DEVICE_SUPPORT)\include&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\..\H3DUtil\include;..\..\..\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(NOVINT_DEVICE_SUPPORT)\include&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\..\H3DUtil\include;..\..\..\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;"
 				PreprocessorDefinitions="_CRTDBG_MAP_ALLOC;_CRT_SECURE_NO_DEPRECATE;WIN32;_DEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -68,8 +68,8 @@
 				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
 				OutputFile="$(OutDir)/HAPI10_vc8_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(NOVINT_DEVICE_SUPPORT)\lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
-				DelayLoadDLLs="HD.dll;dhd.dll;hdl.dll"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;&quot;$(NOVINT_DEVICE_SUPPORT)\lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				DelayLoadDLLs="HD.dll;dhd.dll;hdl.dll;Haptik.Library.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
@@ -128,7 +128,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(NOVINT_DEVICE_SUPPORT)\include&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\..\H3DUtil\include;..\..\..\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(NOVINT_DEVICE_SUPPORT)\include&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\..\H3DUtil\include;..\..\..\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32;NDEBUG;_WINDOWS;_USRDLL;HAPI_EXPORTS"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -153,8 +153,8 @@
 				AdditionalDependencies="opengl32.lib glu32.lib"
 				OutputFile="$(OutDir)/HAPI10_vc8.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(NOVINT_DEVICE_SUPPORT)\lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
-				DelayLoadDLLs="HD.dll;dhd.dll;hdl.dll"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;&quot;$(NOVINT_DEVICE_SUPPORT)\lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				DelayLoadDLLs="HD.dll;dhd.dll;hdl.dll;Haptik.Library.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -305,7 +305,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\HaptikDevice.cpp"
+				RelativePath="..\..\..\src\HaptikHapticsDevice.cpp"
 				>
 			</File>
 			<File
@@ -483,7 +483,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\include\HAPI\HaptikDevice.h"
+				RelativePath="..\..\..\include\HAPI\HaptikHapticsDevice.h"
 				>
 			</File>
 			<File
