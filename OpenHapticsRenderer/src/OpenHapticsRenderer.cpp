@@ -653,11 +653,4 @@ void OpenHapticsRenderer::hlRenderAbsolute( HAPIFloat stiffness,
                     snap_distance );
 }
 
-void OpenHapticsRenderer::OpenHapticsWorkAroundToCleanUpHLContext::cleanUp() {
-  if( dummy_context ) {
-    hlDeleteContext( dummy_context );
-    dummy_context = NULL;
-  }
-}
-
 #endif

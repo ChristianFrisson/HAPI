@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HLCustomObject.h
+/// \file HLCustomObject.cpp
 /// \brief cpp file for HLCustomObject
 ///
 //

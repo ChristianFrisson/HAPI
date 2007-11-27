@@ -147,9 +147,11 @@ namespace HAPI {
       return b;
     }
 
+    /// Must be defined in order to link correctly.
     virtual void closestPointOnShape( const Vec3 &p, Vec3 &cp, 
                                       Vec3 &n, Vec3 &tc ){}
 
+    /// Must be defined in order to link correctly.
     virtual bool lineIntersectShape( const Vec3 &from, 
                                      const Vec3 &to,
                                      Collision::IntersectionInfo &result,
@@ -157,21 +159,25 @@ namespace HAPI {
       return false;
     }
 
+    /// Must be defined in order to link correctly.
     virtual bool movingSphereIntersectShape( HAPIFloat radius,
                                              const Vec3 &from, 
                                              const Vec3 &to ) {
       return false;
     }
 
+    /// Must be defined in order to link correctly.
     virtual void getConstraintsOfShape( const Vec3 &point,
                                         Constraints &constraints,
                                         Collision::FaceType face = 
                                         Collision::FRONT_AND_BACK,
                                         HAPIFloat radius = -1 ){}
 
+    /// Must be defined in order to link correctly.
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx ){}
 
+    /// Must be defined in order to link correctly.
     virtual void glRenderShape(){}
   };
 }
