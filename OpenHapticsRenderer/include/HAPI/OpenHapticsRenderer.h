@@ -45,7 +45,6 @@
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "hd.lib" )
-//#pragma comment( lib, "hdu.lib" )
 #endif
 
 namespace HAPI {
@@ -213,7 +212,7 @@ namespace HAPI {
     static bool hlRenderHAPISurface( HAPISurfaceObject *s );
 
     /// Sets up the surface parameters for HL API. All values are given in
-    /// values between 0 and 1(except snapDistance which is in mm) just
+    /// values between 0 and 1(except snap_distance which is in mm) just
     /// as normally done in OpenHaptics. If you want to specify absolute
     /// values instead use hlRenderAbsolute instead.
     static void hlRenderRelative( HAPIFloat stiffness,
@@ -223,11 +222,14 @@ namespace HAPI {
                                   bool magnetic = false,
                                   HAPIFloat snap_distance = 0 );
 
-    /// Sets up the surface parameters for HL API. 
-    /// TODO: Fix comment
-    /// stiffness is given as N/mm
-    /// damping as ...
-    /// ..
+    /// Sets up the surface parameters for HL API.
+    /// \param stiffness is given as N/mm
+    /// \param damping as Ns/mm
+    /// \param static_friction is dimensionless
+    /// \param dynamic_friction is dimensionless
+    /// \param magnetic is true or false to specify if magnetic property should
+    /// be used.
+    /// \param snap_distance is in mm
     static void hlRenderAbsolute( HAPIFloat stiffness,
                                   HAPIFloat damping,
                                   HAPIFloat static_friction,
@@ -242,13 +244,21 @@ namespace HAPI {
   protected:
 
     /// \internal
+    /// Needed because there need to be a context available in order to not
+    /// accidently stop the scheduler at the wrong time. This dummy_context is
+    /// cleaned up by destructor.
     class OPENHAPTICSRENDERER_API OpenHapticsWorkAroundToCleanUpHLContext :
     public WorkAroundToCleanUpHLContext {
     public:
       OpenHapticsWorkAroundToCleanUpHLContext() {
         dummy_context = NULL;
       }
-      virtual void cleanUp();
+      virtual void cleanUp() {
+        if( dummy_context ) {
+          hlDeleteContext( dummy_context );
+          dummy_context = NULL;
+        }
+      }
       HHLRC dummy_context;
     };
 

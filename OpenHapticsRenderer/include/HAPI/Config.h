@@ -22,8 +22,9 @@
 //
 //
 //
-/// \file HApi.h
+/// \file Config.h
 /// \brief Base header file that handles all configuration related settings
+/// for OpenHapticsRenderer.
 ///
 //////////////////////////////////////////////////////////////////////////////
 
