@@ -30,7 +30,6 @@
 #include <HAPI/Chai3DRenderer.h>
 
 #include <H3DUtil/H3DMath.h>
-//#include "DeviceInfo.h"
 
 #include <HAPI/HapticTriangleSet.h>
 #include <HAPI/HAPIHapticsDevice.h>
@@ -175,10 +174,9 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
       // TODO: fix for other shape types
       HapticTriangleSet *tri_set = 
         dynamic_cast< HapticTriangleSet * >( shape );
-      
-      Matrix4 transform = tri_set->getTransform();
 
       if( tri_set ) {
+        Matrix4 transform = tri_set->getTransform();
         
         int index = 0;
         for( vector< Collision::Triangle >::iterator i = 

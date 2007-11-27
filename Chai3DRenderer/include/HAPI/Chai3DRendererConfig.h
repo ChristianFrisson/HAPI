@@ -22,7 +22,7 @@
 //
 //
 //
-/// \file HApi.h
+/// \file Chai3DRendererConfig.h
 /// \brief Base header file that handles all configuration related settings
 ///
 //////////////////////////////////////////////////////////////////////////////
