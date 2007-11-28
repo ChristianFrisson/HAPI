@@ -117,7 +117,7 @@ namespace HAPI {
     template< class N >
     static HAPIHapticsRenderer *newInstance() { return new N; };
 
-    /// Class used to register a class to the registered file readers.
+    /// Class used to register a class to the registered renderers.
     struct HAPI_API HapticsRendererRegistration{
     public:
       /// Constructor.
@@ -151,8 +151,7 @@ namespace HAPI {
       registerRenderer( HapticsRendererRegistration( name, create ) );
     }
 
-    /// Register a haptics renderer that can then be returned by 
-    /// getSupportedFileReader().
+    /// Register a haptics renderer.
     static void registerRenderer( const HapticsRendererRegistration &fr ) {
       registered_renderers->push_back( fr );
     }
@@ -164,10 +163,10 @@ namespace HAPI {
 
   protected:
     // Creating a new auto_ptr local for this node, because 
-    // registrated_file_reader caused a memory leak and because
+    // registered_renderers caused a memory leak and because
     // of the order of setting the static variables the autp_ptr's
     // constructor resets the auto_ptr to 0 eventhough the 
-    // registrated_file_reader has been initilazed, and therefore
+    // registered_renderers has been initilazed, and therefore
     // cause an error making it imposible to use the standard auto_ptr.
     /// \internal
     template<class T>

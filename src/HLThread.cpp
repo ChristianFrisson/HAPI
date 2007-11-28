@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file Threads.cpp
-/// \brief cpp file for thread handling functions.
+/// \file HLThread.cpp
+/// \brief cpp file for HLThread handling functions.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////

@@ -49,7 +49,7 @@ namespace HAPI {
     /// Destructor.
     virtual ~AnyHapticsDevice() {}
 
-    /// Returns the HD device handle for this device.
+    /// Returns a pointer to the device that is actually used.
     inline HAPIHapticsDevice *getActualHapticsDevice() { 
       return hd.get();
     }
@@ -71,12 +71,14 @@ namespace HAPI {
     /// Register this renderer to the haptics renderer database.
     static HapticsDeviceRegistration device_registration;
   protected:
-    /// Implementation of updateDeviceValues using HD API to get the values.
+    /// Implementation of updateDeviceValues using the contained device
+    /// to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt ) {
       if( hd.get() ) hd->updateDeviceValues( dv, dt );
     }
 
-    /// Implementation of sendOutput using HD API to send forces.
+    /// Implementation of sendOutput, calling sendOutput of the contained
+    /// device.
     virtual void sendOutput( DeviceOutput &dv,
                              HAPITime dt ) {
       if( hd.get() ) {

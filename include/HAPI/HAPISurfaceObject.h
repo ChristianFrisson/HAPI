@@ -174,6 +174,7 @@ namespace HAPI {
         return geom_primitive;
       }
 
+      /// Returns the HAPIHapticShape that the contact occurs on.
       inline HAPIHapticShape *hapticShape() {
         return haptic_shape;
       }

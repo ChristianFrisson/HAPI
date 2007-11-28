@@ -114,6 +114,7 @@ namespace HAPI {
                                         Collision::FaceType face = 
                                         Collision::FRONT_AND_BACK,
                                         HAPIFloat radius = -1 );
+
     /// Get the closest point and normal on the object to the given point p.
     /// \param p The point to find the closest point to(in local coords).
     /// \param closest_point Return parameter for closest point
@@ -147,7 +148,7 @@ namespace HAPI {
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx );
 
-    /// The triangles.
+    /// The points.
     vector< Collision::Point > points;
       
   };

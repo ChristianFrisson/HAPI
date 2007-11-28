@@ -41,17 +41,17 @@ namespace HAPI {
   /// Interface the Falcon haptics device from Novint.
   class HAPI_API FalconHapticsDevice: public HAPIHapticsDevice {
   public:
-  /// FalconThread is a singleton class providing an interface to the scheduler
-  /// and thread. It is used by the FalconHapticsDevice and uses its own thread
-  /// handling. Since only one instance of the Falcon scheduler exists it is a
-  /// singleton class.
+  /// FalconThread is a singleton class providing an interface to the
+  /// Falcon servo loop and thread. It is used by the FalconHapticsDevice and
+  /// uses its own thread handling. Since only one instance of the Falcon servo
+  /// loop exists it is a singleton class.
   class HAPI_API FalconThread : public H3DUtil::HapticThreadBase,
                                 public H3DUtil::PeriodicThreadBase {
 
   private:
     FalconThread():
       is_active( false ) {
-      // the hl thread should not be added unless the hd scheduler
+      // the Falcon thread should not be added unless the Falcon servo loop
       // has started.
       sg_lock.lock();
       threads.pop_back();
@@ -63,10 +63,10 @@ namespace HAPI {
       return singleton.get();
     }
 
-    /// If the scheduler has been started true is returned.
+    /// If the servo loop has been started true is returned.
     inline bool isActive() { return is_active; }
 
-    /// Set the flag indicating if the hd scheduler has been
+    /// Set the flag indicating if the Falcon servo loop has been
     /// started or not.
     void setActive( bool _active );
 
@@ -96,9 +96,8 @@ namespace HAPI {
   };
 
     /// Constructor.
-    /// device_name is the name of the device, as defined in the 
-    /// "Falcon Configuration" tool. A device_name of "" will use the first available
-    /// device.
+    /// device_name is the name of the device.
+    /// A device_name of "" will use the first available device.
     FalconHapticsDevice( string _device_name = "" ):
       device_name( _device_name ) {
     }
@@ -106,7 +105,7 @@ namespace HAPI {
     /// Destructor.
     virtual ~FalconHapticsDevice() {}
 
-    /// Returns the HD device handle for this device.
+    /// Returns the HDL device handle for this device.
     inline HDLDeviceHandle getDeviceHandle() { 
       return device_handle;
     }
@@ -136,10 +135,10 @@ namespace HAPI {
     Vec3 workspace_max;
     Vec3 workspace_min;
     
-    /// Implementation of updateDeviceValues using HD API to get the values.
+    /// Implementation of updateDeviceValues using HDAL API to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt );
 
-    /// Implementation of sendOutput using HD API to send forces.
+    /// Implementation of sendOutput using HDAL API to send forces.
     virtual void sendOutput( DeviceOutput &dv,
                              HAPITime dt );
 
@@ -157,9 +156,6 @@ namespace HAPI {
     
     /// The device handle for this device.
      HDLDeviceHandle device_handle;
-
-    /// Handle for the callback for rendering ForceEffects.  
-    //    vector< HDCallbackCode > hd_handles; 
   };
 }
 

@@ -34,7 +34,9 @@
 #include <HAPI/HAPIHapticShape.h>
 
 namespace HAPI {
-  /// Adds a force to constrain the haptic device position to the surface.
+  /// A HAPIForceEffect which calculates a force to constrain the haptic
+  /// device position to the closest point of the given CollisionObject. The
+  /// CollisionObject could for example be a HAPIHapticShape.
   class HAPI_API HapticShapeConstraint: public HAPIForceEffect {
   public:
     /// Constructor
@@ -43,7 +45,7 @@ namespace HAPI {
     
     /// The force of the EffectOutput is a spring force from the current
     /// position of the haptics device towards the closest point on the
-    /// haptic shape.
+    /// CollisionObject.
     EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
                                           HAPITime dt );
 

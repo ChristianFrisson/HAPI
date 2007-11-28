@@ -58,7 +58,7 @@ void FrictionSurface::getProxyMovement( ContactInfo &contact_info ) {
   } else {
     // FrictionalSurface
     // Friction model calculation modeled after the information in
-    // section 4 of "Haptic Ineraction in Virtual Environments" by
+    // section 4 of "Haptic Interaction in Virtual Environments" by
     // Diego C. Ruspini, Krasimir Kolarov and Oussama Khatib.
     // Published 1997.
     Vec3 local_probe = contact_info.localProbePosition();

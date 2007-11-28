@@ -44,8 +44,8 @@ namespace HAPI {
   public:
     /// Constructor.
     /// device_name is the name of the device, as defined in the 
-    /// "Phantom Configuration" tool. A device_name of "" will use the first available
-    /// device.
+    /// "Phantom Configuration" tool. A device_name of "" will use the first
+    /// available device.
     PhantomHapticsDevice( string _device_name = "" ):
         device_name( _device_name ) {
       hdapi_version = hdGetString( HD_VERSION );
@@ -66,7 +66,7 @@ namespace HAPI {
       return device_name;
     }
 
-    /// Register this renderer to the haptics renderer database.
+    /// Register this device to the haptics device database.
     static HapticsDeviceRegistration device_registration;
 
     /// Get the firmware version for the device. Undefined behavior
@@ -110,7 +110,7 @@ namespace HAPI {
       max = usable_workspace_max;
     }
 
-    /// Get the mechanical offest of the device end-effector in y from
+    /// Get the mechanical offset of the device end-effector in y from
     /// the table top. Undefined if device not initialized.
     inline HAPIFloat getTabletopOffset() { return tabletop_offset; }
     

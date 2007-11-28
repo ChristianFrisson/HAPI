@@ -58,17 +58,20 @@ namespace HAPI {
       return device_id;
     }
 
-    /// Register this renderer to the haptics renderer database.
+    /// Register this device to the haptics device database.
     static HapticsDeviceRegistration device_registration;
   
-    /// Schedule the haptic device to be calibrated if the flag argument is true.
-    /// Do not schedule the haptic device to be calibrated if the flag argument is false.
+    /// Schedule the haptic device to be calibrated if the flag argument is
+    /// true.
+    /// Do not schedule the haptic device to be calibrated if the flag argument
+    /// is false.
     void schedule_calibration( bool calibrate );
 
     /// Send the calibration flag to the haptic device.
     void send_calibration( );
 
-    /// If scheduled, run (or skip) the haptic device calibration procedure (i.e., reset of the encoders).
+    /// If scheduled, run (or skip) the haptic device calibration procedure
+    /// (i.e., reset of the encoders).
     /// Block/wait until completed. Optional timeout argument.
     void do_calibration( int timeout );
 
@@ -91,17 +94,19 @@ namespace HAPI {
     /// A fatal error flag requires the user to restart his/her application.
     bool is_fatal_error();
 
-    /// Return true if the shmem checksum does enable the haptic device power amplifiers 
-    /// (i.e., if the shmem communication is still valid).
+    /// Return true if the shmem checksum does enable the haptic device power
+    /// amplifiers  (i.e., if the shmem communication is still valid).
     /// Return false otherwise. Used for monitoring.
     bool does_checksum_enable();
 
-    /// Return true if the shmem read timeout watchdog does enable the haptic device power amplifiers 
+    /// Return true if the shmem read timeout watchdog does enable the haptic
+    /// device power amplifiers 
     /// (i.e., if the shmem communication is still valid).
     /// Return false otherwise. Used for monitoring.
     bool does_write_timeout_enable();
 
-    /// Return true if the shmem write timeout watchdog does enable the haptic device power amplifiers 
+    /// Return true if the shmem write timeout watchdog does enable the haptic
+    /// device power amplifiers 
     /// (i.e., if the shmem communication is still valid).
     /// Return false otherwise. Used for monitoring.
     bool does_read_timeout_enable();
@@ -136,12 +141,14 @@ namespace HAPI {
     // number of doubles to read
     const static int   shmem_API_read_num_doubles  = 9;
     // size in bytes of shared memory to read
-    const static DWORD shmem_API_read_size         = shmem_API_read_num_doubles * sizeof(double);
+    const static DWORD shmem_API_read_size         = shmem_API_read_num_doubles
+      * sizeof(double);
     /// characteristics on Quanser Haptic API inputs
     // number of doubles to write
     const static int   shmem_API_write_num_doubles = 12;
     // size in bytes of shared memory to write
-    const static DWORD shmem_API_write_size        = shmem_API_write_num_doubles * sizeof(double);
+    const static DWORD shmem_API_write_size       = shmem_API_write_num_doubles
+      * sizeof(double);
     /// loop timing (ms)
     const static int   api_update_dt_ms    = 1;
     /// shmem timeout value (ms)

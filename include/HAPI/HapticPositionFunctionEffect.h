@@ -42,8 +42,8 @@ namespace HAPI {
   class HAPI_API HapticPositionFunctionEffect: public HAPIForceEffect {
   public:
     /// Constructor
-    /// ownership of the pointer in the parameters x_function, y_function and
-    /// z_function are transferred to the HapticFunctionEffect.
+    /// ownership of the pointer in the parameters _x_function, _y_function and
+    /// _z_function are transferred to the HapticPositionFunctionEffect.
     HapticPositionFunctionEffect( 
                           HAPIFunctionObject *_x_function,
                           HAPIFunctionObject *_y_function,

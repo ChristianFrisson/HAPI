@@ -413,7 +413,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         has_intersection = true;
         closest_constraints.push_back( *i );
       } else {
-        // the is a previously intersected plane, check which is closest
+        // there is a previously intersected plane, check which is closest
         Vec3 v = intersection.point - proxy_pos;
         HAPIFloat distance = v * v; 
       

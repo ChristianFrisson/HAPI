@@ -71,7 +71,7 @@ namespace HAPI {
       NOT_INITIALIZED, /// the device has not been initialized
       NOT_ENABLED,     /// the device has not been enabled
       FAIL             /// the operation has failed for another reason
-      /// use getLastErrorMsg() to get info about the error.
+                       /// use getLastErrorMsg() to get info about the error.
     } ErrorCode;
 
     /// Class for holding a snapshot of current values of different properties
@@ -81,14 +81,14 @@ namespace HAPI {
         button_status( 0 ),
         user_data( NULL ) {}
 
-      Vec3 force;      /// The force currently being rendered
-      Vec3 torque;     /// The torque currently being rendered
-      Vec3 position;   /// The position of the haptics device
-      Vec3 velocity;   /// The velocity of the haptics device.
-      Rotation orientation; /// The orientation of the haptics device.
+      Vec3 force;              /// The force currently being rendered
+      Vec3 torque;             /// The torque currently being rendered
+      Vec3 position;           /// The position of the haptics device
+      Vec3 velocity;           /// The velocity of the haptics device.
+      Rotation orientation;    /// The orientation of the haptics device.
       HAPIInt32 button_status; /// The status of the buttons.
       void *user_data;   /// Extra data that can be used be developers when
-      /// supporting new device types.
+                         /// supporting new device types.
     };
 
     typedef H3DUtil::AutoRefVector< HAPIHapticShape > HapticShapeVector;
@@ -117,7 +117,7 @@ namespace HAPI {
     /// Does all the initialization needed for the device before starting to
     /// use it.
     /// \param _thread_frequency is the desired haptic frequency. Check
-    /// comment for the function initHapticsDevice() for each haptics device
+    /// comment for the function initHapticsDevice() of each haptics device
     /// class to know what the values might do for that class.
     virtual ErrorCode initDevice( int _thread_frequency = 1000 );
 
@@ -195,7 +195,7 @@ namespace HAPI {
     }
     
     
-    /// Set the HapticForceEffects to be rendered.
+    /// Set the HapticShapes to be rendered.
     /// \param objects The haptic shapes to render.
     /// \param layer The haptic layer to add the shape to.
     inline void setShapes( const HapticShapeVector &shapes, 
@@ -290,10 +290,12 @@ namespace HAPI {
     }
 
     /// Get the shapes currently used
-    inline const HapticEffectVector &getEffects() {
+    inline HapticEffectVector getEffects() {
+      HapticEffectVector return_force_effects;
       force_effect_lock.lock();
-      return current_force_effects;
+      return_force_effects = current_force_effects;
       force_effect_lock.unlock();
+      return return_force_effects;
     }
 
     /// Remove a force effect so that it is not rendered any longer.
@@ -365,7 +367,7 @@ namespace HAPI {
       force_effect_lock.unlock();
     }
 
-    /// Remove all HAPIHapticShape objects that are currently being rendered.
+    /// Remove all HAPIForceEffect objects that are currently being rendered.
     inline void clearEffects() {
       force_effect_lock.lock();
       current_force_effects.clear();
@@ -420,7 +422,6 @@ namespace HAPI {
       device_values_lock.unlock();
     }
 
-    
     /// Get the current orientation calibration.
     inline const Rotation &getOrientationCalibration() {
       return orientation_calibration;
@@ -637,7 +638,8 @@ namespace HAPI {
       renderer_change_lock.unlock();
     }
 
-    /// Return the number of layers that have had shapes added to it.
+    /// Return the number of layers that have had shapes or has renderers
+    /// added to it.
     inline unsigned int nrLayers() {
       return haptics_renderers.size();
     }
@@ -666,7 +668,7 @@ namespace HAPI {
       return thread;
     }
 
-    // The following is part of the database of available haptics renderers.
+    // The following is part of the database of available haptics devices.
     typedef HAPIHapticsDevice*( *CreateInstanceFunc)(); 
 
     template< class N >
@@ -677,8 +679,8 @@ namespace HAPI {
     public:
       /// Constructor.
       HapticsDeviceRegistration( const string &_name,
-                                   CreateInstanceFunc _create,
-                                   list< string > _libs_to_support  ):
+                                 CreateInstanceFunc _create,
+                                 list< string > _libs_to_support  ):
       name( _name ),
       create_func( _create ),
       libs_to_support( _libs_to_support )
@@ -700,8 +702,8 @@ namespace HAPI {
     friend struct HapticsDeviceRegistration;
 #endif
 
-    /// Register a haptics renderer to the database.
-    /// \param name The name of the renderer
+    /// Register a haptics device to the database.
+    /// \param name The name of the device
     /// \param create A function for creating an instance of that class.
     /// \param libs_to_support A list of strings with libraries that is needed
     /// to be supported by this device (dlls, so).
@@ -712,18 +714,18 @@ namespace HAPI {
                                                  libs_to_support ) );
     }
 
-    /// Register a haptics renderer that can then be returned by 
+    /// Register a haptics device that can then be returned by 
     /// getSupportedFileReader().
     static void registerDevice( const HapticsDeviceRegistration &fr ) {
       registered_devices->push_back( fr );
     }
 
-        // Creating a new auto_ptr local for this node, because 
-    // registrated_file_reader caused a memory leak and because
-    // of the order of setting the static variables the autp_ptr's
+    // Creating a new auto_ptr local for this node, because 
+    // registered_devices caused a memory leak and because
+    // of the order of setting the static variables the auto_ptr's
     // constructor resets the auto_ptr to 0 eventhough the 
-    // registrated_file_reader has been initilazed, and therefore
-    // cause an error making it imposible to use the standard auto_ptr.
+    // registered_devices has been initialized, and therefore
+    // cause an error making it impossible to use the standard auto_ptr.
     template<class T>
     class local_auto_ptr{
     private:
@@ -1028,7 +1030,8 @@ namespace HAPI {
     // lock for when using force effects
     H3DUtil::MutexLock force_effect_lock;
 
-    //
+    // container for shapes that will be transferred to the haptic
+    // rendering loop through transferObjects.
     vector< HapticShapeVector > tmp_shapes ;
 
     /// The time at the beginning of the last rendering loop
@@ -1050,7 +1053,7 @@ namespace HAPI {
     string last_error_message;
     string device_name;
 
-    /// Callback function to render force effects.
+    /// Callback function to render forces.
     static H3DUtil::PeriodicThread::CallbackCode
       hapticRenderingCallback( void *data );
 

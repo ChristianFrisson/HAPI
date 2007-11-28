@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HAPISurfaceObject.cpp
-/// \brief cpp file for HAPISurfaceObject
+/// \file HAPIHapticShape.cpp
+/// \brief cpp file for HAPIHapticShape
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ int HAPIHapticShape::genShapeId() {
 }
 
 void HAPIHapticShape::delShapeId( int id ) {
-  // todo: remove all resources used by id, e.g. hl shape id
+  // todo: remove all resources used by id, e.g. hl shape id, done i think.
   free_ids.push_front( id );
 }
 

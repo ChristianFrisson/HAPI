@@ -39,7 +39,7 @@ namespace HAPI {
   /// \class ImageInterfaceObject
   /// Base class for HAPIObjects that want access to information in an image.
   /// It is optimized for gray scale 8 bit images and slightly faster than 
-  /// using Image functinos directly in other cases.
+  /// using Image functions directly in other cases.
   class HAPI_API ImageInterfaceObject {
 
   public:
@@ -79,10 +79,10 @@ namespace HAPI {
     /// Help function to getSample
     HAPIFloat getPixel( int x = 0, int y = 0, int z = 0 );
 
-    /// Help function to getValue
+    /// Help function to getSample
     HAPIFloat getValue( int x = 0, int y = 0, int z = 0 );
 
-    /// Help function to getValue
+    /// Help function to getPixel
     void getElement( void *value, int x = 0, int y = 0, int z = 0 );
 
     H3DUtil::AutoRef< H3DUtil::Image > image_object;

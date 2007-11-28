@@ -34,7 +34,8 @@
 
 namespace HAPI {
 
-  /// A shape defined by a set of primitives.
+  /// A HAPIHapticShape defined by a set of GeometryPrimitives arranged in a
+  /// tree.
   class HAPI_API HapticPrimitiveTree: public HAPIHapticShape {
   public:
     /// Constructor.
@@ -69,7 +70,7 @@ namespace HAPI {
 
     /// An upper bound on how many triangles are renderered.
     virtual int nrTriangles() {
-      // todo: decide if there is useful to traverse the tree,
+      // TODO: decide if there is useful to traverse the tree,
       // it will take a lot of time to traverse ( O(n) ).
       // Also a bunch of push_backs.
       return -1;
@@ -77,7 +78,7 @@ namespace HAPI {
 
     /// An upper bound on how many points are renderered.
     virtual int nrPoints() {
-      // todo: decide if there is useful to traverse the tree,
+      // TODO: decide if there is useful to traverse the tree,
       // it will take a lot of time to traverse ( O(n) ).
       // Also a bunch of push_backs.
       return -1;
@@ -85,7 +86,7 @@ namespace HAPI {
 
     /// An upper bound on how many lines are renderered.
     virtual int nrLines() {
-      // todo: decide if there is useful to traverse the tree,
+      // TODO: decide if there is useful to traverse the tree,
       // it will take a lot of time to traverse ( O(n) ).
       // Also a bunch of push_backs.
       return -1;

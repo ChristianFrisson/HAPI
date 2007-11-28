@@ -33,11 +33,7 @@
 
 namespace HAPI {
 
-  /// \brief Base class for haptic shapes, i.e. geometrical objects that are
-  /// rendered by letting their surfaces constrain the proxy. A HapticShape
-  /// has a Surface object associated to it that defines the properties of
-  /// the surface, e.g. stiffness and friction properties.
-  ///
+  /// A HAPIHapticShape defined by a set of triangles arranged in a tree.
   class HAPI_API HapticTriangleTree: public HAPIHapticShape {
   public:
     /// Constructor.
@@ -130,8 +126,7 @@ namespace HAPI {
     virtual void glRenderShape();
 
     
-    /// The Surface object describing the properties of the surface of the 
-    /// HapticShape.
+    // The tree containing the triangles.
     Collision::BinaryBoundTree *tree;      
   };
 }

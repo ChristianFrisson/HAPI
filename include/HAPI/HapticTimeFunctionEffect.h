@@ -34,16 +34,17 @@
 #include <HAPI/HAPIFunctionObject.h>
 
 namespace HAPI {
-  /// HapticTimeFunctionEffect creates a force by evaluating three functions
-  /// ( one for each dimension ) by sending in a time parameter. The time
+  /// HapticTimeFunctionEffect is a HAPIForceEffects that calculates a force
+  /// by evaluating three functions ( one for each dimension ). Each function
+  /// takes time as the only input parameter. The time
   /// parameter used in the evaluation function is current_time - zero_time.
   /// It is up to the user to make sure that the functions provided does not
   /// create a force that the attached device can not handle.
   class HAPI_API HapticTimeFunctionEffect: public HAPIForceEffect {
   public:
     /// Constructor
-    /// ownership of the pointer in the parameters x_function, y_function and
-    /// z_function are transferred to the HapticFunctionEffect.
+    /// ownership of the pointer in the parameters _x_function, _y_function and
+    /// _z_function are transferred to the HapticTimeFunctionEffect.
     HapticTimeFunctionEffect( HAPIFunctionObject *_x_function,
                               HAPIFunctionObject *_y_function,
                               HAPIFunctionObject *_z_function,

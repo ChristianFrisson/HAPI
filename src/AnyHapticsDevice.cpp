@@ -34,12 +34,11 @@
 
 using namespace HAPI;
 
-list< string > any_device_libs_list;
 HAPIHapticsDevice::HapticsDeviceRegistration 
 AnyHapticsDevice::device_registration(
                             "Any",
                             &(newInstance< AnyHapticsDevice >),
-                            any_device_libs_list
+                            list< string >()
                             );
 
 bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
@@ -49,6 +48,8 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
        i != registered_devices->end(); i++ ) {
     if( (*i).name != "Any" ) {
 #ifdef WIN32
+      /// need to go through list of libs to see if it is even
+      /// possible to try to initialize the device.
       bool all_libs_ok = true;
       for( list< string >::iterator j = (*i).libs_to_support.begin();
            j != (*i).libs_to_support.end();
@@ -90,6 +91,3 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     return true;
   }
 }
-
-
-

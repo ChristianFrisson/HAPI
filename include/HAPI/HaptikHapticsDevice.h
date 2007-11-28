@@ -38,7 +38,8 @@
 namespace HAPI {
 
   /// \class HaptikHapticsDevice
-  /// Base class for all haptic devices. 
+  /// HaptikHapticsDevice uses the haptik library (www.haptiklibrary.org)
+  /// to interface towards devices.
   class HAPI_API HaptikHapticsDevice: public HAPIHapticsDevice {
   public:
 
@@ -54,8 +55,11 @@ namespace HAPI {
       releaseDevice();
     }
 
+    /// Used in order to change what input device is used.
     void changeHaptikDevice( UINT32 device_id );
 
+    /// Get the index of the device currently used. The index is an index
+    /// in the device array in an Haptik object.
     inline int getHaptikIndex() {
       int dev_index = -1;
       if( haptik_device ) {
@@ -80,13 +84,16 @@ namespace HAPI {
     /// Release all resources allocated to the haptics device.
     virtual bool releaseHapticsDevice();
 
+    /// Implementation of updateDeviceValues using Haptik to get the values.
     virtual void updateDeviceValues( DeviceValues &dv,
                                      HAPITime dt );
 
+    /// Implementation of sendOutput using Haptik to send forces.
     virtual void sendOutput( DeviceOutput &dv,
                              HAPITime dt );
 
     RSLib::Haptik haptik;
+
     /// The device currently in use.
     RSLib::IHaptikDeviceInterface haptik_device;
 

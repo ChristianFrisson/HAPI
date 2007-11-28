@@ -99,7 +99,6 @@ namespace HAPI {
     /// Can be used by the depth function to access the current ContactInfo
     /// class.
     ContactInfo *this_contact_info;
-    //int invert_depth;
     bool depth_invert;
 
     /// Used for static friction calculations
