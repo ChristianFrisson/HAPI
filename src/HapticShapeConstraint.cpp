@@ -32,9 +32,9 @@
 using namespace HAPI;
 
 HapticShapeConstraint::HapticShapeConstraint(
-                          Collision::CollisionObject *_shape,
+                          Collision::CollisionObject *_col_obj,
                           const HAPIFloat &_spring_constant ):
-  shape( _shape ),
+  col_obj( _col_obj ),
   spring_constant( _spring_constant ){
 }
 
@@ -43,7 +43,7 @@ HAPIForceEffect::EffectOutput HapticShapeConstraint::calculateForces(
                               HAPITime dt ) {
   Vec3 closest_point = Vec3(), temp;
   Vec3 hd_pos = hd->getPosition();
-  shape->closestPoint( hd_pos, closest_point, temp, temp );
+  col_obj->closestPoint( hd_pos, closest_point, temp, temp );
   Vec3 the_force = spring_constant * (closest_point - hd_pos);
   return EffectOutput( the_force );
 }
