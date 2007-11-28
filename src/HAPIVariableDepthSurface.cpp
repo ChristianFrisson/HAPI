@@ -57,6 +57,7 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
 void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
   if( H3DUtil::H3DAbs( static_friction ) < Constants::epsilon &&
       H3DUtil::H3DAbs( dynamic_friction ) < Constants::epsilon ) {
+    // Case of no friction.
     this_contact_info = &contact;
     Vec3 local_probe = contact.localProbePosition();
     if( local_probe.y > 0 )
@@ -81,6 +82,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
     
     contact.setLocalProxyMovement( res );
   } else {
+    // In case of friction.
     this_contact_info = &contact;
 
     Vec3 local_probe = contact.localProbePosition();
@@ -229,8 +231,6 @@ void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
       contact_info.setGlobalForce( Vec3() );
   }
   else {
-
-    //depth = depth_invert * depth;
     Vec3 real_contact_point = temp_point + depth * contact_info.yAxis();
 
     Vec3 probe_to_origin = 

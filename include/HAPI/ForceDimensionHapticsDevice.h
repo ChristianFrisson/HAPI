@@ -104,10 +104,10 @@ namespace HAPI {
     /// Register this renderer to the haptics renderer database.
     static HapticsDeviceRegistration device_registration;
   protected:
-    /// Implementation of updateDeviceValues using HD API to get the values.
+    /// Implementation of updateDeviceValues using DHD API to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt );
 
-    /// Implementation of sendOutput using HD API to send forces.
+    /// Implementation of sendOutput using DHD API to send forces.
     virtual void sendOutput( DeviceOutput &dv,
                              HAPITime dt );
 

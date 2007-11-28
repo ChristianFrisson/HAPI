@@ -211,7 +211,7 @@ class Constraints;
         point( p ), normal( n ) {}
       
       /// Returns a point representing the primitive. In this case it is the 
-      /// center of the triangle.
+      /// point defining the plane.
       inline virtual Vec3 pointRepresentation() const {
         return point;
       }
@@ -264,11 +264,13 @@ class Constraints;
     class HAPI_API Sphere: public GeometryPrimitive {
     public:
       /// Constructor.
+      /// \param _center The center of the sphere.
+      /// \param _radius The radius of the sphere.
       Sphere( const Vec3 &_center, HAPIFloat _radius ):
         center( _center ), radius( _radius ) {}
       
       /// Returns a point representing the primitive. In this case it is the 
-      /// center of the triangle.
+      /// center of the sphere.
       inline virtual Vec3 pointRepresentation() const {
         return center;
       }
@@ -427,6 +429,8 @@ class Constraints;
       LineSegment() {}
 
       /// Constructor.
+      /// \param _start is the point where the linesegment starts.
+      /// \param _end is the point where the linesegement ends.
       LineSegment( const Vec3& _start, const Vec3& _end) : 
         start( _start ), end( _end ) {}
 
@@ -541,8 +545,8 @@ class Constraints;
                                           const Vec3 &from, 
                                           const Vec3 &to );
 
-      /// Returns a point representing the primitive. In this case it is the 
-      /// center of the line segment.
+      /// Returns a point representing the primitive. This primitive is a point
+      /// so the pointRepresentation is easy to calculate.
       inline virtual Vec3 pointRepresentation() const {
         return position;
       }
@@ -635,7 +639,7 @@ class Constraints;
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
         Vec3 result;
         // for each coordinate axis, if the point coordinate value
-        // is outside box, clamp it to the box, e;se keep it as it is
+        // is outside box, clamp it to the box, else keep it as it is
         for( int i = 0; i < 3; i++ ) {
           HAPIFloat v = p[i];
           if( v < min[i] ) v = min[i];
@@ -812,6 +816,11 @@ class Constraints;
                        const vector< Triangle > &triangles,
                        unsigned int max_nr_triangles_in_leaf = 1 );
 
+      /// Builds a binary tree from a vector of triangles, lines and points.
+      /// The func argument specifies
+      /// a function for creating  bound of the wanted type in each tree node.
+      /// max_nr_triangles_in_leaf specifies the maximum number of primitives 
+      /// that are allowed to be in a bound of a leaf in the tree. 
       BinaryBoundTree( BoundNewFunc func, 
                        const vector< Triangle > &triangle_vector,
                        const vector< LineSegment > &linesegment_vector,
@@ -837,14 +846,14 @@ class Constraints;
                                    FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
-      /// Adds the triangles found in the tree that are within the distance 
-      /// radius from p to the triangles vector.
+      /// Adds the triangles found in the tree, that are within the distance 
+      /// radius from p, to the triangles vector.
       virtual void getTrianglesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
                                              vector< Triangle > &triangles);
 
-      /// Adds the triangles, lines and points found in the tree that are 
-      /// within the distance radius from p to their respective vector.
+      /// Adds the triangles, lines and points found in the tree, that are 
+      /// within the distance radius from p, to their respective vector.
       virtual void getPrimitivesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
                                              vector< Triangle > &triangles,
@@ -895,8 +904,8 @@ class Constraints;
       }
 
       /// Detect collision between a line segment and the object. Will check
-      /// for collision between the triangles contained in the leaves of the
-      /// tree and the line segment.
+      /// for collision between the triangles, lines or points contained in the
+      /// leaves of the tree and the line segment.
       /// \param from The start of the line segment.
       /// \param to The end of the line segment.
       /// \param result Contains info about the closest intersection, if line
@@ -945,9 +954,9 @@ class Constraints;
                                  Vec3 &tex_coord );
 
       /// The closest point on the bound to the point. If tree is a leaf,
-      /// the closest point to the triangles in the leaf is returned.
-      /// To know the closest point to the primitives in the bound,
-      /// use closestPoint
+      /// the closest point to the triangles, lines or points in the leaf is
+      /// returned. To know the closest point to the primitives in the bound,
+      /// use closestPoint.
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
         if( !isLeaf() && bound.get() )
           return bound->boundClosestPoint( p );
@@ -997,6 +1006,9 @@ class Constraints;
                          triangles,
                          max_nr_triangles_in_leaf ) {}
 
+      /// Builds a binary tree from a vector of triangles, lines and points.
+      /// max_nr_triangles_in_leaf specifies the maximum number of primitives 
+      /// that are allowed to be in a bound of a leaf in the tree. 
       AABBTree( const vector< Triangle > &triangles,
                 const vector< LineSegment > &linesegment_vector,
                 const vector< Point > &point_vector,
@@ -1023,6 +1035,9 @@ class Constraints;
         BinaryBoundTree( &(newInstance< OrientedBoxBound >), triangles, 
                          max_nr_triangles_in_leaf ) {}
       
+      /// Builds a binary tree from a vector of triangles, lines and points.
+      /// max_nr_triangles_in_leaf specifies the maximum number of primitives 
+      /// that are allowed to be in a bound of a leaf in the tree. 
       OBBTree( const vector< Triangle > &triangles,
                 const vector< LineSegment > &linesegment_vector,
                 const vector< Point > &point_vector,
@@ -1049,6 +1064,9 @@ class Constraints;
                          triangles,
                          max_nr_triangles_in_leaf ) {}
 
+      /// Builds a binary tree from a vector of triangles, lines and points.
+      /// max_nr_triangles_in_leaf specifies the maximum number of primitives 
+      /// that are allowed to be in a bound of a leaf in the tree. 
       SphereBoundTree( const vector< Triangle > &triangles,
                 const vector< LineSegment > &linesegment_vector,
                 const vector< Point > &point_vector,
@@ -1084,8 +1102,8 @@ class Constraints;
                        const vector< GeometryPrimitive * > &_primitives,
                        unsigned int max_nr_primitives_in_leaf = 1 );
 
-      /// Returns true if the tree is a leaf, i.e. has no sub-tress
-      /// and hence just contains triangles. false otherwise.
+      /// Returns true if the tree is a leaf, i.e. has no sub-trees
+      /// and hence just contains primitives. false otherwise.
       inline bool isLeaf() { 
         return left.get() == NULL && right.get() == NULL; 
       }
@@ -1103,14 +1121,14 @@ class Constraints;
                                    FaceType face = Collision::FRONT_AND_BACK,
                                    HAPIFloat radius = -1 );
 
-      /// Adds the primitives found in the tree that are 
-      /// within the distance radius from p to the vector. 
+      /// Adds the primitives found in the tree, that are 
+      /// within the distance radius from p, to the vector of primitives.
       virtual void getPrimitivesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
                                     vector< GeometryPrimitive * > &primitives);
 
-      /// Adds the primitives found in the tree that are 
-      /// within the distance radius from p to the vector.
+      /// Adds the primitives that are intersected by the volume swept by a
+      /// sphere when moving from "from" to "to".
       virtual void getPrimitivesIntersectedByMovingSphere(
                       HAPIFloat radius,
                       Vec3 from,
@@ -1143,7 +1161,7 @@ class Constraints;
       }
 
       /// Detect collision between a line segment and the object. Will check
-      /// for collision between the triangles contained in the leaves of the
+      /// for collision between the primitives contained in the leaves of the
       /// tree and the line segment.
       /// \param from The start of the line segment.
       /// \param to The end of the line segment.
@@ -1193,7 +1211,7 @@ class Constraints;
                                  Vec3 &tex_coord );
 
       /// The closest point on the bound to the point. If tree is a leaf,
-      /// the closest point to the triangles in the leaf is returned.
+      /// the closest point to the primitives in the leaf is returned.
       /// To know the closest point to the primitives in the bound,
       /// use closestPoint
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
@@ -1206,7 +1224,7 @@ class Constraints;
         }
       }
 
-      /// Add all triangles in the tree to the given vector.
+      /// Add all primitives in the tree to the given vector.
       virtual void getAllPrimitives(
         vector< GeometryPrimitive * > &primitives );
 

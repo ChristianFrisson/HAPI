@@ -35,7 +35,8 @@
 namespace HAPI {
 
   /// The base class for all classes which can be used with the 
-  /// getFeedbackBufferTriangles functions.
+  /// collectTriangles and collectPrimitives functions in the class
+  /// FeedbackBufferCollector.
   class HAPI_API HAPIGLShape {
   public:
     /// Virtual destructor.
@@ -44,17 +45,17 @@ namespace HAPI {
     /// Render the shape using OpenGL.
     virtual void glRender() {}
 
-    /// A lower bound on how many triangles are renderered.
+    /// A upper bound on how many triangles are renderered.
     virtual int nrTriangles() {
       return 0;
     }
 
-    /// An upperr bound on how many lines are renderered.
+    /// An upper bound on how many lines are renderered.
     virtual int nrLines() {
       return 0;
     }
 
-    /// An upper bound on how many lines are renderered.
+    /// An upper bound on how many points are renderered.
     virtual int nrPoints() {
       return 0;
     }

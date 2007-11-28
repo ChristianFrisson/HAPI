@@ -143,7 +143,7 @@ namespace HAPI {
     /// buffer shapes. 
     virtual void glRenderShape();
 
-    /// The triangles.
+    /// The lines.
     vector< Collision::LineSegment > lines;
       
   };

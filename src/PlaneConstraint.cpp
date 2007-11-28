@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file Scene.cpp
-/// \brief CPP file for Scene, X3D scene-graph node
+/// \file PlaneConstraint.cpp
+/// \brief CPP file for PlaneConstraint
 ///
 //
 //
@@ -62,7 +62,7 @@ bool PlaneConstraint::lineIntersect( const Vec3 &from,
                 //cerr << u << endl;
         result.point = from + u * from_to;
         result.normal = normal;
-        // TODO: temp. Mybe use derivatives to get correct tex coord
+        // TODO: temp. Maybe use derivatives to get correct tex coord
         result.tex_coord = tex_coord;
         return true;
       }

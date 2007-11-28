@@ -34,7 +34,7 @@
 
 namespace HAPI {
   /// \class HAPIFunctionObject
-  /// \brief Base class for nodes evaluating function.
+  /// \brief Base class for classes evaluating a function.
   /// The function is a function R^n -> R.
   class HAPI_API HAPIFunctionObject {
   public:

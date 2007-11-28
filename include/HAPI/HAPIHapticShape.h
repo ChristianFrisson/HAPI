@@ -290,7 +290,7 @@ namespace HAPI {
     static int current_max_id;
     static list< int > free_ids;
   
-  /// The Surface object describing the properties of the surface.
+    /// The Surface object describing the properties of the surface.
     H3DUtil::AutoRef< HAPISurfaceObject > surface;
 
     bool have_transform;
@@ -335,6 +335,7 @@ namespace HAPI {
     virtual bool movingSphereIntersectShape( HAPIFloat radius,
                                              const Vec3 &from, 
                                              const Vec3 &to ) = 0;
+    
     /// Get constraint planes of the shape. A proxy of a haptics renderer
     /// will always stay above any constraints added.
     ///

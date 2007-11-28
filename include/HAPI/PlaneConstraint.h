@@ -20,8 +20,8 @@
 //    A commercial license is also available. Please contact us at 
 //    www.sensegraphics.com for more information.
 //
-/// \file CollisionStructures.h
-/// \brief Header file for CollisionStructures
+/// \file PlaneConstraint.h
+/// \brief Header file for PlaneConstraint
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ namespace HAPI {
       point( p ), normal( n ), tex_coord( tc ), 
         haptic_shape( shape ), primitive( _primitive )  {}
 
-      /// Test for interection with the line segment from "from" to "to".
+      /// Test for intersection with the line segment from "from" to "to".
       /// \returns true on intersection, false otherwise.
       bool lineIntersect( const Vec3 &from, 
                           const Vec3 &to,    

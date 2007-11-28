@@ -52,7 +52,8 @@
 
 /// Undef if you do not have the fparser library
 /// (http://iki.fi/warp/FunctionParser/) installed.
-/// Required for the ParsedFunction class
+/// Required for the ParsedFunction class. Included with
+/// HAPI, no need to download anything.
 #define HAVE_FPARSER
 
 /// Undef if you do not have the C-API wrapper for the HapticMaster
@@ -63,7 +64,8 @@
 /// HaptikDevice will not be usable.
 //#define HAVE_HAPTIK_LIBRARY 
 
-/// Undef if you do not the APIs required for supporting Quanser devices.
+/// Undef if you do not have the API(s) required for supporting Quanser
+/// devices.
 /// www.quanser.com
 //#define HAVE_QUANSERAPI
 
@@ -108,23 +110,6 @@
 #define HAPI_API 
 #define HAVE_SYS_TIME_H
 #endif
-
-
-/*namespace H3D {
-  /// Function for determining if the machine we are running on is uses
-  /// little endian byte order or not.
-  inline bool isLittleEndian() {
-    union probe{ 
-      unsigned int num;
-      unsigned char bytes[sizeof(unsigned int)];
-    };
-    //initialize first member of p with unsigned 1
-    probe p = { 1U };
-    // in a big endian architecture, p.bytes[0] equals 0  
-    bool little_endian = (p.bytes[0] == 1U); 
-    return little_endian;
-  }
-}*/
 
 #endif
 

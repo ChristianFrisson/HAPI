@@ -46,8 +46,8 @@ H3DUtil::PeriodicThread::CallbackCode
   return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
 
-// Callback function for rendering force effects on the 
-// HLHapticsDevice.  
+// Callback function for rendering forces on the 
+// HAPIHapticsDevice.  
 H3DUtil::PeriodicThread::CallbackCode
   HAPIHapticsDevice::hapticRenderingCallback( void *data ) {
 
@@ -252,9 +252,9 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice(
     
     device_state = INITIALIZED;
     if( !thread ) {
-          // create a new thread to run the haptics in
+      // create a new thread to run the haptics in
 #ifdef WIN32
-     thread = new H3DUtil::HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL,
+      thread = new H3DUtil::HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL,
                                           _thread_frequency );
 #else
       thread = new H3DUtil::HapticThread( 20, _thread_frequency );
