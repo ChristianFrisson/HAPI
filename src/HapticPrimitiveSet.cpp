@@ -158,19 +158,21 @@ void HapticPrimitiveSet::countNrOfPrimitives() {
   nr_triangles = 0;
   nr_points = 0;
   nr_lines = 0;
-  for( PrimitiveVector::const_iterator i = primitives.begin();
-    i != primitives.end(); i++ ) {
+  if( !primitives.empty() ) {
+    for( PrimitiveVector::const_iterator i = primitives.begin();
+         i != primitives.end(); i++ ) {
       if( dynamic_cast< Collision::LineSegment * >( *i ) )
         nr_lines++;
       else if( dynamic_cast< Collision::Triangle * >( *i ) )
         nr_triangles++;
       else if( dynamic_cast< Collision::Point * >( *i ) )
         nr_points++;
-  }
-  if( nr_triangles == 0 && nr_points == 0 && nr_lines == 0 ) {
-    // to indicate that we have no idea how many of each there is.
-    nr_triangles = -1;
-    nr_points = -1;
-    nr_lines = -1;
+    }
+    if( nr_triangles == 0 && nr_points == 0 && nr_lines == 0 ) {
+      // to indicate that we have no idea how many of each there is.
+      nr_triangles = -1;
+      nr_points = -1;
+      nr_lines = -1;
+    }
   }
 }

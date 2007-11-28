@@ -40,7 +40,7 @@ namespace HAPI {
   class HAPI_API HapticShapeConstraint: public HAPIForceEffect {
   public:
     /// Constructor
-    HapticShapeConstraint( Collision::CollisionObject *_shape,
+    HapticShapeConstraint( Collision::CollisionObject *_col_obj,
                            const HAPIFloat &_spring_constant );
     
     /// The force of the EffectOutput is a spring force from the current
@@ -50,7 +50,7 @@ namespace HAPI {
                                           HAPITime dt );
 
   protected:
-    H3DUtil::AutoRef< Collision::CollisionObject > shape;
+    H3DUtil::AutoRef< Collision::CollisionObject > col_obj;
     HAPIFloat spring_constant;
   };
 }

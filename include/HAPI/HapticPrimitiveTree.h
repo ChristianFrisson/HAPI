@@ -49,8 +49,7 @@ namespace HAPI {
               void (*_clean_up_func)( void * ) = 0
              ):
       HAPIHapticShape( _surface, _touchable_face, _userdata,
-                       _shape_id, _clean_up_func ),
-      primitives( _primitives ) {
+                       _shape_id, _clean_up_func ) {
       tree = new Collision::AABBPrimitiveTree( _primitives  );
     }
 
@@ -64,8 +63,8 @@ namespace HAPI {
               int _shape_id = -1, 
               void (*_clean_up_func)( void * ) = 0 ):
       HAPIHapticShape( _userdata, _surface,  
-                       _shape_id, _touchable_face ),
-      primitives( begin, end ) {
+                       _shape_id, _touchable_face ) {
+        tree = new Collision::AABBPrimitiveTree( begin, end );
       }
 
     /// An upper bound on how many triangles are renderered.
@@ -158,11 +157,7 @@ namespace HAPI {
     /// shape, i.e. ignoring the transform matrix in the shape.
     virtual void glRenderShape();
 
-    /// The primitives
-    H3DUtil::AutoRefVector< Collision::GeometryPrimitive > primitives;
-    string tree_type;
-    Collision::BBPrimitiveTree *tree;
-      
+    Collision::BBPrimitiveTree *tree;      
   };
 }
 
