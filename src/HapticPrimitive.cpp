@@ -63,8 +63,7 @@ void HapticPrimitive::getConstraintsOfShape( const Vec3 &point,
 }
 
 void HapticPrimitive::glRenderShape() {
-// TODO: fix so that can choose solid or not.
-  return primitive->render();
+  primitive->render();
 }
 
 void HapticPrimitive::getTangentSpaceMatrixShape( const Vec3 &point,

@@ -87,7 +87,10 @@ void HapticPrimitiveSet::getConstraintsOfShape( const Vec3 &point,
 }
 
 void HapticPrimitiveSet::glRenderShape() {
-  // TODO:
+  for( PrimitiveVector::const_iterator i = primitives.begin();
+       i != primitives.end(); i++ ) {
+    (*i)->render();
+  }
 }
 
 void HapticPrimitiveSet::closestPointOnShape( const Vec3 &p,

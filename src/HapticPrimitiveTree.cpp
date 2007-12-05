@@ -63,8 +63,7 @@ void HapticPrimitiveTree::getConstraintsOfShape( const Vec3 &point,
 }
 
 void HapticPrimitiveTree::glRenderShape() {
-// TODO: fix 
-//  return tree->render();
+  tree->render();
 }
 
 void HapticPrimitiveTree::getTangentSpaceMatrixShape( const Vec3 &point,

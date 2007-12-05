@@ -92,7 +92,7 @@ void AABoxBound::render() {
   glVertex3d( max.x, min.y, min.z );
   glVertex3d( min.x, min.y, min.z );
   glEnd();
-  
+
   glBegin( GL_LINE_STRIP );
   glVertex3d( min.x, min.y, max.z );
   glVertex3d( min.x, max.y, max.z );
@@ -100,7 +100,7 @@ void AABoxBound::render() {
   glVertex3d( max.x, min.y, max.z );
   glVertex3d( min.x, min.y, max.z );
   glEnd();
-  
+
   glBegin( GL_LINES );
   glVertex3d( min.x, min.y, max.z );
   glVertex3d( min.x, min.y, min.z );
@@ -239,17 +239,19 @@ bool SphereBound::lineIntersect( const Vec3 &from,
   return sphere.lineIntersect( from, to, result, face );
 }
 
-void SphereBound::render( ) {
+void SphereBound::render() {
   if( !gl_quadric ) gl_quadric = gluNewQuadric();
   glDisable( GL_LIGHTING );
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glTranslated( center.x, center.y, center.z );
   glColor3d( 1, 1, 0 );
+  glPushAttrib( GL_POLYGON_BIT );
   glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
   gluSphere( gl_quadric, radius, 10, 10 );
   glPopMatrix();
-  glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+  glPopAttrib();
   glEnable( GL_LIGHTING );
 }
 
@@ -644,30 +646,9 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 }
 
 void BinaryBoundTree::render() {
-  render( 0 );
-}
-
-void Triangle::render() {
-
-  glDisable( GL_LIGHTING );
-  glColor3d( 0, 0, 1 );
-  glBegin( GL_LINE_STRIP );
-  glVertex3d( a.x, a.y, a.z );
-  glVertex3d( b.x, b.y, b.z );
-  glVertex3d( c.x, c.y, c.z );
-  glVertex3d( a.x, a.y, a.z );
-  glEnd();
-  glEnable( GL_LIGHTING );
-}
-
-void BinaryBoundTree::render( int depth) {
   if( !isLeaf() ) {
-    if( depth == 0 ) {
-      bound->render();
-    } else {
-      if( left.get() ) left->render( depth - 1 );
-      if( right.get() ) right->render( depth - 1 );
-    }
+    if( left.get() ) left->render();
+    if( right.get() ) right->render();
   } else {
     for( unsigned int i = 0; i < triangles.size(); i++ ) { 
       triangles[i].render();
@@ -678,6 +659,40 @@ void BinaryBoundTree::render( int depth) {
     for( unsigned int i = 0; i < points.size(); i++ ) { 
       points[i].render();
     }
+  }
+}
+
+void Triangle::render() {
+  glColor3d( 0, 0, 1 );
+  glBegin( GL_TRIANGLES );
+  glNormal3d( normal.x, normal.y, normal.z );
+  glVertex3d( a.x, a.y, a.z );
+  glVertex3d( b.x, b.y, b.z );
+  glVertex3d( c.x, c.y, c.z );
+  glEnd();
+}
+
+void BinaryBoundTree::renderBounds( int depth ) {
+  if( !isLeaf() ) {
+    if( depth == 0 ) {
+      bound->render();
+    } else {
+      if( left.get() ) left->renderBounds( depth - 1 );
+      if( right.get() ) right->renderBounds( depth - 1 );
+    }
+  } else {
+    glPushAttrib( GL_POLYGON_BIT );
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    for( unsigned int i = 0; i < triangles.size(); i++ ) { 
+      triangles[i].render();
+    }
+    for( unsigned int i = 0; i < linesegments.size(); i++ ) { 
+      linesegments[i].render();
+    }
+    for( unsigned int i = 0; i < points.size(); i++ ) { 
+      points[i].render();
+    }
+    glPopAttrib();
   }
 }
 
@@ -1546,7 +1561,7 @@ bool OrientedBoxBound::insideBound( const Vec3 &p ) {
            rp.z >= min.z );
 }
 
-void OrientedBoxBound::render( ) {
+void OrientedBoxBound::render() {
   Vec3 center = -orientation * ((max + min)/2);
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
@@ -1564,7 +1579,7 @@ void OrientedBoxBound::render( ) {
   glVertex3d( maxf.x, minf.y, minf.z );
   glVertex3d( minf.x, minf.y, minf.z );
   glEnd();
-  
+
   glBegin( GL_LINE_STRIP );
   glVertex3d( minf.x, minf.y, maxf.z );
   glVertex3d( minf.x, maxf.y, maxf.z );
@@ -1572,7 +1587,7 @@ void OrientedBoxBound::render( ) {
   glVertex3d( maxf.x, minf.y, maxf.z );
   glVertex3d( minf.x, minf.y, maxf.z );
   glEnd();
-  
+
   glBegin( GL_LINES );
   glVertex3d( minf.x, minf.y, maxf.z );
   glVertex3d( minf.x, minf.y, minf.z );
@@ -1933,6 +1948,36 @@ bool Plane::movingSphereIntersect( HAPIFloat radius,
   return false;
 }
 
+void Plane::render() {
+  // This rendering will of course not work in all cases. How do you actually
+  // render a plane? It needs to be infitely big to be accurate.
+  // max_length * 2 is approximately the length between triangle edges.
+  if( normal.lengthSqr() > Constants::epsilon ) {
+    Vec3 rand_point( rand(), rand(), rand() );
+    Vec3 point_in_plane, dummy;
+    closestPoint( rand_point, point_in_plane, dummy, dummy );
+    while( (point - point_in_plane ).lengthSqr() <= Constants::epsilon ) {
+      rand_point = Vec3( rand(), rand(), rand() );
+      closestPoint( rand_point, point_in_plane, dummy, dummy );
+    }
+
+    Vec3 t1 = (point_in_plane - point );
+    t1.normalize();
+    Vec3 t2 = normal % t1;
+    t2.normalize();
+
+    HAPIFloat max_length = 1e10;
+    t1 = t1 * max_length;
+    t2 = t2 * max_length;
+
+    glBegin( GL_TRIANGLES );
+    glNormal3d( normal.x, normal.y, normal.z );
+    glVertex3d( t2.x, t2.y, t2.z );
+    glVertex3d( -t2.x - t1.x, -t2.y - t1.y, -t2.z - t1.z );
+    glVertex3d( -t2.x + t1.x, -t2.y + t1.y, -t2.z + t1.z );
+    glEnd();
+  }
+}
 
 bool Sphere::lineIntersect( const Vec3 &from, 
                             const Vec3 &to,
@@ -2081,6 +2126,62 @@ bool Sphere::movingSphereIntersect( HAPIFloat r,
   if( t < 0.0f || t > 1.0f ) return false;
 
   return true;
+}
+
+void Sphere::render() {
+  HAPIFloat theta_parts = 50, phi_parts = 25;
+
+  HAPIFloat inc_theta = (HAPIFloat) H3DUtil::Constants::pi*2 / theta_parts;
+  HAPIFloat inc_phi =   (HAPIFloat) H3DUtil::Constants::pi / phi_parts;
+
+  HAPIFloat r = radius;
+  
+  HAPIFloat double_pi = (HAPIFloat) H3DUtil::Constants::pi * 2;
+
+  glColor3d( 0, 0, 1 );
+  glBegin( GL_QUADS );
+
+  for (unsigned int p = 0; p < phi_parts; p++ ) {
+    for (unsigned int t = 0; t < theta_parts; t++ ) {
+      HAPIFloat phi = p * inc_phi;
+      HAPIFloat theta = t * inc_theta;
+      HAPIFloat next_phi = phi + inc_phi;
+      bool at_seam = t == theta_parts - 1;
+      HAPIFloat next_theta = ( at_seam ? 0 :theta + inc_theta );
+
+      HAPIFloat x, y, z;
+
+      x = - H3DUtil::H3DSin( phi ) * H3DUtil::H3DSin( theta );
+      y = H3DUtil::H3DCos( phi );
+      z = - H3DUtil::H3DSin( phi ) * H3DUtil::H3DCos( theta );
+
+      glNormal3d( x, y, z );
+      glVertex3d( (center.x + x * r), (center.y + y * r), (center.z + z * r ) );
+
+      x = - H3DUtil::H3DSin( next_phi ) * H3DUtil::H3DSin( theta );
+      y = H3DUtil::H3DCos( next_phi );
+      z = - H3DUtil::H3DSin( next_phi ) * H3DUtil::H3DCos( theta );
+
+      glNormal3d( x, y, z );
+      glVertex3d( (center.x + x * r), (center.y + y * r), (center.z + z * r ) );
+
+      x = - H3DUtil::H3DSin( next_phi ) * H3DUtil::H3DSin( next_theta );
+      y = H3DUtil::H3DCos( next_phi );
+      z = - H3DUtil::H3DSin( next_phi ) * H3DUtil::H3DCos( next_theta );
+
+      glNormal3d( x, y, z );
+      glVertex3d( (center.x + x * r), (center.y + y * r), (center.z + z * r ) );
+
+      x = - H3DUtil::H3DSin( phi ) * H3DUtil::H3DSin( next_theta );
+      y = H3DUtil::H3DCos( phi );
+      z = - H3DUtil::H3DSin( phi ) * H3DUtil::H3DCos( next_theta );
+
+      glNormal3d( x, y, z );
+      glVertex3d( (center.x + x * r), (center.y + y * r), (center.z + z * r ) );
+    }
+  }
+
+  glEnd();
 }
 
 void BinaryBoundTree::getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
@@ -2583,21 +2684,31 @@ bool BBPrimitiveTree::movingSphereIntersect( HAPIFloat radius,
 }
 
 void BBPrimitiveTree::render() {
-  render( 0 );
-}
-
-void BBPrimitiveTree::render( int depth) {
   if( !isLeaf() ) {
-    if( depth == 0 ) {
-      bound->render();
-    } else {
-      if( left.get() ) left->render( depth - 1 );
-      if( right.get() ) right->render( depth - 1 );
-    }
+    if( left.get() ) left->render();
+    if( right.get() ) right->render();
   } else {
     for( unsigned int i = 0; i < primitives.size(); i++ ) { 
       primitives[i]->render();
     }
+  }
+}
+
+void BBPrimitiveTree::renderBounds( int depth ) {
+  if( !isLeaf() ) {
+    if( depth == 0 ) {
+      bound->render();
+    } else {
+      if( left.get() ) left->renderBounds( depth - 1 );
+      if( right.get() ) right->renderBounds( depth - 1 );
+    }
+  } else {
+    glPushAttrib( GL_POLYGON_BIT );
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    for( unsigned int i = 0; i < primitives.size(); i++ ) { 
+      primitives[i]->render();
+    }
+    glPopAttrib();
   }
 }
 
