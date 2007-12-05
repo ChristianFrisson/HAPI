@@ -71,14 +71,14 @@ namespace HAPI {
       HAPIHapticObject( ),
       Collision::CollisionObject( true ),
 
-      clean_up_func( _clean_up_func ),
-      surface( _surface ),
       userdata( _userdata ),
       shape_id( _shape_id ),
       touchable_face( _touchable_face ),
-      transform( _transform ),
+      surface( _surface ),
+      have_transform( true ),
       have_inverse( false ),
-      have_transform( true ) {
+      transform( _transform ),
+      clean_up_func( _clean_up_func ) {
       inverse = transform.inverse();
     }
 
@@ -92,13 +92,14 @@ namespace HAPI {
                      ):
       HAPIHapticObject( ),
       Collision::CollisionObject( true ),
-      clean_up_func( _clean_up_func ),
-      surface( _surface ),
+
       userdata( _userdata ),
       shape_id( _shape_id ),
       touchable_face( _touchable_face ),
+      surface( _surface ),
+      have_transform( false ),
       have_inverse( false ),
-      have_transform( false ) {}
+      clean_up_func( _clean_up_func ) {}
 
     /// Destructor.
     virtual ~HAPIHapticShape();

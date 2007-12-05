@@ -97,11 +97,11 @@ namespace HAPI {
     /// Constructor.
     HAPIHapticsDevice() :
       thread( NULL ),
+      switching_effects( false ),
+      time_in_last_loop( 0 ),
       device_state( UNINITIALIZED ),
       delete_thread( false ),
-      time_in_last_loop( 0 ),
       setup_haptic_rendering_callback( true ),
-      switching_effects( false ),
       haptic_rendering_cb_handle( -1 ) {
       setHapticsRenderer( NULL );
       haptic_rendering_callback_data = this;
@@ -948,8 +948,8 @@ namespace HAPI {
       duration( _duration ),
       start_time( _start_time ),
       phase_in( _phase_in ),
-      set_max_fraction( _set_max_fraction ),
-      max_fraction( _max_fraction ) {}
+      max_fraction( _max_fraction ),
+      set_max_fraction( _set_max_fraction ) {}
 
       /// returns a fraction to use for interpolation. The return value
       /// is not normalized and could be bigger than 1 and smaller than 0.
