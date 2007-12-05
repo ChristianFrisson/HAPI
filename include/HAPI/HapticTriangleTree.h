@@ -54,12 +54,20 @@ namespace HAPI {
 
     /// An upper bound on how many triangles are renderered.
     virtual int nrTriangles() {
-      // todo: Perhaps implement a counting variabel in the tree.
-      // getalltriangles and then size feels a bit unneccesary.
-      return -1;
+      return countTriangles( tree );
     }
     
   protected:
+    inline int countTriangles( Collision::BinaryBoundTree * _tree ) {
+      if( _tree == 0 )
+        return 0;
+      
+      if( _tree->isLeaf() )
+        return _tree->triangles.size();
+      
+      return countTriangles( _tree->left.get() ) +
+             countTriangles( _tree->right.get() );
+    }
 
     /// Detect collision between a line segment and the object.
     /// \param from The start of the line segment(in local coords).
