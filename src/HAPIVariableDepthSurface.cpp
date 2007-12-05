@@ -48,10 +48,10 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
   static_friction( _static_friction ),
   dynamic_friction( _dynamic_friction ),
   func( _func ),
-  max_iterations( _max_iterations ),
   minimization_epsilon( _minimization_epsilon ),
-  in_static_contact( true ),
-  depth_invert( false ) {
+  max_iterations( _max_iterations ),
+  depth_invert( false ),
+  in_static_contact( true ) {
 }
 
 void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
