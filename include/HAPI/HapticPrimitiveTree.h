@@ -69,29 +69,54 @@ namespace HAPI {
 
     /// An upper bound on how many triangles are renderered.
     virtual int nrTriangles() {
-      // TODO: decide if there is useful to traverse the tree,
-      // it will take a lot of time to traverse ( O(n) ).
-      // Also a bunch of push_backs.
-      return -1;
+      return countPrimitives< Collision::Triangle >( tree );
     }
 
     /// An upper bound on how many points are renderered.
     virtual int nrPoints() {
-      // TODO: decide if there is useful to traverse the tree,
-      // it will take a lot of time to traverse ( O(n) ).
-      // Also a bunch of push_backs.
-      return -1;
+      return countPrimitives< Collision::Point >( tree );
     }
 
     /// An upper bound on how many lines are renderered.
     virtual int nrLines() {
-      // TODO: decide if there is useful to traverse the tree,
-      // it will take a lot of time to traverse ( O(n) ).
-      // Also a bunch of push_backs.
-      return -1;
+      return countPrimitives< Collision::LineSegment >( tree );
     }
 
   protected:
+
+    typedef H3DUtil::AutoRefVector< Collision::GeometryPrimitive >
+      PrimitiveVector;
+
+    template< class ClassToCount >
+    inline int countPrimitives( Collision::BBPrimitiveTree *_tree ) {
+      if( _tree == 0 )
+        return 0;
+      
+      if( _tree->isLeaf() ) {
+        int counter = 0;
+        for( PrimitiveVector::const_iterator i = _tree->primitives.begin();
+             i != _tree->primitives.end(); i++ ) {
+          if( dynamic_cast< ClassToCount * >( *i ) )
+            counter++;
+          else if( dynamic_cast< Collision::Plane * >( *i ) ||
+            dynamic_cast< Collision::Sphere * >( *i ) ) {
+            counter = -1;
+            break;
+          }
+        }
+        return counter;
+      }
+
+      int left_counter = countPrimitives< ClassToCount >( _tree->left.get() );
+      if( left_counter == -1 )
+        return -1;
+      
+      int right_counter = countPrimitives< ClassToCount >( _tree->right.get());
+      if( right_counter == -1 )
+        return -1;
+      
+      return left_counter + right_counter;
+    }
 
     /// Detect collision between a line segment and the object.
     /// \param from The start of the line segment(in local coords).
