@@ -115,7 +115,9 @@ class Constraints;
                                           const Vec3 &from, 
                                           const Vec3 &to ){ return false; }// = 0;
     
-    /// Render the outlines of the object for debugging purposes.
+    /// Render the object. The caller of the function need to set up OpenGL
+    /// state in case the rendering should be done differently
+    /// (wireframe for example).
     virtual void render() {}
   };
 
@@ -255,6 +257,10 @@ class Constraints;
                                           const Vec3 &from, 
                                           const Vec3 &to );
 
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
+      virtual void render();
 
       Vec3 point, normal;
     };
@@ -315,6 +321,10 @@ class Constraints;
                                           const Vec3 &from, 
                                           const Vec3 &to );
 
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
+      virtual void render();
 
       /// The coordinate of the center of the sphere.
       Vec3 center;
@@ -406,7 +416,9 @@ class Constraints;
         return ( a + b + c ) / 3;
       }
 
-      /// Render the outlines of the object for debugging purposes.
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
       virtual void render();
       
       
@@ -480,7 +492,9 @@ class Constraints;
         return ( start + end ) / 2;
       }
 
-      /// Render the outlines of the object for debugging purposes.
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
       virtual void render();
       
       /// The start of the line segment.
@@ -551,7 +565,9 @@ class Constraints;
         return position;
       }
 
-      /// Render the outlines of the object for debugging purposes.
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
       virtual void render();
       
       /// The position of the point
@@ -561,7 +577,9 @@ class Constraints;
     /// The AABoxBound class represents an axis-aligned bounding box.
     class HAPI_API AABoxBound: public BoundPrimitive {
     public:
-      /// Render the outlines of the object for debugging purposes.
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
       virtual void render();
 
       /// Returns true if the given point is inside the bound, and
@@ -658,7 +676,9 @@ class Constraints;
     /// The OrientedBoxBound class represents an oriented bounding box.
     class HAPI_API OrientedBoxBound: public AABoxBound {
     public:
-      /// Render the outlines of the object for debugging purposes.
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
       virtual void render();
 
       /// Returns true if the given point is inside the bound, and
@@ -722,7 +742,9 @@ class Constraints;
         center (c), radius(r), 
         gl_quadric( NULL ) {}
       
-      /// Render the outlines of the object for debugging purposes.
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
       virtual void render();
 
       /// Returns true if the given point is inside the bound, and
@@ -878,12 +900,14 @@ class Constraints;
                     vector< LineSegment > &lines,
                     vector< Point > &points );
 
-      /// Render the outlines of the object for debugging purposes.
+      /// Render the objects in the leafs. The caller of the function need to
+      /// set up OpenGL state in case the rendering should be done differently
+      /// (wireframe for example).
       virtual void render();
 
       /// Render the outlines of the tree at a given tree depth for debugging 
       /// purposes.
-      virtual void render( int depth );
+      virtual void renderBounds( int depth );
 
       /// Returns true if the given point is inside the bound, and
       /// false otherwise.
@@ -1135,12 +1159,14 @@ class Constraints;
                       Vec3 to,
                       vector< GeometryPrimitive * > &primitives);
 
-      /// Render the outlines of the object for debugging purposes.
+      /// Render the objects in the leafs. The caller of the function need to
+      /// set up OpenGL state in case the rendering should be done differently
+      /// (wireframe for example).
       virtual void render();
 
       /// Render the outlines of the tree at a given tree depth for debugging 
       /// purposes.
-      virtual void render( int depth );
+      virtual void renderBounds( int depth );
 
       /// Returns true if the given point is inside the bound, and
       /// false otherwise.

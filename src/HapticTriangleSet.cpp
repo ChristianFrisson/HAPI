@@ -133,17 +133,9 @@ void HapticTriangleSet::getConstraintsOfShape( const Vec3 &point,
 }
 
 void HapticTriangleSet::glRenderShape() {
-  glPushAttrib( GL_POLYGON_BIT );
-  glDisable( GL_CULL_FACE );
-  glBegin( GL_TRIANGLES );
   for( unsigned int i = 0; i < triangles.size(); i++ ) {
-    HAPI::Collision::Triangle &t = triangles[i];
-    glVertex3d( t.a.x, t.a.y, t.a.z );
-    glVertex3d( t.b.x, t.b.y, t.b.z );
-    glVertex3d( t.c.x, t.c.y, t.c.z );
+    triangles[i].render();
   }
-  glEnd();
-  glPopAttrib();
 }
 
 void HapticTriangleSet::closestPointOnShape( const Vec3 &p,

@@ -64,8 +64,7 @@ void HapticTriangleTree::getConstraintsOfShape( const Vec3 &point,
 }
 
 void HapticTriangleTree::glRenderShape() {
-// TODO: fix 
-//  return tree->render();
+  tree->render();
 }
 
 void HapticTriangleTree::getTangentSpaceMatrixShape( const Vec3 &point,
