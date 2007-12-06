@@ -35,6 +35,46 @@
 using namespace HAPI;
 using namespace Collision;
 
+namespace CollisionInternals {
+  // Used by Sphere::getTangentSpaceMatrix
+  HAPIFloat pi_inv = 1 / H3DUtil::Constants::pi;
+  HAPIFloat two_pi_inv = pi_inv / 2;
+
+  // Used by Sphere and SphereBound for rendering of a sphere.
+  H3DUtil::MutexLock nr_of_spheres_lock;
+  unsigned int nr_of_spheres = 0;
+  GLuint sphere_display_list_id;
+  bool sphere_display_list_created = false;
+  
+  void createSphereDisplayList() {
+    if( !sphere_display_list_created ) {
+      sphere_display_list_id = glGenLists(1);
+      glNewList( sphere_display_list_id, GL_COMPILE );
+      GLUquadricObj* pObj = gluNewQuadric(); 
+      gluSphere(pObj, 1, 10, 10); 
+      gluDeleteQuadric(pObj); 
+      glEndList();
+      sphere_display_list_created = true;
+    }
+  }
+
+  void increaseSphereCounter() {
+    nr_of_spheres_lock.lock();
+    nr_of_spheres++;
+    nr_of_spheres_lock.unlock();
+  }
+
+  void decreseSphereCounter() {
+    nr_of_spheres_lock.lock();
+    nr_of_spheres--;
+    if( nr_of_spheres == 0 && sphere_display_list_created ) {
+      glDeleteLists( sphere_display_list_id, 1 );
+      sphere_display_list_created = false;
+    }
+    nr_of_spheres_lock.unlock();
+  }
+}
+
 bool Collision::intersectSegmentCylinder( Vec3 sa, Vec3 sb,
                                        Vec3 p, Vec3 q,
                                        HAPIFloat r, 
@@ -184,6 +224,18 @@ bool AABoxBound::insideBound( const Vec3 &p ) {
            p.z >= min.z );
 }
 
+SphereBound::SphereBound() {
+  CollisionInternals::increaseSphereCounter();
+}
+
+SphereBound::SphereBound(const Vec3& c, HAPIFloat r): center (c), radius(r) {
+  CollisionInternals::increaseSphereCounter();
+}
+
+SphereBound::~SphereBound() {
+  CollisionInternals::decreseSphereCounter();
+}
+
 void SphereBound::closestPoint( const Vec3 &p,
                                 Vec3 &closest_point,
                                 Vec3 &normal,
@@ -240,18 +292,19 @@ bool SphereBound::lineIntersect( const Vec3 &from,
 }
 
 void SphereBound::render() {
-  if( !gl_quadric ) gl_quadric = gluNewQuadric();
+  CollisionInternals::createSphereDisplayList();
+
   glDisable( GL_LIGHTING );
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glTranslated( center.x, center.y, center.z );
+  glScaled( radius, radius, radius );
   glColor3d( 1, 1, 0 );
   glPushAttrib( GL_POLYGON_BIT );
   glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-  gluSphere( gl_quadric, radius, 10, 10 );
-  glPopMatrix();
+  glCallList( CollisionInternals::sphere_display_list_id );
   glPopAttrib();
+  glPopMatrix();
   glEnable( GL_LIGHTING );
 }
 
@@ -663,7 +716,6 @@ void BinaryBoundTree::render() {
 }
 
 void Triangle::render() {
-  glColor3d( 0, 0, 1 );
   glBegin( GL_TRIANGLES );
   glNormal3d( normal.x, normal.y, normal.z );
   glVertex3d( a.x, a.y, a.z );
@@ -1716,7 +1768,6 @@ void BinaryBoundTree::getPrimitivesWithinRadius( const Vec3 &p,
 
 void LineSegment::render() {
   glDisable( GL_LIGHTING );
-  glColor3d( 0, 0, 1 );
   glBegin( GL_LINES );
   glVertex3d( start.x, start.y, start.z );
   glVertex3d( end.x, end.y, end.z );
@@ -1843,7 +1894,6 @@ HAPIFloat LineSegment::closestPointOnLine( const Vec3 &from, const Vec3 &to,
   
 void Collision::Point::render() {
   glDisable( GL_LIGHTING );
-  glColor3d( 0, 0, 1 );
   glBegin( GL_POINTS );
   glVertex3d( position.x, position.y, position.z );
   glEnd();
@@ -1977,6 +2027,15 @@ void Plane::render() {
     glVertex3d( -t2.x + t1.x, -t2.y + t1.y, -t2.z + t1.z );
     glEnd();
   }
+}
+
+Sphere::Sphere( const Vec3 &_center, HAPIFloat _radius ):
+  center( _center ), radius( _radius ) {
+  CollisionInternals::increaseSphereCounter();
+}
+
+Sphere::~Sphere() {
+  CollisionInternals::decreseSphereCounter();
 }
 
 bool Sphere::lineIntersect( const Vec3 &from, 
@@ -2129,59 +2188,13 @@ bool Sphere::movingSphereIntersect( HAPIFloat r,
 }
 
 void Sphere::render() {
-  HAPIFloat theta_parts = 50, phi_parts = 25;
-
-  HAPIFloat inc_theta = (HAPIFloat) H3DUtil::Constants::pi*2 / theta_parts;
-  HAPIFloat inc_phi =   (HAPIFloat) H3DUtil::Constants::pi / phi_parts;
-
-  HAPIFloat r = radius;
-  
-  HAPIFloat double_pi = (HAPIFloat) H3DUtil::Constants::pi * 2;
-
-  glColor3d( 0, 0, 1 );
-  glBegin( GL_QUADS );
-
-  for (unsigned int p = 0; p < phi_parts; p++ ) {
-    for (unsigned int t = 0; t < theta_parts; t++ ) {
-      HAPIFloat phi = p * inc_phi;
-      HAPIFloat theta = t * inc_theta;
-      HAPIFloat next_phi = phi + inc_phi;
-      bool at_seam = t == theta_parts - 1;
-      HAPIFloat next_theta = ( at_seam ? 0 :theta + inc_theta );
-
-      HAPIFloat x, y, z;
-
-      x = - H3DUtil::H3DSin( phi ) * H3DUtil::H3DSin( theta );
-      y = H3DUtil::H3DCos( phi );
-      z = - H3DUtil::H3DSin( phi ) * H3DUtil::H3DCos( theta );
-
-      glNormal3d( x, y, z );
-      glVertex3d( (center.x + x * r), (center.y + y * r), (center.z + z * r ) );
-
-      x = - H3DUtil::H3DSin( next_phi ) * H3DUtil::H3DSin( theta );
-      y = H3DUtil::H3DCos( next_phi );
-      z = - H3DUtil::H3DSin( next_phi ) * H3DUtil::H3DCos( theta );
-
-      glNormal3d( x, y, z );
-      glVertex3d( (center.x + x * r), (center.y + y * r), (center.z + z * r ) );
-
-      x = - H3DUtil::H3DSin( next_phi ) * H3DUtil::H3DSin( next_theta );
-      y = H3DUtil::H3DCos( next_phi );
-      z = - H3DUtil::H3DSin( next_phi ) * H3DUtil::H3DCos( next_theta );
-
-      glNormal3d( x, y, z );
-      glVertex3d( (center.x + x * r), (center.y + y * r), (center.z + z * r ) );
-
-      x = - H3DUtil::H3DSin( phi ) * H3DUtil::H3DSin( next_theta );
-      y = H3DUtil::H3DCos( phi );
-      z = - H3DUtil::H3DSin( phi ) * H3DUtil::H3DCos( next_theta );
-
-      glNormal3d( x, y, z );
-      glVertex3d( (center.x + x * r), (center.y + y * r), (center.z + z * r ) );
-    }
-  }
-
-  glEnd();
+  CollisionInternals::createSphereDisplayList();
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  glTranslated( center.x, center.y, center.z );
+  glScaled( radius, radius, radius );
+  glCallList( CollisionInternals::sphere_display_list_id );
+  glPopMatrix();
 }
 
 void BinaryBoundTree::getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
@@ -2780,11 +2793,6 @@ void Triangle::getTangentSpaceMatrix( const Vec3 &point,
                                0,        0,        0, 1 ).inverse();
 }
 
-namespace CollisionInternal {
-  HAPIFloat pi_inv = 1 / H3DUtil::Constants::pi;
-  HAPIFloat two_pi_inv = pi_inv / 2;
-}
-
 void Sphere::getTangentSpaceMatrix( const Vec3 &point,
                                      Matrix4 &result_mtx ) {
   // Calculated a jacobian with
@@ -2801,15 +2809,15 @@ void Sphere::getTangentSpaceMatrix( const Vec3 &point,
 
 #if 1
   // This part is only done to get an invertable matrix.
-  Vec3 ds_tangent = Vec3( point.z * CollisionInternal::two_pi_inv * x2_z2_inv,
+  Vec3 ds_tangent = Vec3( point.z * CollisionInternals::two_pi_inv * x2_z2_inv,
                           0.0f,
-                          -point.x * CollisionInternal::two_pi_inv
+                          -point.x * CollisionInternals::two_pi_inv
                           * x2_z2_inv );
-  Vec3 dt_tangent = Vec3( -point.x * point.y * CollisionInternal::pi_inv *
+  Vec3 dt_tangent = Vec3( -point.x * point.y * CollisionInternals::pi_inv *
                           sqrt_x2_z2_inv * length_sqr_inv,
-                          -CollisionInternal::pi_inv * x2_z2 * sqrt_x2_z2_inv *
+                         -CollisionInternals::pi_inv * x2_z2 * sqrt_x2_z2_inv *
                           length_sqr_inv * length_sqr_inv,
-                          -point.y * point.z * CollisionInternal::pi_inv *
+                          -point.y * point.z * CollisionInternals::pi_inv *
                           sqrt_x2_z2_inv * length_sqr_inv );
   Vec3 du_tangent = ds_tangent % dt_tangent;
 
@@ -2831,15 +2839,15 @@ void Sphere::getTangentSpaceMatrix( const Vec3 &point,
   result_mtx[3][3] = 1.0f;
 #else
   // Saved in case we want to change back to non invertable matrix
-  result_mtx[0][0] = point.z * CollisionInternal::two_pi_inv * x2_z2_inv;
+  result_mtx[0][0] = point.z * CollisionInternals::two_pi_inv * x2_z2_inv;
   result_mtx[0][1] = 0.0f;
-  result_mtx[0][2] = -point.x * CollisionInternal::two_pi_inv * x2_z2_inv;
+  result_mtx[0][2] = -point.x * CollisionInternals::two_pi_inv * x2_z2_inv;
   result_mtx[0][3] = 0.0f;
-  result_mtx[1][0] = -point.x * point.y * CollisionInternal::pi_inv *
+  result_mtx[1][0] = -point.x * point.y * CollisionInternals::pi_inv *
                       sqrt_x2_z2_inv * length_sqr_inv;
-  result_mtx[1][1] = -CollisionInternal::pi_inv * x2_z2 * sqrt_x2_z2_inv *
+  result_mtx[1][1] = -CollisionInternals::pi_inv * x2_z2 * sqrt_x2_z2_inv *
                       length_sqr_inv * length_sqr_inv;
-  result_mtx[1][2] = -point.y * point.z * CollisionInternal::pi_inv *
+  result_mtx[1][2] = -point.y * point.z * CollisionInternals::pi_inv *
                       sqrt_x2_z2_inv * length_sqr_inv;
   result_mtx[1][3] = 0.0f;
   result_mtx[2][0] = 0.0f;

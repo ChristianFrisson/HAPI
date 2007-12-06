@@ -272,8 +272,10 @@ class Constraints;
       /// Constructor.
       /// \param _center The center of the sphere.
       /// \param _radius The radius of the sphere.
-      Sphere( const Vec3 &_center, HAPIFloat _radius ):
-        center( _center ), radius( _radius ) {}
+      Sphere( const Vec3 &_center, HAPIFloat _radius );
+
+      /// Destructor
+      ~Sphere();
       
       /// Returns a point representing the primitive. In this case it is the 
       /// center of the sphere.
@@ -735,12 +737,13 @@ class Constraints;
     class HAPI_API SphereBound: public BoundPrimitive {
     public:
       /// Default constructor.
-      SphereBound(): gl_quadric( NULL ) {}
+      SphereBound();
 
       /// Constructor.
-      SphereBound(const Vec3& c, HAPIFloat r): 
-        center (c), radius(r), 
-        gl_quadric( NULL ) {}
+      SphereBound(const Vec3& c, HAPIFloat r);
+
+      /// Destructor
+      ~SphereBound();
       
       /// Render the object. The caller of the function need to set up OpenGL
       /// state in case the rendering should be done differently
@@ -808,8 +811,6 @@ class Constraints;
 
       /// The radius of the sphere.
       HAPIFloat radius;
-
-      GLUquadricObj* gl_quadric;
     };
 
     /// The BinaryBoundTree class is the base class for bound objects 
