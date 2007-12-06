@@ -67,6 +67,10 @@ namespace HAPI {
         tree = new Collision::AABBPrimitiveTree( begin, end );
       }
 
+    ~HapticPrimitiveTree() {
+      delete tree;
+    }
+
     /// An upper bound on how many triangles are renderered.
     virtual int nrTriangles() {
       return countPrimitives< Collision::Triangle >( tree );
