@@ -42,8 +42,8 @@ namespace HLThreadInternals {
   H3DUtil::MutexLock callback_handles_lock;
 #ifdef HAVE_OPENHAPTICS
   typedef std::list< std::pair< int, HDSchedulerHandle > > CallbackHandleList;
-#endif
   CallbackHandleList callback_handles;
+#endif
 }
 
 #ifdef HAVE_OPENHAPTICS
