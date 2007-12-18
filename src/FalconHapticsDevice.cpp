@@ -72,10 +72,6 @@ bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 
   device_model = hdlDeviceModel();
   
-  cerr << "Device model: " << device_model << endl;
-  cerr << "Ws max: " << workspace_max << endl;
-  cerr << "Ws min: " << workspace_min << endl;
-
   FalconThread *fl_thread = FalconThread::getInstance();
   thread = fl_thread;
   fl_thread->setActive( true );
@@ -103,7 +99,7 @@ void FalconHapticsDevice::updateDeviceValues( DeviceValues &dv,
   error = hdlGetError();
   if ( error != HDL_NO_ERROR )
     // TODO: do error handling
-	cerr << "Device error: " << error << endl;
+	H3DUtil::Console(4) << "Device error: " << error << endl;
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
   hdlMakeCurrent( device_handle );
 
