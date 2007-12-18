@@ -48,6 +48,31 @@ namespace HAPI {
     /// Destructor.
     virtual ~HapticMasterDevice() {}
 
+    /// Get the handle to the haptics master.
+    inline int getDeviceHandle() {
+      return device_handle;
+    }
+
+    /// Get the name of this device as specified in servers.db.
+    inline string getName() {
+      return device_name;
+    }
+
+    // Access to create spheres on the haptic master. Only temporarily put
+    // into this file.
+    int createSphere( Vec3 center, double radius,
+                      double ext_spring_stiffness,
+                      double int_spring_stiffness,
+                      double ext_damping_factor,
+                      double int_damping_factor,
+                      double ext_thickness,
+                      double int_thickness );
+
+    int deleteSphere( int sphere );
+
+    int setSphereRadius( int sphere, double radius );
+    int setSpherePosition( int sphere, Vec3 pos );
+
     /// Register this renderer to the haptics renderer database.
     static HapticsDeviceRegistration device_registration;
   
