@@ -110,7 +110,7 @@ void FrictionSurface::getForces( ContactInfo &contact_info ) {
 
   Vec3 n_probe_to_origin = probe_to_origin;
   n_probe_to_origin.normalizeSafe();
-  contact_info.setGlobalForce(  probe_to_origin * stiffness +
+  contact_info.setGlobalForce(  probe_to_origin * stiffness -
                                 ( n_probe_to_origin *
                                   contact_info.hapticsDevice()->getVelocity() *
                                   damping ) * n_probe_to_origin );
