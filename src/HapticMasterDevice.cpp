@@ -63,7 +63,19 @@ typedef void	(*LPFNDLLSetForceGetPosition)		(int Device, double Force[3], double
 typedef void	(*LPFNDLLSetForceGetPV)				(int Device, double Force[3], double CurrentPosition[3], double CurrentVelocity[3]);
 typedef void	(*LPFNDLLSetInertia)				(int Device, double Inertia);
 typedef int		(*LPFNDLLGetState)					(int Device);
-typedef void	(*LPFNDLLSetState)					(int Device, int State);;
+typedef void	(*LPFNDLLSetState)					(int Device, int State);
+typedef int	(*LPFNDLLCreateSphere)			(int Device,
+                                           double center[3],
+                                           double Radius,
+                                           double ExtSpringStiffness,
+                                           double IntSpringStiffness,
+                                           double ExtDampingFactor,
+                                           double IntDampingFactor,
+                                           double ExtThickness,
+                                           double IntThickness);
+typedef int	(*LPFNDLLDeleteSphere)		  (int Device, int Sphere);
+typedef int	(*LPFNDLLSetSphereRadius)		(int Sphere, double radius);
+typedef int	(*LPFNDLLSetSpherePosition) (int Sphere, double pos[3]);
 
 LPFNDLLOpenHapticMaster			OpenHapticMaster; 
 LPFNDLLCloseHapticMaster		CloseHapticMaster; 
@@ -73,6 +85,10 @@ LPFNDLLSetForceGetPV			SetForceGetPV;
 LPFNDLLSetInertia				SetInertia;
 LPFNDLLGetState					GetState;
 LPFNDLLSetState					SetState;
+LPFNDLLCreateSphere     CreateSphere;
+LPFNDLLDeleteSphere     DeleteSphere;
+LPFNDLLSetSphereRadius  SetSphereRadius;
+LPFNDLLSetSpherePosition  SetSpherePosition;
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
 HapticMasterDevice::device_registration(
@@ -87,7 +103,7 @@ unsigned int HapticMasterDevice::dll_references = 0;
 bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
   if (dll_references == 0 ) {
     // Load the DLL library in memory
-	dll_handle = H3DUtil::DynamicLibrary::load("HapticMasterDriver.dll");
+    dll_handle = H3DUtil::DynamicLibrary::load("HapticMasterDriver.dll");
     
     if( dll_handle ) {
       // Get DLL Function pointers
@@ -186,6 +202,38 @@ void HapticMasterDevice::sendOutput( DeviceOutput &dv,
   // this is sent in updateDeviceValues in order to minimize the number of
   // calls to the haptic master.
 }
+
+int HapticMasterDevice::createSphere( Vec3 pos, double radius,
+                                      double ext_spring_stiffness,
+                                      double int_spring_stiffness,
+                                      double ext_damping_factor,
+                                      double int_damping_factor,
+                                      double ext_thickness,
+                                      double int_thickness ) {
+  double p[] = { pos.x, pos.y, pos.z };
+  return CreateSphere( device_handle, p, radius, 
+                ext_spring_stiffness,
+                int_spring_stiffness,
+                ext_damping_factor,
+                int_damping_factor,
+                ext_thickness,
+                int_thickness );
+}
+
+
+
+int HapticMasterDevice::deleteSphere( int sphere ) {
+  return DeleteSphere( device_handle, sphere );
+}
+
+int HapticMasterDevice::setSphereRadius( int sphere, double radius ) {
+  return SetSphereRadius( sphere, radius );
+}
+int HapticMasterDevice::setSpherePosition( int sphere, Vec3 pos ) {
+  double p[] = { pos.x, pos.y, pos.z };
+  return SetSpherePosition( sphere, p );
+}
+
 
 #endif  // HAVE_HAPTIC_MASTER_API
 
