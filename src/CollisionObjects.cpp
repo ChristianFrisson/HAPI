@@ -1115,6 +1115,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   result.face = intersection_face;
   result.intersection = true;
   result.primitive = this;
+  result.t = t;
   // if( (-qp) * result.normal > 0 ) 
   //  result.normal = -result.normal;
   return true;
@@ -1160,28 +1161,28 @@ cerr << "FD";
   Vec3 P = info.point;
   Sphere sphere( from, radius );
 
-  // TODO: check if P within triangle, then collision
-
   if( res ) {
     bool inside = true;
     Vec3 a0 = a - P;
     Vec3 b0 = b - P;
     Vec3 c0 = c - P;
-    HAPIFloat ab = a * b;
-    HAPIFloat ac = a * c;
-    HAPIFloat bc = b * c;
+    HAPIFloat ab = a0 * b0;
+    HAPIFloat ac = a0 * c0;
+    HAPIFloat bc = b0 * c0;
     // Make sure plane normals for pab and pbc point in the same direction
-    if( bc * ac - (c * c) * ab < 0.0f ) inside = false;
-    else if( ab * bc - ac * (b * b) ) inside = false;
+    if( bc * ac - (c0 * c0) * ab < 0.0f ) inside = false;
+    else if( ab * bc - ac * (b0 * b0) ) inside = false;
 
     if( inside )
       return true;
+
+    Vec3 Q;
+    closestPoint( P, Q, tmp, tmp );
+
+    return sphere.lineIntersect( Q, Q - v, info );
   }
 
-  Vec3 Q;
-  closestPoint( P, Q, tmp, tmp );
-
-  return sphere.lineIntersect( Q, Q - v, info );
+  return false;
 }
 
 // at the moment this function does not return a IntersectionInfo
@@ -1226,12 +1227,12 @@ cerr << "FD";
     Vec3 a0 = a - P;
     Vec3 b0 = b - P;
     Vec3 c0 = c - P;
-    HAPIFloat ab = a * b;
-    HAPIFloat ac = a * c;
-    HAPIFloat bc = b * c;
+    HAPIFloat ab = a0 * b0;
+    HAPIFloat ac = a0 * c0;
+    HAPIFloat bc = b0 * c0;
     // Make sure plane normals for pab and pbc point in the same direction
-    if( bc * ac - (c * c) * ab < 0.0f ) inside = false;
-    else if( ab * bc - ac * (b * b) ) inside = false;
+    if( bc * ac - (c0 * c0) * ab < 0.0f ) inside = false;
+    else if( ab * bc - ac * (b0 * b0) ) inside = false;
     
     if( inside )
       return true;
@@ -1315,6 +1316,156 @@ cerr << "FD";
   }
 
   return intersect;
+}
+
+bool Triangle::movingSphereIntersect( HAPIFloat radius,
+                                      const Vec3 &from, 
+                                      const Vec3 &to,
+                                      IntersectionInfo &result ) {
+  // Using robuster version of movingSphereIntersect with triangle.
+  Vec3 closest, tmp;
+  closestPoint( from, closest, tmp, tmp );
+  Vec3 ttt = from - closest;
+  HAPIFloat aba = ttt * ttt;
+  if( aba <= radius * radius ) {
+    result.intersection = true;
+    result.point = closest;
+    result.normal = ttt;
+    result.normal.normalizeSafe();
+    result.t = 0;
+    return true; 
+  }
+                     
+  Vec3 n = normal;
+
+  Vec3 t = from - a;
+  if( t * n < 0 )
+    n = -n;
+
+  Plane plane( a, n );
+  Sphere sphere( from, radius );
+  IntersectionInfo info;
+  Vec3 v = to - from;
+  plane.closestPoint( from, closest, tmp, tmp );
+
+  // TODO: put this in the other triangle::movingSphereIntersect functions to?
+  if( ( from - closest ).length() <= radius ) {
+    Vec3 Q;
+    closestPoint( closest, Q, tmp, tmp );
+
+    bool res = sphere.lineIntersect( Q, Q - v, info );
+    if( res ) {
+      result.point = info.point;
+      result.intersection = true;
+      result.primitive = this;
+      result.t = info.t;
+      result.normal = ( from + v * result.t ) - result.point;
+      result.normal.normalize();
+      return true;
+    } 
+  }
+
+  Vec3 D = from - radius * n;
+
+  bool res = plane.lineIntersect( D, D + v, info );
+  Vec3 P = info.point;
+
+  // TODO: check if P within triangle, then collision
+
+  if( res ) {
+    bool inside = true;
+    Vec3 a0 = a - P;
+    Vec3 b0 = b - P;
+    Vec3 c0 = c - P;
+    HAPIFloat ab = a0 * b0;
+    HAPIFloat ac = a0 * c0;
+    HAPIFloat bc = b0 * c0;
+    // Make sure plane normals for pab and pbc point in the same direction
+    if( bc * ac - (c0 * c0) * ab < 0.0f ) inside = false;
+    else if( ab * bc - ac * (b0 * b0) < 0.0f ) inside = false;
+
+    if( inside ) {
+      result.point = P;
+      result.intersection = true;
+      result.primitive = this;
+      result.t = info.t;
+      result.normal = ( from + v * result.t ) - result.point;
+      result.normal.normalize();
+      return true;
+    }
+  }
+
+  HAPIFloat closest_t = 5;
+  LineSegment cyl_line( a, c );
+  if( Collision::intersectSegmentCylinder( from, to,
+                                           cyl_line.start,
+                                           cyl_line.end,
+                                           radius,
+                                           aba ) ) {
+    if( aba < closest_t ) closest_t = aba;
+  }
+
+  if( Collision::intersectSegmentCylinder( from, to, b, c, radius, aba ) ) {
+    if( aba < closest_t ) {
+      closest_t = aba;
+      cyl_line.start = b;
+    }
+  }
+
+  if( Collision::intersectSegmentCylinder( from, to, a, b, radius, aba ) ) {
+    if( aba < closest_t ) {
+      closest_t = aba;
+      cyl_line.start = a;
+      cyl_line.end = b;
+    }
+  }
+
+  if( closest_t < 4 ) {
+    result.primitive = this;
+    Vec3 sphere_cent = from + v * closest_t;
+    cyl_line.closestPoint( sphere_cent, result.point, tmp, tmp );
+    result.normal = sphere_cent - result.point;
+    result.normal.normalize();
+    result.intersection = true;
+    result.t = closest_t;
+    return true;
+  }
+
+  sphere.center = a;
+  closest_t = 5;
+  if( sphere.lineIntersect( from, to, info ) ) {
+    if( info.t < closest_t ) {
+      closest_t = info.t;
+      P = sphere.center;
+    }
+  }
+
+  sphere.center = b;
+  if( sphere.lineIntersect( from, to, info ) ) {
+    if( info.t < closest_t ) {
+      closest_t = info.t;
+      P = sphere.center;
+    }
+  }
+
+  sphere.center = c;
+  if( sphere.lineIntersect( from, to, info ) ) {
+    if( info.t < closest_t ) {
+      closest_t = info.t;
+      P = sphere.center;
+    }
+  }
+
+  if( closest_t < 4 ) {
+    result.point = P;
+    result.primitive = this;
+    result.normal = ( from + v * closest_t ) - result.point;
+    result.normal.normalize();
+    result.intersection = true;
+    result.t = closest_t;
+    return true;
+  }
+  return false;
 }
 
 bool BinaryBoundTree::lineIntersect( const Vec3 &from, 
@@ -1407,6 +1558,43 @@ bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
       }
       if (right.get()) 
         overlap = right->movingSphereIntersect( radius,from, to );
+      
+      return overlap;
+    }
+    else return false;
+  }
+}
+
+bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
+                                             const Vec3 &from, 
+                                             const Vec3 &to,
+                                             IntersectionInfo &result ) {
+  if ( isLeaf() )  {
+    IntersectionInfo temp_result;
+    for( unsigned int i = 0; i < triangles.size(); i++ ) {
+      Triangle &t = triangles[i];
+      if( t.movingSphereIntersect( radius, from, to, temp_result ) ) {
+        if( temp_result.intersection ) {
+          if( result.intersection ) {
+            if( temp_result.t < result.t )
+              result = temp_result;
+          } else {
+            result = temp_result;
+          }
+        }
+      }
+    }
+
+    return result.intersection;
+  }  else   {
+    if ( bound->boundMovingSphereIntersect( radius, from, to ) )  {
+      bool overlap = result.intersection;
+      
+      if (left.get()) {
+        overlap = left->movingSphereIntersect( radius, from, to, result );
+      }
+      if (right.get()) 
+        overlap = overlap || right->movingSphereIntersect( radius, from, to, result );
       
       return overlap;
     }
@@ -1908,12 +2096,14 @@ bool Collision::Point::lineIntersect( const Vec3 &from,
   Vec3 ab = to - from;
   // Project c onto ab, but deferring divide by Dot( ab, ab )
   HAPIFloat t = ( position - from ) * ab;
+  //TODO: <=?
   if( t <= 0.0f ) {
     // c project outside the [from, to] interval, on from side.
     return false;
   }
   else {
     HAPIFloat denom = ab * ab;
+    //TODO: >=?
     if( t >= denom ) {
       // c projects outside the [from, to] interval, on to side.
       return false;
@@ -1925,6 +2115,7 @@ bool Collision::Point::lineIntersect( const Vec3 &from,
       if( (position - d).lengthSqr() ) {
         result.point = position;
         result.primitive = this;
+        result.t = t;
         return true;
       }
     }
@@ -1974,6 +2165,7 @@ bool Plane::lineIntersect( const Vec3 &from,
     result.point = from + u * from_to;
     result.normal = normal;
     result.primitive = this;
+    result.t = u;
     return true;
   }
   return false;
@@ -2109,6 +2301,7 @@ bool Sphere::lineIntersect( const Vec3 &from,
   // calculate the intersection point and normal
   result.normal =  p + u*v;
   result.point = result.normal + center;
+  result.t = u;
   //TODO: is this the tex_coord we should use?
   HAPIFloat phi = H3DUtil::H3DAcos( result.normal.y / radius );
   //HAPIFloat theta = H3DUtil::H3DAtan( -result.normal.x / -result.normal.z );
@@ -2183,6 +2376,61 @@ bool Sphere::movingSphereIntersect( HAPIFloat r,
 
   HAPIFloat t = ( -b - H3DUtil::H3DSqrt( d ) ) / a;
   if( t < 0.0f || t > 1.0f ) return false;
+
+  return true;
+}
+
+bool Sphere::movingSphereIntersect( HAPIFloat r,
+                                    const Vec3 &from, 
+                                    const Vec3 &to,
+                                    IntersectionInfo &result ) {
+  // Code from p224 in Realtime Collision detection book
+
+  // Vector between sphere centers
+  Vec3 s = from - center;    
+  // Motion of sphere
+  Vec3 v = to - from;         
+
+  // Sum of sphere radii
+  HAPIFloat radius_sum = radius + r;
+  
+  HAPIFloat c = s * s - radius_sum * radius_sum;
+  if (c < 0.0f) {
+    // Spheres initially overlapping so exit directly
+    // This is only correct if we are only interested in not detecting
+    // when a sphere moves through another sphere from the inside. Might give
+    // problems.
+    // TODO: decide how this should work.
+    result.intersection = true;
+    result.normal = s;
+    result.normal.normalizeSafe();
+    result.primitive = this;
+    result.point = result.normal * radius;
+    result.t = 0.0f;
+    return true;
+  }
+
+  HAPIFloat a = v * v;
+  // Spheres not moving relative each other
+  if (a < Constants::epsilon) return false; 
+  HAPIFloat b = v * s;
+  // Spheres not moving towards each other
+  if (b >= 0.0f) return false; 
+  HAPIFloat d = b * b - a * c;
+  // No real-valued root, spheres do not intersect
+  if (d < 0.0f) return false;  
+
+  HAPIFloat t = ( -b - H3DUtil::H3DSqrt( d ) ) / a;
+  if( t < 0.0f || t > 1.0f ) return false;
+
+  result.t = t;
+  Vec3 moving_center = from + v * t;
+  // normal is the direction from the stationary sphere towards where the
+  // moving sphere will be at time for intersection.
+  result.normal = ( moving_center - center ) / radius_sum;
+  result.point = result.normal * radius;
+  result.intersection = true;
+  result.primitive = this;
 
   return true;
 }
@@ -2859,4 +3107,138 @@ void Sphere::getTangentSpaceMatrix( const Vec3 &point,
   result_mtx[3][2] = 0.0f;
   result_mtx[3][3] = 1.0f;
 #endif
+}
+
+bool Plane::movingSphereIntersect( HAPIFloat radius,
+                                   const Vec3 &from,
+                                   const Vec3 &to,
+                                   IntersectionInfo &result ) {
+  // p 221 in Real Time Collision Detection by Christer Ericsson
+  HAPIFloat d = normal * point;
+  HAPIFloat dist = normal * from - d;
+  if( H3DUtil::H3DAbs( dist ) <= radius ) {
+    result.t = 0;
+    result.intersection = true;
+    if( dist > 0.0 )
+      result.normal = normal;
+    else
+      result.normal = -normal;
+    Vec3 tmp;
+    closestPoint( from, result.point, tmp, tmp );
+    result.primitive = this;
+    return true;
+  } else {
+    Vec3 v = to - from;
+    HAPIFloat denom = normal * v;
+    if( denom * dist >= 0.0 ) {
+      return false;
+    } else {
+      HAPIFloat r = dist > 0.0 ? radius : -radius;
+      result.t = ( r - dist ) / denom;
+      result.point = from + result.t * v - radius * normal;
+      result.intersection = true;
+      if( dist > 0.0 )
+        result.normal = normal;
+      else
+        result.normal = -normal;
+      result.primitive = this;
+      return true;
+    }
+  }
+  return false;
+}
+
+bool LineSegment::movingSphereIntersect( HAPIFloat radius,
+                                         const Vec3& from,
+                                         const Vec3& to,
+                                         IntersectionInfo &result ) {
+  //TODO: do it proper and faster.
+  HAPIFloat t;
+  bool hit = intersectSegmentCylinder( from, to, start, end, radius, t );
+  Sphere sphere( start, radius );
+  IntersectionInfo temp_result;
+  if( sphere.lineIntersect( from, to, temp_result ) ) {
+    if( hit ) {
+      if( temp_result.t < t )
+        t = temp_result.t;
+    } else {
+      t = temp_result.t;
+      hit = true;
+    }
+  }
+
+  sphere.center = end;
+  if( sphere.lineIntersect( from, to, temp_result ) ) {
+    if( hit ) {
+      if( temp_result.t < t )
+        t = temp_result.t;
+    } else {
+      t = temp_result.t;
+      hit = true;
+    }
+  }
+
+  if( hit ) {
+    result.t = t;
+    Vec3 center_point = from + (to - from ) * t;
+    Vec3 tmp;
+    closestPoint( center_point, result.point, tmp, tmp );
+    result.normal = center_point - result.point;
+    result.normal.normalizeSafe();
+    result.primitive = this;
+    result.intersection = true;
+    return true;
+  }
+  return false;
+}
+
+bool Point::movingSphereIntersect( HAPIFloat radius,
+                                   const Vec3 &from,
+                                   const Vec3 &to,
+                                   IntersectionInfo &result ) {
+  Sphere sphere( position, radius );
+  if( sphere.lineIntersect( from, to, result ) ) {
+    result.normal = ( from + ( to - from ) * result.t ) - position;
+    result.normal.normalize();
+    result.point = position;
+    return true;
+  }
+  return false;
+}
+
+bool BBPrimitiveTree::movingSphereIntersect( HAPIFloat radius,
+                                             const Vec3 &from, 
+                                             const Vec3 &to,
+                                             IntersectionInfo &result ) {
+  if ( isLeaf() )  {
+    IntersectionInfo temp_result;
+    for( unsigned int i = 0; i < primitives.size(); i++ ) {
+      GeometryPrimitive *pr = primitives[i];
+      if( pr->movingSphereIntersect( radius, from, to, temp_result ) ) {
+        if( temp_result.intersection ) {
+          if( result.intersection ) {
+            if( temp_result.t < result.t )
+              result = temp_result;
+          } else {
+            result = temp_result;
+          }
+        }
+      }
+    }
+
+    return result.intersection;
+  }  else   {
+    if ( bound->boundMovingSphereIntersect( radius, from, to ) )  {
+      bool overlap = result.intersection;
+      
+      if (left.get()) {
+        overlap = left->movingSphereIntersect( radius, from, to, result );
+      }
+      if (right.get()) 
+        overlap = overlap || right->movingSphereIntersect( radius, from, to, result );
+      
+      return overlap;
+    }
+    else return false;
+  }
 }

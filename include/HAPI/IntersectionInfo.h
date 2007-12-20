@@ -54,7 +54,8 @@ namespace HAPI {
       point( _point ),
       normal( _normal ),
       tex_coord( _tex_coord ),
-      id( _id ) { intersection = false; }
+      id( _id ),
+      intersection( false ) {}
 
       /// The intersection point.
       Vec3 point;
@@ -68,7 +69,16 @@ namespace HAPI {
       /// The face that was intersected. BACK or FRONT.
       FaceType face;
 
+      /// True if IntersectionInfo has been used when an intersection
+      /// was detected. This can be used as an indication that some/all of
+      /// the properties of the IntersectionInfo has been set to something
+      /// useful.
       bool intersection;
+
+      /// Point along a line where intersection occurs. Used by collision
+      /// functions that detects collision along a line
+      /// ( lineIntersect, movingSphereIntersect ).
+      HAPIFloat t;
 
       /// The primitive that was intersected.
       GeometryPrimitive * primitive;

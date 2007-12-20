@@ -113,7 +113,22 @@ class Constraints;
       /// \returns true if intersected, false otherwise.
       virtual bool movingSphereIntersect( HAPIFloat radius,
                                           const Vec3 &from, 
-                                          const Vec3 &to ){ return false; }// = 0;
+                                          const Vec3 &to ){ return false; }
+
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Will of course be slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result){ return false; }
     
     /// Render the object. The caller of the function need to set up OpenGL
     /// state in case the rendering should be done differently
@@ -257,6 +272,21 @@ class Constraints;
                                           const Vec3 &from, 
                                           const Vec3 &to );
 
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Will of course be slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result);
+
       /// Render the object. The caller of the function need to set up OpenGL
       /// state in case the rendering should be done differently
       /// (wireframe for example).
@@ -322,6 +352,21 @@ class Constraints;
       virtual bool movingSphereIntersect( HAPIFloat radius,
                                           const Vec3 &from, 
                                           const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Will of course be slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result);
 
       /// Render the object. The caller of the function need to set up OpenGL
       /// state in case the rendering should be done differently
@@ -400,6 +445,21 @@ class Constraints;
       virtual bool movingSphereIntersect( HAPIFloat radius,
                                           const Vec3 &from, 
                                           const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Will of course be slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result);
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -488,6 +548,21 @@ class Constraints;
                                           const Vec3 &from, 
                                           const Vec3 &to );
 
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Will of course be slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result);
+
       /// Returns a point representing the primitive. In this case it is the 
       /// center of the line segment.
       inline virtual Vec3 pointRepresentation() const {
@@ -560,6 +635,21 @@ class Constraints;
       virtual bool movingSphereIntersect( HAPIFloat radius,
                                           const Vec3 &from, 
                                           const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Will of course be slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result);
 
       /// Returns a point representing the primitive. This primitive is a point
       /// so the pointRepresentation is easy to calculate.
@@ -831,8 +921,9 @@ class Constraints;
       BinaryBoundTree(  ): left( NULL ), right( NULL ), new_func( NULL ) {}
 
       /// Constructor.
-      /// Builds a binary tree from a vector of triangles. The func argument specifies
-      /// a function for creating  bound of the wanted type in each tree node.
+      /// Builds a binary tree from a vector of triangles. The func argument
+      /// specifies a function for creating  bound of the wanted type in each
+      /// tree node.
       /// max_nr_triangles_in_leaf specifies the maximum number of triangles 
       /// that are allowed to be in a bound of a leaf in the tree. 
       BinaryBoundTree( BoundNewFunc func, 
@@ -952,6 +1043,21 @@ class Constraints;
       virtual bool movingSphereIntersect( HAPIFloat radius,
                                           const Vec3 &from, 
                                           const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Will of course be slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result);
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -1211,6 +1317,21 @@ class Constraints;
       virtual bool movingSphereIntersect( HAPIFloat radius,
                                           const Vec3 &from, 
                                           const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Will of course be slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result);
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
