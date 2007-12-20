@@ -76,6 +76,7 @@ typedef int	(*LPFNDLLCreateSphere)			(int Device,
 typedef int	(*LPFNDLLDeleteSphere)		  (int Device, int Sphere);
 typedef int	(*LPFNDLLSetSphereRadius)		(int Sphere, double radius);
 typedef int	(*LPFNDLLSetSpherePosition) (int Sphere, double pos[3]);
+typedef void	(*LPFNDLLGetCurrentForce) (int Device, double force[3]);
 
 LPFNDLLOpenHapticMaster			OpenHapticMaster; 
 LPFNDLLCloseHapticMaster		CloseHapticMaster; 
@@ -89,6 +90,7 @@ LPFNDLLCreateSphere     CreateSphere;
 LPFNDLLDeleteSphere     DeleteSphere;
 LPFNDLLSetSphereRadius  SetSphereRadius;
 LPFNDLLSetSpherePosition  SetSpherePosition;
+LPFNDLLGetCurrentForce  GetCurrentForce;
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
 HapticMasterDevice::device_registration(
@@ -126,6 +128,20 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
         (LPFNDLLSetInertia)	GetProcAddress(dll_handle,"SetInertia"); 
       GetState = (LPFNDLLGetState) GetProcAddress(dll_handle,"GetState"); 
       SetState = (LPFNDLLSetState) GetProcAddress(dll_handle,"SetState"); 
+
+      CreateSphere = 
+        (LPFNDLLCreateSphere) GetProcAddress(dll_handle,"CreateSphere");
+
+      DeleteSphere = 
+        (LPFNDLLDeleteSphere) GetProcAddress(dll_handle,"DeleteSphere"); 
+
+      SetSphereRadius = 
+        (LPFNDLLSetSphereRadius) GetProcAddress(dll_handle,"SetSphereRadius"); 
+
+      SetSpherePosition = 
+        (LPFNDLLSetSpherePosition) GetProcAddress(dll_handle,"SetSpherePosition"); 
+      GetCurrentForce = 
+        (LPFNDLLGetCurrentForce) GetProcAddress(dll_handle,"GetCurrentForce"); 
     }
 
     // If we failed to load the library or any of the functions, quit...
@@ -183,12 +199,12 @@ void HapticMasterDevice::updateDeviceValues( DeviceValues &dv,
   double pos[3] = { 0.0, 0.0, 0.0};
   double vel[3] = { 0.0, 0.0, 0.0};
   SetForceGetPV(device_handle, force, pos, vel );
-  
+  GetCurrentForce( device_handle, force );
   dv.position = Vec3(pos[1], pos[2], pos[0]) * 1000;
   dv.velocity = Vec3(vel[1], vel[2], vel[0]) * 1000;
        
   dv.orientation = Rotation( 1, 0, 0, 0 );
-  
+  dv.force = Vec3( force[1], force[2], force[0] );
   // TODO: button
   // bitmask for buttons. bit 0 is button 0, bit 1 button 1 and so on.
   // value of 1 indicates button pressed.
@@ -210,8 +226,17 @@ int HapticMasterDevice::createSphere( Vec3 pos, double radius,
                                       double int_damping_factor,
                                       double ext_thickness,
                                       double int_thickness ) {
-  double p[] = { pos.x, pos.y, pos.z };
-  return CreateSphere( device_handle, p, radius, 
+ /* Matrix4 position_calibration_inverse = Matrix4( 0.5, 0, 0, 0,
+	  0, 0.5, 0, 0,
+	  0, 0, 0.5, 0,
+	  0, 0, 0, 1 );
+*/
+  Vec3 local_pos = 1e-3 *( position_calibration_inverse * (pos*1000 ) );
+
+  Vec3 scaling = position_calibration_inverse.getScalePart();
+  double local_radius = radius * max( scaling.x, max( scaling.y, scaling.z ) );
+  double p[] = { local_pos.z, local_pos.x, local_pos.y };
+  return CreateSphere( device_handle, p, local_radius, 
                 ext_spring_stiffness,
                 int_spring_stiffness,
                 ext_damping_factor,
@@ -227,10 +252,23 @@ int HapticMasterDevice::deleteSphere( int sphere ) {
 }
 
 int HapticMasterDevice::setSphereRadius( int sphere, double radius ) {
+/*	  Matrix4 position_calibration_inverse = Matrix4( 0.5, 0, 0, 0,
+	  0, 0.5, 0, 0,
+	  0, 0, 0.5, 0,
+	  0, 0, 0, 1 );
+*/
+  Vec3 scaling = position_calibration_inverse.getScalePart();
+  double local_radius = radius * max( scaling.x, max( scaling.y, scaling.z ) );
   return SetSphereRadius( sphere, radius );
 }
 int HapticMasterDevice::setSpherePosition( int sphere, Vec3 pos ) {
-  double p[] = { pos.x, pos.y, pos.z };
+/*  Matrix4 position_calibration_inverse = Matrix4( 0.5, 0, 0, 0,
+	  0, 0.5, 0, 0,
+	  0, 0, 0.5, 0,
+	  0, 0, 0, 1 );
+*/
+	Vec3 local_pos = 1e-3 *( position_calibration_inverse * (pos*1000 ) );
+  double p[] = { local_pos.z, local_pos.x, local_pos.y };
   return SetSpherePosition( sphere, p );
 }
 
