@@ -50,9 +50,12 @@ FalconHapticsDevice::device_registration(
                             FalconHapticsDeviceInternal::falcon_device_libs
                             );
 
+bool FalconHapticsDevice::hdl_started = false;
+int FalconHapticsDevice::nr_of_initalized = 0;
+
 bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-  device_handle = hdlInitDevice( HDL_DEFAULT_DEVICE_ID );
-	//device_handle = hdlInitNamedDevice( device_name.c_str() );
+	device_handle = hdlInitNamedDevice( device_name == "" ? 
+    HDL_DEFAULT_DEVICE_ID : device_name.c_str() );
   HDLError error = hdlGetError();
   if ( device_handle == -1 || error != HDL_NO_ERROR ) {
     stringstream s;
@@ -62,7 +65,8 @@ bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
      
     setErrorMsg( s.str() );
     return false;
-  }   
+  }
+  nr_of_initalized++;
   hdlMakeCurrent( device_handle );
 
   double ws[6];
@@ -74,6 +78,10 @@ bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
   FalconThread *fl_thread = FalconThread::getInstance();
   thread = fl_thread;
+  if( hdl_started )
+    hdlStop();
+  hdlStart();
+  hdl_started = true;
   fl_thread->setActive( true );
   
   return true;
@@ -85,6 +93,10 @@ bool FalconHapticsDevice::releaseHapticsDevice() {
   hdlMakeCurrent( device_handle );
 
   hdlUninitDevice( device_handle );
+  nr_of_initalized--;
+  if( nr_of_initalized == 0 ) {
+    hdlStop();
+  }
   device_handle = 0;
 
   FalconThread *fl_thread = static_cast< FalconThread * >( thread );

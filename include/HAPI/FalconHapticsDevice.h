@@ -58,6 +58,7 @@ namespace HAPI {
       sg_lock.unlock();
     }
   public:
+
     /// Get the singleton instance of FalconThread.
     static FalconThread *getInstance() {
       return singleton.get();
@@ -155,7 +156,14 @@ namespace HAPI {
     string device_name;
     
     /// The device handle for this device.
-     HDLDeviceHandle device_handle;
+    HDLDeviceHandle device_handle;
+
+    /// Flag to know if the scheduler is started.
+    static bool hdl_started;
+
+    /// Counts the number of initialized falcon devices.
+    /// Used to know when to stop scheduler.
+    static int nr_of_initalized;
   };
 }
 
