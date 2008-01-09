@@ -100,10 +100,6 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
 /// Release all resources that has been used in the renderer for
 /// the given haptics device.
 void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
-  ContextMap::iterator i = context_map.find( hd );
-  if( i != context_map.end() )
-    hlMakeCurrent( (*i).second );
-
   // Ugly solution to clean up stuff correctly when the device is removed.
   // TODO: Find a better solution.
   if( dummy_context ) {
@@ -126,15 +122,17 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   }
 
   callback_data.clear();
-  for( IdMap::iterator i = id_map.begin();
-       i != id_map.end();
-       i++ ) {
-    HLuint hl_shape_id = (*i).second; 
-    hlDeleteShapes( hl_shape_id, 1 );
-    removeHLEventCallbacks( hl_shape_id );
-  }
-
+  ContextMap::iterator i = context_map.find( hd );
   if( i != context_map.end() ) {
+    hlMakeCurrent( (*i).second );
+    for( IdMap::iterator j = id_map.begin();
+         j != id_map.end();
+         j++ ) {
+      HLuint hl_shape_id = (*j).second; 
+      hlDeleteShapes( hl_shape_id, 1 );
+      removeHLEventCallbacks( hl_shape_id );
+    }
+
     hlMakeCurrent( NULL );
     hlDeleteContext( context_map[ hd ] );
     context_map.erase( i );
@@ -367,9 +365,9 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
       // the state that persists between frame intervals and is used for
       // haptic rendering.
       HHD jj = pd->getDeviceHandle();
-      context_map[ pd ] = hlCreateContext( pd->getDeviceHandle() );
+      context_map[ pd ] = hlCreateContext( jj );
       if( !dummy_context )
-        dummy_context = hlCreateContext( pd->getDeviceHandle() );
+        dummy_context = hlCreateContext( jj );
       hlMakeCurrent( context_map[ pd ] );  
 
       hlEnable(HL_HAPTIC_CAMERA_VIEW);
