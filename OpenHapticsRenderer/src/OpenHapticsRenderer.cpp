@@ -329,6 +329,17 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
        i != previous_shape_ids_copy.end(); i++ ) {
     HLuint hl_shape_id = id_map[*i];
     removeHLEventCallbacks( hl_shape_id );
+    Contacts::iterator to_remove;
+    for( to_remove = contacts.begin();
+         to_remove != contacts.end();
+         to_remove++ ) {
+      if( (*to_remove).first->getShapeId() ==
+        callback_data[ id_cb_map[*i] ]->shape->getShapeId() ) {
+         break;
+      }
+    }
+    if( to_remove != contacts.end() )
+      contacts.erase( to_remove );
     callback_data[ id_cb_map[*i] ]->shape.reset( NULL );
   }
   glMatrixMode( GL_MODELVIEW );

@@ -255,6 +255,7 @@ namespace HAPI {
       }
       virtual void cleanUp() {
         if( dummy_context ) {
+          hlMakeCurrent( NULL );
           hlDeleteContext( dummy_context );
           dummy_context = NULL;
         }
