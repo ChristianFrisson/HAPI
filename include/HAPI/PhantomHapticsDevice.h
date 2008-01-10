@@ -216,6 +216,12 @@ namespace HAPI {
     /// the stop and start again.
     static bool restart_scheduler;
     static bool scheduler_started;
+
+    /// Counts the number of PhantomHapticsDevices for which the scheduler
+    /// should be running and the HLThread should be active. Used in
+    /// releaseHapticsDevice to know if the OpenHaptics threading should be
+    /// shut off.
+    static int nr_of_scheduled;
   };
 }
 

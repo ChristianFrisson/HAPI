@@ -77,6 +77,7 @@ PhantomHapticsDevice::device_registration(
 
 bool PhantomHapticsDevice::restart_scheduler = false;
 bool PhantomHapticsDevice::scheduler_started = false;
+int PhantomHapticsDevice::nr_of_scheduled = 0;
 
 bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device_handle = hdInitDevice( device_name == "" ? 
@@ -160,6 +161,7 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   HLThread *hl_thread = HLThread::getInstance();
   thread = hl_thread;
   hl_thread->setActive( true );
+  nr_of_scheduled++;
   restart_scheduler = true;
   if( !scheduler_started )
     hdSetSchedulerRate( (HDulong)_thread_frequency );
@@ -169,10 +171,11 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 bool PhantomHapticsDevice::releaseHapticsDevice() {
   HAPIHapticsDevice::disableDevice();
 
+  nr_of_scheduled--;
   hdMakeCurrentDevice( device_handle );
 
   // TODO: should not stop scheduler unless it is the last device
-  if( scheduler_started ) {
+  if( scheduler_started && nr_of_scheduled == 0 ) {
     hdStopScheduler();
     scheduler_started = false;
   }
@@ -186,7 +189,8 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
   hdDisableDevice( device_handle );
   device_handle = 0;
   HLThread *hl_thread = static_cast< HLThread * >( thread );
-  hl_thread->setActive( false );
+  if( nr_of_scheduled == 0)
+    hl_thread->setActive( false );
   thread = NULL;
   return true;
 }

@@ -630,8 +630,8 @@ namespace HAPI {
       }
  
       renderer_change_lock.lock();
-      // give ownership to temporary auto_ptr to get correct deletion of 
-      // the renderer that is replaces since the auto_ptr_vector does not
+      // Give ownership to temporary auto_ptr to get correct deletion of 
+      // the renderer that is replaced since the auto_ptr_vector does not
       // take care of this.
       auto_ptr< HAPIHapticsRenderer > temp_rendr( haptics_renderers[ layer ] );
       haptics_renderers[ layer ] = r;
