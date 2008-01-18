@@ -1,117 +1,95 @@
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004-2007, SenseGraphics AB
+//
+//    This file is part of HAPI.
+//
+//    HAPI is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    HAPI is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with HAPI; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file ForceFieldWidgetsPage.cpp
+/// \brief CPP file used to collect user input and create the force effect
+/// HapticForceField found in HAPI.
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+
+// HAPIDemo includes
 #include "ForceFieldWidgetsPage.h"
+
+// HAPI includes
+#include <HAPI/HapticForceField.h>
+
 using namespace HAPI;
 
+// control ids
 enum
 {
-  ButtonInterpolate_true,
-  ButtonInterpolate_false,
   X_ValueText,
   Y_ValueText,
   Z_ValueText
 };
 
-BEGIN_EVENT_TABLE(ForceFieldWidgetsPage, WidgetsPage)
-    EVT_RADIOBOX(wxID_ANY, ForceFieldWidgetsPage::OnCheckOrRadioBox)
-END_EVENT_TABLE()
+IMPLEMENT_WIDGETS_PAGE( ForceFieldWidgetsPage, _T("ForceField") );
 
-IMPLEMENT_WIDGETS_PAGE(ForceFieldWidgetsPage, _T("ForceField"));
-
-ForceFieldWidgetsPage::ForceFieldWidgetsPage(wxBookCtrlBase *book, AnyHapticsDevice *_hd)
-                  : WidgetsPage(book, _hd)
+ForceFieldWidgetsPage::ForceFieldWidgetsPage( wxBookCtrlBase *book,
+                                              AnyHapticsDevice *_hd )
+                                              : WidgetsPage( book, _hd )
 {
+  m_txt_forceX = NULL;
+  m_txt_forceY = NULL;
+  m_txt_forceZ = NULL;
 
-    m_radioInterpolate = (wxRadioBox *)NULL;
-    m_txt_forceX = NULL;
-    m_txt_forceY = NULL;
-    m_txt_forceZ = NULL;
+  wxSizer *sizerTop = new wxBoxSizer( wxHORIZONTAL );
 
-    wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
+  wxSizer *sizerLeft = new wxStaticBoxSizer( wxVERTICAL, this,
+                                             _T("Force Field values" ) );
 
-    wxSizer *sizerLeft = new wxStaticBoxSizer(wxVERTICAL, this, _T("Force Field values") );
+  sizerLeft->Add( createXYZInputControls( this,
+                                          _T("Force (N)"),
+                                          X_ValueText,
+                                          &m_txt_forceX,
+                                          Y_ValueText,
+                                          &m_txt_forceY,
+                                          Z_ValueText,
+                                          &m_txt_forceZ ),
+                  0, wxALL | wxGROW, 5 );
 
-    sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
+  sizerTop->Add( sizerLeft, 0, wxALL, 10 );
 
-    // should be in sync with enums ButtonInterpolate_true(false)!
-    static const wxString interpolate[] =
-    {
-        _T("true"),
-        _T("false")
-    };
+  // final initializations
+  Reset();
 
-    m_radioInterpolate = new wxRadioBox(this, wxID_ANY, _T("&interpolate"),
-                                   wxDefaultPosition, wxDefaultSize,
-                                   WXSIZEOF(interpolate), interpolate);
+  SetSizer( sizerTop );
 
-    sizerLeft->Add(m_radioInterpolate, 0, wxALL, 5);
-
-    sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
-
-    wxSizer *sizerForce = new wxStaticBoxSizer(wxVERTICAL, this, _T("Force") );
-
-    wxSizer *sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("x:"),
-                                            X_ValueText,
-                                            &m_txt_forceX,
-                                            this );
-    sizerForce->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("y:"),
-                                            Y_ValueText,
-                                            &m_txt_forceY,
-                                            this );
-    sizerForce->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("z:"),
-                                            Z_ValueText,
-                                            &m_txt_forceZ,
-                                            this );
-    sizerForce->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerLeft->Add( sizerForce, 0, wxALL | wxGROW, 5);
-
-    sizerTop->Add(sizerLeft, 0, wxALL | wxGROW, 10);
-
-    // final initializations
-    Reset();
-
-    SetSizer(sizerTop);
-
-    sizerTop->Fit(this);
+  sizerTop->Fit(this);
 }
 
 void ForceFieldWidgetsPage::Reset()
 {
-    m_radioInterpolate->SetSelection(ButtonInterpolate_false);
-    interpolate = false;
-    m_txt_forceX->SetValue(_T("1.0" ));
-    force.x = 1.0;
-    m_txt_forceY->SetValue(_T("0.0" ));
-    force.y = 0.0;
-    m_txt_forceZ->SetValue(_T("0.0" ));
-    force.z = 0.0;
+  m_txt_forceX->SetValue( _T("1.0" ) );
+  force.x = 1.0;
+  m_txt_forceY->SetValue( _T("0.0" ) );
+  force.y = 0.0;
+  m_txt_forceZ->SetValue( _T("0.0" ) );
+  force.z = 0.0;
 }
 
-void ForceFieldWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSED(event))
-{
-    switch ( m_radioInterpolate->GetSelection() )
-    {
-        case ButtonInterpolate_true:
-          interpolate = true;
-            break;
-
-        default:
-            wxFAIL_MSG(_T("unexpected radiobox selection"));
-            // fall through
-
-        case ButtonInterpolate_false:
-          interpolate = false;
-            break;
-    }
-}
-
-void ForceFieldWidgetsPage::createForceEffect( ) {
+void ForceFieldWidgetsPage::createForceEffect() {
   double val;
   if( m_txt_forceX->GetValue().ToDouble(&val) ) {
     force.x = val;
@@ -125,15 +103,8 @@ void ForceFieldWidgetsPage::createForceEffect( ) {
     force.z = val;
   }
 
-  force_effect.reset( new HapticForceField( 
-    force ) );
-    hd->addEffect( force_effect.get() );
-    hd->clearEffects();
-    hd->addEffect( force_effect.get() );
+  force_effect.reset( new HapticForceField( force ) );
+  hd->clearEffects();
+  hd->addEffect( force_effect.get() );
 }
 
-void ForceFieldWidgetsPage::removeForceEffect() {
-  if( force_effect.get() ) {
-    hd->removeEffect( force_effect.get() );
-  }
-}

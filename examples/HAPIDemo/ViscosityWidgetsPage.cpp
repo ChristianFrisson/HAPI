@@ -1,117 +1,90 @@
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004-2007, SenseGraphics AB
+//
+//    This file is part of HAPI.
+//
+//    HAPI is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    HAPI is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with HAPI; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file ViscosityWidgetsPage.cpp
+/// \brief CPP file used to collect user input and create the force effect
+/// HapticViscosity found in HAPI.
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+
+// HAPIDemo includes
 #include "ViscosityWidgetsPage.h"
 using namespace HAPI;
 
 enum
 {
-  ButtonInterpolate_true,
-  ButtonInterpolate_false,
   Viscosity_ValueText,
   Radius_ValueText,
   Damping_Factor_ValueText
 };
 
-BEGIN_EVENT_TABLE(ViscosityWidgetsPage, WidgetsPage)
-    EVT_RADIOBOX(wxID_ANY, ViscosityWidgetsPage::OnCheckOrRadioBox)
-END_EVENT_TABLE()
+IMPLEMENT_WIDGETS_PAGE( ViscosityWidgetsPage, _T("Viscosity") );
 
-IMPLEMENT_WIDGETS_PAGE(ViscosityWidgetsPage, _T("Viscosity"));
-
-ViscosityWidgetsPage::ViscosityWidgetsPage(wxBookCtrlBase *book, AnyHapticsDevice *_hd)
-                  : WidgetsPage(book, _hd)
+ViscosityWidgetsPage::ViscosityWidgetsPage( wxBookCtrlBase *book,
+                                            AnyHapticsDevice *_hd )
+                                        : WidgetsPage( book, _hd )
 {
+  m_txt_viscosity = NULL;
+  m_txt_radius = NULL;
+  m_txt_damping_factor = NULL;
 
-    m_radioInterpolate = (wxRadioBox *)NULL;
-    m_txt_viscosity = NULL;
-    m_txt_radius = NULL;
-    m_txt_damping_factor = NULL;
+  wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
 
-    wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
+  wxSizer *sizerLeft =
+    new wxStaticBoxSizer( wxVERTICAL, this, _T("Viscosity effect values") );
 
-    wxSizer *sizerLeft = new wxStaticBoxSizer(wxVERTICAL, this, _T("Viscosity effect values") );
+  sizerLeft->Add( createXYZInputControls( this,
+                                          _T("Values in meter"),
+                                          Viscosity_ValueText,
+                                          &m_txt_viscosity,
+                                          Radius_ValueText,
+                                          &m_txt_radius,
+                                          Damping_Factor_ValueText,
+                                          &m_txt_damping_factor ),
+                  0, wxALL | wxGROW, 5 );
 
-    sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
+  sizerTop->Add( sizerLeft, 0, wxALL, 10 );
 
-    // should be in sync with enums ButtonInterpolate_true(false)!
-    static const wxString interpolate[] =
-    {
-        _T("true"),
-        _T("false")
-    };
+  // final initializations
+  Reset();
 
-    m_radioInterpolate = new wxRadioBox(this, wxID_ANY, _T("&interpolate"),
-                                   wxDefaultPosition, wxDefaultSize,
-                                   WXSIZEOF(interpolate), interpolate);
+  SetSizer( sizerTop );
 
-    sizerLeft->Add(m_radioInterpolate, 0, wxALL, 5);
-
-    sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
-
-    wxSizer *sizerForce = new wxStaticBoxSizer(wxVERTICAL, this, _T("Values in meter") );
-
-    wxSizer *sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("viscosity:"),
-                                            Viscosity_ValueText,
-                                            &m_txt_viscosity,
-                                            this );
-    sizerForce->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("radius:"),
-                                            Radius_ValueText,
-                                            &m_txt_radius,
-                                            this );
-    sizerForce->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("damping factor:"),
-                                            Damping_Factor_ValueText,
-                                            &m_txt_damping_factor,
-                                            this );
-    sizerForce->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerLeft->Add( sizerForce, 0, wxALL | wxGROW, 5);
-
-    sizerTop->Add(sizerLeft, 0, wxALL | wxGROW, 10);
-
-    // final initializations
-    Reset();
-
-    SetSizer(sizerTop);
-
-    sizerTop->Fit(this);
+  sizerTop->Fit(this);
 }
 
 void ViscosityWidgetsPage::Reset()
 {
-    m_radioInterpolate->SetSelection(ButtonInterpolate_false);
-    interpolate = false;
-    m_txt_viscosity->SetValue(_T("0.01" ));
-    viscosity = 0.01 / 1000;
-    m_txt_radius->SetValue(_T("0.0025" ));
-    radius = 0.0025 * 1000;
-    m_txt_damping_factor->SetValue(_T("0.5" ));
-    damping_factor = 0.5;
+  m_txt_viscosity->SetValue( _T("0.01" ) );
+  viscosity = 0.01 / 1000;
+  m_txt_radius->SetValue( _T("0.0025" ) );
+  radius = 0.0025 * 1000;
+  m_txt_damping_factor->SetValue( _T("0.5" ) );
+  damping_factor = 0.5;
 }
 
-void ViscosityWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSED(event))
-{
-    switch ( m_radioInterpolate->GetSelection() )
-    {
-        case ButtonInterpolate_true:
-          interpolate = true;
-            break;
-
-        default:
-            wxFAIL_MSG(_T("unexpected radiobox selection"));
-            // fall through
-
-        case ButtonInterpolate_false:
-          interpolate = false;
-            break;
-    }
-}
-
-void ViscosityWidgetsPage::createForceEffect( ) {
+void ViscosityWidgetsPage::createForceEffect() {
   double val;
   if( m_txt_viscosity->GetValue().ToDouble(&val) ) {
     viscosity = val / 1000;
@@ -125,17 +98,10 @@ void ViscosityWidgetsPage::createForceEffect( ) {
     damping_factor = val;
   }
 
-  force_effect.reset( new HapticViscosity( 
-    viscosity,
-    radius,
-    damping_factor ) );
-    hd->addEffect( force_effect.get() );
-    hd->clearEffects();
-    hd->addEffect( force_effect.get() );
+  force_effect.reset( new HapticViscosity( viscosity,
+                                           radius,
+                                           damping_factor ) );
+  hd->clearEffects();
+  hd->addEffect( force_effect.get() );
 }
 
-void ViscosityWidgetsPage::removeForceEffect() {
-  if( force_effect.get() ) {
-    hd->removeEffect( force_effect.get() );
-  }
-}
