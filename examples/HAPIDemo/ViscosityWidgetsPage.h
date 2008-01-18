@@ -1,4 +1,33 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004-2007, SenseGraphics AB
+//
+//    This file is part of HAPI.
+//
+//    HAPI is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    HAPI is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with HAPI; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file ViscosityWidgetsPage.h
+/// \brief header file used to collect user input and create the force effect
+/// HapticViscosity found in HAPI.
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+// FILE IS BASED ON THIS EXAMPLE. MAYBE MODIFIED BEYOND RECOGNITION
 // Program:     wxWidgets Widgets Sample
 // Name:        button.cpp
 // Purpose:     Part of the widgets sample showing wxButton
@@ -34,40 +63,37 @@
 #include "wx/artprov.h"
 #include "wx/sizer.h"
 
+// HAPIDemo includes
 #include "HAPIDemo.h"
 
+// HAPI includes
 #include <HAPI/HapticViscosity.h>
 
 class ViscosityWidgetsPage : public WidgetsPage
 {
 public:
-  ViscosityWidgetsPage(wxBookCtrlBase *book, HAPI::AnyHapticsDevice *_hd);
-    virtual ~ViscosityWidgetsPage(){};
+  // Constructor
+  ViscosityWidgetsPage( wxBookCtrlBase *book, HAPI::AnyHapticsDevice *_hd );
 
-    virtual wxControl *GetWidget() const { return 0; }
+  // Destructor
+  virtual ~ViscosityWidgetsPage(){};
 
-    virtual void createForceEffect();
-    virtual void removeForceEffect();
+  virtual wxControl *GetWidget() const { return 0; }
+
+  // virtual function to create the force effect given input from the page.
+  // Should also add the force effect to the haptic loop.
+  virtual void createForceEffect();
 
 protected:
-    // event handlers
-    void OnCheckOrRadioBox(wxCommandEvent& event);
+  // reset the parameters
+  void Reset();
 
-    // reset the parameters
-    void Reset();
-
-    wxRadioBox *m_radioInterpolate;
-    bool interpolate;
-
-    wxTextCtrl *m_txt_viscosity;
-    wxTextCtrl *m_txt_radius;
-    wxTextCtrl *m_txt_damping_factor;
-    double viscosity, radius, damping_factor;
-
-    H3DUtil::AutoRef<HAPI::HapticViscosity> force_effect;
-
+  // used to get input from user.
+  wxTextCtrl *m_txt_viscosity;
+  wxTextCtrl *m_txt_radius;
+  wxTextCtrl *m_txt_damping_factor;
+  double viscosity, radius, damping_factor;
 private:
-    DECLARE_EVENT_TABLE()
-    DECLARE_WIDGETS_PAGE(ViscosityWidgetsPage)
+  DECLARE_WIDGETS_PAGE(ViscosityWidgetsPage)
 };
 #endif

@@ -1,129 +1,105 @@
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004-2007, SenseGraphics AB
+//
+//    This file is part of HAPI.
+//
+//    HAPI is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    HAPI is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with HAPI; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file SpringWidgetsPage.cpp
+/// \brief CPP file used to collect user input and create the force effect
+/// HapticSpring found in HAPI.
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+
+// HAPIDemo includes
 #include "SpringWidgetsPage.h"
+
+// HAPI includes
+#include <HAPI/HapticSpring.h>
+
 using namespace HAPI;
 
 enum
 {
-  ButtonInterpolate_true,
-  ButtonInterpolate_false,
   X_ValueText,
   Y_ValueText,
   Z_ValueText,
   spring_constant_ValueText
 };
 
-BEGIN_EVENT_TABLE(SpringWidgetsPage, WidgetsPage)
-    EVT_RADIOBOX(wxID_ANY, SpringWidgetsPage::OnCheckOrRadioBox)
-END_EVENT_TABLE()
+IMPLEMENT_WIDGETS_PAGE( SpringWidgetsPage, _T("Spring") );
 
-IMPLEMENT_WIDGETS_PAGE(SpringWidgetsPage, _T("Spring"));
-
-SpringWidgetsPage::SpringWidgetsPage(wxBookCtrlBase *book, AnyHapticsDevice *_hd)
-                  : WidgetsPage(book, _hd)
+SpringWidgetsPage::SpringWidgetsPage( wxBookCtrlBase *book,
+                                      AnyHapticsDevice *_hd )
+                                  : WidgetsPage(book, _hd)
 {
+  m_txt_positionX = NULL;
+  m_txt_positionY = NULL;
+  m_txt_positionZ = NULL;
+  m_txt_spring_constant = NULL;
 
-    m_radioInterpolate = (wxRadioBox *)NULL;
-    m_txt_positionX = NULL;
-    m_txt_positionY = NULL;
-    m_txt_positionZ = NULL;
-    m_txt_spring_constant = NULL;
+  wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
 
-    wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
+  wxSizer *sizerLeft =
+    new wxStaticBoxSizer( wxVERTICAL, this, _T("Spring Force") );
 
-    wxSizer *sizerLeft = new wxStaticBoxSizer(wxVERTICAL, this, _T("Spring Force") );
+  sizerLeft->Add( createXYZInputControls( this,
+                                          _T("Position in meters"),
+                                          X_ValueText,
+                                          &m_txt_positionX,
+                                          Y_ValueText,
+                                          &m_txt_positionY,
+                                          Z_ValueText,
+                                          &m_txt_positionZ ),
+                  0, wxALL | wxGROW, 5 );
 
-    sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
+   wxSizer *sizerRow = CreateSizerWithTextAndLabel( _T("spring constant:"),
+                                                    spring_constant_ValueText,
+                                                    &m_txt_spring_constant,
+                                                    this );
 
-    // should be in sync with enums ButtonInterpolate_true(false)!
-    static const wxString interpolate[] =
-    {
-        _T("true"),
-        _T("false")
-    };
+  sizerLeft->Add( sizerRow, 0, wxALL, 5 );
 
-    m_radioInterpolate = new wxRadioBox(this, wxID_ANY, _T("&interpolate"),
-                                   wxDefaultPosition, wxDefaultSize,
-                                   WXSIZEOF(interpolate), interpolate);
+  sizerTop->Add( sizerLeft, 0, wxALL, 10 );
 
-    sizerLeft->Add(m_radioInterpolate, 0, wxALL, 5);
+  // final initializations
+  Reset();
 
-    sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
+  SetSizer(sizerTop);
 
-    wxSizer *sizer_position = new wxStaticBoxSizer(wxVERTICAL, this, _T("Position in meters") );
-
-    wxSizer *sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("x:"),
-                                            X_ValueText,
-                                            &m_txt_positionX,
-                                            this );
-    sizer_position->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("y:"),
-                                            Y_ValueText,
-                                            &m_txt_positionY,
-                                            this );
-    sizer_position->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("z:"),
-                                            Z_ValueText,
-                                            &m_txt_positionZ,
-                                            this );
-    sizer_position->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerLeft->Add( sizer_position, 0, wxALL | wxGROW, 5);
-
-    sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("spring constant:"),
-                                            spring_constant_ValueText,
-                                            &m_txt_spring_constant,
-                                            this );
-
-    sizerLeft->Add( sizerRow, 0, wxALL, 5 );
-
-    sizerTop->Add(sizerLeft, 0, wxALL | wxGROW, 10);
-
-    // final initializations
-    Reset();
-
-    SetSizer(sizerTop);
-
-    sizerTop->Fit(this);
+  sizerTop->Fit(this);
 }
 
 void SpringWidgetsPage::Reset()
 {
-    m_radioInterpolate->SetSelection(ButtonInterpolate_false);
-    interpolate = false;
-    m_txt_positionX->SetValue(_T("0.0" ));
-    position.x = 0.0;
-    m_txt_positionY->SetValue(_T("0.0" ));
-    position.y = 0.0;
-    m_txt_positionZ->SetValue(_T("0.0" ));
-    position.z = 0.0;
-    m_txt_spring_constant->SetValue( _T("100"));
-    spring_constant = 100 / 1000;
+  m_txt_positionX->SetValue( _T("0.0" ) );
+  position.x = 0.0;
+  m_txt_positionY->SetValue( _T("0.0" ) );
+  position.y = 0.0;
+  m_txt_positionZ->SetValue( _T("0.0" ) );
+  position.z = 0.0;
+  m_txt_spring_constant->SetValue( _T("100") );
+  spring_constant = 100 / 1000;
 }
 
-void SpringWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSED(event))
-{
-    switch ( m_radioInterpolate->GetSelection() )
-    {
-        case ButtonInterpolate_true:
-          interpolate = true;
-            break;
-
-        default:
-            wxFAIL_MSG(_T("unexpected radiobox selection"));
-            // fall through
-
-        case ButtonInterpolate_false:
-          interpolate = false;
-            break;
-    }
-}
-
-void SpringWidgetsPage::createForceEffect( ) {
+void SpringWidgetsPage::createForceEffect() {
   double val;
   if( m_txt_positionX->GetValue().ToDouble(&val) ) {
     position.x = val * 1000;
@@ -141,16 +117,7 @@ void SpringWidgetsPage::createForceEffect( ) {
     spring_constant = val / 1000;
   }
 
-  force_effect.reset( new HapticSpring( 
-    position,
-    spring_constant ) );
-    hd->addEffect( force_effect.get() );
-    hd->clearEffects();
-    hd->addEffect( force_effect.get() );
-}
-
-void SpringWidgetsPage::removeForceEffect() {
-  if( force_effect.get() ) {
-    hd->removeEffect( force_effect.get() );
-  }
+  force_effect.reset( new HapticSpring( position, spring_constant ) );
+  hd->clearEffects();
+  hd->addEffect( force_effect.get() );
 }

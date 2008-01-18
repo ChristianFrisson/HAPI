@@ -1,4 +1,33 @@
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004-2007, SenseGraphics AB
+//
+//    This file is part of HAPI.
+//
+//    HAPI is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    HAPI is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with HAPI; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file HapticShapeConstraintWidgetsPage.h
+/// \brief header file used to collect user input and create the force effect
+/// HapticShapeConstraint found in HAPI.
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+// FILE IS BASED ON THIS EXAMPLE. MAYBE MODIFIED BEYOND RECOGNITION
 // Program:     wxWidgets Widgets Sample
 // Name:        button.cpp
 // Purpose:     Part of the widgets sample showing wxButton
@@ -34,101 +63,85 @@
 #include "wx/artprov.h"
 #include "wx/sizer.h"
 
+// HAPIDemo includes
 #include "HAPIDemo.h"
-
-#include <HAPI/HapticShapeConstraint.h>
 
 class HapticShapeConstraintWidgetsPage : public WidgetsPage
 {
 public:
-    HapticShapeConstraintWidgetsPage(wxBookCtrlBase *book, HAPI::AnyHapticsDevice *_hd);
-    virtual ~HapticShapeConstraintWidgetsPage(){};
+  HapticShapeConstraintWidgetsPage( wxBookCtrlBase *book,
+                                    HAPI::AnyHapticsDevice *_hd );
+  virtual ~HapticShapeConstraintWidgetsPage() {};
 
-    virtual wxControl *GetWidget() const { return 0; }
+  virtual wxControl *GetWidget() const { return 0; }
 
-    virtual void createForceEffect();
-    virtual void removeForceEffect();
+  // virtual function to create the force effect given input from the page.
+  // Should also add the force effect to the haptic loop.
+  virtual void createForceEffect();
 
 protected:
-    // event handlers
-    void OnCheckOrRadioBox(wxCommandEvent& event);
+  // event handlers
+  void OnCheckOrRadioBox( wxCommandEvent& event );
 
-    // reset the parameters
-    void Reset();
+  // reset the parameters
+  void Reset();
 
-    wxRadioBox *m_radioInterpolate;
-    bool interpolate;
+  wxPanel *rightPanel;
+  wxSizer *panel_sizer;
 
-    wxPanel *rightPanel;
-    wxSizer *panel_sizer;
+  wxRadioBox *m_radio_shapes;
+  int choosen_shape;
 
-    wxRadioBox *m_radio_shapes;
-    int choosen_shape;
+  // Sphere
+  wxPanel *sphere_panel;
+  wxTextCtrl *m_txt_spring_constant;
+  HAPI::HAPIFloat spring_constant;
+  wxTextCtrl *m_txt_sphere_radius;
+  HAPI::HAPIFloat sphere_radius;
 
-    wxPanel *sphere_panel;
-    wxTextCtrl *m_txt_spring_constant;
-    HAPI::HAPIFloat spring_constant;
-    wxTextCtrl *m_txt_sphere_radius;
-    HAPI::HAPIFloat sphere_radius;
+  // Plane
+  wxPanel *plane_panel;
+  wxTextCtrl *m_txt_plane_pointX;
+  wxTextCtrl *m_txt_plane_pointY;
+  wxTextCtrl *m_txt_plane_pointZ;
+  HAPI::Vec3 plane_point;
+  wxTextCtrl *m_txt_plane_normalX;
+  wxTextCtrl *m_txt_plane_normalY;
+  wxTextCtrl *m_txt_plane_normalZ;
+  HAPI::Vec3 plane_normal;
 
-    wxPanel *box_panel;
-    wxTextCtrl *m_txt_box_sizeX;
-    wxTextCtrl *m_txt_box_sizeY;
-    wxTextCtrl *m_txt_box_sizeZ;
-    HAPI::Vec3 box_size;
+  // Triangle
+  wxPanel *triangle_panel;
+  wxTextCtrl *m_txt_triangle_1X;
+  wxTextCtrl *m_txt_triangle_1Y;
+  wxTextCtrl *m_txt_triangle_1Z;
+  HAPI::Vec3 triangle_vertex1;
+  wxTextCtrl *m_txt_triangle_2X;
+  wxTextCtrl *m_txt_triangle_2Y;
+  wxTextCtrl *m_txt_triangle_2Z;
+  HAPI::Vec3 triangle_vertex2;
+  wxTextCtrl *m_txt_triangle_3X;
+  wxTextCtrl *m_txt_triangle_3Y;
+  wxTextCtrl *m_txt_triangle_3Z;
+  HAPI::Vec3 triangle_vertex3;
 
-    /*wxPanel *cone_panel;
-    wxTextCtrl *m_txt_cone_bottomRadius;
-    HAPI::HAPIFloat cone_bottom_radius;
-    wxTextCtrl *m_txt_cone_height;
-    HAPI::HAPIFloat cone_height;*/
+  // LineSet
+  wxPanel *lineSet_panel;
+  wxTextCtrl *m_txt_line_set_points;
+  vector< HAPI::Collision::LineSegment > line_set_lines;
 
-    wxPanel *cylinder_panel;
-    wxTextCtrl *m_txt_cylinder_radius;
-    HAPI::HAPIFloat cylinder_radius;
-    wxTextCtrl *m_txt_cylinder_height;
-    HAPI::HAPIFloat cylinder_height;
+  // PointSet
+  wxPanel *pointSet_panel;
+  wxTextCtrl *m_txt_point_set_points;
+  vector< HAPI::Collision::Point > point_set_points;
 
-    wxPanel *plane_panel;
-    wxTextCtrl *m_txt_plane_pointX;
-    wxTextCtrl *m_txt_plane_pointY;
-    wxTextCtrl *m_txt_plane_pointZ;
-    HAPI::Vec3 plane_point;
-    wxTextCtrl *m_txt_plane_normalX;
-    wxTextCtrl *m_txt_plane_normalY;
-    wxTextCtrl *m_txt_plane_normalZ;
-    HAPI::Vec3 plane_normal;
-
-    wxPanel *triangle_panel;
-    wxTextCtrl *m_txt_triangle_1X;
-    wxTextCtrl *m_txt_triangle_1Y;
-    wxTextCtrl *m_txt_triangle_1Z;
-    HAPI::Vec3 triangle_vertex1;
-    wxTextCtrl *m_txt_triangle_2X;
-    wxTextCtrl *m_txt_triangle_2Y;
-    wxTextCtrl *m_txt_triangle_2Z;
-    HAPI::Vec3 triangle_vertex2;
-    wxTextCtrl *m_txt_triangle_3X;
-    wxTextCtrl *m_txt_triangle_3Y;
-    wxTextCtrl *m_txt_triangle_3Z;
-    HAPI::Vec3 triangle_vertex3;
-
-    wxPanel *lineSet_panel;
-    wxTextCtrl *m_txt_line_set_points;
-    vector< HAPI::Collision::LineSegment > line_set_lines;
-
-    wxPanel *pointSet_panel;
-    wxTextCtrl *m_txt_point_set_points;
-    vector< HAPI::Collision::Point > point_set_points;
-
-    wxPanel *triangleSet_panel;
-    wxTextCtrl *m_txt_triangle_set_triangles;
-    vector< HAPI::Collision::Triangle > triangle_set_triangles;
-
-    H3DUtil::AutoRef<HAPI::HapticShapeConstraint> force_effect;
+  // TriangleSet
+  wxPanel *triangleSet_panel;
+  wxTextCtrl *m_txt_triangle_set_triangles;
+  vector< HAPI::Collision::Triangle > triangle_set_triangles;
 
 private:
-    DECLARE_EVENT_TABLE()
-    DECLARE_WIDGETS_PAGE(HapticShapeConstraintWidgetsPage)
+  DECLARE_EVENT_TABLE()
+  DECLARE_WIDGETS_PAGE( HapticShapeConstraintWidgetsPage )
 };
 #endif

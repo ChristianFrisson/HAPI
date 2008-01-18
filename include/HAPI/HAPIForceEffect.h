@@ -41,10 +41,7 @@ namespace HAPI {
   /// generates force and torque based values of the haptics device such
   /// as position, orientation and velocity. It is a good choice to use
   /// to create global effects such as force fields, springs, recoil
-  /// effects and wind. By setting the HAPIForceEffect to be interpolated
-  /// the HAPIForceEffect will be interpolated with the HAPIForceEffect
-  /// added in the last scene-graph loop in order to avoid haptic rendering
-  /// artifacts.
+  /// effects and wind.
   class HAPI_API HAPIForceEffect: public HAPIHapticObject, 
                                   public H3DUtil::RefCountedClass {
   public:

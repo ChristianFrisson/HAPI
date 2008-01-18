@@ -1,10 +1,43 @@
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004-2007, SenseGraphics AB
+//
+//    This file is part of HAPI.
+//
+//    HAPI is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    HAPI is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with HAPI; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file PositionFunctionWidgetsPage.cpp
+/// \brief CPP file used to collect user input and create the force effect
+/// HapticPositionFunctionEffect found in HAPI.
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+
+// HAPIDemo includes
 #include "PositionFunctionWidgetsPage.h"
+
+// HAPI includes
+#include <HAPI/HapticPositionFunctionEffect.h>
+
 using namespace HAPI;
 
 enum
 {
-  ButtonInterpolate_true,
-  ButtonInterpolate_false,
   x_function_ValueText,
   y_function_ValueText,
   z_function_ValueText
@@ -15,129 +48,71 @@ enum {
   zero_time_now
 };
 
-BEGIN_EVENT_TABLE(PositionFunctionWidgetsPage, WidgetsPage)
-    EVT_RADIOBOX(wxID_ANY, PositionFunctionWidgetsPage::OnCheckOrRadioBox)
-END_EVENT_TABLE()
+IMPLEMENT_WIDGETS_PAGE( PositionFunctionWidgetsPage, _T("PositionFunction") );
 
-IMPLEMENT_WIDGETS_PAGE(PositionFunctionWidgetsPage, _T("PositionFunction"));
-
-PositionFunctionWidgetsPage::PositionFunctionWidgetsPage(wxBookCtrlBase *book, AnyHapticsDevice *_hd)
-                  : WidgetsPage(book, _hd)
+PositionFunctionWidgetsPage::PositionFunctionWidgetsPage(
+  wxBookCtrlBase *book, AnyHapticsDevice *_hd ) : WidgetsPage( book, _hd )
 {
+  m_txt_x_function = NULL;
+  m_txt_y_function = NULL;
+  m_txt_z_function = NULL;
+  x_function = 0;
+  y_function = 0;
+  z_function = 0;
 
-    m_radioInterpolate = (wxRadioBox *)NULL;
-    m_txt_x_function = NULL;
-    m_txt_y_function = NULL;
-    m_txt_z_function = NULL;
-    x_function = 0;
-    y_function = 0;
-    z_function = 0;
+  wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
 
-    wxSizer *sizerTop = new wxBoxSizer(wxHORIZONTAL);
+  wxSizer *sizerLeft =
+    new wxStaticBoxSizer( wxVERTICAL, this, _T("Position Function") );
 
-    wxSizer *sizerLeft = new wxStaticBoxSizer(wxVERTICAL, this, _T("Position Function") );
+  wxSizer *sizerForce = createXYZInputControls( this,
+                           _T("Position functions for each dimension"),
+                                                x_function_ValueText,
+                                                &m_txt_x_function,
+                                                y_function_ValueText,
+                                                &m_txt_y_function,
+                                                z_function_ValueText,
+                                                &m_txt_z_function,
+                                                _T("x(x,y,z):"),
+                                                _T("y(x,y,z):"),
+                                                _T("z(x,y,z):") );
 
-    sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
+  sizerForce->SetMinSize( 200, 10 );
+  sizerLeft->Add( sizerForce, 0, wxALL | wxGROW, 5 );
 
-    // should be in sync with enums ButtonInterpolate_true(false)!
-    static const wxString interpolate[] =
-    {
-        _T("true"),
-        _T("false")
-    };
+  sizerTop->Add(sizerLeft, 0, wxALL, 10);
 
-    m_radioInterpolate = new wxRadioBox(this, wxID_ANY, _T("&interpolate"),
-                                   wxDefaultPosition, wxDefaultSize,
-                                   WXSIZEOF(interpolate), interpolate);
+  // final initializations
+  Reset();
 
-    sizerLeft->Add(m_radioInterpolate, 0, wxALL, 5);
+  SetSizer(sizerTop);
 
-    sizerLeft->Add(5, 5, 0, wxGROW | wxALL, 5); // spacer
-
-    wxSizer *sizerForce = new wxStaticBoxSizer(wxVERTICAL, this, _T("Position functions for each dimension") );
-
-    wxSizer *sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("x(x,y,z):"),
-                                            x_function_ValueText,
-                                            &m_txt_x_function,
-                                            this );
-    sizerForce->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("y(x,y,z):"),
-                                            y_function_ValueText,
-                                            &m_txt_y_function,
-                                            this );
-    sizerForce->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerRow = CreateSizerWithTextAndLabel(
-                                            _T("z(x,y,z):"),
-                                            z_function_ValueText,
-                                            &m_txt_z_function,
-                                            this );
-    sizerForce->Add( sizerRow, 0, wxALL | wxGROW, 5 );
-
-    sizerForce->SetMinSize( 200, 10 );
-
-    sizerLeft->Add( sizerForce, 0, wxALL | wxGROW, 5);
-
-    sizerTop->Add(sizerLeft, 0, wxALL | wxGROW, 10);
-
-    // final initializations
-    Reset();
-
-    SetSizer(sizerTop);
-
-    sizerTop->Fit(this);
+  sizerTop->Fit(this);
 }
 
 void PositionFunctionWidgetsPage::Reset()
 {
-    m_radioInterpolate->SetSelection(ButtonInterpolate_false);
-    interpolate = false;
-    m_txt_x_function->SetValue(_T("x*0 + y + z*0" ));
-    m_txt_y_function->SetValue(_T("0" ));
-    m_txt_z_function->SetValue(_T("0" ));
+  m_txt_x_function->SetValue( _T("x*0 + y + z*0" ) );
+  m_txt_y_function->SetValue( _T("0" ) );
+  m_txt_z_function->SetValue( _T("0" ) );
 }
 
-void PositionFunctionWidgetsPage::OnCheckOrRadioBox(wxCommandEvent& WXUNUSED(event))
-{
-    switch ( m_radioInterpolate->GetSelection() )
-    {
-        case ButtonInterpolate_true:
-          interpolate = true;
-            break;
-
-        default:
-            wxFAIL_MSG(_T("unexpected radiobox selection"));
-            // fall through
-
-        case ButtonInterpolate_false:
-          interpolate = false;
-            break;
-    }
-}
-
-void PositionFunctionWidgetsPage::createForceEffect( ) {
-
+void PositionFunctionWidgetsPage::createForceEffect() {
+  
   x_function = new ParsedFunction();
-  x_function->setFunctionString( HAPIDemo::toStr(m_txt_x_function->GetValue()), "x,y,z" );
+  x_function->setFunctionString(
+    HAPIDemo::toStr( m_txt_x_function->GetValue()), "x,y,z" );
   y_function = new ParsedFunction();
-  y_function->setFunctionString( HAPIDemo::toStr(m_txt_y_function->GetValue()), "x,y,z" );
+  y_function->setFunctionString(
+    HAPIDemo::toStr( m_txt_y_function->GetValue()), "x,y,z" );
   z_function = new ParsedFunction();
-  z_function->setFunctionString( HAPIDemo::toStr(m_txt_z_function->GetValue()), "x,y,z" );
+  z_function->setFunctionString(
+    HAPIDemo::toStr( m_txt_z_function->GetValue()), "x,y,z" );
 
-  force_effect.reset( new HapticPositionFunctionEffect(
-    x_function,
-    y_function,
-    z_function ) );
-    hd->addEffect( force_effect.get() );
-    hd->clearEffects();
-    hd->addEffect( force_effect.get() );
+  force_effect.reset( new HapticPositionFunctionEffect( x_function,
+                                                        y_function,
+                                                        z_function ) );
+  hd->clearEffects();
+  hd->addEffect( force_effect.get() );
 }
 
-void PositionFunctionWidgetsPage::removeForceEffect() {
-  if( force_effect.get() ) {
-    hd->removeEffect( force_effect.get() );
-  }
-}
