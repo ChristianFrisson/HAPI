@@ -486,8 +486,9 @@ void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
   // Why is untouchCallback sometimes called before touchCallback????
   if( to_remove == renderer->contacts.end() ) {
     renderer->already_removed_id.push_back( shape->getShapeId() );
-  } else
+  } else {
     renderer->contacts.erase( to_remove );
+  }
 }
 
 
@@ -654,8 +655,8 @@ void OpenHapticsRenderer::hlRenderAbsolute( HAPIFloat stiffness,
                                             HAPIFloat dynamic_friction,
                                             bool magnetic,
                                             HAPIFloat snap_distance ) {
-  hlRenderRelative( stiffness / 0.7,
-                    damping / 0.7,
+  hlRenderRelative( stiffness > 1 ? 1 : stiffness,
+                    damping,
                     static_friction,
                     dynamic_friction,
                     magnetic,
