@@ -75,8 +75,8 @@ PhantomHapticsDevice::device_registration(
                             PhantomDeviceInternal::phantom_device_libs
                             );
 
-bool PhantomHapticsDevice::restart_scheduler = false;
 bool PhantomHapticsDevice::scheduler_started = false;
+bool PhantomHapticsDevice::enable_start_scheduler = true;
 int PhantomHapticsDevice::nr_of_scheduled = 0;
 
 bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
@@ -162,7 +162,6 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   thread = hl_thread;
   hl_thread->setActive( true );
   nr_of_scheduled++;
-  restart_scheduler = true;
   if( !scheduler_started )
     hdSetSchedulerRate( (HDulong)_thread_frequency );
   return true;

@@ -158,14 +158,21 @@ namespace HAPI {
       // of random crashes when using OpenHapticsRenderer. Apparantly HL API does
       // not like the scheduler to have already been started when creating a new
       // HL context.
-      if( scheduler_started && restart_scheduler ) {
-        hdStopScheduler();
-        restart_scheduler = false;
+      if( enable_start_scheduler ) {
+        startScheduler();
       }
-      hdStartScheduler();
-      if( !scheduler_started )
-        scheduler_started = true;
       return e;
+    }
+
+    // set the enable_start_scheduler variable.
+    static inline void setEnableStartScheduler( bool new_value ) {
+      enable_start_scheduler = new_value;
+    }
+
+    // start the hdScheduler.
+    static inline void startScheduler() {
+      hdStartScheduler();
+      scheduler_started = true;
     }
 
   protected:
@@ -212,9 +219,12 @@ namespace HAPI {
     /// Handle for the callback for rendering ForceEffects.  
     vector< HDCallbackCode > hd_handles;
 
-    /// If a phantom device is initialized after the scheduler has been started
-    /// the stop and start again.
-    static bool restart_scheduler;
+    // If true the scheduler will be started when enableDevice is called.
+    // If not then the startScheduler() function has to be called in order
+    // to have haptics rendering function. Default value is true.
+    static bool enable_start_scheduler;
+
+    // True if the OpenHaptics scheduler is started.
     static bool scheduler_started;
 
     /// Counts the number of PhantomHapticsDevices for which the scheduler
