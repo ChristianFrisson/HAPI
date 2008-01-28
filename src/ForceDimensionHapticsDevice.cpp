@@ -79,8 +79,10 @@ bool ForceDimensionHapticsDevice::releaseHapticsDevice() {
   HAPIHapticsDevice::disableDevice();
   if( device_id != -1 ) {
     if( com_thread ) {
-      if( com_func_cb_handle != -1 )
+      if( com_func_cb_handle != -1 ) {
         com_thread->removeAsynchronousCallback( com_func_cb_handle );
+        com_func_cb_handle = -1;
+      }
       delete com_thread;
       com_thread = NULL;
     }
