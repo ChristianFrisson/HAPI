@@ -162,6 +162,17 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
   if (device_handle != -1) {
     // TODO: what is the return values.
     int result = InitialiseHapticMaster(device_handle);
+
+    // initalize the thread used for communication.
+#ifdef WIN32
+    com_thread = 
+      new H3DUtil::PeriodicThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+#else
+    com_thread = new H3DUtil::PeriodicThread( 20, 1000 );
+#endif
+
+    com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+    
     return true;
   } else {
     // check for the servers.db file
@@ -182,12 +193,25 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
 }
 
 bool HapticMasterDevice::releaseHapticsDevice() {
-  SetState(device_handle, FCSSTATE_INITIALISED);
-  CloseHapticMaster(device_handle);    
-  if( dll_references > 0 ) {
-    dll_references--;
-    if( dll_references == 1 )
-      H3DUtil::DynamicLibrary::close( dll_handle );
+  disableDevice();
+
+  if( device_handle != -1 ) {
+    if( com_thread ) {
+      if( com_func_cb_handle != -1 ) {
+        com_thread->removeAsynchronousCallback( com_func_cb_handle );
+        com_func_cb_handle = -1;
+      }
+      delete com_thread;
+      com_thread = NULL;
+    }
+    SetState(device_handle, FCSSTATE_INITIALISED);
+    CloseHapticMaster(device_handle);    
+    if( dll_references > 0 ) {
+      dll_references--;
+      if( dll_references == 1 )
+        H3DUtil::DynamicLibrary::close( dll_handle );
+    }
+    device_handle = -1;
   }
   return true;
 }
@@ -195,28 +219,26 @@ bool HapticMasterDevice::releaseHapticsDevice() {
 void HapticMasterDevice::updateDeviceValues( DeviceValues &dv,
                                              HAPITime dt ) {
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
-  double force[] = { dv.force.z, dv.force.x, dv.force.y };
-  double pos[3] = { 0.0, 0.0, 0.0};
-  double vel[3] = { 0.0, 0.0, 0.0};
-  SetForceGetPV(device_handle, force, pos, vel );
-  GetCurrentForce( device_handle, force );
-  dv.position = Vec3(pos[1], pos[2], pos[0]) * 1000;
-  dv.velocity = Vec3(vel[1], vel[2], vel[0]) * 1000;
-       
-  dv.orientation = Rotation( 1, 0, 0, 0 );
-  dv.force = Vec3( force[1], force[2], force[0] );
-  // TODO: button
-  // bitmask for buttons. bit 0 is button 0, bit 1 button 1 and so on.
-  // value of 1 indicates button pressed.
-  //dv.button_status = 0;
+  
+  if( device_handle != -1 ) {
+    com_lock.lock();
+    dv.position = current_values.position;
+    dv.velocity = current_values.velocity;
+    dv.orientation = current_values.orientation;
+    dv.button_status = current_values.button_status;
+    com_lock.unlock();
+  }
     
 }
 
 void HapticMasterDevice::sendOutput( DeviceOutput &dv,
                                      HAPITime dt ) {
-
-  // this is sent in updateDeviceValues in order to minimize the number of
-  // calls to the haptic master.
+  if( device_handle != -1 ) {
+    com_lock.lock();
+    current_values.force = dv.force;
+    current_values.torque = dv.torque;
+    com_lock.unlock();
+  }
 }
 
 int HapticMasterDevice::createSphere( Vec3 pos, double radius,
@@ -272,6 +294,38 @@ int HapticMasterDevice::setSpherePosition( int sphere, Vec3 pos ) {
   return SetSpherePosition( sphere, p );
 }
 
+H3DUtil::PeriodicThread::CallbackCode
+HapticMasterDevice::com_func( void *data ) {
+  HapticMasterDevice *hd = 
+    static_cast< HapticMasterDevice * >( data );
+  
+  if( hd->device_handle != -1 ) {
+
+    hd->com_lock.lock();
+    double force[] = { hd->output.force.z, 
+                       hd->output.force.x, 
+                       hd->output.force.y };
+
+    hd->com_lock.unlock();
+
+    double pos[3] = { 0.0, 0.0, 0.0};
+    double vel[3] = { 0.0, 0.0, 0.0};
+    SetForceGetPV(hd->device_handle, force, pos, vel );
+	GetCurrentForce( hd->device_handle, force );
+
+    // convert to millimetres
+    Vec3 position = Vec3(pos[1], pos[2], pos[0]) * 1000;
+    Vec3 velocity = Vec3(vel[1], vel[2], vel[0]) * 1000;
+
+    hd->com_lock.lock();
+    hd->current_values.position = position;
+    hd->current_values.velocity = velocity;
+    hd->current_values.force = Vec3( force[1], force[2], force[0] );
+    hd->com_lock.unlock();
+  }
+                          
+  return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
+}
 
 #endif  // HAVE_HAPTIC_MASTER_API
 
