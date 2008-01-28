@@ -54,6 +54,7 @@ namespace HAPI {
           HAPIFloat (*_func)( const Vec2 &local_point, void *data ) = 0,
           int _max_iterations = 35,
           HAPIFloat _minimization_epsilon = 1e-4,
+          bool _use_relative_values = true,
           bool _use_ref_count_lock = true );
 
 
@@ -69,6 +70,12 @@ namespace HAPI {
     HAPIFloat static_friction;
     /// The dynamic friction of the surface.
     HAPIFloat dynamic_friction;
+
+    /// If false then values (such as stiffness) is in absolute values with
+    /// SI units or equivalent. If true the units are relative to the maximum
+    /// values that the haptics device, on which the surface is rendered on,
+    /// can handle.
+    bool use_relative_values;
 
   protected:
     /// Lock used when getting depth for the surface.

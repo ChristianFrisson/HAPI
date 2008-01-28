@@ -43,7 +43,10 @@ namespace HAPI {
     /// Constructor.
     HapticMasterDevice( const string &_device_name = "vmd" ):
       device_handle( -1 ),
-      device_name( _device_name ) {}
+      device_name( _device_name ) {
+      // This one is really really stiff.
+      max_stiffness = 10000;
+    }
 
     /// Destructor.
     virtual ~HapticMasterDevice() {}

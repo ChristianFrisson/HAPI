@@ -36,12 +36,14 @@ FrictionSurface::FrictionSurface( HAPIFloat _stiffness,
                                   HAPIFloat _damping,
                                   HAPIFloat _static_friction,
                                   HAPIFloat _dynamic_friction,
+                                  bool _use_relative_values,
                                   bool _use_ref_count_lock ) :
 HAPISurfaceObject( _use_ref_count_lock ),
 stiffness( _stiffness ),
 damping( _damping ),
 static_friction( _static_friction ),
 dynamic_friction( _dynamic_friction ),
+use_relative_values( _use_relative_values ),
 in_static_contact( true ) {
 }
 
@@ -62,7 +64,12 @@ void FrictionSurface::getProxyMovement( ContactInfo &contact_info ) {
     // Diego C. Ruspini, Krasimir Kolarov and Oussama Khatib.
     // Published 1997.
     Vec3 local_probe = contact_info.localProbePosition();
-    Vec3 force = local_probe * -stiffness;
+    HAPIFloat local_stiffness = stiffness;
+    if( use_relative_values ) {
+      local_stiffness = stiffness *
+        contact_info.hapticsDevice()->getMaxStiffness();
+    }
+    Vec3 force = local_probe * -local_stiffness;
     Vec2 force_t( force.x, force.z );
 
     if( in_static_contact ) {
@@ -110,7 +117,12 @@ void FrictionSurface::getForces( ContactInfo &contact_info ) {
 
   Vec3 n_probe_to_origin = probe_to_origin;
   n_probe_to_origin.normalizeSafe();
-  contact_info.setGlobalForce(  probe_to_origin * stiffness -
+  HAPIFloat local_stiffness = stiffness;
+  if( use_relative_values ) {
+    local_stiffness = stiffness *
+      contact_info.hapticsDevice()->getMaxStiffness();
+  }
+  contact_info.setGlobalForce(  probe_to_origin * local_stiffness -
                                 ( n_probe_to_origin *
                                   contact_info.hapticsDevice()->getVelocity() *
                                   damping ) * n_probe_to_origin );

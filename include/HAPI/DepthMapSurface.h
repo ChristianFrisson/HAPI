@@ -51,6 +51,7 @@ namespace HAPI {
                          bool _white_max = true,
                          int _max_iterations = 35,
                          HAPIFloat _minimization_epsilon = 1e-4,
+                         bool _use_relative_values = true,
                          bool _use_ref_count_lock = true );
 
   protected:

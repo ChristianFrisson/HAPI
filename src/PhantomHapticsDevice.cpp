@@ -101,6 +101,9 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device_vendor = hdGetString( HD_DEVICE_VENDOR );
   device_serial_number = hdGetString( HD_DEVICE_SERIAL_NUMBER );
 
+  hdGetDoublev( HD_NOMINAL_MAX_STIFFNESS, &d );
+  max_stiffness = d;
+
   HDdouble ws[6];
   hdGetDoublev( HD_USABLE_WORKSPACE_DIMENSIONS, ws );
   usable_workspace_min = Vec3( ws[0], ws[1], ws[1] );

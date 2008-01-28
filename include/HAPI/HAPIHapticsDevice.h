@@ -105,6 +105,9 @@ namespace HAPI {
       haptic_rendering_cb_handle( -1 ) {
       setHapticsRenderer( NULL );
       haptic_rendering_callback_data = this;
+      // This value is choosen ad hoc as fairly "standard".
+      // All devices should have a correct value.
+      max_stiffness = 0.7;
     }
     
     /// Destructor. Stops haptics rendering and remove callback functions.
@@ -668,6 +671,12 @@ namespace HAPI {
       return thread;
     }
 
+    // Should return the maximum stiffness (N/mm) the haptics device can
+    // handle. returns -1 if for some reason there is no such value.
+    HAPIFloat getMaxStiffness() {
+      return max_stiffness;
+    }
+
     // The following is part of the database of available haptics devices.
     typedef HAPIHapticsDevice*( *CreateInstanceFunc)(); 
 
@@ -1082,6 +1091,11 @@ namespace HAPI {
     unsigned int nr_haptics_loops;
     unsigned int haptics_rate;
     TimeStamp last_hr_update;
+
+    /// The maximum stiffness the device can handle in N/mm.
+    /// Should be set by each subclass to HAPIHapticsDevice.
+    /// Default value is 0.7 N/mm.
+    HAPIFloat max_stiffness;
     
   };
 }

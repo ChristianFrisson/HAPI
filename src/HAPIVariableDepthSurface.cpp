@@ -41,6 +41,7 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
         HAPIFloat (*_func)( const Vec2 &local_point, void *data ),
         int _max_iterations,
         HAPIFloat _minimization_epsilon,
+        bool _use_relative_values,
         bool _use_ref_count_lock ) :
   HAPISurfaceObject( _use_ref_count_lock ),
   stiffness( _stiffness ),
@@ -49,6 +50,7 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
   dynamic_friction( _dynamic_friction ),
   func( _func ),
   minimization_epsilon( _minimization_epsilon ),
+  use_relative_values( _use_relative_values ),
   max_iterations( _max_iterations ),
   depth_invert( false ),
   in_static_contact( true ) {
@@ -96,10 +98,16 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
       Vec2( half_movement.y, -half_movement.x ) };
     Vec2 res;
 
+    HAPIFloat local_stiffness = stiffness;
+    if( use_relative_values ) {
+      local_stiffness = stiffness *
+        contact.hapticsDevice()->getMaxStiffness();
+    }
+
     depth_get_lock.lock();
     HAPIFloat start_depth = getDepth( Vec2());
     Vec3 force = ( Vec3( 0, start_depth, 0 ) - contact.localProbePosition() )
-                  * stiffness;
+                  * local_stiffness;
     Vec2 force_t( force.x, force.z );
     HAPIFloat normal_force = force.y;
     HAPIFloat tangent_force = force_t.length();
@@ -237,9 +245,14 @@ void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
       real_contact_point - contact_info.globalProbePosition();
     Vec3 n_probe_to_origin = probe_to_origin;
     n_probe_to_origin.normalizeSafe();
-    contact_info.setGlobalForce(  probe_to_origin * stiffness +
+    HAPIFloat local_stiffness = stiffness;
+    if( use_relative_values ) {
+      local_stiffness = stiffness *
+        contact_info.hapticsDevice()->getMaxStiffness();
+    }
+    contact_info.setGlobalForce(  probe_to_origin * local_stiffness +
                                   ( n_probe_to_origin *
-                                    contact_info.hapticsDevice()->getVelocity() *
+                                  contact_info.hapticsDevice()->getVelocity() *
                                     damping ) * n_probe_to_origin );
   }
 }

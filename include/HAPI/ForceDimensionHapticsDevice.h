@@ -48,6 +48,9 @@ namespace HAPI {
       device_id( -1 ),
       com_thread( NULL ),
       com_func_cb_handle( -1 ) {
+        // This might have to be changed if they redo it so that their
+        // different devices have different maximum stiffness values.
+        max_stiffness = 14.5;
     }
 
     /// Destructor.

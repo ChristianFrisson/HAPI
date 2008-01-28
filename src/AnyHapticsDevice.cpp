@@ -71,6 +71,7 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
         }
         if( hd->thread )
           thread = hd->thread;
+        max_stiffness = hd->getMaxStiffness();
         break;
       } else {
         delete device;
