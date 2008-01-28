@@ -55,7 +55,7 @@ void HLDepthBufferShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     glLoadIdentity();
     glScalef( 1e3f, 1e3f, 1e3f ); 
     glMultMatrixd( vt );
-    OpenHapticsRenderer::hlRenderHAPISurface( surface.get() );
+    OpenHapticsRenderer::hlRenderHAPISurface( surface.get(), hd );
 
     hlTouchableFace( HL_FRONT_AND_BACK );
     Matrix3 m3 = m.getScaleRotationPart();

@@ -254,7 +254,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 #endif
 
           glLoadIdentity();
-          hlRenderHAPISurface( (*i)->getSurface() );
+          hlRenderHAPISurface( (*i)->getSurface(), hd );
 
           HLenum touchable_face;
           Collision::FaceType face = (*i)->getTouchableFace();
@@ -358,7 +358,6 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
       OpenHapticsRendererInternals::getHLErrorString( error ) << endl;
     }   
 }
-
 
 HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
   PhantomHapticsDevice *pd = dynamic_cast< PhantomHapticsDevice * >( hd );
@@ -597,20 +596,28 @@ HLboolean HLCALLBACK OpenHapticsRenderer::closestFeaturesCallback(
 
 /// Renders a HAPISurface object with OpenHaptics. Returns true if it 
 /// succeeded, false otherwise. Not all surface types are valid.
-bool OpenHapticsRenderer::hlRenderHAPISurface( HAPISurfaceObject *s ) {
+bool OpenHapticsRenderer::hlRenderHAPISurface( HAPISurfaceObject *s,
+                                               HAPIHapticsDevice *hd ) {
   if( HLSurface *hl_surface = dynamic_cast< HLSurface * >( s ) ) {
     hl_surface->hlRender();
     return true;
   }
   if( FrictionSurface *friction_surface =
       dynamic_cast< FrictionSurface * >( s ) ) {
-    HAPI::OpenHapticsRenderer::hlRenderAbsolute(
-      friction_surface->stiffness,
-      friction_surface->damping,
-      friction_surface->static_friction,
-      friction_surface->dynamic_friction,
-      false,
-      0 );
+    if( friction_surface->use_relative_values ) {
+      HAPI::OpenHapticsRenderer::hlRenderRelative(
+        friction_surface->stiffness,
+        friction_surface->damping,
+        friction_surface->static_friction,
+        friction_surface->dynamic_friction );
+    } else {
+      HAPI::OpenHapticsRenderer::hlRenderAbsolute(
+        friction_surface->stiffness,
+        friction_surface->damping,
+        friction_surface->static_friction,
+        friction_surface->dynamic_friction,
+        hd->getMaxStiffness() );
+    }
     return true;
   }
   return false;
@@ -653,9 +660,11 @@ void OpenHapticsRenderer::hlRenderAbsolute( HAPIFloat stiffness,
                                             HAPIFloat damping,
                                             HAPIFloat static_friction,
                                             HAPIFloat dynamic_friction,
+                                            HAPIFloat max_stiffness,
                                             bool magnetic,
                                             HAPIFloat snap_distance ) {
-  hlRenderRelative( stiffness > 1 ? 1 : stiffness,
+  HAPIFloat local_stiffness = stiffness / max_stiffness;
+  hlRenderRelative( local_stiffness > 1 ? 1 : local_stiffness,
                     damping,
                     static_friction,
                     dynamic_friction,

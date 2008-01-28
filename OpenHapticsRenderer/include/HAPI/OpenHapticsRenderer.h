@@ -209,7 +209,8 @@ namespace HAPI {
 
     /// Renders a HAPISurface object with OpenHaptics. Returns true if it 
     /// succeeded, false otherwise. Not all surface types are valid.
-    static bool hlRenderHAPISurface( HAPISurfaceObject *s );
+    static bool hlRenderHAPISurface( HAPISurfaceObject *s,
+                                     HAPIHapticsDevice *hd );
 
     /// Sets up the surface parameters for HL API. All values are given in
     /// values between 0 and 1(except snap_distance which is in mm) just
@@ -234,6 +235,7 @@ namespace HAPI {
                                   HAPIFloat damping,
                                   HAPIFloat static_friction,
                                   HAPIFloat dynamic_friction,
+                                  HAPIFloat max_stiffness,
                                   bool magnetic = false,
                                   HAPIFloat snap_distance = 0 );
     

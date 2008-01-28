@@ -47,6 +47,7 @@ namespace HAPI {
                     HAPIFloat _damping = 0,
                     HAPIFloat _static_friction = 0,
                     HAPIFloat _dynamic_friction = 0,
+                    bool _use_relative_values = true,
                     bool _use_ref_count_lock = true );
 
     /// ~Destructor
@@ -71,6 +72,13 @@ namespace HAPI {
     
     /// The dynamic friction of the surface
     HAPIFloat dynamic_friction;
+
+    /// If false then values (such as stiffness) is in absolute values with
+    /// SI units or equivalent. If true the units are relative to the maximum
+    /// values that the haptics device, on which the surface is rendered on,
+    /// can handle.
+    bool use_relative_values;
+
   protected:
     /// Used to determine if the proxy is in static contact with
     /// the surface. In that case there is no proxy movement.
