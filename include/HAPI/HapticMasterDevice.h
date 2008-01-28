@@ -43,9 +43,12 @@ namespace HAPI {
     /// Constructor.
     HapticMasterDevice( const string &_device_name = "vmd" ):
       device_handle( -1 ),
-      device_name( _device_name ) {
+      device_name( _device_name ),
+      com_thread( NULL ),
+      com_func_cb_handle( -1 ) {
+
       // This one is really really stiff.
-      max_stiffness = 10000;
+      max_stiffness = 10;
     }
 
     /// Destructor.
@@ -109,6 +112,23 @@ namespace HAPI {
     // the name of this device as specified in servers.db.
     string device_name;
     
+    /// Callback function for communication thread
+    static H3DUtil::PeriodicThread::CallbackCode com_func( void *data );
+
+    /// Callback handle to the com_func callback that is set up
+    int com_func_cb_handle;
+
+    /// Thread used to do communication with the haptics device
+    H3DUtil::PeriodicThread *com_thread;
+
+    /// Lock for exchanging data with the communication thread.
+    H3DUtil::MutexLock com_lock;
+
+    /// The current device values updated in the communicataion thread.
+    /// Access to this structure must be contained within locking with 
+    /// com_lock.
+    DeviceValues current_values;
+
   };
 }
 
