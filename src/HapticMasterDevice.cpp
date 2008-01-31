@@ -105,7 +105,7 @@ unsigned int HapticMasterDevice::dll_references = 0;
 bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
   if (dll_references == 0 ) {
     // Load the DLL library in memory
-    dll_handle = H3DUtil::DynamicLibrary::load("HapticMasterDriver.dll");
+    dll_handle = H3DUtil::DynamicLibrary::load("HapticMasterDriverd.dll");
     
     if( dll_handle ) {
       // Get DLL Function pointers
@@ -226,6 +226,7 @@ void HapticMasterDevice::updateDeviceValues( DeviceValues &dv,
     dv.velocity = current_values.velocity;
     dv.orientation = current_values.orientation;
     dv.button_status = current_values.button_status;
+	dv.force = current_values.force;
     com_lock.unlock();
   }
     
@@ -234,10 +235,10 @@ void HapticMasterDevice::updateDeviceValues( DeviceValues &dv,
 void HapticMasterDevice::sendOutput( DeviceOutput &dv,
                                      HAPITime dt ) {
   if( device_handle != -1 ) {
-    com_lock.lock();
-    current_values.force = dv.force;
-    current_values.torque = dv.torque;
-    com_lock.unlock();
+    //com_lock.lock();
+    //current_values.force = dv.force;
+    //current_values.torque = dv.torque;
+    //com_lock.unlock();
   }
 }
 
