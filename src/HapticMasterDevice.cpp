@@ -105,7 +105,7 @@ unsigned int HapticMasterDevice::dll_references = 0;
 bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
   if (dll_references == 0 ) {
     // Load the DLL library in memory
-    dll_handle = H3DUtil::DynamicLibrary::load("HapticMasterDriverd.dll");
+    dll_handle = H3DUtil::DynamicLibrary::load("HapticMasterDriver.dll");
     
     if( dll_handle ) {
       // Get DLL Function pointers
