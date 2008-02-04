@@ -44,7 +44,7 @@ GodObjectRenderer::renderer_registration(
 // the minimum distance the proxy will be from the surface. The proxy
 // will be moved above the surface with the given factor in order to
 // avoid roundoff errors and fallthrough problems.
-const HAPIFloat min_distance = 1e-3;
+const HAPIFloat min_distance = 1e-4;
 
 // epsilon value for deciding if a point is the same
 const HAPIFloat length_sqr_point_epsilon = 1e-12; //12
@@ -559,6 +559,7 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
 
   HAPIFloat d2;
   Collision::IntersectionInfo closest_intersection;
+  Collision::Plane plane( Vec3(0, 0, 0), Vec3(0, 0, 0) );
 
   while( have_new_goal ) {
     have_new_goal = false;
@@ -587,15 +588,31 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
       } 
     }
         
-    if( has_intersection ) {
-      Vec3 normal = 
-        closest_intersection.face == Collision::FRONT ?
-        closest_intersection.normal : -closest_intersection.normal;
-      from_point = closest_intersection.point + normal * min_distance;
-      
+    if( has_intersection ) {      
       if( nr_constraints == 1 && first_loop ) {
+        Vec3 normal = 
+          closest_intersection.face == Collision::FRONT ?
+          closest_intersection.normal : -closest_intersection.normal;
+
+        // Find intersection with moved plane along the line from point to
+        // closest intersection with shapes.
+        // Needed in order to not accidently project behind other constraints
+        // when projecting along the intersection of the two moved planes.
+        // May not be the best solution but it minimizes the problem at 
+        // relatively low time cost. It is certainly better then to move
+        // the from_point to an arbitrary position in the direction of the
+        // closest_intersection normal.
+        plane.normal = normal;
+        plane.point = closest_intersection.point + normal * min_distance;
+        Collision::IntersectionInfo intersection;
+        if( plane.lineIntersect( from_point,
+                                 closest_intersection.point,
+                                 intersection ) ) {
+          from_point = intersection.point;
+        }
+
         // project onto plane intersection between intersection plane and
-        // closest constraint
+        // closest constraint.
         from_point =  
           projectOntoPlaneIntersection( from_point, 
                                         closest_intersection.point + 
