@@ -15,7 +15,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(H3D_ROOT)\..\bin"
+			OutputDirectory="..\..\..\..\..\..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			>
@@ -37,7 +37,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_ROOT)\..\H3DUtil\include&quot;;..\..\..\..\..\include"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;..\..\..\..\..\..\H3DUtil\include;..\..\..\..\..\include"
 				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="false"
 				ProgramDataBaseFileName="$(IntDir)\$(TargetName).pdb"
@@ -57,9 +57,9 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="d3d9.lib d3dx9.lib HAPI10_vc8_d.lib H3DUtil10_vc8_d.lib"
 				OutputFile="$(OutDir)\$(ProjectName)_vc8_d.exe"
-				AdditionalLibraryDirectories="&quot;$(H3D_ROOT)\..\lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
+				ProgramDatabaseFile="$(OutDir)\$(TargetName).pdb"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -88,7 +88,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(H3D_ROOT)\..\bin"
+			OutputDirectory="..\..\..\..\..\..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			>
@@ -109,7 +109,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_ROOT)\..\H3DUtil\include&quot;;..\..\..\..\..\include"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;..\..\..\..\..\..\H3DUtil\include;..\..\..\..\..\include"
 				ProgramDataBaseFileName="$(IntDir)\$(TargetName).pdb"
 			/>
 			<Tool
@@ -125,7 +125,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="d3d9.lib d3dx9.lib HAPI10_vc8.lib H3DUtil10_vc8.lib"
 				OutputFile="$(OutDir)\$(ProjectName)_vc8.exe"
-				AdditionalLibraryDirectories="&quot;$(H3D_ROOT)\..\lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
