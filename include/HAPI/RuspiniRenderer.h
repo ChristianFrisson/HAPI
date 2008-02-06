@@ -100,7 +100,9 @@ namespace HAPI {
 
     /// Try to move the proxy to a new location. Will stop at the first
     /// intersection with a plane in case of any.
-    Vec3 tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal );
+    Vec3 tryProxyMovement( const Vec3 &from,
+                           const Vec3 &to,
+                           const Vec3 &normal );
     
     HAPIFloat proxy_radius;
     Vec3 proxy_position;

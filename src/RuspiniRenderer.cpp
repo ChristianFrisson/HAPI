@@ -48,6 +48,8 @@ const HAPIFloat length_sqr_point_epsilon = 1e-12; //12
 // epsilon value for deciding if a normal is the same.
 const HAPIFloat length_sqr_normal_epsilon = 1e-12;
 
+const HAPIFloat above_plane_epsilon = 1e-10;
+
 RuspiniRenderer::RuspiniRenderer( HAPIFloat _proxy_radius ):
   proxy_radius( _proxy_radius ),
   proxy_position( UNINITIALIZED_PROXY_POS ) {
@@ -124,7 +126,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
     
     // create a local coordinate system with the PlaneConstraint normal
     // as y-axis
-    contact.y_axis = p0.normal * local_pos.x + p1.normal * local_pos.y;
+    contact.y_axis = -p0.normal * local_pos.x - p1.normal * local_pos.y;
     contact.y_axis.normalizeSafe();
     
     Vec3 a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
@@ -327,9 +329,6 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
   }    
 }
 
-
-
-
 HAPIForceEffect::EffectOutput 
 RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                                        const HapticShapeVector &shapes ) {
@@ -361,7 +360,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
        i++ ) {
-    (*i)->getConstraints( proxy_pos, constraints, (*i)->getTouchableFace(), r );
+    (*i)->getConstraints( proxy_pos, constraints, (*i)->getTouchableFace(), r);
   }
   
   // move them out by the proxy radius in the direction of the normal. 
@@ -379,9 +378,8 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     for( Constraints::iterator i = constraints.begin();
          i != constraints.end(); i++ ) {
       HAPIFloat d = (*i).normal * (proxy_pos - (*i).point );
-      if( d < 0 && d > -proxy_radius ) {
-        //cerr << (*i).normal << " " << d << endl;
-        proxy_pos = proxy_pos + (*i).normal * (-d+1e-15);
+      if( d <= 0 && d > -proxy_radius ) {
+        proxy_pos = proxy_pos + (*i).normal * (-d+above_plane_epsilon);
         done = false;
       }
     }
@@ -506,7 +504,9 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
 }
 
 
-Vec3 RuspiniRenderer::tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal ) {
+Vec3 RuspiniRenderer::tryProxyMovement( const Vec3 &from,
+                                        const Vec3 &to,
+                                        const Vec3 &normal ) {
   // from = closest_intersection.point;
   // to = new_proxy_pos
 
@@ -573,12 +573,16 @@ Vec3 RuspiniRenderer::tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal ) {
       plane_intersected = true;
       constraints.clear();
       PlaneConstraint pc = *i;
-      Vec3 p = intersection.point;
+      Vec3 p = pc.haptic_shape->getInverse() * intersection.point;
       // get updated constraint
       (*i).primitive->getConstraints( p, constraints, 
                                       (*i).haptic_shape->getTouchableFace() );
-      if( !constraints.empty() )
+      if( !constraints.empty() ) {
         *i = constraints.front();
+        (*i).normal = pc.haptic_shape->getTransform().getRotationPart() *
+                      (*i).normal;
+        (*i).point = pc.haptic_shape->getTransform() * (*i).point;
+      }
 
       (*i).point += (*i).normal * proxy_radius;
       (*i).haptic_shape = pc.haptic_shape;
@@ -592,7 +596,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( Vec3 from, Vec3 to, Vec3 normal ) {
         // make sure the point is above the new constraint
         HAPIFloat d = (*i).normal * (from_point - (*i).point );
         if( d < 0 ) {
-          from_point = from_point + (*i).normal * (-d+1e-15);
+          from_point = from_point + (*i).normal * (-d+above_plane_epsilon);
         } 
       }
       counter++;
