@@ -37,7 +37,6 @@ bool HapticPrimitiveSet::lineIntersectShape(
           const Vec3 &to,
           Collision::IntersectionInfo &result,
           Collision::FaceType face ) { 
-  // TODO: find closest?
   bool have_intersection = false;
   Collision::IntersectionInfo closest_intersection;
   HAPIFloat min_d2;

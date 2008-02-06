@@ -82,10 +82,6 @@ namespace HAPI {
 
       /// The primitive that was intersected.
       GeometryPrimitive * primitive;
-
-      /// Gradient describing the change of tex coord depending on
-      /// change in pos at the intersection point.
-      Matrix3 pos_to_tex_coord_gradient;
       
       /// \brief The id of the primitive that was intersected if applicable,
       /// e.g. triangle index. -1 if no id exists.
