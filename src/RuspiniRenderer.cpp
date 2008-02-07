@@ -43,7 +43,7 @@ RuspiniRenderer::renderer_registration(
                             );
 
 // epsilon value for deciding if a point is the same
-const HAPIFloat length_sqr_point_epsilon = 1e-12; //12
+const HAPIFloat length_sqr_point_epsilon = 1e-12;
 
 // epsilon value for deciding if a normal is the same.
 const HAPIFloat length_sqr_normal_epsilon = 1e-12;
@@ -457,9 +457,52 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
       // plane is not intersected
       other_constraints.push_back( *i );
     }
-  } 
+  }
 
   unsigned int nr_constraints = closest_constraints.size();
+
+  // TODO: Could this check be included in the first loop somehow
+  // or will that just slow it down more. Without this part the
+  // proxy will be stuck between two planes in the part where the angle
+  // is below pi/4
+  if( nr_constraints > 0 ) {
+    constraints.clear();
+    for( Constraints::iterator j = other_constraints.begin();
+         j != other_constraints.end(); j++ ) {
+      HAPIFloat t = (*j).normal * ( proxy_pos  - (*j).point );
+      Vec3 closest_point = proxy_pos - t * (*j).normal;
+      if( ( closest_point - proxy_pos ).lengthSqr() <
+          length_sqr_point_epsilon ) {
+        bool add_it = true;
+        for( Constraints::iterator k = closest_constraints.begin();
+             k != closest_constraints.end(); k++ ) {
+          if( ( (*k).normal + (*j).normal ).lengthSqr() <
+              length_sqr_normal_epsilon ||
+              ( (*k).normal - (*j).normal ).lengthSqr() <
+              length_sqr_normal_epsilon ) {
+              add_it = false;
+              break;
+          }
+        }
+        
+        if( add_it ) {
+          closest_constraints.push_back( *j );
+        } else
+          constraints.push_back( *j );
+
+      } else {
+        constraints.push_back( *j);
+      }
+    }
+
+    if( closest_constraints.size() > nr_constraints ) {
+      nr_constraints = closest_constraints.size();
+      other_constraints.clear();
+      other_constraints.insert( other_constraints.end(),
+                                constraints.begin(),
+                                constraints.end() );
+    }
+  }
 
   Vec3 new_proxy_pos, new_force;
 
@@ -623,6 +666,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( const Vec3 &from,
     } 
   }
 #endif
+
   if( has_intersection ) return closest_point;
   else return to;
 }
