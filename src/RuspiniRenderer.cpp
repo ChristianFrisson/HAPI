@@ -252,6 +252,31 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
     }
   }
 
+  // Sorting from highest to lowest in order to not get fallthrough
+  // at triangle edges.
+  if( probe_local_pos.x < probe_local_pos.y ) {
+    HAPIFloat temp_x = probe_local_pos.x;
+    probe_local_pos.x = probe_local_pos.y;
+    probe_local_pos.y = temp_x;
+    std::swap( p0, p1 );
+  }
+  if( probe_local_pos.y < probe_local_pos.z ) {
+    if( probe_local_pos.x < probe_local_pos.z ) {
+      HAPIFloat temp_value = probe_local_pos.y;
+      probe_local_pos.y = probe_local_pos.z;
+      probe_local_pos.z = temp_value;
+      std::swap( p1, p2 );
+      temp_value = probe_local_pos.x;
+      probe_local_pos.x = probe_local_pos.y;
+      probe_local_pos.y = temp_value;
+      std::swap( p0, p1 );
+    } else {
+      HAPIFloat temp_y = probe_local_pos.y;
+      probe_local_pos.y = probe_local_pos.z;
+      probe_local_pos.z = temp_y;
+      std::swap( p1, p2 );
+    }
+  }
 
   // check that all three planes constrain, if not just do two plane contact
   // calculations
@@ -326,7 +351,7 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
         p1.haptic_shape.get() != p2.haptic_shape.get() ) {
       tmp_contacts.push_back( make_pair( p2.haptic_shape.get(), contact ) );
     }
-  }    
+  }
 }
 
 HAPIForceEffect::EffectOutput 
@@ -470,9 +495,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     for( Constraints::iterator j = other_constraints.begin();
          j != other_constraints.end(); j++ ) {
       HAPIFloat t = (*j).normal * ( proxy_pos  - (*j).point );
-      Vec3 closest_point = proxy_pos - t * (*j).normal;
-      if( ( closest_point - proxy_pos ).lengthSqr() <
-          length_sqr_point_epsilon ) {
+      if( t * t < length_sqr_point_epsilon ) {
         bool add_it = true;
         for( Constraints::iterator k = closest_constraints.begin();
              k != closest_constraints.end(); k++ ) {
