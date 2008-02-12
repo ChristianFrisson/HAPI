@@ -59,7 +59,7 @@
 				OutputFile="$(OutDir)\$(ProjectName)_vc8_d.exe"
 				AdditionalLibraryDirectories="..\..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)\$(TargetName).pdb"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -126,6 +126,7 @@
 				AdditionalDependencies="d3d9.lib d3dx9.lib HAPI10_vc8.lib H3DUtil10_vc8.lib"
 				OutputFile="$(OutDir)\$(ProjectName)_vc8.exe"
 				AdditionalLibraryDirectories="..\..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 			/>
 			<Tool
 				Name="VCALinkTool"
