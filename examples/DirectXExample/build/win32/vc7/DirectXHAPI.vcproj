@@ -27,6 +27,7 @@
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				RuntimeTypeInfo="TRUE"
+				ObjectFile="$(IntDir)/"
 				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="3"/>
@@ -40,7 +41,7 @@
 				AdditionalLibraryDirectories="&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;..\..\..\..\..\..\lib"
 				GenerateDebugInformation="TRUE"
 				AssemblyDebug="1"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"/>
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -76,6 +77,7 @@
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="TRUE"
+				ObjectFile="$(IntDir)/"
 				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="3"/>
@@ -87,8 +89,8 @@
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;..\..\..\..\..\..\lib"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"/>
+				GenerateDebugInformation="FALSE"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
