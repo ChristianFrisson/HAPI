@@ -68,6 +68,7 @@
 
 // HAPI includes
 #include <HAPI/ParsedFunction.h>
+#ifdef HAVE_FPARSER
 
 class TimeFunctionWidgetsPage : public WidgetsPage
 {
@@ -107,4 +108,6 @@ private:
   DECLARE_EVENT_TABLE()
   DECLARE_WIDGETS_PAGE(TimeFunctionWidgetsPage)
 };
+#endif // HAVE_FPARSER
+
 #endif

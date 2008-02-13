@@ -31,6 +31,8 @@
 // HAPIDemo includes
 #include "PositionFunctionWidgetsPage.h"
 
+#ifdef HAVE_FPARSER
+
 // HAPI includes
 #include <HAPI/HapticPositionFunctionEffect.h>
 
@@ -115,4 +117,4 @@ void PositionFunctionWidgetsPage::createForceEffect() {
   hd->clearEffects();
   hd->addEffect( force_effect.get() );
 }
-
+#endif // HAVE_FPARSER

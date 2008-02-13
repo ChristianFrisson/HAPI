@@ -68,6 +68,8 @@
 // HAPI includes
 #include <HAPI/ParsedFunction.h>
 
+#ifdef HAVE_FPARSER
+
 class PositionFunctionWidgetsPage : public WidgetsPage
 {
 public:
@@ -97,4 +99,6 @@ protected:
 private:
   DECLARE_WIDGETS_PAGE(PositionFunctionWidgetsPage)
 };
+#endif // HAVE_FPARSER
+
 #endif
