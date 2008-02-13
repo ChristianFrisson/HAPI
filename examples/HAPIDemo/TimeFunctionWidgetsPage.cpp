@@ -30,6 +30,7 @@
 
 // HAPIDemo includes
 #include "TimeFunctionWidgetsPage.h"
+#ifdef HAVE_FPARSER
 
 // HAPI includes
 #include <HAPI/HapticTimeFunctionEffect.h>
@@ -209,3 +210,4 @@ void TimeFunctionWidgetsPage::createForceEffect() {
   hd->clearEffects();
   hd->addEffect( force_effect.get() );
 }
+#endif //HAVE_FPARSER
