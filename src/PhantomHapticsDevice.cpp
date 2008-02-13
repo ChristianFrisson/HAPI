@@ -176,7 +176,6 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
   nr_of_scheduled--;
   hdMakeCurrentDevice( device_handle );
 
-  // TODO: should not stop scheduler unless it is the last device
   if( scheduler_started && nr_of_scheduled == 0 ) {
     hdStopScheduler();
     scheduler_started = false;
@@ -262,6 +261,11 @@ bool PhantomHapticsDevice::calibrateDevice() {
   } else {
     return false;
   }
+}
+
+void PhantomHapticsDevice::startScheduler() {
+  hdStartScheduler();
+  scheduler_started = true;
 }
 
 #endif

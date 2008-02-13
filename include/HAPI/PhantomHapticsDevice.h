@@ -170,10 +170,7 @@ namespace HAPI {
     }
 
     // start the hdScheduler.
-    static inline void startScheduler() {
-      hdStartScheduler();
-      scheduler_started = true;
-    }
+    static void startScheduler();
 
   protected:
     double device_firmware_version;
