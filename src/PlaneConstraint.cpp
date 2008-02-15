@@ -37,7 +37,8 @@ bool PlaneConstraint::lineIntersect( const Vec3 &from,
                                      const Vec3 &to,
                                      Collision::IntersectionInfo &result ) {
       Vec3 from_to = to - from;
-      if( normal * from_to > Constants::epsilon ) { 
+      HAPIFloat denom = normal * from_to;
+      if( denom > Constants::epsilon ) { 
         /*if( result.normal.z == 0.5 ) {
           cerr << "a" << endl;
           cerr << normal * from_to << endl;
@@ -46,7 +47,7 @@ bool PlaneConstraint::lineIntersect( const Vec3 &from,
       }
 
 
-      HAPIFloat denom = normal * from_to;
+      //HAPIFloat denom = normal * from_to;
       if( denom * denom < Constants::epsilon ) {
         /*        if( result.normal.z == 0.5 )
                   cerr << "b" << endl; */
@@ -61,6 +62,7 @@ bool PlaneConstraint::lineIntersect( const Vec3 &from,
         if( u > 1 ) u = 1;
                 //cerr << u << endl;
         result.point = from + u * from_to;
+        result.t = u;
         result.normal = normal;
         // TODO: temp. Maybe use derivatives to get correct tex coord
         result.tex_coord = tex_coord;

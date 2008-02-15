@@ -43,13 +43,13 @@ bool HapticTriangleSet::lineIntersectShape( const Vec3 &from,
   for( vector< Collision::Triangle >::iterator i = triangles.begin();
        i != triangles.end(); ++i ) {
     Collision::Triangle &t = (*i);
-    if( t.lineIntersect( from, to, result, face ) )	{
-      Vec3 v = result.point - from;
+    if( t.lineIntersect( from, to, closest_intersection, face ) )	{
+      Vec3 v = closest_intersection.point - from;
       HAPIFloat distance_sqr = v * v;
        
       if( !have_intersection ) {
         have_intersection = true;
-        closest_intersection = result;
+        result = closest_intersection;
         // if we have a convex shape we only have one intersection
         if( ( convex == CONVEX_FRONT && 
               result.face == Collision::FRONT ) ||
@@ -60,18 +60,13 @@ bool HapticTriangleSet::lineIntersectShape( const Vec3 &from,
         min_d2 = distance_sqr;
       } else {
         if( distance_sqr < min_d2 ) {
-          closest_intersection = result;
+          result = closest_intersection;
           min_d2 = distance_sqr;
         }
       }
     }
   }
-  
-  if( have_intersection ) {
-    result.point = closest_intersection.point;
-    result.normal = closest_intersection.normal;
-    result.face = closest_intersection.face;
-  }
+
   return have_intersection;
 }
 

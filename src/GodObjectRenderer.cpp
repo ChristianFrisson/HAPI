@@ -425,8 +425,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   Vec3 proxy_pos = proxy_position;
   HAPIForceEffect::EffectOutput output;
   bool has_intersection = false;
-    
-  HAPIFloat d2;
+
   Collision::IntersectionInfo closest_intersection;
   
   // the intersections that are closest to the user (several if the 
@@ -454,16 +453,13 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         // closest intersection
         closest_intersection = intersection;
         Vec3 v = intersection.point - proxy_pos;
-        d2 = v * v;
         has_intersection = true;
         closest_constraints.push_back( pc  );
       } else {
         // this is not the first intersection, check if it closer than
         // previous ones
-        Vec3 v = intersection.point - proxy_pos;
-        HAPIFloat distance = v * v; 
       
-        if( (closest_intersection.point - intersection.point).lengthSqr()
+        if( H3DUtil::H3DAbs(closest_intersection.t - intersection.t)
             < length_sqr_point_epsilon ) {
           // intersection point is the same as previous intersections,
           // check if the normal is the same as a previous intersection.
@@ -486,10 +482,9 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
           } 
         } else {
           // intersection point is not the same as previous intersection
-          if( distance < d2 ) {
+          if( intersection.t < closest_intersection.t ) {
             // new intersection is closer than old intersection
             closest_intersection = intersection;
-            d2 = distance;
             closest_constraints.clear();
             closest_constraints.push_back( pc );
           } 
@@ -557,7 +552,6 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
 
   point = to;
 
-  HAPIFloat d2;
   Collision::IntersectionInfo closest_intersection;
   Collision::Plane plane( Vec3(0, 0, 0), Vec3(0, 0, 0) );
 
@@ -574,15 +568,10 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
                                (*i)->getTouchableFace()) ){
         if( !has_intersection ) {
           closest_intersection = intersection;
-          Vec3 v = intersection.point - from_point;
-          d2 = v * v;
           has_intersection = true;
         } else {
-          Vec3 v = intersection.point - from_point;
-          HAPIFloat distance = v * v; 
-          if( distance < d2 ) {
+          if( intersection.t < closest_intersection.t ) {
             closest_intersection = intersection;
-            d2 = distance;
           } 
         }
       } 
@@ -611,6 +600,11 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
           from_point = intersection.point;
         }
 
+        // TODO:This code will fix some fall through problems that occur
+        // sometimes but the cost is at the moment to great to introduce this.
+        // Needs to be evaluated on a faster computer.
+        //Vec3 old_from_point = from_point;
+
         // project onto plane intersection between intersection plane and
         // closest constraint.
         from_point =  
@@ -621,6 +615,20 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
                                         pc.point + 
                                         pc.normal * min_distance,
                                         pc.normal );
+
+        // This code will fix some fall through problems that occur sometimes
+        // But the cost is at the moment to great to introduce this.
+        /*for( HapticShapeVector::const_iterator i = shapes.begin();
+          i != shapes.end();
+          i++ ) {
+            Collision::IntersectionInfo intersection;
+            if( (*i)->lineIntersect( old_from_point, from_point, intersection,
+              (*i)->getTouchableFace()) ) {
+                from_point = old_from_point;
+                break;
+            }
+        }*/
+
         to_point = 
           projectOntoPlaneIntersection( to_point, 
                                         closest_intersection.point + 

@@ -42,28 +42,23 @@ bool HapticPrimitiveSet::lineIntersectShape(
   HAPIFloat min_d2;
   for( unsigned int i = 0; i < primitives.size(); i++ ) {
     Collision::GeometryPrimitive *a_primitive = primitives[i];
-    if( a_primitive->lineIntersect( from, to, result, face ) )	{
-      Vec3 v = result.point - from;
+    if( a_primitive->lineIntersect( from, to, closest_intersection, face ) ) {
+      Vec3 v = closest_intersection.point - from;
       HAPIFloat distance_sqr = v * v;
        
       if( !have_intersection ) {
         have_intersection = true;
-        closest_intersection = result;
+        result = closest_intersection;
         min_d2 = distance_sqr;
       } else {
         if( distance_sqr < min_d2 ) {
-          closest_intersection = result;
+          result = closest_intersection;
           min_d2 = distance_sqr;
         }
       }
     }
   }
   
-  if( have_intersection ) {
-    result.point = closest_intersection.point;
-    result.normal = closest_intersection.normal;
-    result.face = closest_intersection.face;
-  }
   return have_intersection;
 }
 
