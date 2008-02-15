@@ -48,6 +48,19 @@ namespace HAPI {
                        _shape_id, _clean_up_func ),
       tree( triangle_tree ) {}
 
+    /// Constructor.
+    HapticTriangleTree( const Matrix4 &_transform,
+                        Collision::BinaryBoundTree *triangle_tree,
+                        HAPISurfaceObject *_surface, 
+                        Collision::FaceType _touchable_face = 
+                        Collision::FRONT_AND_BACK,
+                        void *_userdata = NULL,
+                        int _shape_id = -1, 
+                        void (*_clean_up_func)( void * ) = 0 ):
+      HAPIHapticShape( _transform, _surface, _touchable_face, _userdata,
+                       _shape_id, _clean_up_func ),
+      tree( triangle_tree ) {}
+
     ~HapticTriangleTree() {
       delete tree;
     }

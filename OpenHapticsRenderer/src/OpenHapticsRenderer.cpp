@@ -39,6 +39,7 @@
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "hl.lib" )
 #pragma comment( lib, "hlu.lib" )
+#pragma comment( lib, "hd.lib" )
 #endif
 
 using namespace HAPI;

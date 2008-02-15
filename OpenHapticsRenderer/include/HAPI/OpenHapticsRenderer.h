@@ -43,10 +43,6 @@
 #ifdef HAVE_OPENHAPTICS
 #include <HL/hl.h>
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "hd.lib" )
-#endif
-
 namespace HAPI {
 
   /// Haptics renderer using the HL API part of OpenHaptics for the 
