@@ -53,6 +53,21 @@ namespace HAPI {
       tree = new Collision::AABBPrimitiveTree( _primitives  );
     }
 
+    HapticPrimitiveTree(
+              const Matrix4 &_transform,
+              const vector< Collision::GeometryPrimitive * > &_primitives,
+              HAPISurfaceObject *_surface, 
+              Collision::FaceType _touchable_face = 
+              Collision::FRONT_AND_BACK,
+              void *_userdata = NULL,
+              int _shape_id = -1, 
+              void (*_clean_up_func)( void * ) = 0
+             ):
+      HAPIHapticShape( _transform, _surface, _touchable_face, _userdata,
+                       _shape_id, _clean_up_func ) {
+      tree = new Collision::AABBPrimitiveTree( _primitives  );
+    }
+
     template< class Iterator >
     HapticPrimitiveTree( Iterator begin,
                                Iterator end,

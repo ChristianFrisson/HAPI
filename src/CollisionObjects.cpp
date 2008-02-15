@@ -1045,24 +1045,26 @@ bool Triangle::lineIntersect( const Vec3 &p,
   Vec3 tc1 = tb;
   Vec3 tc2 = tc;
  
-  Vec3 ab = v1 - v0;
-  Vec3 ac = v2 - v0;
+  Vec3 t_ab = ab;
+  Vec3 t_ac = ac;
   Vec3 qp = p - q;
 
   // Compute normal.
-  Vec3 n = ab % ac;
+  Vec3 n = t_ab % t_ac;
 /*
-  Vec3 diff1 = abf - ab;
-  Vec3 diff2 = acf - ac;
+  Vec3 diff1 = abf - t_ab;
+  Vec3 diff2 = acf - t_ac;
 
   if( diff1 * diff1 > 1e-13 ||
     diff2 * diff2 > 1e-13 ) {
       H3DUtil::Console(3) << "What! " << endl;  
   }
 */
-  Vec3 original_normal = n;
 
-  HAPIFloat epsilon = 1e-5;
+  // Commented away the epsilon since it gives wrong answer in
+  // some cases (very small triangles compared to distance)
+  // Comment in in case there are some problems.
+  //HAPIFloat epsilon = 1e-5;
 
   HAPIFloat d = qp * n;
 
@@ -1083,9 +1085,9 @@ bool Triangle::lineIntersect( const Vec3 &p,
     tc1 = tc2;
     tc2 = tmp;
 
-    tmp = ab;
-    ab = ac;
-    ac = tmp;
+    tmp = t_ab;
+    t_ab = t_ac;
+    t_ac = tmp;
     intersection_face = Collision::BACK;
   } else if( d == 0 || face == Collision::BACK ) {
     return false;
@@ -1094,13 +1096,13 @@ bool Triangle::lineIntersect( const Vec3 &p,
   Vec3 ap = p - v0;
   HAPIFloat t = ap * n;
 
-  if( t < -epsilon || t > d + epsilon ) return false;
+  if( t < 0/*-epsilon*/ || t > d/* + epsilon*/ ) return false;
 
   Vec3 e = qp % ap;
-  HAPIFloat v = ac * e;
-  if( v < -epsilon || v > d + epsilon ) return false;
-  HAPIFloat w = -(ab * e );
-  if( w < -epsilon || v + w > d + epsilon) return false;
+  HAPIFloat v = t_ac * e;
+  if( v < 0/*-epsilon*/ || v > d/* + epsilon*/ ) return false;
+  HAPIFloat w = -(t_ab * e );
+  if( w < 0/*-epsilon*/ || v + w > d/* + epsilon*/) return false;
 
   HAPIFloat ood = 1 / d;
   t *= ood; 
@@ -1109,8 +1111,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   HAPIFloat u = 1 - v - w;
 
   result.point = u*v0 + v*v1 + w*v2;
-  result.normal = original_normal;
-  result.normal.normalizeSafe();
+  result.normal = normal;
   result.tex_coord =  u*tc0 + v*tc1 + w*tc2;
   result.face = intersection_face;
   result.intersection = true;
