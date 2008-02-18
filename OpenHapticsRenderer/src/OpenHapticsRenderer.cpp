@@ -63,6 +63,7 @@ namespace OpenHapticsRendererInternals {
   }
 }
 
+bool OpenHapticsRenderer::no_context = true;
 
 OpenHapticsRenderer::OpenHapticsSurface::OpenHapticsSurface(  
                           HAPIFloat _stiffness,
@@ -376,7 +377,18 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
       // the state that persists between frame intervals and is used for
       // haptic rendering.
       HHD jj = pd->getDeviceHandle();
+      // The check of no_context and scheduler started is used to get
+      // around a problem with openhaptics if the scheduler is started
+      // before a hlcontext is created. Has to be made this way (only once)
+      // in order to not get strange behaviour when using dual device setup.
+      if( PhantomHapticsDevice::isSchedulerStarted() && no_context )
+        hdStopScheduler();
       context_map[ pd ] = hlCreateContext( jj );
+      if( PhantomHapticsDevice::isSchedulerStarted() && no_context ) {
+        PhantomHapticsDevice::startScheduler();
+      }
+      no_context = false;
+
       if( !dummy_context )
         dummy_context = hlCreateContext( jj );
       hlMakeCurrent( context_map[ pd ] );  

@@ -172,6 +172,11 @@ namespace HAPI {
     // start the hdScheduler.
     static void startScheduler();
 
+    // Check if scheduler is started.
+    static inline bool isSchedulerStarted() {
+      return scheduler_started;
+    }
+
   protected:
     double device_firmware_version;
     string hdapi_version;
