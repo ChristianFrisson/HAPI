@@ -259,40 +259,49 @@ int HapticMasterDevice::createSphere( Vec3 pos, double radius,
   Vec3 scaling = position_calibration_inverse.getScalePart();
   double local_radius = radius * max( scaling.x, max( scaling.y, scaling.z ) );
   double p[] = { local_pos.z, local_pos.x, local_pos.y };
-  return CreateSphere( device_handle, p, local_radius, 
-                ext_spring_stiffness,
-                int_spring_stiffness,
-                ext_damping_factor,
-                int_damping_factor,
-                ext_thickness,
-                int_thickness );
+  if( device_handle == -1 ) return -1;
+  else {
+    driver_lock.lock();
+    int res = CreateSphere( device_handle, p, local_radius, 
+                            ext_spring_stiffness,
+                            int_spring_stiffness,
+                            ext_damping_factor,
+                            int_damping_factor,
+                            ext_thickness,
+                            int_thickness );
+    driver_lock.unlock();
+    return res;
+  }
 }
 
 
 
 int HapticMasterDevice::deleteSphere( int sphere ) {
-  return DeleteSphere( device_handle, sphere );
+	if( device_handle == -1 ) return -1;
+
+  driver_lock.lock();
+  int res =  DeleteSphere( device_handle, sphere );
+  driver_lock.unlock();
+  return res;
 }
 
 int HapticMasterDevice::setSphereRadius( int sphere, double radius ) {
-/*	  Matrix4 position_calibration_inverse = Matrix4( 0.5, 0, 0, 0,
-	  0, 0.5, 0, 0,
-	  0, 0, 0.5, 0,
-	  0, 0, 0, 1 );
-*/
+	if( device_handle == -1 ) return -1;
   Vec3 scaling = position_calibration_inverse.getScalePart();
   double local_radius = radius * max( scaling.x, max( scaling.y, scaling.z ) );
-  return SetSphereRadius( sphere, radius );
+  driver_lock.lock();
+  int res = SetSphereRadius( sphere, radius );
+  driver_lock.unlock();
+  return res;
 }
 int HapticMasterDevice::setSpherePosition( int sphere, Vec3 pos ) {
-/*  Matrix4 position_calibration_inverse = Matrix4( 0.5, 0, 0, 0,
-	  0, 0.5, 0, 0,
-	  0, 0, 0.5, 0,
-	  0, 0, 0, 1 );
-*/
+	if( device_handle == -1 ) return -1;
 	Vec3 local_pos = 1e-3 *( position_calibration_inverse * (pos*1000 ) );
   double p[] = { local_pos.z, local_pos.x, local_pos.y };
-  return SetSpherePosition( sphere, p );
+  driver_lock.lock();
+  int res = SetSpherePosition( sphere, p ); 
+  driver_lock.unlock();
+  return res;
 }
 
 H3DUtil::PeriodicThread::CallbackCode
@@ -311,8 +320,11 @@ HapticMasterDevice::com_func( void *data ) {
 
     double pos[3] = { 0.0, 0.0, 0.0};
     double vel[3] = { 0.0, 0.0, 0.0};
+    
+    hd->driver_lock.lock();
     SetForceGetPV(hd->device_handle, force, pos, vel );
-	GetCurrentForce( hd->device_handle, force );
+    GetCurrentForce( hd->device_handle, force );
+    hd->driver_lock.unlock();
 
     // convert to millimetres
     Vec3 position = Vec3(pos[1], pos[2], pos[0]) * 1000;

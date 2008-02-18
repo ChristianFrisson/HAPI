@@ -124,6 +124,13 @@ namespace HAPI {
     /// Lock for exchanging data with the communication thread.
     H3DUtil::MutexLock com_lock;
 
+    /// Lock in order to not call the hapticmasterdriver at the same 
+    /// time from different threads, since the underlying api is 
+    /// not thread safe.
+    H3DUtil::MutexLock driver_lock;
+
+
+
     /// The current device values updated in the communicataion thread.
     /// Access to this structure must be contained within locking with 
     /// com_lock.
