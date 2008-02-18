@@ -391,6 +391,9 @@ namespace HAPI {
     // TODO: confirm that it is indeed a OpenHaptics Bug by setting up a simple
     // example that gives the same result.
     vector< int > already_removed_id;
+
+    /// True if there has been no hlcontext created at all yet.
+    static bool no_context;
   };
 }
 
