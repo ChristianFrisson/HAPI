@@ -36,7 +36,7 @@
 
 using namespace HAPI;
 
-std::auto_ptr< HLThread > HLThread::singleton( new HLThread );
+std::auto_ptr< HLThread > HLThread::singleton( NULL );
 
 namespace HLThreadInternals {
   H3DUtil::MutexLock callback_handles_lock;
@@ -44,6 +44,13 @@ namespace HLThreadInternals {
   typedef std::list< std::pair< int, HDSchedulerHandle > > CallbackHandleList;
   CallbackHandleList callback_handles;
 #endif
+}
+
+
+/// Get the singleton instance of HLThread.
+HLThread *HLThread::getInstance() {
+  if( !singleton.get() ) singleton.reset( new HLThread );
+  return singleton.get();
 }
 
 #ifdef HAVE_OPENHAPTICS
