@@ -54,9 +54,7 @@ namespace HAPI {
     }
   public:
     /// Get the singleton instance of HLThread.
-    static HLThread *getInstance() {
-      return singleton.get();
-    }
+    static HLThread *getInstance();
 
     /// If the hd scheduler has been started true is returned.
     inline bool isActive() { return is_active; }
