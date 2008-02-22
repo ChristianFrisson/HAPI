@@ -43,16 +43,16 @@ namespace HAPI {
   public:
     /// Constructor
     DepthMapSurface( HAPIFloat _stiffness = 0.35,
-                         HAPIFloat _damping = 0,
-                         HAPIFloat _static_friction = 0.1,
-                         HAPIFloat _dynamic_friction = 0.4,
-                         H3DUtil::Image * _depth_map = 0,
-                         HAPIFloat _max_depth = 1.0,
-                         bool _white_max = true,
-                         int _max_iterations = 35,
-                         HAPIFloat _minimization_epsilon = 1e-4,
-                         bool _use_relative_values = true,
-                         bool _use_ref_count_lock = true );
+                     HAPIFloat _damping = 0,
+                     HAPIFloat _static_friction = 0.1,
+                     HAPIFloat _dynamic_friction = 0.4,
+                     H3DUtil::Image * _depth_map = 0,
+                     HAPIFloat _max_depth = 0.001,
+                     bool _white_max = true,
+                     bool _use_relative_values = true,
+                     int _max_iterations = 35,
+                     HAPIFloat _minimization_epsilon = 1e-4,
+                     bool _use_ref_count_lock = true );
 
   protected:
     /// Get the value of the texture at texture coordinate tex_coord.
@@ -76,13 +76,13 @@ namespace HAPI {
       if( dms->this_contact_info->primitive() ) {
         dms->this_contact_info->primitive()->getTangentSpaceMatrix(
           dms->this_contact_info->hapticShape()->getInverse() *
-          ( dms->this_contact_info->globalOrigin() + global_vector ),
+          dms->this_contact_info->globalOrigin(),
           tangent_space_mtx );
         tangent_space_mtx = tangent_space_mtx *
           dms->this_contact_info->hapticShape()->getInverse();
       } else {
         dms->this_contact_info->hapticShape()->getTangentSpaceMatrix(
-          dms->this_contact_info->globalOrigin() + global_vector,
+          dms->this_contact_info->globalOrigin(),
           tangent_space_mtx );
       }
 

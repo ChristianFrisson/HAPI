@@ -43,12 +43,12 @@ RuspiniRenderer::renderer_registration(
                             );
 
 // epsilon value for deciding if a point is the same
-const HAPIFloat length_sqr_point_epsilon = 1e-12;
+const HAPIFloat length_sqr_point_epsilon = 1e-15;
 
 // epsilon value for deciding if a normal is the same.
-const HAPIFloat length_sqr_normal_epsilon = 1e-12;
+const HAPIFloat length_sqr_normal_epsilon = 1e-15;
 
-const HAPIFloat above_plane_epsilon = 1e-10;
+const HAPIFloat above_plane_epsilon = 1e-13;
 
 RuspiniRenderer::RuspiniRenderer( HAPIFloat _proxy_radius ):
   proxy_radius( _proxy_radius ),
@@ -601,8 +601,8 @@ Vec3 RuspiniRenderer::tryProxyMovement( const Vec3 &from,
       Vec3 s = inv.getScalePart();
       HAPIFloat scale = max( s.x, max( s.y, s.z ) ); 
 
-      Vec3 f = from_point;/* + normal * 1e-3;*/
-      Vec3 t = to_point;/* + normal * 1e-3;*/
+      Vec3 f = from_point;/* + normal * 1e-6;*/
+      Vec3 t = to_point;/* + normal * 1e-6;*/
 
       if( true || (*i).primitive->movingSphereIntersect( proxy_radius * scale,
                                                  inv * f, 
@@ -654,7 +654,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( const Vec3 &from,
       (*i).haptic_shape = pc.haptic_shape;
       
       // if normal has not changed, stop updating constraint
-      if( ( 1 - pc.normal * (*i).normal ) < 1e-8 ) {
+      if( ( 1 - pc.normal * (*i).normal ) < 1e-11 ) {
         done = true;
       } else {
         from_point = intersection.point;

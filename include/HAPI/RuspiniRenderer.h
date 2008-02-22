@@ -48,7 +48,7 @@ namespace HAPI {
 	  typedef Collision::CollisionObject::Constraints Constraints;
 
     /// Constructor.
-    RuspiniRenderer( HAPIFloat _proxy_radius = 2.5 );
+    RuspiniRenderer( HAPIFloat _proxy_radius = 0.0025 );
 
     /// Destructor.
     virtual ~RuspiniRenderer() {}

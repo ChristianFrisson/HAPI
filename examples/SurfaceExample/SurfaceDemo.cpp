@@ -53,9 +53,9 @@ int main(int argc, char* argv[]) {
   
   // Creating a default surface.
   HAPISurfaceObject * my_surface = new FrictionSurface();
-  // Creating a sphere with radius 50 and center in (60, 0, 0). Units in mm.
+  // Creating a sphere with radius 0.05 and center in (0.06, 0, 0). Units in m.
   HapticPrimitive *my_haptic_sphere =
-	  new HapticPrimitive( new Collision::Sphere( Vec3( 60, 0, 0 ), 50 ), my_surface );
+	  new HapticPrimitive( new Collision::Sphere( Vec3( 0.06, 0, 0 ), 0.05 ), my_surface );
 
   // Add the shape to be rendered on the device.
   hd.addShape( my_haptic_sphere );

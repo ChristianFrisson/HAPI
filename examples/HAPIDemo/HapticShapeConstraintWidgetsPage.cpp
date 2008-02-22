@@ -294,7 +294,7 @@ void HapticShapeConstraintWidgetsPage::Reset()
 {
   // Spring constant
   m_txt_spring_constant->SetValue( _T("300") );
-  spring_constant = 300 / 1000;
+  spring_constant = 300;
 
   // Choose the sphere shape as default.
   m_radio_shapes->SetSelection( Button_Sphere );
@@ -303,44 +303,44 @@ void HapticShapeConstraintWidgetsPage::Reset()
 
   // Sphere defaults.
   m_txt_sphere_radius->SetValue( _T("0.05") );
-  sphere_radius = 0.05 * 1000;
+  sphere_radius = 0.05;
 
   // Triangle defaults
   m_txt_triangle_1X->SetValue( _T("0.0") );
-  triangle_vertex1.x = 0.0 * 1000;
+  triangle_vertex1.x = 0.0;
   m_txt_triangle_1Y->SetValue( _T("0.0") );
-  triangle_vertex1.y = 0.0 * 1000;
+  triangle_vertex1.y = 0.0;
   m_txt_triangle_1Z->SetValue( _T("0.0") );
-  triangle_vertex1.z = 0.0 * 1000;
+  triangle_vertex1.z = 0.0;
 
   m_txt_triangle_2X->SetValue( _T("0.05") );
-  triangle_vertex2.x = 0.05 * 1000;
+  triangle_vertex2.x = 0.05;
   m_txt_triangle_2Y->SetValue( _T("0.0") );
-  triangle_vertex2.y = 0.0 * 1000;
+  triangle_vertex2.y = 0.0;
   m_txt_triangle_2Z->SetValue( _T("0.0") );
-  triangle_vertex2.z = 0.0 * 1000;
+  triangle_vertex2.z = 0.0;
 
   m_txt_triangle_3X->SetValue( _T("0.05") );
-  triangle_vertex3.x = 0.05 * 1000;
+  triangle_vertex3.x = 0.05;
   m_txt_triangle_3Y->SetValue( _T("0.05") );
-  triangle_vertex3.y = 0.05 * 1000;
+  triangle_vertex3.y = 0.05;
   m_txt_triangle_3Z->SetValue( _T("0.01") );
-  triangle_vertex3.z = 0.01 * 1000;
+  triangle_vertex3.z = 0.01;
 
   // LineSet defaults
   m_txt_line_set_points->SetValue(_T("-0.1 0 0, 0.1 0 0"));
   if( !line_set_lines.empty() )
     line_set_lines.clear();
   line_set_lines.push_back( Collision::LineSegment(
-                              Vec3( -0.1 * 1000, 0, 0 ),
-                              Vec3( 0.1 * 1000, 0, 0 ) ) );
+                              Vec3( -0.1, 0, 0 ),
+                              Vec3( 0.1, 0, 0 ) ) );
 
   // PointSet defaults
   m_txt_point_set_points->SetValue(_T("-0.05 0 0, 0.05 0 0"));
   if( !point_set_points.empty() )
     point_set_points.clear();
-  point_set_points.push_back( Collision::Point( Vec3( -0.05 * 1000, 0, 0 ) ) );
-  point_set_points.push_back( Collision::Point( Vec3( 0.05 * 1000, 0, 0 ) ) );
+  point_set_points.push_back( Collision::Point( Vec3( -0.05, 0, 0 ) ) );
+  point_set_points.push_back( Collision::Point( Vec3( 0.05, 0, 0 ) ) );
 
   // TriangleSet defaults
   m_txt_triangle_set_triangles->SetValue(
@@ -348,22 +348,22 @@ void HapticShapeConstraintWidgetsPage::Reset()
   if( !triangle_set_triangles.empty() )
     triangle_set_triangles.clear();
   triangle_set_triangles.push_back(
-    Collision::Triangle( Vec3( -0.05 * 1000, 0, 0 ),
-                         Vec3( 0.05 * 1000, 0, 0 ),
+    Collision::Triangle( Vec3( -0.05, 0, 0 ),
+                         Vec3( 0.05, 0, 0 ),
                          Vec3( 0, 0, -0.05 ) ) );
   triangle_set_triangles.push_back(
-    Collision::Triangle( Vec3( -0.05 * 1000, 0, 0 ),
-                         Vec3( 0.05 * 1000, 0, 0 ),
-                         Vec3( 0, 0.05 * 1000, 0 ) ) );
+    Collision::Triangle( Vec3( -0.05, 0, 0 ),
+                         Vec3( 0.05, 0, 0 ),
+                         Vec3( 0, 0.05, 0 ) ) );
 
 
   // Plane defaults
   m_txt_plane_pointX->SetValue( _T("0.0") );
-  plane_point.x = 0.0 * 1000;
+  plane_point.x = 0.0;
   m_txt_plane_pointY->SetValue( _T("0.0") );
-  plane_point.y = 0.0 * 1000;
+  plane_point.y = 0.0;
   m_txt_plane_pointZ->SetValue( _T("0.0") );
-  plane_point.z = 0.0 * 1000;
+  plane_point.z = 0.0;
 
   m_txt_plane_normalX->SetValue( _T("0.0") );
   plane_normal.x = 0.0;
@@ -483,7 +483,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
   }
 
   if( m_txt_spring_constant->GetValue().ToDouble(&val) ) {
-    spring_constant = val / 1000;
+    spring_constant = val;
   }
   
   // For the choosen shape a force effect is created and stored in
@@ -491,7 +491,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
   switch( choosen_shape ) {
     case Button_Sphere: {
       if( m_txt_sphere_radius->GetValue().ToDouble(&val) ) {
-        sphere_radius = val * 1000;
+        sphere_radius = val;
       }
 
       force_effect.reset( new HapticShapeConstraint(
@@ -503,31 +503,31 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
 
     case Button_Triangle: {
       if( m_txt_triangle_1X->GetValue().ToDouble(&val) ) {
-        triangle_vertex1.x = val * 1000;
+        triangle_vertex1.x = val;
       }
       if( m_txt_triangle_1Y->GetValue().ToDouble(&val) ) {
-        triangle_vertex1.y = val * 1000;
+        triangle_vertex1.y = val;
       }
       if( m_txt_triangle_1Z->GetValue().ToDouble(&val) ) {
-        triangle_vertex1.z = val * 1000;
+        triangle_vertex1.z = val;
       }
       if( m_txt_triangle_2X->GetValue().ToDouble(&val) ) {
-        triangle_vertex2.x = val * 1000;
+        triangle_vertex2.x = val;
       }
       if( m_txt_triangle_2Y->GetValue().ToDouble(&val) ) {
-        triangle_vertex2.y = val * 1000;
+        triangle_vertex2.y = val;
       }
       if( m_txt_triangle_2Z->GetValue().ToDouble(&val) ) {
-        triangle_vertex2.z = val * 1000;
+        triangle_vertex2.z = val;
       }
       if( m_txt_triangle_3X->GetValue().ToDouble(&val) ) {
-        triangle_vertex3.x = val * 1000;
+        triangle_vertex3.x = val;
       }
       if( m_txt_triangle_3Y->GetValue().ToDouble(&val) ) {
-        triangle_vertex3.y = val * 1000;
+        triangle_vertex3.y = val;
       }
       if( m_txt_triangle_3Z->GetValue().ToDouble(&val) ) {
-        triangle_vertex3.z = val * 1000;
+        triangle_vertex3.z = val;
       }
       force_effect.reset( new HapticShapeConstraint(
                             new Collision::Triangle( triangle_vertex1,
@@ -558,12 +558,12 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         for( unsigned int i = 0; i < line_values.size(); i += 3 ) {
           if( line_values.size() - i > 5 ) {
             line_set_lines.push_back( Collision::LineSegment(
-              Vec3( line_values[i] * 1000,
-                    line_values[i+1] * 1000,
-                    line_values[i+2] * 1000 ),
-              Vec3( line_values[i+3] * 1000,
-                    line_values[i+4] * 1000,
-                    line_values[i+5] * 1000 ) ) );
+              Vec3( line_values[i],
+                    line_values[i+1],
+                    line_values[i+2] ),
+              Vec3( line_values[i+3],
+                    line_values[i+4],
+                    line_values[i+5] ) ) );
           }
         }
       }
@@ -595,9 +595,9 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         for( unsigned int i = 0; i < point_values.size(); i += 3 ) {
           if( point_values.size() - i > 2 ) {
             point_set_points.push_back(
-              Collision::Point( Vec3( point_values[i] * 1000,
-                                      point_values[i+1] * 1000,
-                                      point_values[i+2] * 1000 ) ) );
+              Collision::Point( Vec3( point_values[i],
+                                      point_values[i+1],
+                                      point_values[i+2] ) ) );
           }
         }
       }
@@ -629,15 +629,15 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
         for( unsigned int i = 0; i < triangle_values.size(); i += 9 ) {
           if( triangle_values.size() - i > 8 ) {
             triangle_set_triangles.push_back(
-              Collision::Triangle( Vec3( triangle_values[i] * 1000,
-                                         triangle_values[i+1] * 1000,
-                                         triangle_values[i+2] * 1000 ),
-                                   Vec3( triangle_values[i+3] * 1000,
-                                         triangle_values[i+4] * 1000,
-                                         triangle_values[i+5] * 1000 ),
-                                   Vec3( triangle_values[i+6] * 1000,
-                                         triangle_values[i+7] * 1000,
-                                         triangle_values[i+8] * 1000 ) ) );
+              Collision::Triangle( Vec3( triangle_values[i],
+                                         triangle_values[i+1],
+                                         triangle_values[i+2] ),
+                                   Vec3( triangle_values[i+3],
+                                         triangle_values[i+4],
+                                         triangle_values[i+5] ),
+                                   Vec3( triangle_values[i+6],
+                                         triangle_values[i+7],
+                                         triangle_values[i+8] ) ) );
           }
         }
       }
@@ -650,13 +650,13 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
 
     case Button_Plane: {
       if( m_txt_plane_pointX->GetValue().ToDouble(&val) ) {
-        plane_point.x = val * 1000;
+        plane_point.x = val;
       }
       if( m_txt_plane_pointY->GetValue().ToDouble(&val) ) {
-        plane_point.y = val * 1000;
+        plane_point.y = val;
       }
       if( m_txt_plane_pointZ->GetValue().ToDouble(&val) ) {
-        plane_point.z = val * 1000;
+        plane_point.z = val;
       }
       if( m_txt_plane_normalX->GetValue().ToDouble(&val) ) {
         plane_normal.x = val;

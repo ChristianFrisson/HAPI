@@ -34,14 +34,26 @@
 
 using namespace HAPI;
 
-void HaptikHapticsDevice::changeHaptikDevice( uint32 device_id ) {
+void HaptikHapticsDevice::changeHaptikDevice(
+#ifdef WIN32
+      UINT32
+#else
+      uint32
+#endif
+                                            device_id ) {
   if( haptik_device ) {
     RSLib::HaptikDeviceInfo info;
     haptik_device->GetInfo( info );
     int index = -1;
 
     // find the index of the current device
-    for(uint32 i = 0 ; i<haptik.numberOfDevices ; i++) {
+    for(
+#ifdef WIN32
+      UINT32
+#else
+      uint32
+#endif
+         i = 0 ; i<haptik.numberOfDevices ; i++) {
       if( haptik.device[i].id == info.id ) {
         index = i;
         break;
@@ -93,8 +105,8 @@ void HaptikHapticsDevice::updateDeviceValues( DeviceValues &dv,
   if( haptik_device ) {
     RSLib::HaptikData data;
     haptik_device->Read( data );
-    dv.position = Vec3( data.position.x, data.position.y, data.position.z );
-    dv.velocity = Vec3( data.velocity.x, data.velocity.y, data.velocity.z );
+    dv.position = 1e-3 * Vec3( data.position.x, data.position.y, data.position.z );
+    dv.velocity = 1e-3 * Vec3( data.velocity.x, data.velocity.y, data.velocity.z );
     dv.button_status = data.buttonMask;
     dv.orientation = Rotation(
       Matrix3( data.matrix.e00, data.matrix.e10, data.matrix.e20,

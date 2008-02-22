@@ -44,13 +44,13 @@ GodObjectRenderer::renderer_registration(
 // the minimum distance the proxy will be from the surface. The proxy
 // will be moved above the surface with the given factor in order to
 // avoid roundoff errors and fallthrough problems.
-const HAPIFloat min_distance = 1e-4;
+const HAPIFloat min_distance = 1e-7;
 
 // epsilon value for deciding if a point is the same
-const HAPIFloat length_sqr_point_epsilon = 1e-12; //12
+const HAPIFloat length_sqr_point_epsilon = 1e-15; //12
 
 // epsilon value for deciding if a normal is the same.
-const HAPIFloat length_sqr_normal_epsilon = 1e-12;
+const HAPIFloat length_sqr_normal_epsilon = 1e-15;
 
 inline bool planeIntersect( Vec3 p1, Vec3 n1, Vec3 p2, Vec3 n2,
                             Vec3 &p, Vec3 &dir ) {
@@ -641,7 +641,7 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
       } else {
         Vec3 move = closest_intersection.point - from_point;
         HAPIFloat l = move.length();
-        if( l >= min_distance + 1e-8) {
+        if( l >= min_distance + 1e-11) {
           move = move * ( (l-min_distance) / l );
           point = from_point + move;
         } else {

@@ -48,7 +48,7 @@ namespace HAPI {
       com_func_cb_handle( -1 ) {
 
       // This one is really really stiff.
-      max_stiffness = 10;
+      max_stiffness = 10000;
     }
 
     /// Destructor.

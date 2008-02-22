@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 
   while( continue_trying ) {
     // Get info from user.
-    cout << "Enter a position as x y z (in mm) then press ENTER" << endl;
+    cout << "Enter a position as x y z (in m) then press ENTER" << endl;
     string thePosition;
     getline( cin, thePosition );
 
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
     z = strtod( pEnd, NULL );
 
     cout << "Enter the value for a spring constant then press ENTER." << endl;
-    cout << "A good value is 0.1 since HAPI uses mm." << endl;
+    cout << "A good value is 100 since HAPI uses m." << endl;
     cout << "Keep a firm grip of the device before pressing ENTER." << endl;
     getline( cin, thePosition );
     HAPIFloat spring_constant = strtod( thePosition.c_str(), NULL );

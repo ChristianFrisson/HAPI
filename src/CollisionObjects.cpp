@@ -193,6 +193,7 @@ bool AABoxBound::boundIntersect( const Vec3 &from,
 
   // bias with an epsilon to increase robustness when segment is parallel 
   // to a box plane...
+  //TODO? mm->m conversion? change to 100 instead of 100000
   HAPIFloat epsilon = (e*e)/100000;
   adx += epsilon;
   ady += epsilon;
@@ -1055,8 +1056,8 @@ bool Triangle::lineIntersect( const Vec3 &p,
   Vec3 diff1 = abf - t_ab;
   Vec3 diff2 = acf - t_ac;
 
-  if( diff1 * diff1 > 1e-13 ||
-    diff2 * diff2 > 1e-13 ) {
+  if( diff1 * diff1 > 1e-16 ||
+    diff2 * diff2 > 1e-16 ) {
       H3DUtil::Console(3) << "What! " << endl;  
   }
 */
@@ -1064,7 +1065,7 @@ bool Triangle::lineIntersect( const Vec3 &p,
   // Commented away the epsilon since it gives wrong answer in
   // some cases (very small triangles compared to distance)
   // Comment in in case there are some problems.
-  //HAPIFloat epsilon = 1e-5;
+  //HAPIFloat epsilon = 1e-8;
 
   HAPIFloat d = qp * n;
 
@@ -1645,7 +1646,7 @@ void symmetricSchurDecomposition( const Matrix3 &A,
                                   unsigned int q, 
                                   HAPIFloat &c, 
                                   HAPIFloat &s) {
-  // TODO: epsilon??
+  // TODO: epsilon?? FIX? not touched when changing from mm to m.
   if (H3DUtil::H3DAbs(A[p][q]) > 0.0001f) {
     HAPIFloat r = (A[q][q] - A[p][p]) / (2.0f * A[p][q]);
     HAPIFloat t = (r >= 0.0f ? 
@@ -3043,7 +3044,7 @@ void Triangle::getTangentSpaceMatrix( const Vec3 &point,
 }
 
 void Sphere::getTangentSpaceMatrix( const Vec3 &point,
-                                     Matrix4 &result_mtx ) {
+                                    Matrix4 &result_mtx ) {
   // Calculated a jacobian with
   // s = arctan( -x/-z) / 2pi,
   // t = 1 - arccos( y / sqrt(x^2 + y^2 + z^2 ) ) / pi,

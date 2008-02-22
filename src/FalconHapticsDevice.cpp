@@ -117,7 +117,7 @@ void FalconHapticsDevice::updateDeviceValues( DeviceValues &dv,
 
   double v[16];
   hdlToolPosition( v ); 
-  dv.position = 1e3 * Vec3( v[0], v[1], v[2] );
+  dv.position = Vec3( v[0], v[1], v[2] );
 
   calculateVelocity( dv, dt );
 

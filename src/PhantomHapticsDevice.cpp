@@ -102,15 +102,15 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device_serial_number = hdGetString( HD_DEVICE_SERIAL_NUMBER );
 
   hdGetDoublev( HD_NOMINAL_MAX_STIFFNESS, &d );
-  max_stiffness = d;
+  max_stiffness = d * 1e3;
 
   HDdouble ws[6];
   hdGetDoublev( HD_USABLE_WORKSPACE_DIMENSIONS, ws );
   usable_workspace_min = Vec3( ws[0], ws[1], ws[2] );
   usable_workspace_max = Vec3( ws[3], ws[4], ws[5] );
   hdGetDoublev( HD_MAX_WORKSPACE_DIMENSIONS, ws );
-  max_workspace_min = Vec3( ws[0], ws[1], ws[2] );
-  max_workspace_max = Vec3( ws[3], ws[4], ws[5] );
+  max_workspace_min = 1e-3 * Vec3( ws[0], ws[1], ws[2] );
+  max_workspace_max = 1e-3 * Vec3( ws[3], ws[4], ws[5] );
 
   hdGetDoublev( HD_NOMINAL_MAX_FORCE, &d );
   max_force = d;
@@ -119,7 +119,7 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   max_cont_force = d;
 
   hdGetDoublev( HD_TABLETOP_OFFSET, &d );
-  tabletop_offset = d;
+  tabletop_offset = 1e-3 * d;
 
   HDint i;
   hdGetIntegerv( HD_INPUT_DOF, &i );
@@ -207,14 +207,14 @@ void PhantomHapticsDevice::updateDeviceValues( DeviceValues &dv,
   hdMakeCurrentDevice( device_handle );
   HDdouble v[16];
   hdGetDoublev( HD_CURRENT_POSITION, v ); 
-  dv.position = Vec3( v[0], v[1], v[2] );
+  dv.position = 1e-3 * Vec3( v[0], v[1], v[2] );
   hdGetDoublev( HD_CURRENT_VELOCITY, v ); 
-  dv.velocity = Vec3( v[0], v[1], v[2] );
+  dv.velocity = 1e-3 * Vec3( v[0], v[1], v[2] );
   hdGetIntegerv( HD_CURRENT_BUTTONS, &dv.button_status );    
   hdGetDoublev( HD_CURRENT_TRANSFORM, v );
   dv.orientation = Rotation( Matrix3( v[0], v[4], v[8],
-                                       v[1], v[5], v[9],
-                                       v[2], v[6], v[10] ) );
+                                      v[1], v[5], v[9],
+                                      v[2], v[6], v[10] ) );
   hdGetDoublev( HD_CURRENT_JOINT_ANGLES, v );
   joint_angles = Vec3( v[0], v[1], v[2] );
   hdGetDoublev( HD_CURRENT_GIMBAL_ANGLES, v );

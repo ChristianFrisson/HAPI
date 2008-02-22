@@ -261,17 +261,17 @@ LPDIRECT3DVERTEXBUFFER9 fillTriangleVertices( HWND window_handle,
                                               MyCustomVertex *tri_vertices )
 {
   // Vertices of the triangle.
-  tri_vertices[0].x = -30.0f;
-  tri_vertices[0].y = -20.0f;
+  tri_vertices[0].x = -0.03f;
+  tri_vertices[0].y = -0.02f;
   tri_vertices[0].z = 0.0f;
   tri_vertices[0].color = 0xffff0000;
 
-  tri_vertices[1].x = -30.0f;
-  tri_vertices[1].y = 20.0f;
+  tri_vertices[1].x = -0.03f;
+  tri_vertices[1].y = 0.02f;
   tri_vertices[1].z = 0.0f;
   tri_vertices[1].color = 0xff00ff00;
 
-  tri_vertices[2].x = 20.0f;
+  tri_vertices[2].x = 0.02f;
   tri_vertices[2].y = 0.0f;
   tri_vertices[2].z = 0.0f;
   tri_vertices[2].color = 0xff00ffff;
@@ -311,7 +311,7 @@ inline HAPI::Vec3 myCustomVertex2Vec3f( const MyCustomVertex & cv ) {
 // Set up camera for the scene.
 void setUpCamera( LPDIRECT3DDEVICE9 p_dx_device )
 {
-  D3DXVECTOR3 eye_pos(0, 0, -90);
+  D3DXVECTOR3 eye_pos(0, 0, -0.09);
   D3DXVECTOR3 target_pos(0, 0, 0);
   D3DXVECTOR3 up_vector(0, 1, 0);
   D3DXMATRIXA16 view_matrix;

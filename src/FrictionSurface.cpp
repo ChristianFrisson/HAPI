@@ -92,14 +92,11 @@ void FrictionSurface::getProxyMovement( ContactInfo &contact_info ) {
         velocity = 0;
         contact_info.setLocalProxyMovement( Vec2( 0, 0 ) ); 
       } else {
-        // The max_movement should be in mm. The velocity gotten is calculated
-        // using forces which is in newton (since stiffness is in N/mm), this
-        // means that in order to get the maximum movement on one frame we do:
-        // max_movement = velocity * 1000 * 0.001.
-        // Where 1000 is conversion from mm to m and
-        // 0.001 is the maximum time (in seconds) of one frame. This simplifies
-        // the expression to max_movement = velocity
-        HAPIFloat max_movement = velocity;
+        // The max_movement should be in m. The velocity gotten is in m/s.
+        // The maximum movement in one haptic frame is therefore
+        // velocity * 0.001 where 0.001 is the time in seconds for one haptic
+        // frame. TODO: make this correct even for other frame rates.
+        HAPIFloat max_movement = velocity * dt;
         Vec2 proxy_movement = Vec2( local_probe.x, local_probe.z );
         HAPIFloat l = proxy_movement.length();
         if( l > max_movement ) {

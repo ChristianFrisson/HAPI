@@ -94,7 +94,7 @@ PositionFunctionWidgetsPage::PositionFunctionWidgetsPage(
 
 void PositionFunctionWidgetsPage::Reset()
 {
-  m_txt_x_function->SetValue( _T("x*0 + y + z*0" ) );
+  m_txt_x_function->SetValue( _T("x*0 + 50 * y + z*0" ) );
   m_txt_y_function->SetValue( _T("0" ) );
   m_txt_z_function->SetValue( _T("0" ) );
 }

@@ -44,11 +44,11 @@ namespace HAPI {
 
     /// Constructor
     FrictionSurface( HAPIFloat _stiffness = 0.35,
-                    HAPIFloat _damping = 0,
-                    HAPIFloat _static_friction = 0,
-                    HAPIFloat _dynamic_friction = 0,
-                    bool _use_relative_values = true,
-                    bool _use_ref_count_lock = true );
+                     HAPIFloat _damping = 0,
+                     HAPIFloat _static_friction = 0,
+                     HAPIFloat _dynamic_friction = 0,
+                     bool _use_relative_values = true,
+                     bool _use_ref_count_lock = true );
 
     /// ~Destructor
     virtual ~FrictionSurface();
