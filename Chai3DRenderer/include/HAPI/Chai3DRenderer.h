@@ -41,6 +41,8 @@
 #include <H3DUtil/AutoPtrVector.h>
 #include <H3DUtil/Threads.h>
 
+#ifdef HAVE_CHAI3D
+
 // Chai3D includes
 #include <CGenericDevice.h>
 #include <CGeneric3dofPointer.h>
@@ -187,4 +189,8 @@ namespace HAPI {
   };
 }
 
+#endif //HAVE_CHAI3D
+
 #endif
+
+
