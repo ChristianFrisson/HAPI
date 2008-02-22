@@ -29,6 +29,8 @@
 
 #include <HAPI/Chai3DRenderer.h>
 
+#ifdef HAVE_CHAI3D
+
 #include <H3DUtil/H3DMath.h>
 
 #include <HAPI/HapticTriangleSet.h>
@@ -344,3 +346,5 @@ int Chai3DRenderer::H3DDevice::command(int a_command, void* a_data)
 
     return result;
 }
+
+#endif //HAVE_CHAI3D
