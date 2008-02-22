@@ -56,7 +56,7 @@ namespace HAPI {
     }
 
     /// Used in order to change what input device is used.
-    void changeHaptikDevice( UINT32 device_id );
+    void changeHaptikDevice( uint32 device_id );
 
     /// Get the index of the device currently used. The index is an index
     /// in the device array in an Haptik object.
@@ -65,7 +65,7 @@ namespace HAPI {
       if( haptik_device ) {
         RSLib::HaptikDeviceInfo info;
         haptik_device->GetInfo( info );
-        for(UINT32 i = 0 ; i< haptik.numberOfDevices ; i++) {
+        for(uint32 i = 0 ; i< haptik.numberOfDevices ; i++) {
           if( haptik.device[i].id == info.id ) {
             dev_index = i;
             break;
