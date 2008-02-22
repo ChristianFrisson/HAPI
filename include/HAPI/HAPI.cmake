@@ -57,7 +57,7 @@
 
 /// Undef if you do not have Haptik(www.haptiklibrary.org) installed. 
 /// HaptikDevice will not be usable.
-//#define HAVE_HAPTIK_LIBRARY 
+#cmakedefine HAVE_HAPTIK_LIBRARY 
 
 /// Undef if you do not the APIs required for supporting Quanser devices.
 /// www.quanser.com
