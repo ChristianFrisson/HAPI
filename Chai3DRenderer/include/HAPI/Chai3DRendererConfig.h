@@ -39,6 +39,10 @@
 
 #if defined(__linux)
 #define CHAI3DRENDERER_API
+// the following defines are required when using Chai3D
+#define _POSIX
+#define _MAX_PATH 260
+#define _LINUX
 #endif
 
 

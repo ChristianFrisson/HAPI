@@ -42,11 +42,11 @@
 /// Undef if you do not have Chai3d installed
 #cmakedefine HAVE_CHAI3D
 
-/// Undef if you do not have DHD API(www.forcedimension,com) installed.
+/// Undef if you do not have DHD API(www.forcedimension.com) installed.
 /// Required for the Omega and Delta haptics devices.
 #cmakedefine HAVE_DHDAPI
 
-/// Undef if you do not have FALCON API(www.forcedimension,com) installed.
+/// Undef if you do not have FALCON API(www.novint.com) installed.
 /// Required for the Falcon haptics device.
 #cmakedefine HAVE_FALCONAPI
 
