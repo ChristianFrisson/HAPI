@@ -256,6 +256,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 #endif
 
           glLoadIdentity();
+          glScalef( 1e3f, 1e3f, 1e3f ); 
           hlRenderHAPISurface( (*i)->getSurface(), hd );
 
           HLenum touchable_face;
@@ -406,7 +407,7 @@ HAPI::Vec3 OpenHapticsRenderer::getProxyPosition() {
     hlMakeCurrent( (*context_map.begin()).second );
   HLdouble pos[3];
   hlGetDoublev( HL_PROXY_POSITION, pos );
-  return HAPI::Vec3( pos[0], pos[1], pos[2] );
+  return 1e-3 * HAPI::Vec3( pos[0], pos[1], pos[2] );
 }
 
 void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
@@ -431,7 +432,7 @@ void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
 
   hlGetShapeDoublev( object, HL_REACTION_FORCE, hlforce );
 
-  HAPI::Vec3 cp = HAPI::Vec3( p[0], p[1], p[2] );
+  HAPI::Vec3 cp = HAPI::Vec3( p[0], p[1], p[2] ) * 1e-3;
   HAPI::Vec3 cn = HAPI::Vec3( n[0], n[1], n[2] );
   HAPI::Vec3 f  = HAPI::Vec3( hlforce[0], hlforce[1], hlforce[2] );
   for( Contacts::iterator i = renderer->contacts.begin();

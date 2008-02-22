@@ -188,7 +188,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     
     Rotation orientation = Rotation( Vec3( rx, ry, rz ) );
     // convert to millimetres
-    Vec3 position = Vec3( x, y, z ) * 1000;
+    Vec3 position = Vec3( x, y, z );
 
     hd->com_lock.lock();
 

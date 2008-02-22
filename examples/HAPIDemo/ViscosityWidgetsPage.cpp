@@ -77,9 +77,9 @@ ViscosityWidgetsPage::ViscosityWidgetsPage( wxBookCtrlBase *book,
 void ViscosityWidgetsPage::Reset()
 {
   m_txt_viscosity->SetValue( _T("0.01" ) );
-  viscosity = 0.01 / 1000;
+  viscosity = 0.01;
   m_txt_radius->SetValue( _T("0.0025" ) );
-  radius = 0.0025 * 1000;
+  radius = 0.0025;
   m_txt_damping_factor->SetValue( _T("0.5" ) );
   damping_factor = 0.5;
 }
@@ -87,11 +87,11 @@ void ViscosityWidgetsPage::Reset()
 void ViscosityWidgetsPage::createForceEffect() {
   double val;
   if( m_txt_viscosity->GetValue().ToDouble(&val) ) {
-    viscosity = val / 1000;
+    viscosity = val;
   }
 
   if( m_txt_radius->GetValue().ToDouble(&val) ) {
-    radius = val * 1000;
+    radius = val;
   }
 
   if( m_txt_damping_factor->GetValue().ToDouble(&val) ) {

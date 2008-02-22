@@ -96,25 +96,25 @@ void SpringWidgetsPage::Reset()
   m_txt_positionZ->SetValue( _T("0.0" ) );
   position.z = 0.0;
   m_txt_spring_constant->SetValue( _T("100") );
-  spring_constant = 100 / 1000;
+  spring_constant = 100;
 }
 
 void SpringWidgetsPage::createForceEffect() {
   double val;
   if( m_txt_positionX->GetValue().ToDouble(&val) ) {
-    position.x = val * 1000;
+    position.x = val;
   }
 
   if( m_txt_positionY->GetValue().ToDouble(&val) ) {
-    position.y = val * 1000;
+    position.y = val;
   }
 
   if( m_txt_positionZ->GetValue().ToDouble(&val) ) {
-    position.z = val * 1000;
+    position.z = val;
   }
 
   if( m_txt_spring_constant->GetValue().ToDouble(&val) ) {
-    spring_constant = val / 1000;
+    spring_constant = val;
   }
 
   force_effect.reset( new HapticSpring( position, spring_constant ) );

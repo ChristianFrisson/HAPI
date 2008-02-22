@@ -107,7 +107,7 @@ namespace HAPI {
       haptic_rendering_callback_data = this;
       // This value is choosen ad hoc as fairly "standard".
       // All devices should have a correct value.
-      max_stiffness = 0.7;
+      max_stiffness = 700;
     }
     
     /// Destructor. Stops haptics rendering and remove callback functions.
@@ -1094,7 +1094,7 @@ namespace HAPI {
 
     /// The maximum stiffness the device can handle in N/mm.
     /// Should be set by each subclass to HAPIHapticsDevice.
-    /// Default value is 0.7 N/mm.
+    /// Default value is 700 N/m.
     HAPIFloat max_stiffness;
     
   };

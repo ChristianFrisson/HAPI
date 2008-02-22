@@ -77,6 +77,8 @@ namespace HAPI {
 
     /// The OpenHapticsSurface is a HAPISurfaceObject that sets its parameters
     /// through OpenHaptics calls. It can only be used with OpenHapticsRenderer.
+    /// The values for stiffness, damping and so on have to have the units that
+    /// OpenHaptics uses. For example, snap_distance should be in mm.
     class OPENHAPTICSRENDERER_API OpenHapticsSurface: public HAPISurfaceObject,
       public HLSurface
     {
@@ -87,7 +89,7 @@ namespace HAPI {
                           HAPIFloat static_friction = 0.1,
                           HAPIFloat dynamic_friction = 0.4,
                           bool magnetic = false,
-                          HAPIFloat snap_distance = 0.01,
+                          HAPIFloat snap_distance = 0,
                           bool use_ref_count_lock = true );
 
       /// Renders the surface using hlMaterialf calls
