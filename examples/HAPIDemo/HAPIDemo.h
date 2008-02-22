@@ -145,9 +145,9 @@ protected:
                                     wxTextCtrl **triangle_y,
                                     int vertex_z,
                                     wxTextCtrl **triangle_z,
-                                    const wxString& x_label = "x:",
-                                    const wxString& y_label = "y:",
-                                    const wxString& z_label = "z:" );
+                                    const wxString& x_label = wxT("x:"),
+                                    const wxString& y_label = wxT("y:"),
+                                    const wxString& z_label = wxT("z:") );
 
 
 public:
