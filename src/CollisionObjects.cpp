@@ -3065,8 +3065,8 @@ void Sphere::getTangentSpaceMatrix( const Vec3 &point,
                           * x2_z2_inv );
   Vec3 dt_tangent = Vec3( -point.x * point.y * CollisionInternals::pi_inv *
                           sqrt_x2_z2_inv * length_sqr_inv,
-                         -CollisionInternals::pi_inv * x2_z2 * sqrt_x2_z2_inv *
-                          length_sqr_inv * length_sqr_inv,
+                          CollisionInternals::pi_inv * x2_z2 * sqrt_x2_z2_inv *
+                          length_sqr_inv,
                           -point.y * point.z * CollisionInternals::pi_inv *
                           sqrt_x2_z2_inv * length_sqr_inv );
   Vec3 du_tangent = ds_tangent % dt_tangent;
