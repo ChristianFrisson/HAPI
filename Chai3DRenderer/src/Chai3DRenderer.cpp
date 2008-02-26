@@ -58,11 +58,11 @@ Chai3DRenderer::renderer_registration(
 /// Initialize the renderer to be used with the given haptics device.
 void Chai3DRenderer::initRenderer( HAPIHapticsDevice *hd ) {
   chai3d_tool->initialize();
-  chai3d_tool->setRadius( 0.05 );
+  chai3d_tool->setRadius( 0.0025 );
   chai3d_tool->computeGlobalPositions();
   chai3d_tool->start();
   chai3d_tool->setForcesON();
-  setProxyRadius( 0.5 );
+  setProxyRadius( 0.0025 );
 }
 
 /// Release all resources that has been used in the renderer for
@@ -85,7 +85,6 @@ Chai3DRenderer::renderHapticsOneStep(
   chai3d_tool->updatePose();
   mesh_change_lock.lock();
   chai3d_tool->computeForces();
-  mesh_change_lock.unlock();
 
   cVector3d f = chai3d_tool->m_lastComputedGlobalForce;
   
@@ -143,6 +142,7 @@ Chai3DRenderer::renderHapticsOneStep(
       }
     }
   }
+  mesh_change_lock.unlock();
 
   contacts_lock.lock();
   contacts.swap( new_contacts );
@@ -197,7 +197,11 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
         if( chai3d_surface )
           chai3d_surface->chai3dMaterial( mat );
         else if( friction_surface ) {
-          mat.setStiffness( friction_surface->stiffness );
+          if( friction_surface->use_relative_values )
+            mat.setStiffness( friction_surface->stiffness *
+                              hd->getMaxStiffness() );
+          else
+            mat.setStiffness( friction_surface->stiffness );
           mat.setStaticFriction( friction_surface->static_friction );
           mat.setDynamicFriction( friction_surface->dynamic_friction );
         }
