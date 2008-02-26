@@ -12,6 +12,7 @@ INCLUDES += introduction.tex
 
 # Examples:
 INCLUDES += examples/constant_force.tex
+INCLUDES += examples/feedback_buffer_collector.tex
 INCLUDES += examples/transfer_objects.tex
 INCLUDES += examples/hapticsDeviceRegistration_h.tex
 INCLUDES += examples/hapticsDeviceRegistration_cpp.tex
