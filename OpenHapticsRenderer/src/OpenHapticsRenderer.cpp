@@ -256,7 +256,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 #endif
 
           glLoadIdentity();
-          glScalef( 1e3f, 1e3f, 1e3f ); 
+          glScalef( 1e3f, 1e3f, 1e3f );
           hlRenderHAPISurface( (*i)->getSurface(), hd );
 
           HLenum touchable_face;
@@ -276,8 +276,13 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
             hlEnable( HL_HAPTIC_CAMERA_VIEW );
           else
             hlDisable( HL_HAPTIC_CAMERA_VIEW );
-          
-          Matrix3 m3 = (*i)->getTransform().getScaleRotationPart();
+
+          const Matrix4 &m4 = (*i)->getTransform();
+          GLdouble vt[] = { m4[0][0], m4[1][0], m4[2][0], 0,
+                            m4[0][1], m4[1][1], m4[2][1], 0,
+                            m4[0][2], m4[1][2], m4[2][2], 0,
+                            m4[0][3], m4[1][3], m4[2][3], 1 };
+          Matrix3 m3 = m4.getScaleRotationPart();
           GLint front_face;
           
           bool negative_scaling = 
@@ -291,13 +296,22 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
               glFrontFace( GL_CCW );
           } else if( negative_scaling )
             glFrontFace( GL_CW );
+
+          const Matrix4 m4_inv = (*i)->getInverse();
+          GLdouble vt_inv[] = { m4_inv[0][0], m4_inv[1][0], m4_inv[2][0], 0,
+                            m4_inv[0][1], m4_inv[1][1], m4_inv[2][1], 0,
+                            m4_inv[0][2], m4_inv[1][2], m4_inv[2][2], 0,
+                            m4_inv[0][3], m4_inv[1][3], m4_inv[2][3], 1 };
           
           if( shape_type == OpenHapticsOptions::DEPTH_BUFFER ) {
+            glMultMatrixd( vt );
             hlBeginShape( HL_SHAPE_DEPTH_BUFFER, hl_shape_id );
             glClear( GL_DEPTH_BUFFER_BIT );
+            glMultMatrixd( vt_inv );
             (*i)->glRender();
             hlEndShape();
           } else if( shape_type == OpenHapticsOptions::FEEDBACK_BUFFER ) {
+            glMultMatrixd( vt );
             int nr_vertices = (*i)->nrVertices();
             if( nr_vertices == -1 )
               hlHinti( HL_SHAPE_FEEDBACK_BUFFER_VERTICES, 65536 );
@@ -305,10 +319,14 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
               hlHinti( HL_SHAPE_FEEDBACK_BUFFER_VERTICES, nr_vertices );
 
             hlBeginShape( HL_SHAPE_FEEDBACK_BUFFER, hl_shape_id );
+            glMultMatrixd( vt_inv );
             (*i)->glRender();
             hlEndShape();         
           } else {
             // custom shape, use intersection functions
+            // TODO: This will give fallthrough of moving object
+            // maybe should try to do the same as for the others, but need
+            // to call lineIntersectShape then instead.
             hlBeginShape(HL_SHAPE_CALLBACK, hl_shape_id );
             hlCallback(HL_SHAPE_INTERSECT_LS, 
                        (HLcallbackProc) intersectCallback, (*i) );
