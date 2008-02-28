@@ -3,67 +3,50 @@ There are two ways to generate forces in HAPI. One is the one
 previously described, by specifying shapes and surfaces and letting
 a haptics rendering algorithm determine forces when colliding with the
 shapes. Another way to generate forces is by using force effects. A
-force effect is a global force function specifying what force to
-generate at any given moment depending on the current values of the
-haptics device. It can, among other things, be used to simulate
+force effect is a global force function which calculates what force to
+generate at any given moment. It can, among other things, be used to simulate
 viscosity and springs. 
 
 \section{Available force effects}
 The force effects available in HAPI are:
 
 \begin{itemize}
-\item Force field
-\item Spring
-\item Viscosity
-\item Vibration
-\item PlaneConstraint
-\item LineConstraint
-\item TimeFunctionEffect 
+\item HapticForceField
+\item HapticPositionFunctionEffect
+\item HapticShapeConstraint
+\item HapticSpring
+\item HapticTimeFunctionEffect 
+\item HapticViscosity
 \end{itemize}
 
 \section{Interpolation}
-When adding a force effect the user can choose if it should be
-interpolated or not. Interpolation of force effects means that newly
-added force effects will be ... should we have interpolation? how
-should it work??  
+Force effects does not have an internal property to decide whether they
+should be interpolated between frames. If this is needed it is assumed
+that this is taken care of by the force calculation itself. However,
+when adding or removing a force effect from a haptics device there
+is a parameter to make the force effect fade in or out smoothly. See section
+\ref{ssHapticsRenderingFunctions} for details.
 
 \section{Creating new force effects}
 A user can easily create their own force effects by subclassing from
 HAPIForceEffect and implementing the calculateForces() method. The
-method gets the haptics device the force effect is to be rendered on
-as argument, allowing it to access all device values. It also get the
-time since the last call haptics loop. The output is an en
-EffectOutput structure. It contains:
+method takes the struct EffectInput as input. This struct contains:
 
 \begin{itemize}
-\item force
-\item torque
-\item position to force jacobian matrix
-\item velocity to force jabobian matrix
+\item hd - A pointer to the HAPIHapticsDevice on which the force is rendered.
+Through this pointer the force effect can access device values such as
+the current position, velocity and orientation of the HAPIHapticsDevice.
+\item deltaT - The change in time since the last haptic frame.
+\end{itemize}
+The output of the calculateForces() method is an EffectOutput structure.
+It contains:
+
+\begin{itemize}
+\item force - The force calculated by the calculateForces() function.
+\item torque - The torque calculated by the calculateForces() function.
 \end{itemize}
 
-Global coordinates. Transform from local to global coordinates.
+The force and torque outputed should always be given in global coordinates.
+Here follows an example of a very simple class that generates a constant force.
 
-E.g. a very simple class generating a constant force would look like.
-
-namespace HAPI {
-  /// This is a HAPIForceEffect that generates a constant force.
-  class ConstantForce: public HAPIForceEffect {
-  public:
-    /// Constructor
-    ConstantForce( const Vec3 \&\_force ): 
-      force( \_force ) {}
-
-    /// The force of the EffectOutput will be the force of the force field. 
-    EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
-                                          HAPITime dt ) {
-      return EffectOutput( force );
-    }
-    
-  protected:
-    Vec3 force;
-  };
-}
-
-
-
+\input{examples/HapticForceField}

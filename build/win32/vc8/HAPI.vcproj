@@ -231,6 +231,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\HAPI.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\HAPIForceEffect.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\HAPIHapticsDevice.cpp"
 				>
 			</File>

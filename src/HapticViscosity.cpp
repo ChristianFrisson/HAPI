@@ -42,9 +42,8 @@ HapticViscosity::HapticViscosity( const HAPIFloat &_viscosity,
 }
 
 HAPIForceEffect::EffectOutput HapticViscosity::calculateForces(
-                                                HAPIHapticsDevice *hd,
-                                               HAPITime dt ) {
-  Vec3 hd_vel = hd->getVelocity();
+    const EffectInput &input ) {
+  Vec3 hd_vel = input.hd->getVelocity();
   Vec3 the_force = the_constant * hd_vel;
   return EffectOutput( the_force );
 }

@@ -75,6 +75,7 @@ H3DUtil::PeriodicThread::CallbackCode
   hd->force_effect_lock.lock();
   bool last_add_interpolate = !hd->last_add_rem_effect_map.empty();
   bool current_add_interpolate = !hd->current_add_rem_effect_map.empty();
+  HAPIForceEffect::EffectInput input( hd, dt );
   if( hd->switching_effects || current_add_interpolate ||
       last_add_interpolate ) {
     // If there is any kind of interpolation needed to be done, it is taken
@@ -110,10 +111,10 @@ H3DUtil::PeriodicThread::CallbackCode
                 hd->last_add_rem_effect_map[ j ];
               hd->last_add_rem_effect_map.erase( j );
             }
-            output = output + (*i)->calculateForces( hd, dt ) * temp_fraction;
+            output = output + (*i)->calculateForces( input ) * temp_fraction;
           }
         } else {
-          output = output + (*i)->calculateForces( hd, dt );
+          output = output + (*i)->calculateForces( input );
         }
       }
     } else {
@@ -122,7 +123,7 @@ H3DUtil::PeriodicThread::CallbackCode
            hd->last_force_effects.begin();
          i != hd->last_force_effects.end();
          i++ ) {
-        output = output + (*i)->calculateForces( hd, dt );
+        output = output + (*i)->calculateForces( input );
       }
     }
 
@@ -170,11 +171,11 @@ H3DUtil::PeriodicThread::CallbackCode
             temp_fraction = 1;
             hd->current_add_rem_effect_map.erase( found );
           }
-          output = output + (*i)->calculateForces( hd, dt ) *
+          output = output + (*i)->calculateForces( input ) *
                             temp_fraction *
                             force_interpolation_fraction;
         } else
-          output = output + (*i)->calculateForces( hd, dt ) *
+          output = output + (*i)->calculateForces( input ) *
                             force_interpolation_fraction;
       }
     } else {
@@ -183,7 +184,7 @@ H3DUtil::PeriodicThread::CallbackCode
            hd->current_force_effects.begin();
          i != hd->current_force_effects.end();
          i++ ) {
-        output = output + (*i)->calculateForces( hd, dt )
+        output = output + (*i)->calculateForces( input )
           * force_interpolation_fraction;
       }
     }
@@ -194,7 +195,7 @@ H3DUtil::PeriodicThread::CallbackCode
            hd->current_force_effects.begin();
          i != hd->current_force_effects.end();
          i++ ) {
-      output = output + (*i)->calculateForces( hd, dt );
+      output = output + (*i)->calculateForces( input );
     }
   }
   hd->force_effect_lock.unlock();

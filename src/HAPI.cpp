@@ -21,37 +21,21 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticShapeConstraint.h
-/// \brief Header file for HapticShapeConstraint
+/// \file HAPI.cpp
+/// \brief Cpp file for HAPI.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __HAPTICSHAPECONSTRAINT_H__
-#define __HAPTICSHAPECONSTRAINT_H__
 
-#include <HAPI/HAPIForceEffect.h> 
-#include <HAPI/HAPIHapticsDevice.h>
-#include <HAPI/HAPIHapticShape.h>
+#include <HAPI/HAPI.h>
+#include <sstream>
 
-namespace HAPI {
-  /// A HAPIForceEffect which calculates a force to constrain the haptic
-  /// device position to the closest point of the given CollisionObject. The
-  /// CollisionObject could for example be a HAPIHapticShape.
-  class HAPI_API HapticShapeConstraint: public HAPIForceEffect {
-  public:
-    /// Constructor
-    HapticShapeConstraint( Collision::CollisionObject *_col_obj,
-                           const HAPIFloat &_spring_constant );
-    
-    /// The force of the EffectOutput is a spring force from the current
-    /// position of the haptics device towards the closest point on the
-    /// CollisionObject.
-    EffectOutput virtual calculateForces( const EffectInput &input );
+using namespace HAPI;
 
-  protected:
-    H3DUtil::AutoRef< Collision::CollisionObject > col_obj;
-    HAPIFloat spring_constant;
-  };
+double HAPI::getHAPIVersion(){
+  std::stringstream stm;
+  stm << HAPI_MAJOR_VERSION;
+  stm << ".";
+  stm << HAPI_MINOR_VERSION;
+  return atof( stm.str().c_str() );
 }
-
-#endif

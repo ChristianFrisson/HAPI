@@ -60,7 +60,6 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
   if( H3DUtil::H3DAbs( static_friction ) < Constants::epsilon &&
       H3DUtil::H3DAbs( dynamic_friction ) < Constants::epsilon ) {
     // Case of no friction.
-    this_contact_info = &contact;
     Vec3 local_probe = contact.localProbePosition();
     if( local_probe.y > 0 )
       depth_invert = true;
@@ -73,6 +72,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
     Vec2 res;
     
     depth_get_lock.lock();
+    this_contact_info = &contact;
     H3DUtil::DownhillSimplexMethod::amoeba< Vec2, HAPIFloat, 2>(
                                       v,
                                       &HAPIVariableDepthSurface::localPtToDist,
@@ -85,7 +85,6 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
     contact.setLocalProxyMovement( res );
   } else {
     // In case of friction.
-    this_contact_info = &contact;
 
     Vec3 local_probe = contact.localProbePosition();
     if( local_probe.y > 0 )
@@ -105,6 +104,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
     }
 
     depth_get_lock.lock();
+    this_contact_info = &contact;
     HAPIFloat start_depth = getDepth( Vec2());
     Vec3 force = ( Vec3( 0, start_depth, 0 ) - contact.localProbePosition() )
                   * local_stiffness;

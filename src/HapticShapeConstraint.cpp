@@ -39,10 +39,9 @@ HapticShapeConstraint::HapticShapeConstraint(
 }
 
 HAPIForceEffect::EffectOutput HapticShapeConstraint::calculateForces(
-                              HAPIHapticsDevice *hd,
-                              HAPITime dt ) {
+    const EffectInput &input ) {
   Vec3 closest_point = Vec3(), temp;
-  Vec3 hd_pos = hd->getPosition();
+  Vec3 hd_pos = input.hd->getPosition();
   col_obj->closestPoint( hd_pos, closest_point, temp, temp );
   Vec3 the_force = spring_constant * (closest_point - hd_pos);
   return EffectOutput( the_force );
