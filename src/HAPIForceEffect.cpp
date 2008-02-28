@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -21,37 +21,20 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticShapeConstraint.h
-/// \brief Header file for HapticShapeConstraint
+/// \file HAPIForceEffect.cpp
+/// \brief cpp file for HAPIForceEffect
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __HAPTICSHAPECONSTRAINT_H__
-#define __HAPTICSHAPECONSTRAINT_H__
-
-#include <HAPI/HAPIForceEffect.h> 
+#include <HAPI/HAPIForceEffect.h>
 #include <HAPI/HAPIHapticsDevice.h>
-#include <HAPI/HAPIHapticShape.h>
+using namespace HAPI;
 
-namespace HAPI {
-  /// A HAPIForceEffect which calculates a force to constrain the haptic
-  /// device position to the closest point of the given CollisionObject. The
-  /// CollisionObject could for example be a HAPIHapticShape.
-  class HAPI_API HapticShapeConstraint: public HAPIForceEffect {
-  public:
-    /// Constructor
-    HapticShapeConstraint( Collision::CollisionObject *_col_obj,
-                           const HAPIFloat &_spring_constant );
-    
-    /// The force of the EffectOutput is a spring force from the current
-    /// position of the haptics device towards the closest point on the
-    /// CollisionObject.
-    EffectOutput virtual calculateForces( const EffectInput &input );
-
-  protected:
-    H3DUtil::AutoRef< Collision::CollisionObject > col_obj;
-    HAPIFloat spring_constant;
-  };
+HAPIForceEffect::EffectInput::EffectInput( HAPIHapticsDevice *_hd,
+                                           const TimeStamp &dt ) :
+                                           deltaT( dt ),
+                                           hd( _hd ){
+  position = hd->getPosition();
+  velocity = hd->getVelocity();
+  orientation = hd->getOrientation();
 }
-
-#endif

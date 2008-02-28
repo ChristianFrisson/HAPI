@@ -52,8 +52,8 @@
 
 /// Undef if you do not have the fparser library
 /// (http://iki.fi/warp/FunctionParser/) installed.
-/// Required for the ParsedFunction class. Included with
-/// HAPI, no need to download anything.
+/// Required for the ParsedFunction class.
+/// NOTE: Included with HAPI, no need to download anything.
 #define HAVE_FPARSER
 
 /// Undef if you do not have the C-API wrapper for the HapticMaster
@@ -110,6 +110,14 @@
 #define HAPI_API 
 #define HAVE_SYS_TIME_H
 #endif
+
+#define HAPI_MAJOR_VERSION 1
+#define HAPI_MINOR_VERSION 0
+namespace HAPI {
+  /// Will return the version of HAPI as a double on the form
+  /// HAPI_MAJOR_VERSION.HAPI_MINOR_VERSION
+  double HAPI_API getHAPIVersion();
+}
 
 #endif
 

@@ -41,9 +41,8 @@ HapticPositionFunctionEffect::HapticPositionFunctionEffect(
 }
 
 HAPIForceEffect::EffectOutput HapticPositionFunctionEffect::calculateForces(
-                              HAPIHapticsDevice *hd,
-                              HAPITime dt ) {
-  Vec3 position = hd->getPosition();
+    const EffectInput &input ) {
+  Vec3 position = input.hd->getPosition();
   HAPIFloat pos [] = { position.x, position.y, position.z };
   Vec3 force = Vec3( x_function->evaluate( pos ),
                      y_function->evaluate( pos ),

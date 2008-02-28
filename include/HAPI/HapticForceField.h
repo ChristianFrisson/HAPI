@@ -41,8 +41,7 @@ namespace HAPI {
 
     
     /// The force of the EffectOutput will be the force of the force field. 
-    EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
-                                          HAPITime dt ) {
+    EffectOutput virtual calculateForces( const EffectInput &input ) {
       return EffectOutput( force );
     }
     

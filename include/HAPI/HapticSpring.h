@@ -50,9 +50,8 @@ namespace HAPI {
     
     /// The force of the EffectOutput will be a force from the position of
     /// the haptics device to the position of the HapticSpring. 
-    EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
-                                          HAPITime dt ) {
-      force = ( position - hd->getPosition() ) * spring_constant;
+    EffectOutput virtual calculateForces( const EffectInput &input ) {
+      force = ( position - input.hd->getPosition() ) * spring_constant;
       return EffectOutput( force );
     }
 

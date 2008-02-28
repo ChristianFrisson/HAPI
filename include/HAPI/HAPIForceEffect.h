@@ -45,6 +45,28 @@ namespace HAPI {
   class HAPI_API HAPIForceEffect: public HAPIHapticObject, 
                                   public H3DUtil::RefCountedClass {
   public:
+
+    /// The input to a HAPIForceEffect. 
+    struct HAPI_API EffectInput {
+      /// Constructor.
+      EffectInput( HAPIHapticsDevice *_hd,
+                   const TimeStamp &dt = 0 );
+      
+      /// The position of the finger. THIS VARIABLE IS
+      /// DEPRECATED, use hd->getPosition instead.
+      Vec3 position;
+      /// The velocity of the finger. THIS VARIABLE IS
+      /// DEPRECATED, use hd->getVelocity instead.
+      Vec3 velocity;
+      /// The orientation of the stylus. THIS VARIABLE IS
+      /// DEPRECATED, use hd->getOrientation instead.
+      Rotation orientation;
+      /// The change in time since the last call
+      TimeStamp deltaT;
+      /// The haptics device for the device that created the EffectInput
+      HAPIHapticsDevice *hd;
+    };
+
     /// The output from a HAPIForceEffect.
     struct HAPI_API EffectOutput {
       /// Constructor.
@@ -85,8 +107,7 @@ namespace HAPI {
     
     /// The function that calculates the forces given by this 
     /// HAPIForceEffect.
-    EffectOutput virtual calculateForces( HAPIHapticsDevice *hd,
-                                          HAPITime dt ) = 0;
+    EffectOutput virtual calculateForces( const EffectInput &input ) = 0;
     
     /// Destructor. Virtual to make HAPIForceEffect a polymorphic type.
     virtual ~HAPIForceEffect() {}
