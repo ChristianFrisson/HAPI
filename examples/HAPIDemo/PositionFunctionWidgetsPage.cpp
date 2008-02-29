@@ -116,5 +116,6 @@ void PositionFunctionWidgetsPage::createForceEffect() {
                                                         z_function ) );
   hd->clearEffects();
   hd->addEffect( force_effect.get() );
+  hd->transferObjects();
 }
 #endif // HAVE_FPARSER

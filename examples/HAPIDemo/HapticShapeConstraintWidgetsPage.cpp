@@ -681,5 +681,6 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
 
   if( force_effect.get() ) {
     hd->addEffect( force_effect.get() );
+    hd->transferObjects();
   }
 }

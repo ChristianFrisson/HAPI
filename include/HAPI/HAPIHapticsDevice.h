@@ -98,7 +98,9 @@ namespace HAPI {
     HAPIHapticsDevice() :
       thread( NULL ),
       switching_effects( false ),
+      tmp_switching_effects( false ),
       time_in_last_loop( 0 ),
+      tmp_switch_effects_duration( 0 ),
       device_state( UNINITIALIZED ),
       delete_thread( false ),
       setup_haptic_rendering_callback( true ),
@@ -262,11 +264,9 @@ namespace HAPI {
     inline void addEffect( HAPIForceEffect *effect,
                            HAPITime fade_in_time = 0 ) {
       force_effect_lock.lock();
-      current_force_effects.push_back( effect );
-      if( fade_in_time > Constants::epsilon ) {
-        current_add_rem_effect_map[ current_force_effects.size() - 1 ] =
-          PhaseInOut( fade_in_time, TimeStamp() );
-      }
+      tmp_current_force_effects.push_back( effect );
+      added_effects_indices.push_back(
+        make_pair( tmp_current_force_effects.size() - 1, fade_in_time ) );
       force_effect_lock.unlock();
     }
 
@@ -275,20 +275,11 @@ namespace HAPI {
     inline void setEffects( const HapticEffectVector &effects,
                             HAPITime _switch_effects_duration = 0 ) {
       force_effect_lock.lock();
-      if( _switch_effects_duration > Constants::epsilon ) {
-        last_add_rem_effect_map.clear();
-        last_add_rem_effect_map.swap( current_add_rem_effect_map );
-        last_force_effects.swap( current_force_effects );
-        switch_effects_duration = _switch_effects_duration;
-        last_force_effect_change = TimeStamp();
-        switching_effects = true;
-      } else {
-        last_force_effects.clear();
-        current_add_rem_effect_map.clear();
-        last_add_rem_effect_map.clear();
-        switching_effects = false;
-      }
-      current_force_effects = effects;
+      tmp_current_force_effects = effects;
+      tmp_switch_effects_duration = _switch_effects_duration;
+      tmp_switching_effects = true;
+      force_effects_to_remove.clear();
+      added_effects_indices.clear();
       force_effect_lock.unlock();
     }
 
@@ -296,46 +287,42 @@ namespace HAPI {
     inline HapticEffectVector getEffects() {
       HapticEffectVector return_force_effects;
       force_effect_lock.lock();
-      return_force_effects = current_force_effects;
+      return_force_effects = tmp_current_force_effects;
       force_effect_lock.unlock();
       return return_force_effects;
     }
 
     /// Remove a force effect so that it is not rendered any longer.
-    void removeEffect( HAPIForceEffect *effect, HAPITime fade_out_time = 0 ) {
+    inline void removeEffect( HAPIForceEffect *effect,
+                              HAPITime fade_out_time = 0 ) {
       force_effect_lock.lock();
-      if( fade_out_time > Constants::epsilon ) {
-        unsigned int i = 0;
-        for( HapticEffectVector::const_iterator j =
-               current_force_effects.begin();
-             j != current_force_effects.end(); j++, i++ )
-          if( effect == (*j) )
-            break;
-        if( i < current_force_effects.size() ) {
-          PhaseInOut temp_phase_in_out( fade_out_time, TimeStamp(), false );
-          IndexTimeMap::iterator found = current_add_rem_effect_map.find( i );
-          if( found != current_add_rem_effect_map.end() ) {
-            temp_phase_in_out.setMaxFraction(
-              (*found).second.getMaxFraction() );
-            current_add_rem_effect_map.erase( found );
-            for( unsigned int k = i + 1;
-                 k < current_force_effects.size(); k++ ) {
-              found = current_add_rem_effect_map.find( k );
-              if( found != current_add_rem_effect_map.end() ) {
-                current_add_rem_effect_map[ k - 1 ] =
-                  current_add_rem_effect_map[ k ];
-                current_add_rem_effect_map.erase( k );
-              }
+      unsigned int i = 0;
+      for( HapticEffectVector::const_iterator j =
+             tmp_current_force_effects.begin();
+           j != tmp_current_force_effects.end(); j++, i++ )
+        if( effect == (*j) )
+          break;
+
+      if( i < tmp_current_force_effects.size() ) {
+        force_effects_to_remove.push_back( make_pair( effect, fade_out_time ));
+        for( vector< pair< int, HAPITime > >::iterator j =
+               added_effects_indices.begin();
+             j != added_effects_indices.end(); j++ ) {
+          if( i == (*j).first ) {
+            added_effects_indices.erase( j );
+            for( vector< pair< int, HAPITime > >::iterator k =
+                   added_effects_indices.begin();
+                 k != added_effects_indices.end(); k++ ) {
+              (*k).first--;
             }
+            break;
           }
-          last_add_rem_effect_map[ last_force_effects.size() ] =
-            temp_phase_in_out;
-          last_force_effects.push_back( effect );
         }
       }
-      current_force_effects.erase( effect );
+      tmp_current_force_effects.erase( effect );
       force_effect_lock.unlock();
     }
+
 
 
     /// Add all effects between [begin, end)
@@ -353,31 +340,22 @@ namespace HAPI {
     inline void swapEffects( HapticEffectVector &effects,
                              HAPITime _switch_effects_duration = 0 ) {
       force_effect_lock.lock();
-      if( _switch_effects_duration > Constants::epsilon ) {
-        last_add_rem_effect_map.clear();
-        last_add_rem_effect_map.swap( current_add_rem_effect_map );
-        last_force_effects.swap( current_force_effects );
-        switch_effects_duration = _switch_effects_duration;
-        last_force_effect_change = TimeStamp();
-        switching_effects = true;
-      } else {
-        last_force_effects.clear();
-        current_add_rem_effect_map.clear();
-        last_add_rem_effect_map.clear();
-        switching_effects = false;
-      }
-      current_force_effects.swap( effects );
+      tmp_current_force_effects.swap( effects );
+      tmp_switch_effects_duration = _switch_effects_duration;
+      tmp_switching_effects = true;
+      force_effects_to_remove.clear();
+      added_effects_indices.clear();
       force_effect_lock.unlock();
     }
 
     /// Remove all HAPIForceEffect objects that are currently being rendered.
     inline void clearEffects() {
       force_effect_lock.lock();
-      current_force_effects.clear();
-      last_force_effects.clear();
-      current_add_rem_effect_map.clear();
-      last_add_rem_effect_map.clear();
-      switching_effects = false;
+      tmp_current_force_effects.clear();
+      tmp_switching_effects = true;
+      tmp_switch_effects_duration = 0;
+      force_effects_to_remove.clear();
+      added_effects_indices.clear();
       force_effect_lock.unlock();
     }
     
@@ -920,10 +898,14 @@ namespace HAPI {
     /// The thread that this haptics device loop is run in.
     H3DUtil::PeriodicThreadBase *thread;
 
-    // the force effects that are currently rendered in the realtime loop.
-    // Should not be changed directly from the scenegraph loop but instead
-    // use the renderEffects function to set the effects.
+    // The force effects that are currently rendered in the haptics loop.
+    // Only used in the haptics loop.
     HapticEffectVector current_force_effects;
+
+    // A copy of the current_force_effects vector which is used to add and
+    // remove force effect from the haptics loop. The force effects are copied
+    // over to the haptics loop when transferObjects() is called.
+    HapticEffectVector tmp_current_force_effects;
 
     // The forces to interpolate with if interpolation should be done.
     HapticEffectVector last_force_effects;
@@ -933,9 +915,22 @@ namespace HAPI {
     // and swapForceEffects.
     bool switching_effects;
 
+    // Copy of switching_effects not used in haptics loop.
+    bool tmp_switching_effects;
+
     // The time it takes to fully switch to the new force effects when
     // using setForceEffects or swapForceEffects.
     HAPITime switch_effects_duration;
+
+    // Copy of switch_effects_duration not used in haptics loop.
+    HAPITime tmp_switch_effects_duration;
+
+    // Used to know which effects was added through the addEffect function.
+    vector< pair< int, HAPITime > > added_effects_indices;
+
+    // Used to know which effects was removed through the removeEffect
+    // function.
+    vector< pair< HAPIForceEffect *, HAPITime > > force_effects_to_remove;
 
     // The time of the last call to setForceEffects or swapForceEffects.
     // Only set if switching_effects is true.

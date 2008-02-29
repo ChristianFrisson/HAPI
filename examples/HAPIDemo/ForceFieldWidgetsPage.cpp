@@ -106,5 +106,6 @@ void ForceFieldWidgetsPage::createForceEffect() {
   force_effect.reset( new HapticForceField( force ) );
   hd->clearEffects();
   hd->addEffect( force_effect.get() );
+  hd->transferObjects();
 }
 

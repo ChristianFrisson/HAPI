@@ -98,6 +98,7 @@ public:
   virtual void removeForceEffect() {
     if( force_effect.get() ) {
       hd->removeEffect( force_effect.get() );
+      hd->transferObjects();
     }
   }
 
