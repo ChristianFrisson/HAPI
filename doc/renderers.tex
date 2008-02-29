@@ -47,14 +47,13 @@ implemented and two uses external haptics libraries. We will list them
 and point out their uses, advantages/disadvantages etc.
 
 \subsection{God-Object algorithm}
-The god-object algorithm is based on the God-object paper( reference)
+The god-object algorithm is based on the God-object paper \cite{zilles95constraintbased}
 by .... It uses a point proxy .
 - Point proxy
 - User defined surfaces
 
 \subsection{Ruspini algorithm}
-The ruspini renderer is based on the algorithm presented by Ruspini in
-(reference). It uses a sphere proxy.
+The ruspini renderer is based on the algorithm presented by Ruspini \cite{ruspini}. It uses a sphere proxy.
 - Sphere proxy
 - User defined surfaces
 
@@ -119,7 +118,7 @@ After the new position of the proxy has been calculated, the interaction force w
 The interaction force(and possible torque) in a new surface is determined by defining the virtual function getForces( ContactInfo \&ci ) by calling the setGlobalForce or setLocalForce functions in the ci object. 
 
 \subsection{The ContactInfo object}
-When calculating the proxy movement and the interaction force the user has access to a ContactInfo object. This object contains information about the surface contact that can be used in the calculations. It is also the object in which to return the calculated forces and proxy movement. The most commonly used values from the object are:
+When calculating the proxy movement and the interaction force the user has access to a ContactInfo object. This object contains information about the surface contact that can be used in the calculations. It is also the object in which to return the calculated forces and proxy movement. The most commonly used values provided are:
 
 \begin{itemize}
 \item Contact point origin(proxy position) (add proxyPosition functions)?.
@@ -132,7 +131,7 @@ When calculating the proxy movement and the interaction force the user has acces
 
 
 All positions can be obtained in either the global coordinate system or
-in a local contact coordinate system. The local coordinate system is constructed with the proxy position as the origin, the contact normal as the y-axis and and two arbitrary perpendicular axis in the plane as x and z-axis. This means that e.g. the penetration depth is the same as -y in the local coordinate system. 
+in a local contact coordinate system. The local coordinate system is constructed with the proxy position as the origin, the contact normal as the y-axis and and two arbitrary perpendicular axis in the plane as x and z-axis. This means that e.g. the penetration depth is the same as -y in the local coordinate system. There are also functions in the ContactInfo object for converting between these two coordinate spaces. 
 
 \begin{figure} 
   \centering 
@@ -141,6 +140,7 @@ in a local contact coordinate system. The local coordinate system is constructed
   \label{coordsystems} 
 \end{figure}
 
+The output parameters that can be set are:
 
 \begin{itemize}
 \item Force - setGlobalForce/setLocalForce
