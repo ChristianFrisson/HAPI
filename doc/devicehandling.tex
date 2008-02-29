@@ -1,24 +1,24 @@
 
 \chapter {Device handling}
-
-The functions in a haptics device class can be divided into two classes:
+HAPI is device independent and can be used with a wide variety of haptics devices. The haptics devices currently supported by HAPI are:
 
 \begin{itemize}
-\item Device handling routines.
-\item Routines for determining what and how should be rendered haptically
-for the device. 
+\item PHANToM Devices from SensAble Technologies (implemented in the
+  PhantomHapticsDevice class)
+\item Delta and Omega devices from ForceDimension(implemented in the
+  ForceDimensionHapticsDevice class)
+\item 2 DOF Pantograph and something else (TODO) from Quanser.
+ (implemented in the QuanserHapticsDevice class). This feature is not yet fully
+ tested and should be considered prototype.
+\item Falcon from Novint (implemented in the FalconHapticsDevice class ). 
+\item HapticMaster from Moog/FCS (implemented in the HapticMasterDevice class ). 
 \end{itemize}
 
-The device handling routines are functions for initializing the
-device, reading positions and sending forces. 
-
-The other functions are for setting the haptics rendering algorithm
-to use and set the geometries and force effects that are to be
-rendered.
+Each of these devices has a special class implementing the interface to the device. These classes also provide device specific functions that can be used. Most of the time the user does not care what haptics device is used and can then use the AnyHapticsDevice class when specifying the haptics device instead. The AnyHapticsDevice class will try to find a haptics device to use by trying to initialize all the devices that are supported. The haptics devices used will be the first one that initializes successfully.
 
 \section{Calibration}
 By default the coordinates given by the haptics device classes are
-given in millimetres in the local coordinate space of the haptics
+given in metres in the local coordinate space of the haptics
 device. Often this is not the coordinate system a user wants
 though, and therefore HAPI provides a mean to change the coordinate
 system by adding a calibration matrix. The position given by the
@@ -60,7 +60,19 @@ By default all operations use layer 0.
 \section{The HAPIHapticsDevice abstract base class}
 The HAPIHapticsDevice abstract base class is the base class for all
 haptics device implementations. It contains the functions that are
-available for all haptics devices.  
+available for all haptics devices.  The functions available can be divided into two classes:
+
+\begin{itemize}
+\item Device handling functions.
+\item Calibration functions.
+\item Haptic rendering functions.
+\end{itemize}
+
+The device handling functions are for communication with the haptics device, such as initializing/deinitializing the device, reading positions and sending forces. 
+
+The calibration functions lets the user manipulate the coordinate system the values of the haptics device is reported in.
+
+The haptic rendering functions are used to define what to render on the haptics device, e.g. which effects, which shapes and what haptics renderer.
 
 \subsection{Device handling functions}
 
@@ -128,14 +140,13 @@ how to render objects with the haptics device.
 \item void removeEffect( HapticForceEffect *effect ) - Remove a haptic
   effect currently being rendered.
 \item void clearEffects() - Remove all haptic effects currently rendered.
+\item void transferObjects() - Transfer the current objects to the haptics loop.
 \end{itemize}
 
 The above functions works at a temporary local copy of effects and
 shapes. The haptics is rendered in a different loop and in order to
 transfer the changes made to that loop the user has to call the
-transferObjects() function. It is made in this way so only one
-synchronization call is needed between the two threads, instead of one
-for each call to the functions above.
+transferObjects() function. 
 
 Example:
 
@@ -150,30 +161,11 @@ device and sends a constant force of 1 N in the positive x-direction.
 
 \input{examples/constant_force} 
 
-\section{Supported haptics devices}
-The haptics devices currently supported by HAPI are:
-
-\begin{itemize}
-\item PHANToM Devices from SensAble Technologies (implemented in the
-  PhantomHapticsDevice class)
-\item Delta and Omega devices from ForceDimension(implemented in the
-  ForceDimensionHapticsDevice class)
-\item 2 DOF Pantograph and something else (TODO) from Quanser.
- (implemented in the QuanserHapticsDevice class). This feature is not yet fully
- tested and should be considered prototype.
-\item Falcon from Novint (implemented in the FalconHapticsDevice class ). 
-This feature is not yet fully tested and should be considered prototype.
-\end{itemize}
-
-Also there is the AnyHapticsDevice class which uses any supported
-device connected to the computer.
-
-\subsection{Adding support for new devices}
+\section{Adding support for new devices}
 \label{ssAddingHapticsSupport}
 
 Support for new devices can easily be added to HAPI by subclassing the
-HAPIHapticsDevice class and implement the abstract functions. The
-functions to implement are:
+HAPIHapticsDevice class and implement the four abstract functions below.
 
 \begin{itemize}
 \item bool initHapticsDevice() - initialize the haptics device. Return

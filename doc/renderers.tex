@@ -18,7 +18,7 @@ then generated to bring the haptics device out of the surface, towards
 the proxy, and usally some kind of spring force between the proxy and
 haptics device is used. When the user moves the haptics device inside
 the object the proxy follows the movement, but on the surface. How the
-surface follows determines how the structure of the surface will
+proxy follows determines how the structure of the surface will
 feel. For example, if the proxy is always moved to a local minimum on
 the distance to the surface, the surface will feel completely smooth,
 but if the proxy is dragging behind you can get friction effects. In
@@ -71,21 +71,14 @@ The ruspini renderer is based on the algorithm presented by Ruspini in
 
 \section{Surfaces}
 (TODO)
-The way to specify how an object should feel in HAPI is done by
-specifying an instance of a HAPISurfaceObject class that implements
-the behavior. See ref specifying geometres. There are a couple of
-surfaces already available in HAPI. They are:
+A surface object in HAPI is an object that defines the haptic properties of a geometric shape, such as stiffness and friction. It is responsible for generating forces at a local contact point on a shape. The base class of all such objects is HAPISurfaceObject and there are several surfaces available in HAPI. They are: 
 
 (TODO Change to FrictionSurface!! take away bumpMap??)
 \begin{itemize}
-\item SmoothSurface - A SmoothSurface is a frictionless surface, where
-  the proxy is always moved to minimize the distance between proxy and
-  probe position. 
-\item FrictionalSurface - Has additional parameters for specifying
-  static and dynamic friction.
+\item FrictionSurface - Allows the user to set stiffness, damping, static friction and dynamic friction.
 \item MagneticSurface - Surface pulls the haptics device towards the
-  surface when within a user specified distance.
-\item BumpmapSurface - Use a texture to define the height 
+  surface when within a user specified distance. 
+\item DepthMapSurface - Use a texture to define the height 
 \item StiffnessFunctionSurface - Use a generic function to generate
   the normal force. The function takes the penetration depth as input
   and returns the corresponding force. 
@@ -106,52 +99,49 @@ those libraries directly. They are:
 
 \subsection{User defined surfaces}
 
+In addition to using the already defined surfaces HAPI provides an interface to develop custom surfaces. This gives the user full control over the forces generated when in contact with a surface. The base class for all surface classes is HAPISurfaceObject and this is the class to inherit from when creating new surfaces. The surface object is responsible for two things. 
+
+
+\subsubsection{Moving the proxy}
+The movement of the proxy is often used to control the feeling of an abject when moving across the surface, e.g. if the surface should feel smooth or rough. Letting the proxy move along the contact plane as to minimise the distance between proxy and probe will create a totally smooth surface since the forces will always just be normal forces and no tangential forces. Letting the proxy lag behind in different ways can be used to create different friction-like effects and not letting it move at all will mean that you will not be able to move away from the first point of contact of the surface (unless you lift the probe out of the surface). The proxy movement is a 2D movement along the xz-plane of the local contact coordinate system. 
+
+When defining a new surface the virtual function getProxyMovement( ContactInfo &ci ) in HAPISurfaceObject is used to define the proxy movement. The user should call the ci.setLocalProxyMovement( Vec2f pm ) function here to set the proxy movement. The rendering system will try to move the proxy according to the specified movement but might be stopped by colliding with other geomtries along the path to the new position. The proxy will then stay at this collision point instead of moving all the way to the specified position.
+
 \begin{figure} 
   \centering 
   \includegraphics{images/surface.pdf}
-  \caption{The distance returned from getProxyMovement() is proxy\_movement.}
+  \caption{Local surface contact. Always moving the proxy to the dashed position(i.e. minimise the distance between proxy and probe) will give a surface without any friction.}
   \label{proxy movement} 
 \end{figure}
 
-Surfaces can be created for arbitrary force functions and proxy
-movements. This is done by subclassing the HAPISurfaceObject class and
-implementing the onContact() method. The purpose of the onContact
-function is for the user to specify force and wanted proxy
-movement. To understand the argument given to the onContact function
-we will have to go through some preliminaries. When in contact with
-the surface there will be a local surface approximation at the contact
-point in the form of a plane. The argument given to the onContact
-function is a ContactInfo structure. It contains information of the
-contact and is also the structure used for returning force and proxy
-movement. The input to the user is:
+\subsubsection{Calculating an interaction force}
+After the new position of the proxy has been calculated, the interaction force with the surface has to be determined. For the most common surface types this is usually a linear spring force pulling the device back towards the proxy. It is however totally up to the user to define the force profile of the interaction to model e.g. button clicks and other non-linear behaviour. To have the most stable force feedback it is recommended that the direction of the force towards the proxy however.  
+The interaction force(and possible torque) in a new surface is determined by defining the virtual function getForces( ContactInfo &ci ) by calling the setGlobalForce or setLocalForce functions in the ci object. 
 
+\subsection{The ContactInfo object}
+When calculating the proxy movement and the interaction force the user has access to a ContactInfo object. This object contains information about the surface contact that can be used in the calculations. It is also the object in which to return the calculated forces and proxy movement. The most commonly used values from the object are:
 
 \begin{itemize}
-\item Contact point(proxy position)
-\item Probe position
-\item Texture coordinate
-\item Proxy radius
-\item Shape id
+\item Contact point origin(proxy position) (add proxyPosition functions)?.
+\item Probe position.
+\item Probe velocity(not implemented).
+\item Texture coordinate of contact.
+\item The haptics device that made the contact.
+\item The haptic shape the contact is made on.
 \end{itemize}
 
-All positions can be obtained in either global coordinates system or
-in a local coordinate system with the plane normal as the y-axis and
-contact point as the origin and two arbitrary perpendicular axis in
-the plane as x and z-axis. This means that the penetration depth is
-the same as -y in the local coordinate system. There are also function
-available for converting between the global and local coordinate
-system.
+All positions can be obtained in either the global coordinate system or
+in a local contact coordinate system. The local coordinate system is constructed with the proxy position as the origin, the contact normal as the y-axis and and two arbitrary perpendicular axis in the plane as x and z-axis. This means that e.g. the penetration depth is the same as -y in the local coordinate system. 
 
 \begin{itemize}
-\item Force
-\item Torque
-\item Proxy movement
-\item Force position jacobian
-\item Force velocity jacobian
-
+\item Force - setGlobalForce/setLocalForce
+\item Torque - setGlobalForce/setLocalForce
+\item Proxy movement - setLocalProxyMovement
 \end{itemize}
 
-.
-.
-.
+See the Doxygen documentation for a full listing of the functions available.
 
+\subsection{Example surface}
+Following is an example of an implementation of a surface with no friction and a linear spring force for the penetration of the surface.   
+
+\input{examples/surface_example_h}
