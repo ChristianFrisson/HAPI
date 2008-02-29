@@ -209,5 +209,6 @@ void TimeFunctionWidgetsPage::createForceEffect() {
                                                     z_zero_time ) );
   hd->clearEffects();
   hd->addEffect( force_effect.get() );
+  hd->transferObjects();
 }
 #endif //HAVE_FPARSER

@@ -42,7 +42,109 @@ H3DUtil::PeriodicThread::CallbackCode
   void *data ) {
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
+  // shapes
   hd->current_shapes = hd->tmp_shapes;
+
+  // force effects. A bit more confusing due to the fact that they
+  // should be added with interpolation in some cases.
+  bool already_transferred = false;
+  // If set effects was called.
+  if( hd->tmp_switching_effects ) {
+    if( hd->tmp_switch_effects_duration > Constants::epsilon ) {
+      hd->last_add_rem_effect_map.clear();
+      hd->last_add_rem_effect_map.swap( hd->current_add_rem_effect_map );
+      hd->last_force_effects.swap( hd->current_force_effects );
+      hd->switch_effects_duration = hd->tmp_switch_effects_duration;
+      hd->last_force_effect_change = TimeStamp();
+      hd->switching_effects = true;
+    } else {
+      hd->last_force_effects.clear();
+      hd->current_add_rem_effect_map.clear();
+      hd->last_add_rem_effect_map.clear();
+      hd->switching_effects = false;
+    }
+    hd->tmp_switching_effects = false;
+    hd->current_force_effects = hd->tmp_current_force_effects;
+    already_transferred = true;
+  }
+
+  // If addEffect was called
+  if( !hd->added_effects_indices.empty() ) {
+    for( vector< pair< int, HAPITime > >::iterator i =
+           hd->added_effects_indices.begin();
+         i != hd->added_effects_indices.end(); i++ ) {
+      unsigned int index = (*i).first;
+      if( !already_transferred ) {
+        // The current_force_effects vector has not been updated.
+        hd->current_force_effects.push_back(
+          hd->tmp_current_force_effects[ index ] );
+        index = hd->current_force_effects.size() - 1;
+      }
+      if( (*i).second > Constants::epsilon ) {
+        hd->current_add_rem_effect_map[ index ] =
+          PhaseInOut( (*i).second, TimeStamp() );
+      }
+    }
+    hd->added_effects_indices.clear();
+  }
+
+  // If removeEffect was called.
+  if( !hd->force_effects_to_remove.empty() ) {
+    for( vector< pair< HAPIForceEffect *, HAPITime > >::iterator i =
+         hd->force_effects_to_remove.begin();
+         i != hd->force_effects_to_remove.end(); i++ ) {
+
+      // Find index of HAPIForceEffect if it is rendered.
+      unsigned int j = 0;
+      for( HapticEffectVector::const_iterator k =
+           hd->current_force_effects.begin();
+           k != hd->current_force_effects.end(); k++, j++ ) {
+        if( (*i).first == (*k) )
+        break;
+      }
+
+      if( j < hd->current_force_effects.size() ) {
+        // If found
+        if( (*i).second > Constants::epsilon ) {
+          // If the time to phase out is over 0.
+          PhaseInOut temp_phase_in_out( (*i).second, TimeStamp(), false );
+          
+          IndexTimeMap::iterator found =
+            hd->current_add_rem_effect_map.find( j );
+          if( found != hd->current_add_rem_effect_map.end() ) {
+            // If the force effect still is being phased in.
+            // Old time is taken to not suddenly phase out from
+            // maximum to 0, but only from "phase in fraction" to zero.
+            temp_phase_in_out.setMaxFraction(
+              (*found).second.getMaxFraction() );
+            hd->current_add_rem_effect_map.erase( found );
+            // Update index of other effects that are phased in.
+            // They should be lowered by 1. The reason for not
+            // iterating from the beginning is because they are added
+            // in increasing order of index.
+            for( unsigned int k = j + 1;
+                 k < hd->current_force_effects.size(); k++ ) {
+              found = hd->current_add_rem_effect_map.find( k );
+              if( found != hd->current_add_rem_effect_map.end() ) {
+                hd->current_add_rem_effect_map[ k - 1 ] =
+                  hd->current_add_rem_effect_map[ k ];
+                hd->current_add_rem_effect_map.erase( k );
+              }
+            }
+          }
+          // Updated last_add_rem_effect_map and last_force_effects;
+          hd->last_add_rem_effect_map[ hd->last_force_effects.size() ] =
+            temp_phase_in_out;
+          hd->last_force_effects.push_back( (*i).first );
+        }
+        if( !already_transferred ) {
+          hd->current_force_effects.erase( (*i).first );
+        }
+      }
+    }
+    hd->force_effects_to_remove.clear();
+  }
+
   return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
 
@@ -72,7 +174,6 @@ H3DUtil::PeriodicThread::CallbackCode
   
   HAPIForceEffect::EffectOutput output;
   
-  hd->force_effect_lock.lock();
   bool last_add_interpolate = !hd->last_add_rem_effect_map.empty();
   bool current_add_interpolate = !hd->current_add_rem_effect_map.empty();
   HAPIForceEffect::EffectInput input( hd, dt );
@@ -198,7 +299,6 @@ H3DUtil::PeriodicThread::CallbackCode
       output = output + (*i)->calculateForces( input );
     }
   }
-  hd->force_effect_lock.unlock();
 
   hd->renderer_change_lock.lock();
 

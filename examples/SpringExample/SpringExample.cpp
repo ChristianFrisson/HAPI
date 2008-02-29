@@ -82,10 +82,11 @@ int main(int argc, char* argv[]) {
     // The spring effect with a position and spring_constant input by the user.
     HapticSpring *spring_effect = new HapticSpring( Vec3( x, y, z ),
                                                     spring_constant );
-    // Add the effect to the haptics device. This sends the effect to the
-    // haptics loop and from now on it will be used to send forces to the
-    // device.
+    // Add the effect to the haptics device.
     hd.addEffect( spring_effect );
+    // Send the effect to the haptics loop and from now on it will be used to
+    // send forces to the device.
+    hd.transferObjects();
 
     cout << "Type q and then ENTER to exit, any other input and then ";
     cout << "ENTER will allow you to a new point and a new springconstant"
@@ -94,9 +95,11 @@ int main(int argc, char* argv[]) {
     if( thePosition == "q" ) {
       continue_trying = false;
     }
-    // Remove the effect from the haptics device. The haptic effect will stop
-    // affecting the haptics device since it is removed from the haptics loop.
+    // Remove the effect from the haptics device.
     hd.removeEffect( spring_effect );
+    // Transfer changes to the haptic loop. Now the haptic effect will stop
+    // affecting the haptics device since it is removed from the haptics loop.
+    hd.transferObjects();
   }
   // Disable device.
   hd.disableDevice();

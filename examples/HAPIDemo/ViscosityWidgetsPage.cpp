@@ -103,5 +103,6 @@ void ViscosityWidgetsPage::createForceEffect() {
                                            damping_factor ) );
   hd->clearEffects();
   hd->addEffect( force_effect.get() );
+  hd->transferObjects();
 }
 
