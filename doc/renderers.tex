@@ -105,7 +105,7 @@ In addition to using the already defined surfaces HAPI provides an interface to 
 \subsubsection{Moving the proxy}
 The movement of the proxy is often used to control the feeling of an abject when moving across the surface, e.g. if the surface should feel smooth or rough. Letting the proxy move along the contact plane as to minimise the distance between proxy and probe will create a totally smooth surface since the forces will always just be normal forces and no tangential forces. Letting the proxy lag behind in different ways can be used to create different friction-like effects and not letting it move at all will mean that you will not be able to move away from the first point of contact of the surface (unless you lift the probe out of the surface). The proxy movement is a 2D movement along the xz-plane of the local contact coordinate system. 
 
-When defining a new surface the virtual function getProxyMovement( ContactInfo &ci ) in HAPISurfaceObject is used to define the proxy movement. The user should call the ci.setLocalProxyMovement( Vec2f pm ) function here to set the proxy movement. The rendering system will try to move the proxy according to the specified movement but might be stopped by colliding with other geomtries along the path to the new position. The proxy will then stay at this collision point instead of moving all the way to the specified position.
+When defining a new surface the virtual function getProxyMovement( ContactInfo \&ci ) in HAPISurfaceObject is used to define the proxy movement. The user should call the ci.setLocalProxyMovement( Vec2f pm ) function here to set the proxy movement. The rendering system will try to move the proxy according to the specified movement but might be stopped by colliding with other geomtries along the path to the new position. The proxy will then stay at this collision point instead of moving all the way to the specified position.
 
 \begin{figure} 
   \centering 
@@ -116,7 +116,7 @@ When defining a new surface the virtual function getProxyMovement( ContactInfo &
 
 \subsubsection{Calculating an interaction force}
 After the new position of the proxy has been calculated, the interaction force with the surface has to be determined. For the most common surface types this is usually a linear spring force pulling the device back towards the proxy. It is however totally up to the user to define the force profile of the interaction to model e.g. button clicks and other non-linear behaviour. To have the most stable force feedback it is recommended that the direction of the force towards the proxy however.  
-The interaction force(and possible torque) in a new surface is determined by defining the virtual function getForces( ContactInfo &ci ) by calling the setGlobalForce or setLocalForce functions in the ci object. 
+The interaction force(and possible torque) in a new surface is determined by defining the virtual function getForces( ContactInfo \&ci ) by calling the setGlobalForce or setLocalForce functions in the ci object. 
 
 \subsection{The ContactInfo object}
 When calculating the proxy movement and the interaction force the user has access to a ContactInfo object. This object contains information about the surface contact that can be used in the calculations. It is also the object in which to return the calculated forces and proxy movement. The most commonly used values from the object are:
@@ -130,8 +130,17 @@ When calculating the proxy movement and the interaction force the user has acces
 \item The haptic shape the contact is made on.
 \end{itemize}
 
+
 All positions can be obtained in either the global coordinate system or
 in a local contact coordinate system. The local coordinate system is constructed with the proxy position as the origin, the contact normal as the y-axis and and two arbitrary perpendicular axis in the plane as x and z-axis. This means that e.g. the penetration depth is the same as -y in the local coordinate system. 
+
+\begin{figure} 
+  \centering 
+  \includegraphics{images/coordsystems.pdf}
+  \caption{Local and global coordinate system. The local coordinate system is constructed with the proxy position as the origin, the contact normal as the y-axis and and two arbitrary perpendicular axis in the plane as x and z-axis.}
+  \label{coordsystems} 
+\end{figure}
+
 
 \begin{itemize}
 \item Force - setGlobalForce/setLocalForce
