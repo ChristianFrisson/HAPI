@@ -4,14 +4,14 @@ HAPI is device independent and can be used with a wide variety of haptics device
 
 \begin{itemize}
 \item PHANToM Devices from SensAble Technologies (implemented in the
-  PhantomHapticsDevice class)
+  PhantomHapticsDevice class) \cite{sensable}
 \item Delta and Omega devices from ForceDimension(implemented in the
-  ForceDimensionHapticsDevice class)
+  ForceDimensionHapticsDevice class. \cite{forcedimension} 
 \item 2 DOF Pantograph and something else (TODO) from Quanser.
  (implemented in the QuanserHapticsDevice class). This feature is not yet fully
- tested and should be considered prototype.
-\item Falcon from Novint (implemented in the FalconHapticsDevice class ). 
-\item HapticMaster from Moog/FCS (implemented in the HapticMasterDevice class ). 
+ tested and should be considered prototype. \cite{quanser}
+\item Falcon from Novint (implemented in the FalconHapticsDevice class ). \cite{novint} 
+\item HapticMaster from Moog/FCS (implemented in the HapticMasterDevice class ).\cite{moogfcs} \cite{linde02hapticmaster} 
 \end{itemize}
 
 Each of these devices has a special class implementing the interface to the device. These classes also provide device specific functions that can be used. Most of the time the user does not care what haptics device is used and can then use the AnyHapticsDevice class when specifying the haptics device instead. The AnyHapticsDevice class will try to find a haptics device to use by trying to initialize all the devices that are supported. The haptics devices used will be the first one that initializes successfully.
