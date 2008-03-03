@@ -18,6 +18,9 @@ INCLUDES += examples/hapticsDeviceRegistration_h.tex
 INCLUDES += examples/hapticsDeviceRegistration_cpp.tex
 INCLUDES += examples/surface_example_h.tex
 INCLUDES += examples/HapticForceField.tex
+INCLUDES += examples/SimpleThreadPrint_cpp.tex
+INCLUDES += examples/SimpleThreadPrintLock_cpp.tex
+INCLUDES += examples/PeriodicThreadCallbacks_cpp.tex
 
 
 # Compile once
