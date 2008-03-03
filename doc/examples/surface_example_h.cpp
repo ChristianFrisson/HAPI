@@ -24,7 +24,7 @@ namespace HAPI {
       // set the proxy movement to move to the projection of the probe
       // onto the local xz-plane.
       contact_info.setLocalProxyMovement( Vec2( local_probe.x , 
-						local_probe.z ) );
+                                                local_probe.z ) );
     }
 
     // Calculate a force from the probe towards the proxy. 

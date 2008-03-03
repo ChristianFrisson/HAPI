@@ -41,32 +41,85 @@ or a sphere. The problem with point proxies is that it can fall
 through small gaps in the geometry and makes it very hard to be able
 to touch small, thin objects. Sphere problems... 
 
-\section{Available algorithms}
-There are four algorithms available in HAPI, where two are internally
-implemented and two uses external haptics libraries. We will list them
-and point out their uses, advantages/disadvantages etc.
+\section{Available renderers}
+There are four haptic renderers available in HAPI, where two are internally
+implemented in HAPI and two uses external haptics libraries. Each of them can work better than the others on a specific geometry model or in a specific application. You will have to try and see which one works best in your case and with your requirements. In the listing below we point out some of the strength and weaknesses of each renderer in order for you to choose the algorithm. 
 
-\subsection{God-Object algorithm}
-The god-object algorithm is based on the God-object paper \cite{zilles95constraintbased}
-by .... It uses a point proxy .
-- Point proxy
-- User defined surfaces
+\subsection{GodObject renderer}
+The god-object algorithm is based on the paper ``A constrained based god-object method for haptics display'' by Zilles et al. \cite{zilles95constraintbased}. It uses a point proxy and supports custom user defined surfaces.
 
-\subsection{Ruspini algorithm}
-The ruspini renderer is based on the algorithm presented by Ruspini \cite{ruspini}. It uses a sphere proxy.
-- Sphere proxy
-- User defined surfaces
 
+\begin{minipage}[t]{3in}
+\subsubsection{Pros} 
+\begin{itemize} 
+\item Open source. 
+\item Device independent. 
+\item User surfaces. 
+\end{itemize} 
+\end{minipage}
+\begin{minipage}[t]{3in}
+\subsubsection{Cons} 
+\begin{itemize} 
+\item Some fallthrough problems on moving objects.
+\end{itemize}
+\end{minipage}
+
+\subsection{Ruspini renderer}
+The RuspiniRenderer is based on the algorithm presented by Ruspini in ``The Haptic Display of Complex Graphical Environments'' \cite{ruspini}. It is different from all the other renderers in that it uses a sphere proxy making it possible to have an interaction object with a size instead of just a point.  
+
+\begin{minipage}[t]{3in}
+\subsubsection{Pros}
+\begin{itemize}
+\item Open source.
+\item Device independent.
+\item User surfaces.
+\item Sphere proxy.
+\end{itemize}
+\end{minipage}
+\begin{minipage}[t]{3in}
+\subsubsection{Cons}
+\begin{itemize}
+\item A little slower than other renderers.
+\end{itemize}
+\end{minipage}
 
 \subsection{Chai3D}
-- Sphere proxy(but not good)
-- No user defined surfaces
-- No magnetic surfaces
+Chai3D \cite{chai3d} is an open source haptics library distributed under the GNU GPL license. It has been developed by ... Stanford blablabla. 
+
+\begin{minipage}[t]{3in}
+\subsubsection{Pros}
+\begin{itemize}
+\item Open source.
+\item Device independent.
+\end{itemize}
+\end{minipage}
+\begin{minipage}[t]{3in}
+\subsubsection{Cons}
+\begin{itemize}
+\item No user defined surfaces.
+\item Fallthrough problems with moving objects ???
+\end{itemize}
+\end{minipage}
 
 \subsection{OpenHaptics}
-- Point based
-- Only devices from SensAble
-- No user defined surfaces
+OpenHaptics \cite{openhaptics} is a propriatary haptics library developed by SensAble Technologies. It uses a point proxy based approach and provides a stable haptic feedback. It is however not very extendable in terms of user defined surfaces and only works with haptics from SensAble Technologies.
+
+\begin{minipage}[t]{3in}
+\subsubsection{Pros}
+\begin{itemize}
+\item MagneticSurface available.
+\item Good with moving objects.
+\end{itemize}
+\end{minipage}
+\begin{minipage}[t]{3in}
+\subsubsection{Cons}
+\begin{itemize}
+\item Only works with devices from SensAble.
+\item No user defined surfaces.
+\item Closed source.
+\end{itemize}
+\end{minipage}
+
 
 \section{Surfaces}
 (TODO)
@@ -75,8 +128,6 @@ A surface object in HAPI is an object that defines the haptic properties of a ge
 (TODO Change to FrictionSurface!! take away bumpMap??)
 \begin{itemize}
 \item FrictionSurface - Allows the user to set stiffness, damping, static friction and dynamic friction.
-\item MagneticSurface - Surface pulls the haptics device towards the
-  surface when within a user specified distance. 
 \item DepthMapSurface - Use a texture to define the height 
 \item StiffnessFunctionSurface - Use a generic function to generate
   the normal force. The function takes the penetration depth as input
@@ -93,11 +144,12 @@ those libraries directly. They are:
   specified as a value between 0 and 1. A value of 0 for the stiffness
   means no stiffness at all and a value of 1 means the maximum
   stiffness the device can handle.
+\item MagneticSurface - Surface pulls the haptics device towards the
+  surface when within a user specified distance. Only with the OpenHapticsRenderer.
 \item Chai3DSurface?? Don't know yet if it has any special parameters.
 \end{itemize}
 
 \subsection{User defined surfaces}
-
 In addition to using the already defined surfaces HAPI provides an interface to develop custom surfaces. This gives the user full control over the forces generated when in contact with a surface. The base class for all surface classes is HAPISurfaceObject and this is the class to inherit from when creating new surfaces. The surface object is responsible for two things. 
 
 
@@ -154,3 +206,4 @@ See the Doxygen documentation for a full listing of the functions available.
 Following is an example of an implementation of a surface with no friction and a linear spring force for the penetration of the surface.   
 
 \input{examples/surface_example_h}
+
