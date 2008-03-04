@@ -123,12 +123,11 @@ OpenHaptics \cite{openhaptics} is a propriatary haptics library developed by Sen
 
 \section{Surfaces}
 (TODO)
-A surface object in HAPI is an object that defines the haptic properties of a geometric shape, such as stiffness and friction. It is responsible for generating forces at a local contact point on a shape. The base class of all such objects is HAPISurfaceObject and there are several surfaces available in HAPI. They are: 
+A surface object in HAPI is an object that defines the haptic properties of a geometric shape, such as stiffness and friction. It is responsible for generating forces at a local contact point on a shape. The base class of all such objects is HAPISurfaceObject and there are several surfaces available in HAPI. 
 
-(TODO Change to FrictionSurface!! take away bumpMap??)
 \begin{itemize}
-\item FrictionSurface - Allows the user to set stiffness, damping, static friction and dynamic friction.
-\item DepthMapSurface - Use a texture to define the height 
+\item FrictionSurface - Allows the user to set stiffness, damping, static friction and dynamic friction parameters. The force produced is a linear spring-damper force between the proxy position and probe position, i.e. F = stiffness * (proxy_pos - probe_pos) - damping * probe_velocity. The friction parameters control how the proxy move over the surface during contact. The static friction parameter controls how hard it is to start moving across the surface from a resting contact while the dynamic friction parameter controls how hard it is to move across the surface when the proxy has started moving.
+\item DepthMapSurface - Use a texture to define the height (only available for GodObjectRenderer and RuspiniRenderer).
 \item StiffnessFunctionSurface - Use a generic function to generate
   the normal force. The function takes the penetration depth as input
   and returns the corresponding force. 
