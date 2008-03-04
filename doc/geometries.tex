@@ -1,20 +1,30 @@
 \chapter{Collision geometries}
+In order for HAPI to do geometry based haptics rendering there must be a way to
+specify a geometry. In HAPI these are called shapes.
 
 \section{Available shapes}
-
+The following shapes are general and can be used with any renderer. When
+referring to a "primitive" it means that the class inherit from
+GeometryPrimitive found in CollisionObjects.h.
 \begin{itemize}
-\item PointSet
-\item LineSet
-\item TriangleSet
-\item PrimitiveSet
-\item Binary tree of primitives(OBB, AABB, Sphere)
-\item Box
-\item Sphere
-\item Cylinder
-\item Cone
-\item Torus
+\item HapticLineSet - Contains a set of LineSegment primitives.
+\item HapticPointSet - Contains a set of Point primitives.
+\item HapticPrimitive - Contains one instance of a primitive.
+\item HapticPrimitiveSet - Contains a set of primitives.
+\item HapticPrimitiveTree - Contains a tree of primitives.
+\item HapticTriangleSet - Contains a set of Triangle primitives.
+\item HapticTriangleTree - Contains a tree of Triangle primitives
 \end{itemize}
 
+The following two shapes are specific for OpenHapticsRenderer and will not
+work with any other renderer.
+\begin{itemize}
+\item HLDepthBufferShape - Use an instance of HAPIGLShape for easy
+implementation of a HL\-\_SHAPE\-\_DEPTH\-\_BUFFER in HLAPI by using the render()
+function of HAPIGLShape.
+\item HLFeedbackShape - Use an instance of a HAPIGLShape for easy
+implementation of a HL\-\_SHAPE\-\_FEEDBACK\-\_BUFFER in HLAPI.
+\end{itemize}
 
 \section{Using OpenGL to specify shapes}
 If you are using OpenGL to do graphics rendering of your objects you
@@ -23,3 +33,33 @@ that are used in your OpenGL graphics rendering and use them for
 haptics too. 
 
 \input{examples/feedback_buffer_collector}
+
+The collected triangles could be used with a HapticTriangleSet or structured
+in a tree and used with HapticTriangleTree. Then that shape can be sent to
+the haptics device to do geometry based haptic rendering.
+
+\section{Creating new shapes}
+All geometries sent to be rendered on a haptics device must
+inherit from the class HAPIHapticShape. There are a couple of abstract functions
+that must be implemented when subclassing HAPIHapticShape.
+
+\begin{itemize}
+\item void closestPointOnShape( const Vec3 \&p, Vec3 \&cp, Vec3 \&n, Vec3 \&tc )
+- Get the closest point and normal on the object to the given point p.
+\item bool lineIntersectShape( const Vec3 \&from, const Vec3 \&to, Collision::IntersectionInfo \&result, Collision::FaceType face )
+- Detect collision between a line segment and the object.
+\item bool movingSphereIntersectShape( HAPIFloat radius, const Vec3 \&from, const Vec3 \&to )
+- Detect collision between a moving sphere and the object.
+\item void getConstraintsOfShape( const Vec3 \&point, Constraints \&constraints, Collision::FaceType face, HAPIFloat radius )
+- Get constraint planes of the shape. A proxy of a haptics renderer will always stay above any constraints added.
+\item void getTangentSpaceMatrixShape( const Vec3 \&point, Matrix4 \&result\_mtx )
+- Calculates a matrix transforming a vector from local space of the shape to texture space of the shape.
+\item void glRenderShape() - Render a graphical representation of the shape using OpenGL.
+\end{itemize}
+
+The first three functions are used for collision detection. The second and
+fourth are used by the custom implemented renderers in HAPI. The fifth
+function must calculate something useful if DepthMapSurface should work with
+the shape. The last function have its uses for debugging purposes and also for
+one specific renderer (OpenHapticsRenderer). For more information about the
+arguments to the functions see HAPIHapticShape.h.

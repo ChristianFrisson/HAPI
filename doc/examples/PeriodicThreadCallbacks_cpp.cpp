@@ -7,7 +7,8 @@
 using namespace std;
 
 // The function we will use for our asynchronousCallback.
-H3DUtil::PeriodicThreadBase::CallbackCode printAsynchronous( void *argument ) {
+H3DUtil::PeriodicThreadBase::CallbackCode printAsynchronous(
+                                              void *argument ) {
   string * to_print = (string *)argument;
   cerr << *to_print << endl;
   return H3DUtil::PeriodicThreadBase::CALLBACK_CONTINUE;
@@ -15,7 +16,8 @@ H3DUtil::PeriodicThreadBase::CallbackCode printAsynchronous( void *argument ) {
 
 // The function we will use for our synchronousCallback. It will change
 // the argument to the asynchronousCallback.
-H3DUtil::PeriodicThreadBase::CallbackCode printSynchronous( void *argument ) {
+H3DUtil::PeriodicThreadBase::CallbackCode printSynchronous(
+                                             void *argument ) {
   string * to_print = (string *)argument;
   cerr << "synchronousCallback" << endl;
   *to_print = "asynchCallback";
@@ -27,8 +29,8 @@ int main(int argc, char* argv[]) {
   // Creating the PeriodicThread.
   H3DUtil::PeriodicThread periodic_thread( DEFAULT_THREAD_PRIORITY, 3 );
   cerr << "Press ENTER to add an asynchronousCallback "
-       << "that will be called each loop in the thread. The number of loops"
-       << " per second is 3." << endl;
+       << "that will be called each loop in the thread. "
+       << "The number of loops per second is 3." << endl;
 
   string temp_string;
   getline( cin, temp_string );
