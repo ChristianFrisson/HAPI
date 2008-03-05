@@ -503,6 +503,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   // fill in contact information
   contact.contact_point_global = closest_intersection.point;
   contact.probe_position_global = input.position;
+  contact.probe_velocity_global = input.velocity;
   contact.proxy_radius = 0;
   contact.tex_coord = closest_intersection.tex_coord;
 

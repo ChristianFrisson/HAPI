@@ -1,19 +1,27 @@
 \chapter{Collision geometries}
 In order for HAPI to do geometry based haptics rendering there must be a way to
-specify a geometry. In HAPI these are called shapes.
+specify a geometry to do this haptic rendering on. In HAPI these collision
+geometries are called shapes.
 
 \section{Available shapes}
 The following shapes are general and can be used with any renderer. When
 referring to a "primitive" it means that the class inherit from
 GeometryPrimitive found in CollisionObjects.h.
+
 \begin{itemize}
 \item HapticLineSet - Contains a set of LineSegment primitives.
 \item HapticPointSet - Contains a set of Point primitives.
-\item HapticPrimitive - Contains one instance of a primitive.
+\item HapticPrimitive - Contains one primitive.
 \item HapticPrimitiveSet - Contains a set of primitives.
-\item HapticPrimitiveTree - Contains a tree of primitives.
+\item HapticPrimitiveTree - Contains a tree of primitives. The tree used
+allow for faster collision detection through grouping of the primitives
+into bounding boxes. Check the doxygen documentation (CollisionObject.h)
+for more information about the predefined tree classes in HAPI.
 \item HapticTriangleSet - Contains a set of Triangle primitives.
-\item HapticTriangleTree - Contains a tree of Triangle primitives
+\item HapticTriangleTree - Contains a tree of Triangle primitives. The tree used
+allow for faster collision detection through grouping of the triangles
+into bounding boxes. Check the doxygen documentation (CollisionObject.h)
+for more information about the predefined tree classes in HAPI.
 \end{itemize}
 
 The following two shapes are specific for OpenHapticsRenderer and will not
@@ -35,12 +43,12 @@ haptics too.
 \input{examples/feedback_buffer_collector}
 
 The collected triangles could be used with a HapticTriangleSet or structured
-in a tree and used with HapticTriangleTree. Then that shape can be sent to
+in a tree and used with HapticTriangleTree. The created shape can be sent to
 the haptics device to do geometry based haptic rendering.
 
-\section{Creating new shapes}
+\section{Custom made collision geometries}
 All geometries sent to be rendered on a haptics device must
-inherit from the class HAPIHapticShape. There are a couple of abstract functions
+inherit from the class HAPIHapticShape. These are the abstract functions
 that must be implemented when subclassing HAPIHapticShape.
 
 \begin{itemize}
@@ -53,7 +61,7 @@ that must be implemented when subclassing HAPIHapticShape.
 \item void getConstraintsOfShape( const Vec3 \&point, Constraints \&constraints, Collision::FaceType face, HAPIFloat radius )
 - Get constraint planes of the shape. A proxy of a haptics renderer will always stay above any constraints added.
 \item void getTangentSpaceMatrixShape( const Vec3 \&point, Matrix4 \&result\_mtx )
-- Calculates a matrix transforming a vector from local space of the shape to texture space of the shape.
+- Calculates a matrix which transforms from local space of the shape to texture space of the shape.
 \item void glRenderShape() - Render a graphical representation of the shape using OpenGL.
 \end{itemize}
 
@@ -62,4 +70,4 @@ fourth are used by the custom implemented renderers in HAPI. The fifth
 function must calculate something useful if DepthMapSurface should work with
 the shape. The last function have its uses for debugging purposes and also for
 one specific renderer (OpenHapticsRenderer). For more information about the
-arguments to the functions see HAPIHapticShape.h.
+arguments to the functions see the doxygen documentation.

@@ -65,6 +65,9 @@ namespace HAPI {
       // The position of the haptics device in global coordinates.
       Vec3 probe_position_global;
 
+      // The velocity of the haptics device in global coordinates.
+      Vec3 probe_velocity_global;
+
       // The texture coordinate at the contact point.
       Vec3 tex_coord;
 
@@ -256,8 +259,23 @@ namespace HAPI {
         return pointToLocal( probe_position_global );
       }
 
+      /// Get the probe velocity in global coordinates.
+      inline Vec3 globalProbeVelocity() {
+        return probe_velocity_global;
+      }
+
+      /// Get the probe velocity in local coordinates.
+      inline Vec3 localProbeVelocity() {
+        return vectorToLocal( probe_velocity_global );
+      }
+
       /// Get the origin of the local coordinate system in global coordinates.
       inline Vec3 globalOrigin() {
+        return origin_global;
+      }
+
+      /// Get the proxy position in global coordinates.
+      inline Vec3 globalProxyPosition() {
         return origin_global;
       }
 

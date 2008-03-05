@@ -60,7 +60,7 @@ By default all operations use layer 0.
 \section{The HAPIHapticsDevice abstract base class}
 The HAPIHapticsDevice abstract base class is the base class for all
 haptics device implementations. It contains the functions that are
-available for all haptics devices.  The functions available can be divided into two classes:
+available for all haptics devices.  The functions available can be divided into three classes:
 
 \begin{itemize}
 \item Device handling functions.
@@ -70,7 +70,7 @@ available for all haptics devices.  The functions available can be divided into 
 
 The device handling functions are for communication with the haptics device, such as initializing/deinitializing the device, reading positions and sending forces. 
 
-The calibration functions lets the user manipulate the coordinate system the values of the haptics device is reported in.
+The calibration functions lets the user manipulate the coordinate system the values of the haptics device are reported in.
 
 The haptic rendering functions are used to define what to render on the haptics device, e.g. which effects, which shapes and what haptics renderer.
 
@@ -91,9 +91,9 @@ from being updated, but does not release the device.
   device values that are recorded each frame (such as position,
   velocity,etc)
 \item Vec3 getPosition() - Get the position of the haptics device (in
-  mm)
+  m)
 \item Vec3 getVelocity() - Get the velocity of the haptics device (in
-  mm/s)
+  m/s)
 \item Rotation getOrientation() - Get the orientation of the haptics
   device stylus (if 6 DOF input).
 \item bool getButtonStatus( unsigned int button\_nr ) - get the status
@@ -134,10 +134,10 @@ how to render objects with the haptics device.
 \item void clearShapes( unsigned int layer = 0 ) - Remove all shapes
   on a layer. 
 
-\item void addEffect( HapticForceEffect *effect ) - Add a haptic
+\item void addEffect( HAPIForceEffect *effect, HAPITime fade\_in\_time = 0 ) - Add a haptic
   effect to render by the haptics device. The effect will be rendered
   until removed.
-\item void removeEffect( HapticForceEffect *effect ) - Remove a haptic
+\item void removeEffect( HapticForceEffect *effect, HAPITime fade\_out\_time = 0 ) - Remove a haptic
   effect currently being rendered.
 \item void clearEffects() - Remove all haptic effects currently rendered.
 \item void transferObjects() - Transfer the current objects to the haptics loop.
@@ -198,5 +198,9 @@ In .cpp file:
 
 \input{examples/hapticsDeviceRegistration_cpp}
 
-The string given as first argument is the name of your new device.
+The string given as first argument is the name of your new device. The second
+argument is the function to use for creating a new instance of the device. The
+third argument is a list of names of dll-s that need to exist on the system to
+be able to start the device. This argument is only used on system using
+Microsoft Windows.
 
