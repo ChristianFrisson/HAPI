@@ -30,7 +30,11 @@
 
 #include <HAPI/FeedbackBufferCollector.h>
 
+#ifdef MACOSX
+#include <OpenGL/glu.h>
+#else
 #include <GL/glu.h>
+#endif
 
 using namespace HAPI;
 
