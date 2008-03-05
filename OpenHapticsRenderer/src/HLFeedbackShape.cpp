@@ -28,10 +28,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <HAPI/HLFeedbackShape.h>
-#include <GL/glew.h>
+
 
 #ifdef HAVE_OPENHAPTICS
 
+#include <GL/gl.h>
 using namespace HAPI;
 
 void HLFeedbackShape::hlRender( HAPI::HAPIHapticsDevice *hd,

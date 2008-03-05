@@ -30,6 +30,8 @@
 #include <HAPI/CollisionObjects.h>
 #include <HAPI/PlaneConstraint.h>
 
+#include <GL/glu.h>
+
 #include <stack>
 
 using namespace HAPI;

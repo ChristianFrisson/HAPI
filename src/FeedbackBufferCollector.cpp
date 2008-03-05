@@ -30,6 +30,8 @@
 
 #include <HAPI/FeedbackBufferCollector.h>
 
+#include <GL/glu.h>
+
 using namespace HAPI;
 
 GLfloat *FeedbackBufferCollector::buffer = NULL;
