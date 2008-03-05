@@ -34,7 +34,11 @@
 #include <HAPI/HAPITypes.h>
 #include <HAPI/IntersectionInfo.h>
 
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 #include <vector>
 #include <assert.h>
