@@ -12,7 +12,9 @@ AUX_SOURCE_DIRECTORY(../Chai3DRenderer/src HAPI_SRCS)
 
 SET(optionalLibs)
 
-INCLUDE_DIRECTORIES( ../include ../OpenHapticsRenderer/include ../Chai3DRenderer/include )
+INCLUDE_DIRECTORIES( ../include ../OpenHapticsRenderer/include
+../Chai3DRenderer/include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
+
 
 SET(CMAKE_SYSTEM_INCLUDE_PATH ${CMAKE_SYSTEM_INCLUDE_PATH}
 "$ENV{H3D_EXTERNAL_ROOT}\\include" 
@@ -24,13 +26,13 @@ SET(CMAKE_SYSTEM_INCLUDE_PATH ${CMAKE_SYSTEM_INCLUDE_PATH}
 SET(CMAKE_SYSTEM_LIBRARY_PATH ${CMAKE_SYSTEM_LIBRARY_PATH}
 "$ENV{H3D_EXTERNAL_ROOT}\\lib" ../../External/lib )
 
-SET(requiredLibs)
+SET(requiredLibs H3DUtil )
 
 IF(WIN32)
   SET(requiredLibs ${requiredLibs} winmm.lib )
 ENDIF(WIN32)
 
-SET(CMAKE_MODULE_PATH "modules/")
+SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
 
 FIND_PACKAGE(PTHREAD REQUIRED)
 
@@ -39,12 +41,14 @@ IF(PTHREAD_FOUND)
   SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
 ENDIF(PTHREAD_FOUND)
 
-FIND_PACKAGE(H3DUtil REQUIRED)
+#FIND_PACKAGE(H3DUtil REQUIRED)
 
-IF(H3DUTIL_FOUND)
-  INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
-ENDIF(H3DUTIL_FOUND)
+ 
+
+#IF(H3DUTIL_FOUND)
+#  INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
+#  SET(requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
+#ENDIF(H3DUTIL_FOUND)
 
 FIND_PACKAGE(OpenHaptics)
 
@@ -101,4 +105,6 @@ INSTALL( DIRECTORY ../include/HAPI ../OpenHapticsRenderer/include/HAPI ../Chai3D
 	 DESTINATION /usr/local/include 
 	 PATTERN .svn EXCLUDE )
     
-
+ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
+${HAPI_SOURCE_DIR}/../../H3DUtil/build )
+ADD_DEPENDENCIES( HAPI H3DUtil )
