@@ -30,7 +30,12 @@
 #include <HAPI/CollisionObjects.h>
 #include <HAPI/PlaneConstraint.h>
 
+#ifdef MACOSX
+#include <OpenGL/glu.h>
+#else
 #include <GL/glu.h>
+#endif
+
 
 #include <stack>
 
