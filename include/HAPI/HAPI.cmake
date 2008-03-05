@@ -105,22 +105,14 @@
 #define HAVE_SYS_TIME_H
 #endif
 
+#define HAPI_MAJOR_VERSION 1
+#define HAPI_MINOR_VERSION 0
 
-/*namespace H3D {
-  /// Function for determining if the machine we are running on is uses
-  /// little endian byte order or not.
-  inline bool isLittleEndian() {
-    union probe{ 
-      unsigned int num;
-      unsigned char bytes[sizeof(unsigned int)];
-    };
-    //initialize first member of p with unsigned 1
-    probe p = { 1U };
-    // in a big endian architecture, p.bytes[0] equals 0  
-    bool little_endian = (p.bytes[0] == 1U); 
-    return little_endian;
-  }
-}*/
+namespace HAPI {
+  /// Will return the version of HAPI as a double on the form
+  /// HAPI_MAJOR_VERSION.HAPI_MINOR_VERSION
+  double HAPI_API getHAPIVersion();
+}
 
 #endif
 

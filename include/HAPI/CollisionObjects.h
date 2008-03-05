@@ -34,7 +34,8 @@
 #include <HAPI/HAPITypes.h>
 #include <HAPI/IntersectionInfo.h>
 
-#include <GL/glew.h>
+#include <GL/gl.h>
+
 #include <vector>
 #include <assert.h>
 #include <H3DUtil/RefCountedClass.h>
