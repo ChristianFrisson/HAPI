@@ -1,5 +1,6 @@
 HAPIHapticsDevice::HapticsDeviceRegistration 
 MyNewHapticsDevice::device_registration(
                             "MyDevice",
-                            &(newInstance< MyNewHapticsDevice >)
+                            &(newInstance< MyNewHapticsDevice >),
+                            my_list_of_dlls
                             );

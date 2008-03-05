@@ -2,15 +2,18 @@
 
 Sometimes it is desirable to do calculations in a thread separate from an
 applications main thread. Thread handling in HAPI is needed because haptics
-rendering should be done at (at least) 1000 Hz. Therefore each haptics device
-needs its own thread for haptics rendering. This chapter covers thread handling
-in HAPI.
+rendering should be done at (at least) 1000 Hz which is considerably higher
+than main loop threads of most applications. A typical application with haptics
+added through HAPI would have thread communication like in figure \ref{threads}.
+The purpose of the haptics thread is to calculate forces from all force effects
+and geometries that are rendered on a haptics device. There also has to be a way
+to send this information to other threads if they should ask for it (figure
+\ref{haptics thread}).
 
 \section{Thread handling classes}
 All classes and everything needed to do proper thread handling in HAPI can be
-found in the H3DUtil library. See Threads.h and Threads.cpp (in H3DUtil) for
-class declarations and class definitions. Here follows a list and a short
-description of what each class is used for:
+found in the H3DUtil library. The most commonly used
+classes for thread handling are:
 
 \begin{itemize}
 \item MutexLock - Used to lock/unlock access to data.
@@ -21,10 +24,13 @@ separate thread.
 remove callbacks.
 \end{itemize}
 
+See doxygen documentation for Threads.h and Threads.cpp (in H3DUtil) for more
+information and classes
+
 \section{Setting up a simple thread}
 \label{secSimpleThread}
 Setting up a thread using the SimpleThread class is very easy.
-The only arguments to SimpleThread are the function that is to be run in a
+The arguments to SimpleThread are what function that to run in a
 separate thread and arguments to that function if there are any. If the
 function depends on more than one argument these should be collected in a
 custom made struct and a pointer to an instance of the struct should be sent
@@ -57,10 +63,10 @@ functions which exists in both the MutexLock class and ConditionLock class are:
 
 These two functions are used in pairs to protect code from being accessed by
 more than one thread at a time. If a variable is used in two or more threads
-there should be a lock/unlock pair around all code that use this variable. If a
-function may be called from two or more threads all code in the function should
+there should be a lock/unlock pair around all code that use this variable. Similary, if a
+function will be called from two or more threads all code in the function should
 be enclosed by a lock/unlock pair. It is important to remember that calls to
-the lock() function only stop access to data surrounded by lock/unlock pairs
+the lock() function only prevent access to data surrounded by lock/unlock pairs
 in those places where the same instance of MutexLock (or ConditionLock) is used
 to lock. This means that in an application which contains "MutexLock A" and
 "MutexLock B" calls to A.lock() will not prevent access to code after calls to
@@ -71,8 +77,7 @@ is printed to the console by the SimpleThread without setting up the thread
 again. In the following example locks will be used in order to safely change
 the content of the string variable used for printing since it is not possible
 to set up callbacks for the class SimpleThread. Removing the locks from this
-example will most likely crash the program when pressing ENTER. It does not
-neccessarily have to happen but there is a high probability of it happening.
+example will most likely crash the program when pressing ENTER.
 
 \input{examples/SimpleThreadPrintLock_cpp.tex}
 
@@ -114,21 +119,20 @@ printSynchronous as a synchronousCallback or asynchronousCallback. The program
 will not crash. The only difference is that the calling thread will wait for
 the callback to finish before continuing. However, if the main thread would
 change the value of the variable "to\_print" without the use of callback a
-crash may occur. At least if the PeriodicThread is set to be called 1000 times
-each second.
+crash may occur. It is more likely to happen for high update frequencies of the
+PeriodicThread.
 
 \section{Threads and haptics devices}
-Each HAPIHapticsDevice implemented in HAPI must have a thread in which haptic
-rendering is done. The function getThread() returns the thread used by
-HAPIHapticsDevice which is a pointer to a PeriodicThreadBase declared in 
-Threads.h (in H3DUtil). For this reason the threads used by HAPIHapticsDevice
-must be a subclass of PeriodicThreadBase. This means that it is possible to
-set up callbacks for the threads of a haptics device in HAPI. By default the
-thread used is a HapticThread (see Threads.h).
+Haptics rendering have to be done for each device which means that each device
+will have its own haptic thread. Most of the time it is enough to use the
+functions in section \ref{ssHapticsRenderingFunctions} but sometimes one might
+want to access the thread of the haptics device. This can be done through the
+function "H3DUtil::PeriodicThreadBase *getThread()". The thread returned from
+this function can be used to set up new callbacks.
 
-Most of the time when adding a
+By default the thread used is a HapticThread. Most of the time when adding a
 new device to HAPI by subclassing HAPIHapticsDevice the default thread is
 sufficient. If however the haptics device provides some way of adding callbacks
-through calls to other functions a wrapper thread class should be implemented
+through calls to other functions a wrapper class should be implemented
 to override the virtual functions of PeriodicThreadBase for adding and removing
 callbacks. For example implementation of this see PhantomHapticsDevice.

@@ -1,8 +1,8 @@
 {
 \tt
 {\hlstd }{\hlline \ \ \ \ 1\ }\leavevmode\par
-{\hlline \ \ \ \ 2\ }{\hldir \#include $\mathord{<}$AnyHapticsDevice.h$\mathord{>}$}\leavevmode\par
-{\hlline \ \ \ \ 3\ }{\hlstd }{\hldir \#include $\mathord{<}$HapticForceField.h$\mathord{>}$}\leavevmode\par
+{\hlline \ \ \ \ 2\ }{\hldir \#include $\mathord{<}$HAPI/AnyHapticsDevice.h$\mathord{>}$}\leavevmode\par
+{\hlline \ \ \ \ 3\ }{\hlstd }{\hldir \#include $\mathord{<}$HAPI/HapticForceField.h$\mathord{>}$}\leavevmode\par
 {\hlline \ \ \ \ 4\ }{\hlstd }\leavevmode\par
 {\hlline \ \ \ \ 5\ }{\hlkwa using namespace }{\hlstd HAPI}{\hlsym ;}\leavevmode\par
 {\hlline \ \ \ \ 6\ }{\hlstd }\leavevmode\par
@@ -29,11 +29,13 @@
 {\hlline \ \ \ 27\ }}{\hlstd\ \ }{\hlstd }{\hlslc // transfer the effect to the haptics loop.}\leavevmode\par
 {\hlline \ \ \ 28\ }{\hlstd }{\hlstd\ \ }{\hlstd device}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd transferObjects}{\hlstd }{\hlsym ();}\leavevmode\par
 {\hlline \ \ \ 29\ }{\hlstd \leavevmode\par
-{\hlline \ \ \ 30\ }}{\hlstd\ \ }{\hlstd }{\hlslc // wait for keyboard press, then finish program}\leavevmode\par
-{\hlline \ \ \ 31\ }{\hlstd }{\hlstd\ \ }{\hlstd }{\hlkwa while}{\hlstd }{\hlsym (}{\hlstd }{\hlkwa true}{\hlstd }{\hlsym ) $\{$}\leavevmode\par
-{\hlline \ \ \ 32\ }{\hlstd \leavevmode\par
-{\hlline \ \ \ 33\ }}{\hlstd\ \ }{\hlstd }{\hlsym $\}$}\leavevmode\par
-{\hlline \ \ \ 34\ }{\hlstd \leavevmode\par
-{\hlline \ \ \ 35\ }}{\hlstd\ \ }{\hlstd }{\hlkwa return }{\hlstd }{\hlnum 0}{\hlstd }{\hlsym ;}\leavevmode\par
-{\hlline \ \ \ 36\ }{\hlstd }{\hlsym $\}$}{\hlstd }\leavevmode\par
+{\hlline \ \ \ 30\ }}{\hlstd\ \ }{\hlstd }{\hlslc // wait for keyboard ENTER press, then finish program}\leavevmode\par
+{\hlline \ \ \ 31\ }{\hlstd }{\hlstd\ \ }{\hlstd string temp\_{}string}{\hlsym ;}\leavevmode\par
+{\hlline \ \ \ 32\ }{\hlstd }{\hlstd\ \ }{\hlstd }{\hlkwd getline}{\hlstd }{\hlsym ( }{\hlstd cin}{\hlsym , }{\hlstd temp\_{}string }{\hlsym );}\leavevmode\par
+{\hlline \ \ \ 33\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 34\ }}{\hlstd\ \ }{\hlstd }{\hlslc // release the device.}\leavevmode\par
+{\hlline \ \ \ 35\ }{\hlstd }{\hlstd\ \ }{\hlstd device}{\hlsym $\mathord{-}$$\mathord{>}$}{\hlstd }{\hlkwd releaseDevice}{\hlstd }{\hlsym ();}\leavevmode\par
+{\hlline \ \ \ 36\ }{\hlstd \leavevmode\par
+{\hlline \ \ \ 37\ }}{\hlstd\ \ }{\hlstd }{\hlkwa return }{\hlstd }{\hlnum 0}{\hlstd }{\hlsym ;}\leavevmode\par
+{\hlline \ \ \ 38\ }{\hlstd }{\hlsym $\}$}{\hlstd }\leavevmode\par
 }

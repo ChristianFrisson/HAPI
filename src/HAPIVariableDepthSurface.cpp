@@ -249,7 +249,7 @@ void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
     }
     contact_info.setGlobalForce(  probe_to_origin * local_stiffness +
                                   ( n_probe_to_origin *
-                                  contact_info.hapticsDevice()->getVelocity() *
+                                  contact_info.globalProbeVelocity() *
                                     damping ) * n_probe_to_origin );
   }
 }

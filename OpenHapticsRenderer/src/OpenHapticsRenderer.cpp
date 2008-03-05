@@ -205,7 +205,15 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   // TODO: fix matrices
   //hlPushMatrix();
 
-  const Matrix4 &pcal = hd->getPositionCalibrationInverse();
+  const Matrix4 &pcal = Matrix4( 1e3, 0, 0, 0,
+                                 0, 1e3, 0, 0,
+                                 0, 0, 1e3, 0,
+                                 0, 0, 0, 1 ) *
+    hd->getPositionCalibrationInverse() *
+    Matrix4( 1e-3, 0, 0, 0,
+             0, 1e-3, 0, 0,
+             0, 0, 1e-3, 0,
+             0, 0, 0, 1 );
   HLdouble m[16] = { pcal[0][0], pcal[1][0], pcal[2][0], pcal[3][0], 
                      pcal[0][1], pcal[1][1], pcal[2][1], pcal[3][1], 
                      pcal[0][2], pcal[1][2], pcal[2][2], pcal[3][2], 

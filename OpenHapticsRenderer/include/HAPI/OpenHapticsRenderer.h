@@ -95,8 +95,28 @@ namespace HAPI {
       /// Renders the surface using hlMaterialf calls
       virtual void hlRender();
 
-      HAPIFloat stiffness, damping, static_friction,
-                dynamic_friction, snap_distance;
+      /// Control the hardness of the surface. Must be between 0 and 1.
+      /// 1 means the hardest surface that the device can handle.
+      HAPIFloat stiffness;
+
+      /// Damping.
+      /// Must be a value between 0 and 1. 1 is the maximum damping possible.
+      HAPIFloat damping;
+
+      /// Static friction controls how hard it is to start sliding along the surface
+      /// when the device is initially not moving. 0 means no friction. 1 means
+      /// device maximum.
+      HAPIFloat static_friction;
+
+      /// Dynamic friction controls the amount of resistance while moving along
+      /// the surface. 0 means no friction. 1 means device maximum.
+      HAPIFloat dynamic_friction;
+
+      /// The distance in mm from the surface at which the haptic device will
+      /// be pulled towards the surface.
+      HAPIFloat snap_distance;
+
+      // Set to true if the surface should be magnetic.
       bool magnetic;
     };
 

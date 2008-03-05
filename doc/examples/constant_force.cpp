@@ -1,6 +1,6 @@
 
-#include <AnyHapticsDevice.h>
-#include <HapticForceField.h>
+#include <HAPI/AnyHapticsDevice.h>
+#include <HAPI/HapticForceField.h>
 
 using namespace HAPI;
 
@@ -27,10 +27,12 @@ int main(int argc, char* argv[]) {
   // transfer the effect to the haptics loop.
   device->transferObjects();
 
-  // wait for keyboard press, then finish program 
-  while(true) {
-    
-  } 
+  // wait for keyboard ENTER press, then finish program 
+  string temp_string;
+  getline( cin, temp_string );
+
+  // release the device.
+  device->releaseDevice();
   
   return 0;
 }
