@@ -32,6 +32,12 @@
 #include <HAPI/HAPIGLShape.h>
 #include <HAPI/CollisionObjects.h>
 
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
 namespace HAPI {
   /// The FeedbackBufferCollector contains a bunch of static functions for 
   /// collecting primitives rendered by OpenGL from the feedback buffer.

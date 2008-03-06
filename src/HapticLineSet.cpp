@@ -30,6 +30,12 @@
 #include <HAPI/HapticLineSet.h> 
 #include <HAPI/PlaneConstraint.h>
 
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
 using namespace HAPI;
 
 bool HapticLineSet::lineIntersectShape( const Vec3 &from, 
