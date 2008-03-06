@@ -34,6 +34,12 @@
 #include <HAPI/AnyHapticsDevice.h>
 #include <HAPI/FrictionSurface.h>
 
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
 #ifdef HAVE_OPENHAPTICS
 #include <HD/hd.h>
 #if defined(_MSC_VER) || defined(__BORLANDC__)

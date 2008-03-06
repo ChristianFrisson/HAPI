@@ -30,6 +30,12 @@
 #include <HAPI/HAPIHapticShape.h>
 #include <HAPI/PlaneConstraint.h>
 
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
 using namespace HAPI;
 
 int HAPIHapticShape::current_max_id = 0;
