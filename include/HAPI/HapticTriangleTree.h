@@ -65,12 +65,15 @@ namespace HAPI {
       delete tree;
     }
 
+#ifdef HAVE_OPENGL
     /// An upper bound on how many triangles are renderered.
     virtual int nrTriangles() {
       return countTriangles( tree );
     }
+#endif
     
   protected:
+#ifdef HAVE_OPENGL
     inline int countTriangles( Collision::BinaryBoundTree * _tree ) {
       if( _tree == 0 )
         return 0;
@@ -81,6 +84,7 @@ namespace HAPI {
       return countTriangles( _tree->left.get() ) +
              countTriangles( _tree->right.get() );
     }
+#endif
 
     /// Detect collision between a line segment and the object.
     /// \param from The start of the line segment(in local coords).
@@ -140,11 +144,13 @@ namespace HAPI {
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx );
 
+#ifdef HAVE_OPENGL
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth
     /// buffer shapes. The rendering should be done in local space of the 
     /// shape, i.e. ignoring the transform matrix in the shape.
     virtual void glRenderShape();
+#endif
 
     
     // The tree containing the triangles.

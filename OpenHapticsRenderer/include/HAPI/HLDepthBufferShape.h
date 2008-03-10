@@ -35,6 +35,7 @@
 #include <HAPI/OpenHapticsRenderer.h>
 
 #ifdef HAVE_OPENHAPTICS
+#ifdef HAVE_OPENGL
 
 namespace HAPI {
   /// Class for using the render() function of an X3DGeometryNode for
@@ -117,5 +118,6 @@ namespace HAPI {
 
 }
 
+#endif //HAVE_OPENGL
 #endif
 #endif

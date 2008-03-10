@@ -177,8 +177,10 @@ namespace HAPI {
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx ){}
 
+#ifdef HAVE_OPENGL
     /// Must be defined in order to link correctly.
     virtual void glRenderShape(){}
+#endif
   };
 }
 

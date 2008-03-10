@@ -87,10 +87,12 @@ namespace HAPI {
       triangles( begin, end ),
       convex( _convex ) {}
 
+#ifdef HAVE_OPENGL
     /// Returns the number of triangles in the set.
     inline virtual int nrTriangles() {
       return triangles.size();
     }
+#endif
     
     /// The triangles.
     vector< Collision::Triangle > triangles;
@@ -156,10 +158,12 @@ namespace HAPI {
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx );
 
+#ifdef HAVE_OPENGL
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth
     /// buffer shapes. 
     virtual void glRenderShape();
+#endif
 
   };
 }

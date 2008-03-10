@@ -32,10 +32,15 @@
 #include <HAPI/HAPIGLShape.h>
 #include <HAPI/CollisionObjects.h>
 
+#ifdef HAVE_OPENGL
 #ifdef MACOSX
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
+
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#pragma comment( lib, "OpenGL32.lib" )
+#endif
 #endif
 
 namespace HAPI {
@@ -146,5 +151,5 @@ namespace HAPI {
     static GLfloat *buffer;
   };
 }
-
+#endif //HAVE_OPENGL
 #endif

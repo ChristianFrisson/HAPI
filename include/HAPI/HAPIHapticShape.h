@@ -55,8 +55,11 @@ namespace HAPI {
   ///
   /// Several functions below 
   class HAPI_API HAPIHapticShape: public HAPIHapticObject,
-                                  public Collision::CollisionObject,
-                                  public HAPIGLShape {
+                                  public Collision::CollisionObject
+#ifdef HAVE_OPENGL
+                                  , public HAPIGLShape
+#endif
+  {
   public:
 
    /// Constructor.
@@ -186,11 +189,13 @@ namespace HAPI {
                                  Collision::FaceType face = 
                                  Collision::FRONT_AND_BACK,
                                  HAPIFloat radius = -1 );
-    
+
+#ifdef HAVE_OPENGL    
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth
     /// buffer shapes.
     virtual void glRender();
+#endif
 
     /// Generate a new shape id.
     static int genShapeId();
@@ -361,11 +366,13 @@ namespace HAPI {
                                              Matrix4 &result_mtx ) = 0;
 
 
+#ifdef HAVE_OPENGL
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth
     /// buffer shapes. The rendering should be done in local space of the 
     /// shape, i.e. ignoring the transform matrix in the shape.
     virtual void glRenderShape() = 0;
+#endif
   };
 }
 

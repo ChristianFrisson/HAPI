@@ -125,11 +125,13 @@ void HapticTriangleSet::getConstraintsOfShape( const Vec3 &point,
   }
 }
 
+#ifdef HAVE_OPENGL
 void HapticTriangleSet::glRenderShape() {
   for( unsigned int i = 0; i < triangles.size(); i++ ) {
     triangles[i].render();
   }
 }
+#endif
 
 void HapticTriangleSet::closestPointOnShape( const Vec3 &p,
                                              Vec3 &cp,

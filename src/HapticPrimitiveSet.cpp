@@ -80,12 +80,14 @@ void HapticPrimitiveSet::getConstraintsOfShape( const Vec3 &point,
   }
 }
 
+#ifdef HAVE_OPENGL
 void HapticPrimitiveSet::glRenderShape() {
   for( PrimitiveVector::const_iterator i = primitives.begin();
        i != primitives.end(); i++ ) {
     (*i)->render();
   }
 }
+#endif
 
 void HapticPrimitiveSet::closestPointOnShape( const Vec3 &p,
                                               Vec3 &cp,
@@ -147,6 +149,7 @@ void HapticPrimitiveSet::getTangentSpaceMatrixShape( const Vec3 &point,
   }
 }
 
+#ifdef HAVE_OPENGL
 void HapticPrimitiveSet::countNrOfPrimitives() {
   // If I did not miss anything we can do this because the
   // primitives vector will not change so that a primitive
@@ -173,3 +176,4 @@ void HapticPrimitiveSet::countNrOfPrimitives() {
     }
   }
 }
+#endif

@@ -30,10 +30,12 @@
 #include <HAPI/HAPIHapticShape.h>
 #include <HAPI/PlaneConstraint.h>
 
+#ifdef HAVE_OPENGL
 #ifdef MACOSX
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
+#endif
 #endif
 
 using namespace HAPI;
@@ -151,6 +153,7 @@ void HAPIHapticShape::getTangentSpaceMatrix( const Vec3 &point,
   }
 }
 
+#ifdef HAVE_OPENGL
 void HAPIHapticShape::glRender() {
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
@@ -163,6 +166,7 @@ void HAPIHapticShape::glRender() {
   glRenderShape();
   glPopMatrix();
 }
+#endif
 
 /// Scale object uniformly on all axis by the given scaling factor.
 void HAPIHapticShape::scale( HAPIFloat s ) {

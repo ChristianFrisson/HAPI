@@ -30,6 +30,7 @@
 #define __HAPIGLSHAPE_H__
 
 #include <HAPI/HAPI.h>
+#ifdef HAVE_OPENGL
 #include <HAPI/HAPITypes.h>
 
 namespace HAPI {
@@ -93,5 +94,6 @@ namespace HAPI {
     }
   };
 }
+#endif //HAVE_OPENGL
 
 #endif
