@@ -34,10 +34,15 @@
 #include <HAPI/AnyHapticsDevice.h>
 #include <HAPI/FrictionSurface.h>
 
+#ifdef HAVE_OPENGL
 #ifdef MACOSX
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
+#endif
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#pragma comment( lib, "OpenGL32.lib" )
+#endif
 #endif
 
 #ifdef HAVE_OPENHAPTICS
@@ -198,10 +203,12 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 
   if( !haptic_context ) return;
 
+#ifdef HAVE_OPENGL
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glLoadIdentity();
-  glClear(GL_DEPTH_BUFFER_BIT);   
+  glClear(GL_DEPTH_BUFFER_BIT);
+#endif
   hlMakeCurrent( haptic_context );
   hlMatrixMode( HL_VIEWTOUCH );
   hlLoadIdentity();
@@ -263,14 +270,18 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
             adaptive_viewport = options->use_adaptive_viewport;
           }
           
+#ifdef HAVE_OPENGL
           glMatrixMode( GL_MODELVIEW );
           glPushMatrix();
+#endif
 #if HL_VERSION_MAJOR_NUMBER >= 2
           hlPushAttrib( HL_MATERIAL_BIT | HL_TOUCH_BIT );
 #endif
 
+#ifdef HAVE_OPENGL
           glLoadIdentity();
           glScalef( 1e3f, 1e3f, 1e3f );
+#endif
           hlRenderHAPISurface( (*i)->getSurface(), hd );
 
           HLenum touchable_face;
@@ -292,11 +303,14 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
             hlDisable( HL_HAPTIC_CAMERA_VIEW );
 
           const Matrix4 &m4 = (*i)->getTransform();
+#ifdef HAVE_OPENGL
           GLdouble vt[] = { m4[0][0], m4[1][0], m4[2][0], 0,
                             m4[0][1], m4[1][1], m4[2][1], 0,
                             m4[0][2], m4[1][2], m4[2][2], 0,
                             m4[0][3], m4[1][3], m4[2][3], 1 };
+#endif
           Matrix3 m3 = m4.getScaleRotationPart();
+#ifdef HAVE_OPENGL
           GLint front_face;
           
           bool negative_scaling = 
@@ -310,8 +324,10 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
               glFrontFace( GL_CCW );
           } else if( negative_scaling )
             glFrontFace( GL_CW );
+#endif
 
           const Matrix4 m4_inv = (*i)->getInverse();
+#ifdef HAVE_OPENGL
           GLdouble vt_inv[] = { m4_inv[0][0], m4_inv[1][0], m4_inv[2][0], 0,
                             m4_inv[0][1], m4_inv[1][1], m4_inv[2][1], 0,
                             m4_inv[0][2], m4_inv[1][2], m4_inv[2][2], 0,
@@ -337,6 +353,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
             (*i)->glRender();
             hlEndShape();         
           } else {
+#endif
             // custom shape, use intersection functions
             // TODO: This will give fallthrough of moving object
             // maybe should try to do the same as for the others, but need
@@ -347,12 +364,16 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
             hlCallback(HL_SHAPE_CLOSEST_FEATURES, 
                        (HLcallbackProc) closestFeaturesCallback, (*i) );
             hlEndShape();
+#ifdef HAVE_OPENGL
           }
+#endif
           
 #if HL_VERSION_MAJOR_NUMBER >= 2
           hlPopAttrib();
 #endif
+#ifdef HAVE_OPENGL
           glPopMatrix();
+#endif
       } else {
         H3DUtil::Console(2) 
           <<  "Surface type not supported by OpenHapticsRenderer." << endl;
@@ -377,8 +398,10 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
       contacts.erase( to_remove );
     callback_data[ id_cb_map[*i] ]->shape.reset( NULL );
   }
+#ifdef HAVE_OPENGL
   glMatrixMode( GL_MODELVIEW );
   glPopMatrix();
+#endif
 
   hlEndFrame(); 
   //hlMatrixMode( HL_VIEWTOUCH );

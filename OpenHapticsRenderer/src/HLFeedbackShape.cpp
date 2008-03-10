@@ -32,7 +32,13 @@
 
 #ifdef HAVE_OPENHAPTICS
 
+#ifdef HAVE_OPENGL
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
+#endif
+
 using namespace HAPI;
 
 void HLFeedbackShape::hlRender( HAPI::HAPIHapticsDevice *hd,
@@ -100,5 +106,7 @@ void HLFeedbackShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     glPopMatrix();
   }
 }
+
+#endif //HAVE_OPENGL
 #endif
 

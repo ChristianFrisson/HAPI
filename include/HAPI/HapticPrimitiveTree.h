@@ -86,6 +86,7 @@ namespace HAPI {
       delete tree;
     }
 
+#ifdef HAVE_OPENGL
     /// An upper bound on how many triangles are renderered.
     virtual int nrTriangles() {
       return countPrimitives< Collision::Triangle >( tree );
@@ -100,12 +101,14 @@ namespace HAPI {
     virtual int nrLines() {
       return countPrimitives< Collision::LineSegment >( tree );
     }
+#endif
 
   protected:
 
     typedef H3DUtil::AutoRefVector< Collision::GeometryPrimitive >
       PrimitiveVector;
 
+#ifdef HAVE_OPENGL
     template< class ClassToCount >
     inline int countPrimitives( Collision::BBPrimitiveTree *_tree ) {
       if( _tree == 0 )
@@ -136,6 +139,7 @@ namespace HAPI {
       
       return left_counter + right_counter;
     }
+#endif
 
     /// Detect collision between a line segment and the object.
     /// \param from The start of the line segment(in local coords).
@@ -195,11 +199,13 @@ namespace HAPI {
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx );
 
+#ifdef HAVE_OPENGL
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth
     /// buffer shapes. The rendering should be done in local space of the 
     /// shape, i.e. ignoring the transform matrix in the shape.
     virtual void glRenderShape();
+#endif
 
     Collision::BBPrimitiveTree *tree;      
   };

@@ -28,7 +28,12 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <HAPI/HLDepthBufferShape.h>
+#ifdef HAVE_OPENGL
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 #ifdef HAVE_OPENHAPTICS
 
@@ -101,5 +106,5 @@ void HLDepthBufferShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     glPopMatrix();
   }
 }
-
+#endif //HAVE_OPENGL
 #endif

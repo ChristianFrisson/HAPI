@@ -30,6 +30,7 @@
 
 #include <HAPI/FeedbackBufferCollector.h>
 
+#ifdef HAVE_OPENGL
 #ifdef MACOSX
 #include <OpenGL/glu.h>
 #else
@@ -329,4 +330,4 @@ int FeedbackBufferCollector::parseVertex( GLfloat *buffer, int index,
   return 11;
 }
 
-
+#endif //HAVE_OPENGL

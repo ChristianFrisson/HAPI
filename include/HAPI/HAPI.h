@@ -69,6 +69,10 @@
 /// www.quanser.com
 //#define HAVE_QUANSERAPI
 
+/// Undef if you do not want to build HAPI with OpenGL support. This will
+/// disable some features like FeedbackBufferCollector.
+#define HAVE_OPENGL
+
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL
 // are compiled with the HAPI_EXPORTS symbol defined on the command

@@ -138,10 +138,12 @@ namespace HAPI {
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx );
 
+#ifdef HAVE_OPENGL
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth
     /// buffer shapes. 
     virtual void glRenderShape();
+#endif
 
     /// The lines.
     vector< Collision::LineSegment > lines;

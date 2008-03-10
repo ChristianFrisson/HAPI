@@ -30,10 +30,16 @@
 #include <HAPI/CollisionObjects.h>
 #include <HAPI/PlaneConstraint.h>
 
+#ifdef HAVE_OPENGL
 #ifdef MACOSX
 #include <OpenGL/glu.h>
 #else
 #include <GL/glu.h>
+#endif
+
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#pragma comment( lib, "glu32.lib" )
+#endif
 #endif
 
 
@@ -47,6 +53,7 @@ namespace CollisionInternals {
   HAPIFloat pi_inv = 1 / H3DUtil::Constants::pi;
   HAPIFloat two_pi_inv = pi_inv / 2;
 
+#ifdef HAVE_OPENGL
   // Used by Sphere and SphereBound for rendering of a sphere.
   H3DUtil::MutexLock nr_of_spheres_lock;
   unsigned int nr_of_spheres = 0;
@@ -80,6 +87,7 @@ namespace CollisionInternals {
     }
     nr_of_spheres_lock.unlock();
   }
+#endif
 }
 
 bool Collision::intersectSegmentCylinder( Vec3 sa, Vec3 sb,
@@ -129,6 +137,7 @@ bool Collision::intersectSegmentCylinder( Vec3 sa, Vec3 sb,
 }
 
 void AABoxBound::render() {
+#ifdef HAVE_OPENGL
   glDisable( GL_LIGHTING );
 
   glColor3d( 1, 1, 0 );
@@ -159,6 +168,7 @@ void AABoxBound::render() {
   glVertex3d( max.x, max.y, min.z );
   glEnd();
   glEnable( GL_LIGHTING );
+#endif
 }
 
 void AABoxBound::fitAroundPoints( const vector< Vec3 > &points ) {
@@ -233,15 +243,21 @@ bool AABoxBound::insideBound( const Vec3 &p ) {
 }
 
 SphereBound::SphereBound() {
+#ifdef HAVE_OPENGL
   CollisionInternals::increaseSphereCounter();
+#endif
 }
 
 SphereBound::SphereBound(const Vec3& c, HAPIFloat r): center (c), radius(r) {
+#ifdef HAVE_OPENGL
   CollisionInternals::increaseSphereCounter();
+#endif
 }
 
 SphereBound::~SphereBound() {
+#ifdef HAVE_OPENGL
   CollisionInternals::decreseSphereCounter();
+#endif
 }
 
 void SphereBound::closestPoint( const Vec3 &p,
@@ -300,6 +316,7 @@ bool SphereBound::lineIntersect( const Vec3 &from,
 }
 
 void SphereBound::render() {
+#ifdef HAVE_OPENGL
   CollisionInternals::createSphereDisplayList();
 
   glDisable( GL_LIGHTING );
@@ -314,6 +331,7 @@ void SphereBound::render() {
   glPopAttrib();
   glPopMatrix();
   glEnable( GL_LIGHTING );
+#endif
 }
 
 void SphereBound::fitAroundPoints( const vector< Vec3 > &points ) {
@@ -724,12 +742,14 @@ void BinaryBoundTree::render() {
 }
 
 void Triangle::render() {
+#ifdef HAVE_OPENGL
   glBegin( GL_TRIANGLES );
   glNormal3d( normal.x, normal.y, normal.z );
   glVertex3d( a.x, a.y, a.z );
   glVertex3d( b.x, b.y, b.z );
   glVertex3d( c.x, c.y, c.z );
   glEnd();
+#endif
 }
 
 void BinaryBoundTree::renderBounds( int depth ) {
@@ -741,8 +761,10 @@ void BinaryBoundTree::renderBounds( int depth ) {
       if( right.get() ) right->renderBounds( depth - 1 );
     }
   } else {
+#ifdef HAVE_OPENGL
     glPushAttrib( GL_POLYGON_BIT );
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+#endif
     for( unsigned int i = 0; i < triangles.size(); i++ ) { 
       triangles[i].render();
     }
@@ -752,7 +774,9 @@ void BinaryBoundTree::renderBounds( int depth ) {
     for( unsigned int i = 0; i < points.size(); i++ ) { 
       points[i].render();
     }
+#ifdef HAVE_OPENGL
     glPopAttrib();
+#endif
   }
 }
 
@@ -1812,6 +1836,7 @@ bool OrientedBoxBound::insideBound( const Vec3 &p ) {
 
 void OrientedBoxBound::render() {
   Vec3 center = -orientation * ((max + min)/2);
+#ifdef HAVE_OPENGL
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glDisable( GL_LIGHTING );
@@ -1849,6 +1874,7 @@ void OrientedBoxBound::render() {
   glEnd();
   glEnable( GL_LIGHTING );
   glPopMatrix();
+#endif
 }
 
 void GeometryPrimitive::getConstraints( const Vec3 &point,
@@ -1964,12 +1990,14 @@ void BinaryBoundTree::getPrimitivesWithinRadius( const Vec3 &p,
 }
 
 void LineSegment::render() {
+#ifdef HAVE_OPENGL
   glDisable( GL_LIGHTING );
   glBegin( GL_LINES );
   glVertex3d( start.x, start.y, start.z );
   glVertex3d( end.x, end.y, end.z );
   glEnd();
   glEnable( GL_LIGHTING );
+#endif
 }
 
 /// Returns the closest point on the object to the given point p.
@@ -2090,11 +2118,13 @@ HAPIFloat LineSegment::closestPointOnLine( const Vec3 &from, const Vec3 &to,
 }
   
 void Collision::Point::render() {
+#ifdef HAVE_OPENGL
   glDisable( GL_LIGHTING );
   glBegin( GL_POINTS );
   glVertex3d( position.x, position.y, position.z );
   glEnd();
   glEnable( GL_LIGHTING );
+#endif
 }
 
 /// Detect collision between a line segment and the object.
@@ -2221,22 +2251,28 @@ void Plane::render() {
     t1 = t1 * max_length;
     t2 = t2 * max_length;
 
+#ifdef HAVE_OPENGL
     glBegin( GL_TRIANGLES );
     glNormal3d( normal.x, normal.y, normal.z );
     glVertex3d( t2.x, t2.y, t2.z );
     glVertex3d( -t2.x - t1.x, -t2.y - t1.y, -t2.z - t1.z );
     glVertex3d( -t2.x + t1.x, -t2.y + t1.y, -t2.z + t1.z );
     glEnd();
+#endif
   }
 }
 
 Sphere::Sphere( const Vec3 &_center, HAPIFloat _radius ):
   center( _center ), radius( _radius ) {
+#ifdef HAVE_OPENGL
   CollisionInternals::increaseSphereCounter();
+#endif
 }
 
 Sphere::~Sphere() {
+#ifdef HAVE_OPENGL
   CollisionInternals::decreseSphereCounter();
+#endif
 }
 
 bool Sphere::lineIntersect( const Vec3 &from, 
@@ -2445,6 +2481,7 @@ bool Sphere::movingSphereIntersect( HAPIFloat r,
 }
 
 void Sphere::render() {
+#ifdef HAVE_OPENGL
   CollisionInternals::createSphereDisplayList();
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
@@ -2452,6 +2489,7 @@ void Sphere::render() {
   glScaled( radius, radius, radius );
   glCallList( CollisionInternals::sphere_display_list_id );
   glPopMatrix();
+#endif
 }
 
 void BinaryBoundTree::getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
@@ -2973,12 +3011,16 @@ void BBPrimitiveTree::renderBounds( int depth ) {
       if( right.get() ) right->renderBounds( depth - 1 );
     }
   } else {
+#ifdef HAVE_OPENGL
     glPushAttrib( GL_POLYGON_BIT );
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+#endif
     for( unsigned int i = 0; i < primitives.size(); i++ ) { 
       primitives[i]->render();
     }
+#ifdef HAVE_OPENGL
     glPopAttrib();
+#endif
   }
 }
 

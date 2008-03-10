@@ -51,7 +51,9 @@ namespace HAPI {
       HAPIHapticShape( _surface, _touchable_face, _userdata,
                        _shape_id, _clean_up_func ),
       primitives(_primitives) {
+#ifdef HAVE_OPENGL
         countNrOfPrimitives();
+#endif
     }
 
     HapticPrimitiveSet(
@@ -67,7 +69,9 @@ namespace HAPI {
       HAPIHapticShape( _transform, _surface, _touchable_face, _userdata,
                        _shape_id, _clean_up_func ),
       primitives(_primitives) {
+#ifdef HAVE_OPENGL
         countNrOfPrimitives();
+#endif
     }
 
     template< class Iterator >
@@ -86,6 +90,7 @@ namespace HAPI {
         countNrOfPrimitives();
       }
 
+#ifdef HAVE_OPENGL
     /// An upper bound on how many triangles are renderered.
     virtual int nrTriangles() {
       return nr_triangles;
@@ -100,6 +105,7 @@ namespace HAPI {
     virtual int nrLines() {
       return nr_lines;
     }
+#endif
 
   protected:
     /// Detect collision between a line segment and the object.
@@ -161,10 +167,12 @@ namespace HAPI {
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx );
 
+#ifdef HAVE_OPENGL
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth
     /// buffer shapes. 
     virtual void glRenderShape();
+#endif
 
     typedef H3DUtil::AutoRefVector< Collision::GeometryPrimitive >
       PrimitiveVector;
@@ -172,6 +180,7 @@ namespace HAPI {
     /// The primitives
     PrimitiveVector primitives;
 
+#ifdef HAVE_OPENGL
     /// set the nr_triangles, nr_points and nr_lines 
     void countNrOfPrimitives();
 
@@ -179,6 +188,7 @@ namespace HAPI {
     // the primitive set. All of them are -1 if there is no way to know an
     // upper bound.
     int nr_triangles, nr_points, nr_lines;
+#endif
   };
 }
 

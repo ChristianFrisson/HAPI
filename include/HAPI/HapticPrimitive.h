@@ -65,6 +65,7 @@ namespace HAPI {
                        _shape_id, _clean_up_func ),
       primitive( _primitive ) {}
 
+#ifdef HAVE_OPENGL
     /// An upper bound on how many triangles are renderered.
     virtual int nrTriangles() {
       if( dynamic_cast< Collision::Triangle * >( primitive.get() ) )
@@ -97,6 +98,7 @@ namespace HAPI {
       // GeometryPrimitive sphere and plane
       return -1;
     }
+#endif
 
   protected:
 
@@ -158,11 +160,13 @@ namespace HAPI {
     virtual void getTangentSpaceMatrixShape( const Vec3 &point,
                                              Matrix4 &result_mtx );
 
+#ifdef HAVE_OPENGL
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth
     /// buffer shapes. The rendering should be done in local space of the 
     /// shape, i.e. ignoring the transform matrix in the shape.
     virtual void glRenderShape();
+#endif
 
     H3DUtil::AutoRef< Collision::GeometryPrimitive > primitive;
 

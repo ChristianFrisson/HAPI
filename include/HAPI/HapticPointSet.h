@@ -126,10 +126,12 @@ namespace HAPI {
     virtual void closestPointOnShape( const Vec3 &p, Vec3 &cp, 
                                       Vec3 &n, Vec3 &tc );
 
+#ifdef HAVE_OPENGL
     /// Render a graphical representation of the shape using OpenGL. This
     /// is used by the OpenHapticsRenderer when using feedback or depth
     /// buffer shapes. 
     virtual void glRenderShape();
+#endif
 
     /// Detect collision between a moving sphere and the object.
     /// \param radius The radius of the sphere(in local coords).

@@ -32,6 +32,7 @@
 #include <HAPI/Config.h>
 
 #include <HAPI/HAPIHapticShape.h>
+#ifdef HAVE_OPENGL
 #include <HAPI/OpenHapticsRenderer.h>
 #include <HAPI/HAPIGLShape.h>
 #include <HAPI/CollisionObjects.h>
@@ -122,5 +123,7 @@ namespace HAPI {
 }
 
 #endif
+
+#endif //HAVE_OPENGL
 
 #endif

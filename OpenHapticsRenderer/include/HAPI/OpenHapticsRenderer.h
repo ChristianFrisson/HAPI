@@ -124,13 +124,20 @@ namespace HAPI {
     class OPENHAPTICSRENDERER_API OpenHapticsOptions: public HAPI::HAPIShapeRenderOptions {
     public:
       typedef enum {
+#ifdef HAVE_OPENGL
         FEEDBACK_BUFFER,
         DEPTH_BUFFER,
+#endif
         CUSTOM 
       } ShapeType;
 
       /// Constructor.
-      OpenHapticsOptions( ShapeType _shape_type = FEEDBACK_BUFFER,
+      OpenHapticsOptions(
+#ifdef HAVE_OPENGL
+                          ShapeType _shape_type = FEEDBACK_BUFFER,
+#else
+                          ShapeType _shape_type = CUSTOM,
+#endif
                           bool _use_adaptive_viewport = true,
                           bool _use_haptic_camera_view = true ):
         shape_type( _shape_type ),
@@ -158,8 +165,14 @@ namespace HAPI {
     virtual void preProcessShapes( HAPI::HAPIHapticsDevice *hd,
                                    const HapticShapeVector &shapes );
     /// Constructor.
-    OpenHapticsRenderer( ShapeType _default_shape_type = 
+    OpenHapticsRenderer(
+#ifdef HAVE_OPENGL
+                         ShapeType _default_shape_type = 
                          OpenHapticsOptions::FEEDBACK_BUFFER,
+#else
+                         ShapeType _default_shape_type = 
+                         OpenHapticsOptions::CUSTOM,
+#endif
                          bool _default_adaptive_viewport = true,
                          bool _default_haptic_camera_view = true ) :
       default_gl_shape( _default_shape_type ),

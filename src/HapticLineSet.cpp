@@ -29,11 +29,12 @@
 
 #include <HAPI/HapticLineSet.h> 
 #include <HAPI/PlaneConstraint.h>
-
+#ifdef HAVE_OPENGL
 #ifdef MACOSX
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
+#endif
 #endif
 
 using namespace HAPI;
@@ -85,6 +86,7 @@ void HapticLineSet::getConstraintsOfShape( const Vec3 &point,
   }
 }
 
+#ifdef HAVE_OPENGL
 void HapticLineSet::glRenderShape() {
   glPushAttrib( GL_LINE_BIT | GL_LIGHTING_BIT );
   glDisable( GL_CULL_FACE );
@@ -99,6 +101,7 @@ void HapticLineSet::glRenderShape() {
   glEnd();
   glPopAttrib();
 }
+#endif
 
 void HapticLineSet::closestPointOnShape( const Vec3 &p,
                                          Vec3 &cp,

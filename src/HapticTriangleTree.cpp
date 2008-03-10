@@ -63,9 +63,11 @@ void HapticTriangleTree::getConstraintsOfShape( const Vec3 &point,
   }
 }
 
+#ifdef HAVE_OPENGL
 void HapticTriangleTree::glRenderShape() {
   tree->render();
 }
+#endif
 
 void HapticTriangleTree::getTangentSpaceMatrixShape( const Vec3 &point,
                                                      Matrix4 &result_mtx ) {
