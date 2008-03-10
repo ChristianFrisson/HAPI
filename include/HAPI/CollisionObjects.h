@@ -45,10 +45,10 @@ class Constraints;
   namespace Collision {
     /// Intersect segment S(t)=sa+t(sb-sa), 0<=t<=1 against cylinder 
     /// specified by p, q and r. The segment finds the first along the segment.
-    bool intersectSegmentCylinder( Vec3 sa, Vec3 sb, 
-                                   Vec3 p, Vec3 q, 
-                                   HAPIFloat r, 
-                                   HAPIFloat & t );
+    bool HAPI_API intersectSegmentCylinder( Vec3 sa, Vec3 sb, 
+                                            Vec3 p, Vec3 q, 
+                                            HAPIFloat r, 
+                                            HAPIFloat & t );
 
     class PlaneConstraint; 
 	
