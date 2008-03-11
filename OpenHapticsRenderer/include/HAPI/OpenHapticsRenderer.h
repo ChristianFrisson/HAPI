@@ -44,7 +44,6 @@
 #include <HL/hl.h>
 
 namespace HAPI {
-
   /// Haptics renderer using the HL API part of OpenHaptics for the 
   /// haptics rendering. 
   class OPENHAPTICSRENDERER_API OpenHapticsRenderer: 
@@ -259,6 +258,7 @@ namespace HAPI {
     /// \param damping as Ns/mm
     /// \param static_friction is dimensionless
     /// \param dynamic_friction is dimensionless
+    /// \param max_stiffness is the maximum stiffness the device can handle.
     /// \param magnetic is true or false to specify if magnetic property should
     /// be used.
     /// \param snap_distance is in mm

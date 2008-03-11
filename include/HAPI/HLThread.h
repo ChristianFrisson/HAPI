@@ -21,14 +21,14 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file Threads.h
-/// \brief Header file for thread handling functions.
+/// \file HLThread.h
+/// \brief Header file for HLThread.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef __HLTHREADS_H__
-#define __HLTHREADS_H__
+#ifndef __HLTHREAD_H__
+#define __HLTHREAD_H__
 
 #include <HAPI/HAPI.h>
 #include <H3DUtil/Threads.h>

@@ -144,8 +144,6 @@ namespace HAPI {
     /// Register a haptics renderer to the database.
     /// \param name The name of the renderer
     /// \param create A function for creating an instance of that class.
-    /// \param supports A function to determine if the class supports a
-    /// given file type.
     static void registerRenderer( const string &name,
                                   CreateInstanceFunc create ) {
       registerRenderer( HapticsRendererRegistration( name, create ) );

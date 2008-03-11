@@ -36,6 +36,12 @@
 namespace HAPI {
   /// \class DepthMapSurface
   /// A HAPIVariableDepthSurface using a texture to calculate depth.
+  /// Black areas in the texture are considered deep by default, this
+  /// can be changed by changing parameters (see parameter descriptions).
+  /// This surface might be very slow if the texture used is not a
+  /// gray scale 8 bit image. If an image contain more than one color
+  /// channel the value used for depth map calculation will be the average
+  /// of the channels.
   /// For OpenHapticsRenderer this surface will not work.
   class HAPI_API DepthMapSurface: public HAPIVariableDepthSurface,
                                       public ImageInterfaceObject {

@@ -189,7 +189,7 @@ namespace HAPI {
     //
 
     /// Add a HAPIHapticShape to be rendered haptically.
-    /// \param objects The haptic shapes to render.
+    /// \param shape The haptic shape to render.
     /// \param layer The haptic layer to add the shape to.
     inline void addShape( HAPIHapticShape *shape, 
                           unsigned int layer = 0 ) {
@@ -201,7 +201,7 @@ namespace HAPI {
     
     
     /// Set the HapticShapes to be rendered.
-    /// \param objects The haptic shapes to render.
+    /// \param shapes The haptic shapes to render.
     /// \param layer The haptic layer to add the shape to.
     inline void setShapes( const HapticShapeVector &shapes, 
                            unsigned int layer = 0 ) {
@@ -213,12 +213,14 @@ namespace HAPI {
     }
 
     /// Get the shapes currently used
+    /// \param layer The haptic layer to get the shapes from.
     inline const HapticShapeVector &getShapes( unsigned int layer = 0 ) {
       assureSize( layer );
       return tmp_shapes[layer];
     }
 
     /// Remove a HAPIHapticShape from the shapes being rendered.
+    /// \param shape The haptic shape to remove.
     /// \param layer The haptic layer to remove the shape from.
     inline void removeShape( HAPIHapticShape *shape,
                              unsigned int layer = 0 ) {
@@ -229,6 +231,8 @@ namespace HAPI {
     }
     
     /// Add all shapes between [begin, end)
+    /// \param begin Iterator of where to begin getting shapes.
+    /// \param end Iterator of where to stop getting shapes.
     /// \param layer The haptic layer to add shapes to
     template< class InputIterator > 
     inline void addShapes( InputIterator begin, InputIterator end,
@@ -241,6 +245,7 @@ namespace HAPI {
 
     /// Swap the vector of shapes currently being rendered with the
     /// given vector, replacing all shapes being rendered.
+    /// \param shapes The haptic shapes to render.
     /// \param layer The haptic layer to add shapes to
     inline void swapShapes( HapticShapeVector &shapes, 
                             unsigned int layer = 0 ) {
@@ -260,7 +265,9 @@ namespace HAPI {
     }
 
     /// Add a HapticForceEffect to be rendered.
-    /// \param objects The haptic shapes to render.
+    /// \param effect The haptic shapes to render.
+    /// \param fade_in_time The time until the effect is rendered at full
+    /// strength.
     inline void addEffect( HAPIForceEffect *effect,
                            HAPITime fade_in_time = 0 ) {
       force_effect_lock.lock();
@@ -271,7 +278,11 @@ namespace HAPI {
     }
 
     /// Set the HapticForceEffects to be rendered.
-    /// \param objects The haptic shapes to render.
+    /// \param effects The haptic shapes to render.
+    /// \param _switch_effects_duration The time until the new effects have
+    /// completely replaced the old ones. During this time the old will be
+    /// interpolated with a fraction and the new will be interpolated with
+    /// 1 - fraction.
     inline void setEffects( const HapticEffectVector &effects,
                             HAPITime _switch_effects_duration = 0 ) {
       force_effect_lock.lock();

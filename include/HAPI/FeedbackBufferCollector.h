@@ -63,6 +63,8 @@ namespace HAPI {
   /// outside the startCollecting() and endCollecting() pair.
   class HAPI_API FeedbackBufferCollector {
   public:
+    
+    /// Message generated when trying to collect OpenGL primitives.
     typedef enum {
       /// Success, no error occured
       SUCCESS,
@@ -90,8 +92,8 @@ namespace HAPI {
 
     /// Collect all primitives rendered when calling the glRender() function for
     /// the given HAPIGLShape. 
-    /// \param shape The HAPIGLShape which to collect primitives for.
-    /// \param transform A transformation matrix to transform the coordinate 
+    /// \param _shape The HAPIGLShape which to collect primitives for.
+    /// \param _transform A transformation matrix to transform the coordinate 
     /// space before rendering the HAPIGLShape.
     /// \param triangles Return parameter. All triangles rendered are added 
     /// to this vector.

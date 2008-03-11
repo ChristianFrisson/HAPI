@@ -720,11 +720,11 @@ void OpenHapticsRenderer::hlRenderRelative( HAPIFloat stiffness,
   hlTouchModelf( HL_SNAP_DISTANCE, (HLfloat)snap_distance );
 }
 
-/// Sets up the surface parameters for HL API. 
-/// TODO: Fix comment
-/// stiffness is given as N/mm
-/// damping as ...
-/// ..
+// Sets up the surface parameters for HL API. 
+// TODO: Fix comment
+// stiffness is given as N/mm
+// damping as ...
+// ..
 void OpenHapticsRenderer::hlRenderAbsolute( HAPIFloat stiffness,
                                             HAPIFloat damping,
                                             HAPIFloat static_friction,

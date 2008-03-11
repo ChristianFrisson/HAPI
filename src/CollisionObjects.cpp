@@ -1635,7 +1635,7 @@ bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
   }
 }
 
-
+// TODO: document function.
 Matrix3 covarianceMatrix( const vector< Vec3 >&points ) {
   // TODO: if no points?
 
@@ -1692,6 +1692,8 @@ void symmetricSchurDecomposition( const Matrix3 &A,
   }
 }
 
+/// Tries to find eigen values and eigen vectors for the matrix A given as
+/// input.
 void eigenValuesAndEigenVectorsJacobi(const Matrix3& A, 
                                       Vec3& eigValues, 
                                       Matrix3& eigVectors, 
