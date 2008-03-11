@@ -131,13 +131,11 @@ namespace HAPI {
                                         HAPIFloat radius = -1 );
 
     /// Get the closest point and normal on the object to the given point p.
-    /// \param p The point to find the closest point to(in local coords).
-    /// \param closest_point Return parameter for closest point
-    /// (in local coords)
-    /// \param normal Return parameter for normal at closest point
+    /// \param p The point to find the closest point to (in local coords).
+    /// \param cp Return parameter for closest point (in local coords).
+    /// \param n Return parameter for normal at closest point
     /// (in local coords).
-    /// \param tex_coord Return paramater for texture coordinate at closest 
-    /// point.
+    /// \param tc Return paramater for texture coordinate at closest point.
     virtual void closestPointOnShape( const Vec3 &p, Vec3 &cp, 
                                       Vec3 &n, Vec3 &tc );
 

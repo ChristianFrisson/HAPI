@@ -43,7 +43,7 @@ namespace HAPI {
   ///
   class OPENHAPTICSRENDERER_API HLCustomObject: 
     public HAPIHapticShape, 
-    public HAPI::OpenHapticsRenderer::HLShape {
+    public OpenHapticsRenderer::HLShape {
   public:
 
     /// Intersect the line segment from start_point to end_point with
@@ -84,7 +84,7 @@ namespace HAPI {
     /// the instersectSurface and closestPointOnSurface function in the callback
     /// functions.
     /// 
-    virtual void hlRender( HAPI::HAPIHapticsDevice *hd,
+    virtual void hlRender( HAPIHapticsDevice *hd,
                            HLuint shape_id );
 
   protected:

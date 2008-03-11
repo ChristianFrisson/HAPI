@@ -36,7 +36,7 @@
 
 using namespace HAPI;
 
-void HLCustomObject::hlRender( HAPI::HAPIHapticsDevice *hd,
+void HLCustomObject::hlRender( HAPIHapticsDevice *hd,
                                HLuint hl_shape_id ) {
   if( OpenHapticsRenderer::hlRenderHAPISurface( surface.get(), hd ) ) {
     hlBeginShape(HL_SHAPE_CALLBACK, hl_shape_id );

@@ -221,8 +221,8 @@ class Constraints;
     class HAPI_API Plane: public GeometryPrimitive {
     public:
       /// Constructor.
-      /// \params p A point in the plane.
-      /// \params n The normal of the plane.
+      /// \param p A point in the plane.
+      /// \param n The normal of the plane.
       Plane( const Vec3 &p, const Vec3 &n ):
         point( p ), normal( n ) {}
       
@@ -235,7 +235,7 @@ class Constraints;
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
       /// \param closest_point Return parameter for closest point
-      /// \param normal Return parameter for normal at closest point.
+      /// \param n Return parameter for normal at closest point.
       /// \param tex_coord Return paramater for texture coordinate at closest 
       /// point
       virtual void closestPoint( const Vec3 &p,
