@@ -7,11 +7,24 @@
 
 
 # Look for the header file.
-FIND_PATH(DHD_INCLUDE_DIR NAMES dhdc.h)
+FIND_PATH(DHD_INCLUDE_DIR NAMES dhdc.h 
+                          PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                $ENV{H3D_EXTERNAL_ROOT}/include/DHD-API
+                                 ../../External/include
+                                 ../../External/include/DHD-API )
 MARK_AS_ADVANCED(DHD_INCLUDE_DIR)
 
+
 # Look for the library.
-FIND_LIBRARY(DHD_LIBRARY NAMES dhd)
+IF(WIN32)
+  FIND_LIBRARY(DHD_LIBRARY NAMES dhdms
+                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                 ../../External/lib)
+ELSE(WIN32)
+  FIND_LIBRARY(DHD_LIBRARY NAMES dhd
+                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                 ../../External/lib)
+ENDIF(WIN32)
 MARK_AS_ADVANCED(DHD_LIBRARY)
 
 

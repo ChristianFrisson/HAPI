@@ -7,13 +7,23 @@
 
 
 # Look for the header file.
-FIND_PATH(CHAI3D_INCLUDE_DIR NAMES cWorld.h)
+FIND_PATH(CHAI3D_INCLUDE_DIR NAMES cWorld.h
+                             PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                   $ENV{H3D_EXTERNAL_ROOT}/include/Chai3D/include
+                                   ../../External/include
+                                   ../../External/include/Chai3D/include)
 MARK_AS_ADVANCED(CHAI3D_INCLUDE_DIR)
 
-# Look for the library.
-FIND_LIBRARY(CHAI3D_LIBRARY NAMES chai3d_linux)
-MARK_AS_ADVANCED(CHAI3D_LIBRARY)
 
+# Look for the library.
+IF(WIN32)
+FIND_LIBRARY(CHAI3D_LIBRARY NAMES chai3d_complete  
+                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                  ../../External/lib )
+ELSE(WIN32)
+FIND_LIBRARY(CHAI3D_LIBRARY NAMES chai3d_linux)
+ENDIF(WIN32)
+MARK_AS_ADVANCED(CHAI3D_LIBRARY)
 
 # Copy the results to the output variables.
 IF(CHAI3D_INCLUDE_DIR AND CHAI3D_LIBRARY)

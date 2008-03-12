@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES( .. )
 
 SET(requiredLibs)
 
-SET(CMAKE_MODULE_PATH "../../../build/modules/")
+SET(CMAKE_MODULE_PATH ${HAPIDemo_SOURCE_DIR}/../../../build/modules )
 
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)
@@ -30,15 +30,31 @@ IF(HAPI_FOUND)
   SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
 ENDIF(HAPI_FOUND)
 
-SET(wxWidgets_USE_LIBS base core)
+IF(WIN32)
+  FIND_PACKAGE(wxWidgetsWin)
+  IF(wxWidgets_FOUND)
+    INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+  ENDIF(wxWidgets_FOUND)
+ENDIF(WIN32)
 
-FIND_PACKAGE(wxWidgets REQUIRED)
 IF(wxWidgets_FOUND)
-  INCLUDE(${wxWidgets_USE_FILE})
-  SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+ELSE(wxWidgets_FOUND)
+  SET(wxWidgets_USE_LIBS base core)
+  FIND_PACKAGE(wxWidgets REQUIRED)
+  IF(wxWidgets_FOUND)
+    INCLUDE(${wxWidgets_USE_FILE})
+    SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+  ENDIF(wxWidgets_FOUND)
 ENDIF(wxWidgets_FOUND)
 
-ADD_EXECUTABLE(HAPIDemo MACOSX_BUNDLE ${HAPIDemo_SRCS})
+FIND_PACKAGE(PTHREAD REQUIRED)
+IF(PTHREAD_FOUND)
+  INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
+  SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
+ENDIF(PTHREAD_FOUND)
+
+ADD_EXECUTABLE(HAPIDemo WIN32 MACOSX_BUNDLE ${HAPIDemo_SRCS})
 
 TARGET_LINK_LIBRARIES( HAPIDemo ${requiredLibs} ${optionalLibs} )
 

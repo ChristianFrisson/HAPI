@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES( .. )
 
 SET(requiredLibs)
 
-SET(CMAKE_MODULE_PATH "../../../build/modules/")
+SET(CMAKE_MODULE_PATH ${SurfaceExample_SOURCE_DIR}/../../../build/modules )
 
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)

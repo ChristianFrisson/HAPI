@@ -1,7 +1,7 @@
 # The name of our project is "HELLO".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
 # to the root binary directory of the project as ${HELLO_BINARY_DIR}.
-project (SpringExample)
+PROJECT(SpringExample)
 
 # Create a library called "Hello" which includes the source file "hello.cxx".
 # The extension is already found.  Any number of sources could be listed here.
@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES( .. )
 
 SET(requiredLibs)
 
-SET(CMAKE_MODULE_PATH "../../../build/modules/")
+SET(CMAKE_MODULE_PATH ${SpringExample_SOURCE_DIR}/../../../build/modules )
 
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)
