@@ -41,9 +41,12 @@
 
 namespace HAPI {
 
-  /// Class for using the render() function of an X3DGeometryNode for
+  /// \ingroup OpenHapticsRenderer
+  /// \ingroup Shapes
+  /// \class HLFeedbackShape
+  /// \brief Class for using the glRender() function of an HAPIGLShape for
   /// haptics rendering. This makes it very easy to implement simple
-  /// haptics rendering of a geometry, since when the render() function
+  /// haptics rendering of a geometry, since when the glRender() function
   /// is implemented to perform the graphical rendering. The shape is
   /// implemented as a HL_SHAPE_FEEDBACK_BUFFER shape in HLAPI.
   class OPENHAPTICSRENDERER_API HLFeedbackShape: public HAPIHapticShape, 

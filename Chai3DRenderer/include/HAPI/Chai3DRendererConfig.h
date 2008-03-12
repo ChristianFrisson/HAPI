@@ -26,10 +26,6 @@
 /// \brief Base header file that handles all configuration related settings
 ///
 //////////////////////////////////////////////////////////////////////////////
-
-/// \mainpage
-/// Copyright 2004, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
-
 #ifndef __CHAI3DRENDERERCONFIG_H__
 #define __CHAI3DRENDERERCONFIG_H__
 

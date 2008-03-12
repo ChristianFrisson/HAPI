@@ -35,9 +35,13 @@
 
 namespace HAPI {
 
-  /// The base class for all classes which can be used with the 
-  /// collectTriangles and collectPrimitives functions in the class
-  /// FeedbackBufferCollector.
+  /// \ingroup AbstractClasses
+  /// \class HAPIGLShape
+  /// \brief The base class for all classes which can be used with functions
+  /// in the class FeedbackBufferCollector.
+  ///
+  /// The functions that HAPIGLShape can be used with are collectTriangles and
+  /// collectPrimitives functions in the class FeedbackBufferCollector.
   class HAPI_API HAPIGLShape {
   public:
     /// Virtual destructor.

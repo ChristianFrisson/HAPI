@@ -36,9 +36,11 @@
 
 namespace HAPI {
 
-
-  /// Interface to all haptics devices from ForceDimension, including the 
-  /// Delta and Omega devices.
+  /// \ingroup HapticsDevices
+  /// \class ForceDimensionHapticsDevice
+  /// \brief Interface to all haptics devices from ForceDimension, including
+  /// the Delta and Omega devices.
+  ///
   /// Uses the DHD API to interface to the haptics devices, so every
   /// device supported by DHD API is supported by this class.
   class HAPI_API ForceDimensionHapticsDevice: public HAPIHapticsDevice {

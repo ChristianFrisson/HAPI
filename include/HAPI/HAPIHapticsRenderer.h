@@ -43,9 +43,12 @@ namespace HAPI {
   // forward declaration
   class HAPIHapticsDevice;
 
-  /// Base class for all haptics renderers in HAPI. The purpose of a
-  /// haptics renderer is, given a set of geometries and the current
-  /// values of a haptics device, to generate a force and a torque to
+  /// \ingroup AbstractClasses
+  /// \class HAPIHapticsRenderer
+  /// \brief Base class for all haptics renderers in HAPI.
+  ///
+  /// The purpose of a haptics renderer is, given a set of geometries and the
+  /// current values of a haptics device, to generate a force and a torque to
   /// send to the haptics device to render. Subclasses must define the
   /// following function that does this: 
   /// -   HapticForceEffect::EffectOutput 
@@ -117,7 +120,7 @@ namespace HAPI {
     template< class N >
     static HAPIHapticsRenderer *newInstance() { return new N; };
 
-    /// Class used to register a class to the registered renderers.
+    /// Struct used to register a class to the registered renderers.
     struct HAPI_API HapticsRendererRegistration{
     public:
       /// Constructor.

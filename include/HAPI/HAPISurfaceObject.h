@@ -40,7 +40,10 @@ namespace HAPI {
   class HAPIHapticsDevice;
   class HAPIHapticShape;
 
-  /// The HAPISurfaceObject is the base class of all surfaces in HAPI.
+  /// \ingroup AbstractClasses
+  /// \class HAPISurfaceObject
+  /// \brief The base class of all surfaces in HAPI.
+  ///
   /// A surface is responsible for defining the forces and proxy movements
   /// to use when in contact with a shape, depending on penetration depth,
   /// friction etc. Surfaces that are to work with RuspiniRenderer and

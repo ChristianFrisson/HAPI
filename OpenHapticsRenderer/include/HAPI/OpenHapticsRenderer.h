@@ -44,14 +44,23 @@
 #include <HL/hl.h>
 
 namespace HAPI {
-  /// Haptics renderer using the HL API part of OpenHaptics for the 
+  /// \defgroup OpenHapticsRenderer OpenHapticsRenderer classes
+  /// These classes use HAPI and HL but are built in a separate project.
+  /// The reason for this is to separate dependency on dlls in Windows.
+
+  /// \ingroup OpenHapticsRenderer
+  /// \ingroup Renderers
+  /// \class OpenHapticsRenderer
+  /// \brief Haptics renderer using the HL API part of OpenHaptics for the
   /// haptics rendering. 
   class OPENHAPTICSRENDERER_API OpenHapticsRenderer: 
     public HAPI::HAPIProxyBasedRenderer {
   public:
 
-    /// Special shape type that allows for hl api specific rendering calls
-    /// using the hlRender function.
+    /// \ingroup OpenHapticsRenderer
+    /// \class HLShape
+    /// \brief Base class for all special shape type that allows for hl api
+    /// specific rendering calls using the hlRender function.
     class OPENHAPTICSRENDERER_API HLShape {
     public:
       /// Destructor.
@@ -62,8 +71,10 @@ namespace HAPI {
                              HLuint shape_id ) = 0;
     };
 
-    /// Special surface type that allows for hl api specific rendering calls
-    /// using the hlRender function.
+    /// \ingroup OpenHapticsRenderer
+    /// \class HLSurface
+    /// \brief Base class for all special surface types that allows for hl api
+    /// specific rendering calls using the hlRender function.
     class OPENHAPTICSRENDERER_API HLSurface {
     public:
       /// Destructor.
@@ -74,10 +85,14 @@ namespace HAPI {
       virtual void hlRender() = 0;
     };
 
-    /// The OpenHapticsSurface is a HAPISurfaceObject that sets its parameters
-    /// through OpenHaptics calls. It can only be used with OpenHapticsRenderer.
-    /// The values for stiffness, damping and so on have to have the units that
-    /// OpenHaptics uses. For example, snap_distance should be in mm.
+    /// \ingroup OpenHapticsRenderer
+    /// \ingroup Surfaces
+    /// \class OpenHapticsSurface
+    /// \brief A surface that sets its parameters through OpenHaptics calls.
+    ///
+    /// It can only be used with OpenHapticsRenderer. The values for stiffness,
+    /// damping and so on have to have the units that OpenHaptics uses. For
+    /// example, snap_distance should be in mm.
     class OPENHAPTICSRENDERER_API OpenHapticsSurface: public HAPISurfaceObject,
       public HLSurface
     {
@@ -102,9 +117,9 @@ namespace HAPI {
       /// Must be a value between 0 and 1. 1 is the maximum damping possible.
       HAPIFloat damping;
 
-      /// Static friction controls how hard it is to start sliding along the surface
-      /// when the device is initially not moving. 0 means no friction. 1 means
-      /// device maximum.
+      /// Static friction controls how hard it is to start sliding along the
+      /// surface when the device is initially not moving. 0 means no friction.
+      /// 1 means device maximum.
       HAPIFloat static_friction;
 
       /// Dynamic friction controls the amount of resistance while moving along
@@ -119,8 +134,12 @@ namespace HAPI {
       bool magnetic;
     };
 
-    /// Options for what OpenHaptics parameters to use when rendering a shape.
-    class OPENHAPTICSRENDERER_API OpenHapticsOptions: public HAPI::HAPIShapeRenderOptions {
+    /// \ingroup OpenHapticsRenderer
+    /// \class OpenHapticsOptions
+    /// \brief Options for what OpenHaptics parameters to use when rendering a
+    /// shape.
+    class OPENHAPTICSRENDERER_API OpenHapticsOptions:
+      public HAPI::HAPIShapeRenderOptions {
     public:
       typedef enum {
 #ifdef HAVE_OPENGL
@@ -344,6 +363,9 @@ namespace HAPI {
                                            HLcache *cache,
                                            void *userdata );
 
+    /// \internal
+    /// Contains data sent to the callbacks used for haptics geometry
+    /// rendering with OpenHapticsRenderer.
     struct CallbackData {
       CallbackData( OpenHapticsRenderer *r, 
                     HAPI::HAPIHapticShape *s,

@@ -32,7 +32,10 @@
 #include <HAPI/HAPISurfaceObject.h>
 
 namespace HAPI {
-  /// FrictionSurface is a basic surface with friction capabilities.
+  /// \ingroup Surfaces
+  /// \class FrictionSurface
+  /// \brief A basic surface with friction capabilities.
+  ///
   /// By default it behaves as if there is no friction at all on the surface.
   /// The force calculated always points from the probe towards the
   /// proxy. The force along the surface multiplied by the dynamic friction

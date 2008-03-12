@@ -37,8 +37,10 @@ namespace HAPI {
   // forward declaration
   class HAPIProxyBasedDevice;
 
+  /// \ingroup AbstractClasses
   /// \class HAPIProxyBasedRenderer
-  /// \brief Base class for all proxy based haptic renderers in HAPI. 
+  /// \brief Base class for all proxy based haptic renderers in HAPI.
+  ///
   /// A proxy is a virtual representation of the haptics device position that
   /// always stays outside any surface. Forces are then generated depending on the 
   /// difference between the proxy position and the haptics device position.

@@ -37,6 +37,7 @@
 #include <HAPI/fparser.hh>
 
 namespace HAPI {
+  /// \ingroup Others
   /// \class ParsedFunction
   /// \brief A function class that parses a string specifying a function and
   /// uses that function when evaluating its value.

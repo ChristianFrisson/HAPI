@@ -45,6 +45,8 @@ class Constraints;
   namespace Collision {
     /// Intersect segment S(t)=sa+t(sb-sa), 0<=t<=1 against cylinder 
     /// specified by p, q and r. The segment finds the first along the segment.
+    /// If the segment intersects the cylinder the point of intersection can
+    /// be calculated from t.
     bool HAPI_API intersectSegmentCylinder( Vec3 sa, Vec3 sb, 
                                             Vec3 p, Vec3 q, 
                                             HAPIFloat r, 
@@ -53,8 +55,10 @@ class Constraints;
     class PlaneConstraint; 
 	
     
-    /// The CollisionObject class is the base class for objects that 
-    /// can be used  in collision detection.
+    /// \ingroup AbstractClasses
+    /// \class CollisionObject
+    /// \brief The base class for objects that can be used in collision
+    /// detection.
     class HAPI_API CollisionObject : public H3DUtil::RefCountedClass {
     public:
       /// Constructor.
@@ -68,7 +72,7 @@ class Constraints;
 
       /// Get constraint planes of the object. A proxy of a haptics renderer
       /// will always stay above any constraints added.
-      /// \param point Point to constrain.
+      /// \param point The point to constrain.
       /// \param constraints Where to add the constraints.
       /// \param face Determines which faces of the shape will be seen as
       /// constraining.
@@ -88,7 +92,7 @@ class Constraints;
       virtual void closestPoint( const Vec3 &p,
                                  Vec3 &closest_point,
                                  Vec3 &normal,
-                                 Vec3 &tex_coord ) {}// = 0;
+                                 Vec3 &tex_coord ) = 0;
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -102,8 +106,7 @@ class Constraints;
       virtual bool lineIntersect( const Vec3 &from, 
                                   const Vec3 &to,
                                   IntersectionInfo &result,
-                                  FaceType face = Collision::FRONT_AND_BACK ){
-        return false; }// = 0;
+                               FaceType face = Collision::FRONT_AND_BACK ) = 0;
 
       /// Detect collision between a moving sphere and the object.
       /// \param radius The radius of the sphere
@@ -115,7 +118,7 @@ class Constraints;
                                           const Vec3 &to ){ return false; }
 
       /// Detect collision between a moving sphere and the object and returns
-      /// information about the closest intersection. Will of course be slower
+      /// information about the closest intersection. Is of course slower
       /// than the version of movingSphereIntersect which does not return
       /// information about the intersection.
       /// \param radius The radius of the sphere
@@ -135,7 +138,9 @@ class Constraints;
     virtual void render() {}
   };
 
-    /// The BoundObject is the base class for bounding objects.
+    /// \ingroup AbstractClasses
+    /// \class BoundObject
+    /// \brief The base class for bounding objects.
     class HAPI_API BoundObject: public CollisionObject {
     public:
       /// Returns true if the given point is inside the bound, and
@@ -172,8 +177,10 @@ class Constraints;
 
     };
 
-    /// The BoundPrimitive class is the base class for simple bound 
-    /// primitives such as bounding spheres and bounding boxes.
+    /// \ingroup AbstractClasses
+    /// \class BoundPrimitive
+    /// \brief The base class for simple bound primitives such as bounding
+    /// spheres and bounding boxes.
     class HAPI_API BoundPrimitive: public BoundObject {
     public:
       /// Constructor.
@@ -187,13 +194,15 @@ class Constraints;
       virtual Vec3 longestAxis() const = 0;
     };
     
-    /// The GeometryPrimitive is the base class for all geometry 
-    /// primitives used in collision detection.
+    /// \ingroup AbstractClasses
+    /// \class GeometryPrimitive
+    /// \brief The base class for all geometry primitives used in collision
+    /// detection.
     class HAPI_API GeometryPrimitive: public CollisionObject {
     public:
       /// Get constraint planes of the shape. A proxy of a haptics renderer
       /// will always stay above any constraints added.
-      /// \param point Point to constrain.
+      /// \param point The point to constrain.
       /// \param constraints Where to add the constraints.
       /// \param face Determines which faces of the shape will be seen as
       /// constraining.
@@ -216,8 +225,11 @@ class Constraints;
 
     };
     
-    /// The Plane class is a collision primitive for a plane. The plane is
-    /// defined by a point and a normal.
+    /// \ingroup CollisionStructures
+    /// \class Plane
+    /// \brief A collision primitive for a plane.
+    ///
+    /// The plane is defined by a point and a normal.
     class HAPI_API Plane: public GeometryPrimitive {
     public:
       /// Constructor.
@@ -272,7 +284,7 @@ class Constraints;
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object and returns
-      /// information about the closest intersection. Will of course be slower
+      /// information about the closest intersection. Is of course slower
       /// than the version of movingSphereIntersect which does not return
       /// information about the intersection.
       /// \param radius The radius of the sphere
@@ -295,7 +307,11 @@ class Constraints;
     };
 
 
-    /// The Sphere class is a collision primitive for a sphere.
+    /// \ingroup CollisionStructures
+    /// \class Sphere
+    /// \brief A collision primitive for a sphere.
+    ///
+    /// The Sphere is defined by a center and a radius.
     class HAPI_API Sphere: public GeometryPrimitive {
     public:
       /// Constructor.
@@ -353,7 +369,7 @@ class Constraints;
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object and returns
-      /// information about the closest intersection. Will of course be slower
+      /// information about the closest intersection. Is of course slower
       /// than the version of movingSphereIntersect which does not return
       /// information about the intersection.
       /// \param radius The radius of the sphere
@@ -380,7 +396,9 @@ class Constraints;
     };
 
 
-    /// The Triangle class represents a triangle primitive.
+    /// \ingroup CollisionStructures
+    /// \class Triangle
+    /// \brief Represents a triangle primitive.
     class HAPI_API Triangle: public GeometryPrimitive  {
     public:
       /// Default constructor.
@@ -446,7 +464,7 @@ class Constraints;
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object and returns
-      /// information about the closest intersection. Will of course be slower
+      /// information about the closest intersection. Is of course slower
       /// than the version of movingSphereIntersect which does not return
       /// information about the intersection.
       /// \param radius The radius of the sphere
@@ -495,7 +513,11 @@ class Constraints;
       Vec3 ac, ab;
     };
 
-    /// The LineSegment class represents a line segment primitive.
+    /// \ingroup CollisionStructures
+    /// \class LineSegment
+    /// \brief Represents a line segment primitive.
+    ///
+    /// A line segment is a line from point a to point b.
     class HAPI_API LineSegment: public GeometryPrimitive  {
     public:
       /// Default constructor.
@@ -548,7 +570,7 @@ class Constraints;
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object and returns
-      /// information about the closest intersection. Will of course be slower
+      /// information about the closest intersection. Is of course slower
       /// than the version of movingSphereIntersect which does not return
       /// information about the intersection.
       /// \param radius The radius of the sphere
@@ -586,7 +608,9 @@ class Constraints;
       }
     };
 
-    /// The Point class represents a point primitive.
+    /// \ingroup CollisionStructures
+    /// \class Point
+    /// \brief Represents a point primitive.
     class HAPI_API Point: public GeometryPrimitive  {
     public:
       /// Default constructor.
@@ -636,7 +660,7 @@ class Constraints;
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object and returns
-      /// information about the closest intersection. Will of course be slower
+      /// information about the closest intersection. Is of course slower
       /// than the version of movingSphereIntersect which does not return
       /// information about the intersection.
       /// \param radius The radius of the sphere
@@ -665,7 +689,9 @@ class Constraints;
       Vec3 position;
     };
     
-    /// The AABoxBound class represents an axis-aligned bounding box.
+    /// \ingroup CollisionStructures
+    /// \class AABoxBound
+    /// \brief Represents an axis-aligned bounding box.
     class HAPI_API AABoxBound: public BoundPrimitive {
     public:
       /// Render the object. The caller of the function need to set up OpenGL
@@ -764,7 +790,9 @@ class Constraints;
      
     };
 
-    /// The OrientedBoxBound class represents an oriented bounding box.
+    /// \ingroup CollisionStructures
+    /// \class OrientedBoxBound
+    /// \brief Represents an oriented bounding box.
     class HAPI_API OrientedBoxBound: public AABoxBound {
     public:
       /// Render the object. The caller of the function need to set up OpenGL
@@ -822,7 +850,9 @@ class Constraints;
     };
 
 
-    /// The SphereBound class represents a bounding sphere.
+    /// \ingroup CollisionStructures
+    /// \class SphereBound
+    /// \brief Represents a bounding sphere.
     class HAPI_API SphereBound: public BoundPrimitive {
     public:
       /// Default constructor.
@@ -902,8 +932,11 @@ class Constraints;
       HAPIFloat radius;
     };
 
-    /// The BinaryBoundTree class is the base class for bound objects 
-    /// structured as a binary tree. Each node in the tree has a BoundPrimitive
+    /// \ingroup AbstractClasses
+    /// \class BinaryBoundTree
+    /// \brief The base class for bound objects structured as a binary tree.
+    /// 
+    /// Each node in the tree has a BoundPrimitive
     /// specifying a bound for itself and each subtree has the same. Each leaf
     /// in the tree contains triangle, line and point primitives contained
     /// within its parent bound.
@@ -948,7 +981,7 @@ class Constraints;
 
       /// Get constraint planes of the shape. A proxy of a haptics renderer
       /// will always stay above any constraints added.
-      /// \param point Point to constrain.
+      /// \param point The point to constrain.
       /// \param constraints Where to add the constraints.
       /// \param face Determines which faces of the shape will be seen as
       /// constraining.
@@ -1044,7 +1077,7 @@ class Constraints;
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object and returns
-      /// information about the closest intersection. Will of course be slower
+      /// information about the closest intersection. Is of course slower
       /// than the version of movingSphereIntersect which does not return
       /// information about the intersection.
       /// \param radius The radius of the sphere
@@ -1119,7 +1152,9 @@ class Constraints;
     };
 
 
-    /// The AABBTree is a BinaryBoundTree where the bounding primitive 
+    /// \ingroup CollisionStructures
+    /// \class AABBTree
+    /// \brief A BinaryBoundTree where the bounding primitive
     /// for each node is a AABoxBound (axis-aligned bounding box).
     class HAPI_API AABBTree: public BinaryBoundTree {
     public:
@@ -1149,7 +1184,9 @@ class Constraints;
     };
 
 
-    /// The OBBTree is a BinaryBoundTree where the bounding primitive 
+    /// \ingroup CollisionStructures
+    /// \class OBBTree
+    /// \brief a BinaryBoundTree where the bounding primitive
     /// for each node is an OrientedBoxBound.
     class HAPI_API OBBTree: public BinaryBoundTree {
     public:
@@ -1177,7 +1214,9 @@ class Constraints;
                          max_nr_triangles_in_leaf ) {}
     };
 
-    /// The SphereBoundTree is a BinaryBoundTree where the bounding 
+    /// \ingroup CollisionStructures
+    /// \class SphereBoundTree
+    /// \brief A BinaryBoundTree where the bounding
     /// primitive for each node is a SphereBound object.
     class HAPI_API SphereBoundTree: public BinaryBoundTree {
     public:
@@ -1206,8 +1245,12 @@ class Constraints;
                          max_nr_triangles_in_leaf ) {}
     };
 
-    /// The BBPrimitiveTree class is the base class for bound objects 
-    /// structured as a binary tree. Each node in the tree has a BoundPrimitive
+    /// \ingroup AbstractClasses
+    /// \class BBPrimitiveTree
+    /// \brief The base class for bound objects using structured as a binary
+    /// tree which contains pointers to the GeometryPrimitive class.
+    ///
+    /// Each node in the tree has a BoundPrimitive
     /// specifying a bound for itself and each subtree has the same. The leaf
     /// nodes can contain any GeometryPrimitive objects.
     class HAPI_API BBPrimitiveTree: public BoundObject {
@@ -1240,7 +1283,7 @@ class Constraints;
 
       /// Get constraint planes of the object. A proxy of a haptics renderer
       /// will always stay above any constraints added.
-      /// \param point Point to constrain.
+      /// \param point The point to constrain.
       /// \param constraints Where to add the constraints.
       /// \param face Determines which faces of the shape will be seen as
       /// constraining.
@@ -1318,7 +1361,7 @@ class Constraints;
                                           const Vec3 &to );
 
       /// Detect collision between a moving sphere and the object and returns
-      /// information about the closest intersection. Will of course be slower
+      /// information about the closest intersection. Is of course slower
       /// than the version of movingSphereIntersect which does not return
       /// information about the intersection.
       /// \param radius The radius of the sphere
@@ -1387,7 +1430,9 @@ class Constraints;
     };
 
 
-    /// The AABBPrimitiveTree is a BBPrimitiveTree where the bounding 
+    /// \ingroup CollisionStructures
+    /// \class AABBPrimitiveTree
+    /// \brief A BBPrimitiveTree where the bounding
     /// primitive for each node is a AABoxBound (axis-aligned bounding box).
     class HAPI_API AABBPrimitiveTree: public BBPrimitiveTree {
     public:
@@ -1406,8 +1451,10 @@ class Constraints;
     };
 
 
-    /// The OBBPrimitiveTree is a BBPrimitiveTree where the bounding primitive 
-    /// for each node is a OrientedBoxBound.
+    /// \ingroup CollisionStructures
+    /// \class OBBPrimitiveTree
+    /// \brief A BBPrimitiveTree where the bounding
+    /// primitive for each node is a OrientedBoxBound.
     class HAPI_API OBBPrimitiveTree: public BBPrimitiveTree {
     public:
       /// Default constructor.
@@ -1423,7 +1470,9 @@ class Constraints;
                          max_nr_primitives_in_leaf ) {}
     };
 
-    /// The SBPrimitiveTree is a BBPrimitiveTree where the bounding 
+    /// \ingroup CollisionStructures
+    /// \class SBPrimitiveTree
+    /// \brief A BBPrimitiveTree where the bounding 
     /// primitive for each node is a SphereBound object.
     class HAPI_API SBPrimitiveTree: public BBPrimitiveTree {
     public:

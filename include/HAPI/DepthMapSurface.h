@@ -34,8 +34,10 @@
 #include <HAPI/HAPIHapticShape.h>
 
 namespace HAPI {
+  /// \ingroup Surfaces
   /// \class DepthMapSurface
-  /// A HAPIVariableDepthSurface using a texture to calculate depth.
+  /// \brief A HAPIVariableDepthSurface using a texture to calculate depth.
+  ///
   /// Black areas in the texture are considered deep by default, this
   /// can be changed by changing parameters (see parameter descriptions).
   /// This surface might be very slow if the texture used is not a

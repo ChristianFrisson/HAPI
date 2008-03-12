@@ -50,12 +50,23 @@
 
 namespace HAPI {
 
-  /// Chai3DRenderer
-  /// Haptics renderer using Chai3D(www.chai3d.org) for the 
+  /// \defgroup Chai3DRenderer Chai3DRenderer classes
+  /// These classes use HAPI but use Chai3D for haptic rendering and are built
+  /// in a project separate from HAPI.
+  /// The reason for this is to separate dependency on dlls in Windows.
+
+  /// \ingroup Chai3DRenderer
+  /// \ingroup Renderers
+  /// \class Chai3DRenderer
+  /// \brief Haptics renderer using Chai3D(www.chai3d.org) for the
   /// haptics rendering.
   class CHAI3DRENDERER_API Chai3DRenderer: public HAPIProxyBasedRenderer {
   public:
-    /// Special shape type that uses Chai3D calls to render the shape.
+
+    /// \ingroup Chai3DRenderer
+    /// \class Chai3DShape
+    /// \brief Base class for special shape types that uses Chai3D calls to
+    /// render the shape.
     class CHAI3DRENDERER_API Chai3DShape {
     public:
       virtual ~Chai3DShape() {}
@@ -64,7 +75,10 @@ namespace HAPI {
       virtual void chai3dRender( HAPIHapticsDevice *hd ) = 0;
     };
 
-    /// Special shape type that uses Chai3D calls to render the surface.
+    /// \ingroup Chai3DRenderer
+    /// \class Chai3DSurface
+    /// \brief Base class for special shape types that uses Chai3D calls to
+    /// render the surface.
     class CHAI3DRENDERER_API Chai3DSurface {
     public:
       /// Destructor.
@@ -75,7 +89,9 @@ namespace HAPI {
       virtual void chai3dMaterial( cMaterial &m ) = 0;
     };
 
-    
+    /// \ingroup Chai3DRenderer
+    /// \class H3DDevice
+    /// \brief Our implementation of cGenericDevice which must be subclassed.
     class H3DDevice: public cGenericDevice {
     public:
       /// Constructor.
@@ -118,6 +134,9 @@ namespace HAPI {
 
     };
 
+    /// \ingroup Chai3DRenderer
+    /// \class H3DTool
+    /// \brief Our subclass of cGeneric3dofPointer of Chai3D.
     class H3DTool : public cGeneric3dofPointer {
     public:
       H3DTool(cWorld* a_world) : cGeneric3dofPointer( a_world ) {
@@ -125,6 +144,10 @@ namespace HAPI {
       }
     };
 
+    /// \ingroup Chai3DRenderer
+    /// \class Chai3DOptions
+    /// \brief Used to set specific options for Chai3D. No options are Chai3D
+    /// specific at the moment.
     class CHAI3DRENDERER_API Chai3DOptions: public HAPIShapeRenderOptions {
     public:
 

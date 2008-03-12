@@ -32,7 +32,9 @@
 #include <HAPI/HAPIForceEffect.h> 
 
 namespace HAPI {
-  /// This is a HAPIForceEffect that generates a constant force.
+  /// \ingroup ForceEffects
+  /// \class HapticForceField
+  /// \brief A haptic force effect that generates a constant force.
   class HAPI_API HapticForceField: public HAPIForceEffect {
   public:
 

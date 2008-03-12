@@ -37,7 +37,9 @@
 
 namespace HAPI {
 
-  /// Interface to the HapticMaster haptics device from Moog/FCS.
+  /// \ingroup HapticsDevices
+  /// \class HapticMasterDevice
+  /// \brief Interface to the HapticMaster haptics device from Moog/FCS.
   class HAPI_API HapticMasterDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.

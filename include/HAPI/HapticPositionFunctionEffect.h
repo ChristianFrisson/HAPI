@@ -34,7 +34,12 @@
 #include <HAPI/HAPIFunctionObject.h>
 
 namespace HAPI {
-  /// HapticPositionFunctionEffect creates a force by evaluating three
+  /// \ingroup ForceEffects
+  /// \class HapticPositionFunctionEffect
+  /// \brief A haptic force effect which creates a force that depends on the
+  /// position of the device.
+  ///
+  /// The force is calculated by evaluating three
   /// functions ( one for each dimension ) with the device position as input
   /// ( parameters x, y, z ).
   /// It is up to the user to make sure that the functions provided does not

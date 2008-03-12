@@ -33,7 +33,9 @@
 
 namespace HAPI {
 
-  /// A shape defined by a set of points.
+  /// \ingroup Shapes
+  /// \class HapticPointSet
+  /// \brief A shape defined by a set of points.
   class HAPI_API HapticPointSet: public HAPIHapticShape {
   public:
     /// Constructor.

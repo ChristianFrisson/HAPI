@@ -39,6 +39,7 @@
 
 namespace HAPI {
 
+  /// \ingroup AbstractClasses
   /// \class HAPIHapticsDevice
   /// \brief Base class for all haptics devices.
   /// 
@@ -74,8 +75,9 @@ namespace HAPI {
                        /// use getLastErrorMsg() to get info about the error.
     } ErrorCode;
 
-    /// Class for holding a snapshot of current values of different properties
-    /// of the haptics device.
+    /// \struct DeviceValues
+    /// \brief Struct for holding a snapshot of current values of different
+    /// properties of the haptics device.
     struct HAPI_API DeviceValues {
       DeviceValues():
         button_status( 0 ),
@@ -672,7 +674,7 @@ namespace HAPI {
     template< class N >
     static HAPIHapticsDevice *newInstance() { return new N; };
 
-    /// Class used to register a class to the registered file readers.
+    /// Struct used to register a class to the registered haptics devices.
     struct HAPI_API HapticsDeviceRegistration{
     public:
       /// Constructor.

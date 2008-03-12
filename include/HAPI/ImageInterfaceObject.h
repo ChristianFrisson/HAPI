@@ -35,11 +35,14 @@
 #include <HAPI/HAPITypes.h>
 
 namespace HAPI {
-  /// \ingroup HAPINodes
+  /// \ingroup Others
   /// \class ImageInterfaceObject
-  /// Base class for HAPIObjects that want access to information in an image.
+  /// \brief Interface class for classes that want access to information in an
+  /// image.
+  ///
   /// It is optimized for gray scale 8 bit images and slightly faster than 
-  /// using Image functions directly in other cases.
+  /// using Image functions directly in other cases. Classes that need access
+  /// to information in an Image should inherit from this class.
   class HAPI_API ImageInterfaceObject {
 
   public:

@@ -35,8 +35,11 @@ namespace HAPI {
 
   namespace Collision {
 
-    /// A representation of a plane constraining the proxy during calculations
-    /// in GodObjectRenderer and RuspiniRenderer.
+    /// \ingroup CollisionStructures
+    /// \class PlaneConstraint
+    /// \brief A representation of a plane constraining the proxy.
+    ///
+    /// Used during calculations in GodObjectRenderer and RuspiniRenderer.
     class HAPI_API PlaneConstraint {
 
     public:
@@ -61,8 +64,12 @@ namespace HAPI {
     };
   }
   
-  /// Similar to vector< PlaneConstraint > this class has many of the same
-  /// functions, but does some optimizations to avoid reallocation of memory
+  /// \ingroup CollisionStructures
+  /// \class Constraints
+  /// \brief Similar to vector< PlaneConstraint >.
+  ///
+  /// This class has many of the same functions as vector< PlaneConstraint >,
+  /// but does some optimizations to avoid reallocation of memory
   /// when used in RuspiniRenderer.
   class Constraints {
   public:
@@ -80,7 +87,8 @@ namespace HAPI {
       delete [] constraints;
     }
     
-    // The iterator class for Constraints.
+    /// \class iterator
+    /// \brief The iterator class for Constraints.
     class iterator {
     public:
       const static unsigned int end_value = 1929294;

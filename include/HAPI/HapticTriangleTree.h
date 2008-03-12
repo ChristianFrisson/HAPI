@@ -33,7 +33,10 @@
 
 namespace HAPI {
 
-  /// A HAPIHapticShape defined by a set of triangles arranged in a tree.
+  /// \ingroup Shapes
+  /// \class HapticTriangleTree
+  /// \brief A shape defined by a set of triangles arranged in a
+  /// tree.
   class HAPI_API HapticTriangleTree: public HAPIHapticShape {
   public:
     /// Constructor.

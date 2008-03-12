@@ -34,10 +34,12 @@
 
 namespace HAPI {
 
-  /// The base class for all haptic objects. A haptic object performs
-  /// any kind of haptic rendering e.g. rendering of shapes or
-  /// general force effects.
-  
+  /// \ingroup AbstractClasses
+  /// \class HAPIHapticObject
+  /// \brief The base class for all haptic objects.
+  ///
+  /// A haptic object performs any kind of haptic rendering e.g. rendering of
+  /// shapes or general force effects.  
   class HAPI_API HAPIHapticObject {
   public:
     /// Destructor. Virtual to make HapticObject a polymorphic type.

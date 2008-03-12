@@ -62,6 +62,37 @@ namespace HAPI {
   typedef float HAPIFloat ;
 #endif
 
+  // defining "types" for doxygen. That is, different groups used to
+  // give better structured documentation.
+
+  /// \defgroup AbstractClasses Abstract Classes
+  /// An abstract classe is a common base class for other classes.
+
+  /// \defgroup Renderers Haptic geometry rendering
+  /// These classes takes care of geometry based haptic rendering in HAPI.
+
+  /// \defgroup ForceEffects Haptics force effects
+  /// These classes implements some kind of force effect to be renderered
+  /// on the haptics device.
+
+  /// \defgroup Shapes Haptic geometries
+  /// These classes can be used by a renderer to allow for geometry based
+  /// haptic rendering in HAPI.
+
+  /// \defgroup CollisionStructures Collision structures
+  /// These classes contains functions and structures to simplify collision
+  /// detection for other classes. 
+
+  /// \defgroup Surfaces Haptic surfaces
+  /// These classes are used to define the behaviour on the surface of
+  /// shapes.
+
+  /// \defgroup HapticsDevices Haptics devices
+  /// These classes interfaces to a haptics device of some kind.
+
+  /// \defgroup Others Other classes
+  /// These classes does not fit in any other categories and can be any kind
+  /// of class used as help functions or interfaces to other classes.
 }
 
 #endif
