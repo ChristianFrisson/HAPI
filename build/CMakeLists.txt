@@ -80,9 +80,9 @@ SET(optionalLibs)
 # add all required libraries to this variable
 SET(requiredLibs)
 
-IF(!WIN32)
+IF(NOT WIN32)
 SET(requiredLibs ${requiredLibs} H3DUtil)
-ENDIF(!WIN32)
+ENDIF(NOT WIN32)
 
 INCLUDE_DIRECTORIES( ../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
 
@@ -202,8 +202,6 @@ ENDIF( WIN32 )
 
 # autogenerate HAPI.h depending on the libraries available.
 CONFIGURE_FILE( ../include/HAPI/HAPI.cmake ../include/HAPI/HAPI.h )
-
-SET( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. )
 
 INSTALL( TARGETS HAPI 
          LIBRARY DESTINATION lib
