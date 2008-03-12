@@ -7,17 +7,25 @@
 
 
 # Look for the header file.
-FIND_PATH(OPENHAPTICS_INCLUDE_DIR NAMES HL/HL.h HD/HD.h HDU/hdu.h)
+FIND_PATH(OPENHAPTICS_INCLUDE_DIR NAMES HL/HL.h HD/HD.h HDU/hdu.h
+                                  PATHS $ENV{3DTOUCH_BASE}/include
+                                        "/Program Files/SensAble/3DTouch/include")
 MARK_AS_ADVANCED(OPENHAPTICS_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(HL_LIBRARY NAMES HL)
+FIND_LIBRARY(HL_LIBRARY NAMES HL 
+                        PATHS $ENV{3DTOUCH_BASE}/lib
+                              "/Program Files/SensAble/3DTouch/lib")
 MARK_AS_ADVANCED(HL_LIBRARY)
 
-FIND_LIBRARY(HD_LIBRARY NAMES HD)
+FIND_LIBRARY(HD_LIBRARY NAMES HD
+                        PATHS $ENV{3DTOUCH_BASE}/lib
+                              "/Program Files/SensAble/3DTouch/lib")
 MARK_AS_ADVANCED(HD_LIBRARY)
 
-FIND_LIBRARY(HDU_LIBRARY NAMES HDU)
+FIND_LIBRARY(HDU_LIBRARY NAMES HDU
+                         PATHS $ENV{3DTOUCH_BASE}/utilities/lib
+                               "/Program Files/SensAble/3DTouch/utilities/lib")
 MARK_AS_ADVANCED(HDU_LIBRARY)
 
 # Copy the results to the output variables.

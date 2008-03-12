@@ -7,14 +7,20 @@
 
 
 # Look for the header file.
-FIND_PATH(PTHREAD_INCLUDE_DIR NAMES pthread.h)
+FIND_PATH(PTHREAD_INCLUDE_DIR NAMES pthread.h
+                              PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
+                                    $ENV{H3D_EXTERNAL_ROOT}/include/pthread
+                                    ../../External/include    
+                                    ../../External/include/pthread)
 
 MARK_AS_ADVANCED(PTHREAD_INCLUDE_DIR)
 
 # Look for the library.
 
 IF(WIN32)
-  FIND_LIBRARY(PTHREAD_LIBRARY NAMES pthreadVC2)
+  FIND_LIBRARY(PTHREAD_LIBRARY NAMES pthreadVC2 
+                               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                     ../../External/lib    )
 ELSE(WIN32)
   FIND_LIBRARY(PTHREAD_LIBRARY NAMES pthread)
 MARK_AS_ADVANCED(PTHREAD_LIBRARY)
@@ -34,7 +40,7 @@ ENDIF(PTHREAD_INCLUDE_DIR AND PTHREAD_LIBRARY)
 # Report the results.
 IF(NOT PTHREAD_FOUND)
   SET(PTHREAD_DIR_MESSAGE
-    "PTHREAD was not found. Make sure PTHREAD_LIBRARY and PTHREAD_INCLUDE_DIR are set.")
+    "PTHREAD was not found. Make sure PTHREAD_LIBRARY and PTHREAD_INCLUDE_DIR are set. Pthread is required to compile.")
   IF(NOT PTHREAD_FIND_QUIETLY)
     MESSAGE(STATUS "${PTHREAD_DIR_MESSAGE}")
   ELSE(NOT PTHREAD_FIND_QUIETLY)
