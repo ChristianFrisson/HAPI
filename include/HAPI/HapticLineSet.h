@@ -33,7 +33,9 @@
 
 namespace HAPI {
 
-  /// A shape defined by a set of lines.
+  /// \ingroup Shapes
+  /// \class HapticLineSet
+  /// \brief A shape defined by a set of lines.
   class HAPI_API HapticLineSet: public HAPIHapticShape {
   public:
     /// Constructor.

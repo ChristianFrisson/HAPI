@@ -34,7 +34,9 @@
 
 namespace HAPI {
 
-  /// A shape defined by a set of primitives.
+  /// \ingroup Shapes
+  /// \class HapticPrimitiveSet
+  /// \brief A shape defined by a set of primitives.
   class HAPI_API HapticPrimitiveSet: public HAPIHapticShape {
   public:
 

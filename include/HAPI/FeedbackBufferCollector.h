@@ -44,8 +44,10 @@
 #endif
 
 namespace HAPI {
-  /// The FeedbackBufferCollector contains a bunch of static functions for 
-  /// collecting primitives rendered by OpenGL from the feedback buffer.
+  /// \ingroup Others
+  /// \class FeedbackBufferCollector
+  /// \brief Contains a bunch of static functions
+  /// for collecting primitives rendered by OpenGL from the feedback buffer.
   ///
   /// If you have a class instance that inherit from HAPIGLShape you can
   /// use one of the collectTriangles() or collectPrimitives() functions.

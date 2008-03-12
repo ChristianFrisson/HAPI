@@ -38,7 +38,9 @@
 
 namespace HAPI {
 
-  /// Haptics renderer that uses a variant of the algorithm presented
+  /// \ingroup Renderers
+  /// \class RuspiniRenderer
+  /// \brief Haptics renderer that uses a variant of the algorithm presented
   /// in the paper "The haptic display of complex graphical environments"
   /// by Diego C. Ruspini, Krasimir Kolarov and Oussama Khatib.
   ///

@@ -36,7 +36,9 @@
 
 namespace HAPI {
 
-  /// Haptics renderer that uses a variant of the algorithm presented
+  /// \ingroup Renderers
+  /// \class GodObjectRenderer
+  /// \brief Haptics renderer that uses a variant of the algorithm presented
   /// in the paper "A Constraint-based God-object Method For Haptic Display"
   /// by C. B. Zilles J. K. Salisbury.
   ///

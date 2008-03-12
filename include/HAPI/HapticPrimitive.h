@@ -34,8 +34,10 @@
 
 namespace HAPI {
 
-  /// The HapticPrimitive class is a HAPIHapticShape which uses
-  /// a GeometryPrimitive to define the geometry. 
+  /// \ingroup Shapes
+  /// \class HapticPrimitive
+  /// \brief A shape which uses one instance of
+  /// the GeometryPrimitive class to define the geometry.
   class HAPI_API HapticPrimitive: public HAPIHapticShape {
   public:
     /// Constructor.

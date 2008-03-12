@@ -27,10 +27,6 @@
 /// for OpenHapticsRenderer.
 ///
 //////////////////////////////////////////////////////////////////////////////
-
-/// \mainpage
-/// Copyright 2004, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
-
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 

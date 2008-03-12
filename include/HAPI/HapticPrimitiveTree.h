@@ -34,8 +34,10 @@
 
 namespace HAPI {
 
-  /// A HAPIHapticShape defined by a set of GeometryPrimitives arranged in a
-  /// tree.
+  /// \ingroup Shapes
+  /// \class HapticPrimitiveTree
+  /// \brief A shape defined by a set of the class GeometryPrimitive
+  /// arranged in a tree.
   class HAPI_API HapticPrimitiveTree: public HAPIHapticShape {
   public:
     /// Constructor.

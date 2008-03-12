@@ -34,12 +34,14 @@
 
 namespace HAPI {
 
-  /// The AnyHapticsDevice node uses the first connected haptics
-  /// device that it can successfully initialize.
+  /// \ingroup HapticsDevices
+  /// \class AnyHapticsDevice
+  /// \brief This class represents any haptics device connected to the system.
   ///
-  /// This can be used if you do not care which haptics device to
-  /// use, just any one connected to your computer. It will try all 
-  /// registered haptics devices such as PhantomHapticsDevice and 
+  /// The class uses the first connected haptics device that it can
+  /// successfully initialize. This can be used if you do not care which
+  /// haptics device to use, just any one connected to your computer. It will
+  /// try all registered haptics devices such as PhantomHapticsDevice and
   /// ForceDimensionHapticsDevice until it finds one that works.
   class HAPI_API AnyHapticsDevice: public HAPIHapticsDevice {
   public:

@@ -33,9 +33,13 @@
 #include <HAPI/HAPIHapticsDevice.h>
 
 namespace HAPI {
-  /// A HAPIForceEffect that uses stokes law to calculate the force exerted on
-  /// a sphere of radius r in a fluid with a certain viscosity. The flow is
-  /// assumed to be laminar.
+  /// \ingroup ForceEffects
+  /// \class HapticViscosity
+  /// \brief A haptic force effect which tries to simulate viscosity.
+  ///
+  /// HapticViscosity uses stokes law to calculate the force
+  /// exerted on a sphere of radius r in a fluid with a certain viscosity.
+  /// The flow is assumed to be laminar.
   class HAPI_API HapticViscosity: public HAPIForceEffect {
   public:
     /// Constructor

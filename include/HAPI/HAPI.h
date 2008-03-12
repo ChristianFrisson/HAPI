@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 /// \mainpage
-/// Copyright 2004, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
+/// Copyright 2006, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
 
 #ifndef __HAPI_H__
 #define __HAPI_H__

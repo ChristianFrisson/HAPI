@@ -37,16 +37,19 @@ namespace HAPI {
   // forward declaration
   class HAPIHapticsDevice;
 
-  /// The base class for force effects. A HAPIForceEffect is a class that 
-  /// generates force and torque based values of the haptics device such
-  /// as position, orientation and velocity. It is a good choice to use
-  /// to create global effects such as force fields, springs, recoil
-  /// effects and wind.
+  /// \ingroup AbstractClasses
+  /// \class HAPIForceEffect
+  /// \brief The base class for force effects.
+  ///
+  /// A HAPIForceEffect is a class that generates force and torque based
+  /// values of the haptics device such as position, orientation and velocity.
+  /// It is a good choice to use to create global effects such as force
+  /// fields, springs, recoil effects and wind.
   class HAPI_API HAPIForceEffect: public HAPIHapticObject, 
                                   public H3DUtil::RefCountedClass {
   public:
 
-    /// The input to a HAPIForceEffect. 
+    /// The input to the calculateForces function of HAPIForceEffect. 
     struct HAPI_API EffectInput {
       /// Constructor.
       EffectInput( HAPIHapticsDevice *_hd,
@@ -67,7 +70,7 @@ namespace HAPI {
       HAPIHapticsDevice *hd;
     };
 
-    /// The output from a HAPIForceEffect.
+    /// The output from the calculateForces function of HAPIForceEffect.
     struct HAPI_API EffectOutput {
       /// Constructor.
       EffectOutput( const Vec3 _force = Vec3( 0,0,0 ),

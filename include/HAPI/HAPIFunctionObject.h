@@ -33,8 +33,10 @@
 #include <HAPI/HAPITypes.h>
 
 namespace HAPI {
+  /// \ingroup AbstractClasses
   /// \class HAPIFunctionObject
   /// \brief Base class for classes evaluating a function.
+  ///
   /// The function is a function R^n -> R.
   class HAPI_API HAPIFunctionObject {
   public:

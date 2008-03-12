@@ -34,12 +34,13 @@
 #include <H3DUtil/AutoRef.h>
 
 namespace HAPI {
-  /// \ingroup HAPINodes
+  /// \ingroup AbstractClasses
   /// \class HAPIVariableDepthSurface
-  /// Base class for all surfaces which has a "depth". Sufficient force is
-  /// needed by the user to go from a deep area to a shallow area on the
-  /// surface. The depth is calculated by a function using local space of
-  /// the point of contact.
+  /// \brief Base class for all surfaces which has a "depth".
+  ///
+  /// Sufficient force is needed by the user to go from a deep area to a
+  /// shallow area on the surface. The depth is calculated by a function
+  /// using local space of the point of contact.
   /// For OpenHapticsRenderer this surface will not work.
   class HAPI_API HAPIVariableDepthSurface: public HAPISurfaceObject {
 

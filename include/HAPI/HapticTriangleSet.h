@@ -33,7 +33,9 @@
 
 namespace HAPI {
 
-  /// A shape defined by a set of triangles.
+  /// \ingroup Shapes
+  /// \class HapticTriangleSet
+  /// \brief A shape defined by a set of triangles.
   class HAPI_API HapticTriangleSet: public HAPIHapticShape {
   public:
     typedef enum {

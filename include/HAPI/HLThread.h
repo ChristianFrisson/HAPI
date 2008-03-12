@@ -36,10 +36,14 @@
 #include <memory>
 
 namespace HAPI {
-  /// HLThread is a singleton class providing an interface to the scheduler
-  /// and thread running when using OpenHaptics and HD API. It is used
-  /// by the HLHapticsDevice and uses its own thread handling. Since only
-  /// one instance of the HD API scheduler exists it is a singleton class.
+  /// \ingroup Others
+  /// \class HLThread
+  /// \brief A singleton class providing an interface to the
+  /// scheduler and thread running when using OpenHaptics and HD API.
+  ///
+  /// It is used by the HLHapticsDevice and uses its own thread handling.
+  /// Since only one instance of the HD API scheduler exists it is a
+  /// singleton class.
   class HAPI_API HLThread : public H3DUtil::HapticThreadBase,
                             public H3DUtil::PeriodicThreadBase {
 

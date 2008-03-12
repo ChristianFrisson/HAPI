@@ -37,7 +37,11 @@
 
 namespace HAPI {
 
-  /// Interface to all Phantom haptics devices from SensAble Technologies.
+  /// \ingroup HapticsDevices
+  /// \class PhantomHapticsDevice
+  /// \brief Interface to all Phantom haptics devices from SensAble
+  /// Technologies.
+  ///
   /// Uses the HD API of OpenHaptics to interface to the haptics devices,
   /// so every device supported by OpenHaptics is supported by this class.
   class HAPI_API PhantomHapticsDevice: public HAPIHapticsDevice {

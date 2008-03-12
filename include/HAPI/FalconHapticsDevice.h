@@ -38,63 +38,71 @@
 
 namespace HAPI {
 
-  /// Interface the Falcon haptics device from Novint.
+  /// \ingroup HapticsDevices
+  /// \class FalconHapticsDevice
+  /// \brief Interface the Falcon haptics device from Novint.
+  ///
+  /// Use Novints HDAL SDK to interface with a Falcon.
   class HAPI_API FalconHapticsDevice: public HAPIHapticsDevice {
   public:
-  /// FalconThread is a singleton class providing an interface to the
-  /// Falcon servo loop and thread. It is used by the FalconHapticsDevice and
-  /// uses its own thread handling. Since only one instance of the Falcon servo
-  /// loop exists it is a singleton class.
-  class HAPI_API FalconThread : public H3DUtil::HapticThreadBase,
-                                public H3DUtil::PeriodicThreadBase {
+    /// \ingroup Others
+    /// \class FalconThread
+    /// \brief A singleton class providing an interface to the
+    /// Falcon servo loop and thread.
+    ///
+    /// It is used by the FalconHapticsDevice and
+    /// uses its own thread handling. Since only one instance of the Falcon
+    /// servo loop exists it is a singleton class.
+    class HAPI_API FalconThread : public H3DUtil::HapticThreadBase,
+      public H3DUtil::PeriodicThreadBase {
 
-  private:
-    FalconThread():
-      is_active( false ) {
-      // the Falcon thread should not be added unless the Falcon servo loop
-      // has started.
-      sg_lock.lock();
-      threads.pop_back();
-      sg_lock.unlock();
-    }
-  public:
+    private:
+      FalconThread():
+           is_active( false ) {
+             // the Falcon thread should not be added unless the Falcon servo
+             // loop has started.
+             sg_lock.lock();
+             threads.pop_back();
+             sg_lock.unlock();
+           }
+    public:
 
-    /// Get the singleton instance of FalconThread.
-    static FalconThread *getInstance() {
-      return singleton.get();
-    }
+      /// Get the singleton instance of FalconThread.
+      static FalconThread *getInstance() {
+        return singleton.get();
+      }
 
-    /// If the servo loop has been started true is returned.
-    inline bool isActive() { return is_active; }
+      /// If the servo loop has been started true is returned.
+      inline bool isActive() { return is_active; }
 
-    /// Set the flag indicating if the Falcon servo loop has been
-    /// started or not.
-    void setActive( bool _active );
+      /// Set the flag indicating if the Falcon servo loop has been
+      /// started or not.
+      void setActive( bool _active );
 
-    /// Add a callback function to be executed in this thread. The calling
-    /// thread will wait until the callback function has returned before 
-    /// continuing. 
-    virtual void synchronousCallback( CallbackFunc func, void *data );
+      /// Add a callback function to be executed in this thread. The calling
+      /// thread will wait until the callback function has returned before 
+      /// continuing. 
+      virtual void synchronousCallback( CallbackFunc func, void *data );
 
-    /// Add a callback function to be executed in this thread. The calling
-    /// thread will continue executing after adding the callback and will 
-    /// not wait for the callback function to execute.
-    /// Returns a handle to the callback that can be used to remove
-    /// the callback.
-    virtual int asynchronousCallback( CallbackFunc func, void *data );
+      /// Add a callback function to be executed in this thread. The calling
+      /// thread will continue executing after adding the callback and will 
+      /// not wait for the callback function to execute.
+      /// Returns a handle to the callback that can be used to remove
+      /// the callback.
+      virtual int asynchronousCallback( CallbackFunc func, void *data );
 
-    /// Attempts to remove a callback. returns true if succeded. returns
-    /// false if the callback does not exist. This function should be handled
-    /// with care. It can remove the wrong callback if the callback that
-    /// returned the callback_handle id is removed and a new callback is added.
-    /// Callbacks are removed if they return CALLBACK_DONE or a call to this
-    /// function is made.
-    virtual bool removeAsynchronousCallback( int callback_handle );
-  protected:
-    static H3DUtil::PeriodicThread::CallbackCode setThreadId( void * _data );
-    static auto_ptr< FalconThread > singleton;
-    bool is_active;
-  };
+      /// Attempts to remove a callback. returns true if succeded. returns
+      /// false if the callback does not exist. This function should be handled
+      /// with care. It can remove the wrong callback if the callback that
+      /// returned the callback_handle id is removed and a new callback is
+      /// added. Callbacks are removed if they return CALLBACK_DONE or a call
+      /// to this function is made.
+      virtual bool removeAsynchronousCallback( int callback_handle );
+    protected:
+      static H3DUtil::PeriodicThread::CallbackCode setThreadId( void * _data );
+      static auto_ptr< FalconThread > singleton;
+      bool is_active;
+    };
 
     /// Constructor.
     /// device_name is the name of the device.
