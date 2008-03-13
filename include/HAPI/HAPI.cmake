@@ -63,6 +63,8 @@
 /// www.quanser.com
 //#define HAVE_QUANSERAPI
 
+#define HAVE_OPENGL
+
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL
 // are compiled with the HAPI_EXPORTS symbol defined on the command
@@ -105,8 +107,9 @@
 #define HAVE_SYS_TIME_H
 #endif
 
-#define HAPI_MAJOR_VERSION 1
-#define HAPI_MINOR_VERSION 0
+#define HAPI_MAJOR_VERSION ${HAPI_MAJOR_VERSION}
+#define HAPI_MINOR_VERSION ${HAPI_MINOR_VERSION}
+#define HAPI_BUILD_VERSION ${HAPI_BUILD_VERSION}
 
 namespace HAPI {
   /// Will return the version of HAPI as a double on the form
