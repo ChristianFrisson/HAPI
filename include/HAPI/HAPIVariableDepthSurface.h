@@ -59,9 +59,9 @@ namespace HAPI {
           bool _use_ref_count_lock = true );
 
 
-    virtual void getProxyMovement( ContactInfo &contact_info );
+    virtual void getProxyMovement( HAPISurfaceObject::ContactInfo &contact );
 
-    virtual void getForces( ContactInfo &contact_info );
+    virtual void getForces( HAPISurfaceObject::ContactInfo &contact );
 
     /// The stiffness of the surface.
     HAPIFloat stiffness;

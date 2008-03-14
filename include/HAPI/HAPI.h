@@ -22,12 +22,12 @@
 //
 //
 //
-/// \file HApi.h
+/// \file HAPI.h
 /// \brief Base header file that handles all configuration related settings
 ///
 //////////////////////////////////////////////////////////////////////////////
 
-/// \mainpage
+/// \mainpage HAPI Documentation
 /// Copyright 2006, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
 
 #ifndef __HAPI_H__
