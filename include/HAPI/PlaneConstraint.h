@@ -88,7 +88,7 @@ namespace HAPI {
     }
     
     /// \class iterator
-    /// \brief The iterator class for Constraints.
+    /// \brief Class used to iterate between the PlaneConstraints.
     class iterator {
     public:
       const static unsigned int end_value = 1929294;

@@ -22,12 +22,12 @@
 //
 //
 //
-/// \file HApi.h
+/// \file HAPI.h
 /// \brief Base header file that handles all configuration related settings
 ///
 //////////////////////////////////////////////////////////////////////////////
 
-/// \mainpage
+/// \mainpage HAPI Documentation
 /// Copyright 2004, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
 
 #ifndef __HAPI_H__
@@ -59,10 +59,13 @@
 /// HaptikDevice will not be usable.
 #cmakedefine HAVE_HAPTIK_LIBRARY 
 
-/// Undef if you do not the APIs required for supporting Quanser devices.
+/// Undef if you do not have the API(s) required for supporting Quanser
+/// devices.
 /// www.quanser.com
 //#define HAVE_QUANSERAPI
 
+/// Undef if you do not want to build HAPI with OpenGL support. This will
+/// disable some features like FeedbackBufferCollector.
 #define HAVE_OPENGL
 
 // The following ifdef block is the standard way of creating macros
