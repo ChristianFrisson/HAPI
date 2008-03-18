@@ -1,8 +1,44 @@
 PROJECT (HAPI)
 
+# include H3DUtil in the build
+STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../../H3DUtil/build BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
+ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
+                  ${BINARY_DIR_FOR_H3DUTIL} )
+
 SET( HAPI_MAJOR_VERSION 1 )
 SET( HAPI_MINOR_VERSION 0 )
 SET( HAPI_BUILD_VERSION 0 )
+
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform device independent haptics library.")
+SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
+SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
+SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
+SET(CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION})
+# TODO: fix different for windows and unix if needed.
+IF(WIN32 AND NOT UNIX)
+  SET(CPACK_IGNORE_FILES /\\\\.svn/
+                         \\\\.obj$
+                         \\\\.vcproj$
+                         \\\\.ncb$
+                         \\\\.log$
+                         \\\\.suo$
+                         \\\\.sln$
+                         \\\\.zip$
+                         \\\\.dir/
+                         \\\\.user$
+                         \\\\.cv$
+                         /Debug
+                         /debug
+                         /Release
+                         /release
+                         /linux
+                         /win32
+                         /osx )
+  SET(CPACK_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
+                                  "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
+ENDIF(WIN32 AND NOT UNIX)
+INCLUDE(CPack)
+
 
 SET( HAPI_FULL_VERSION
 ${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION} ) 
@@ -12,7 +48,7 @@ AUX_SOURCE_DIRECTORY(../src HAPI_SRCS)
 
 # add the HAPI.rc resource file if Visual Studio
 IF(MSVC)
-  SET( HAPI_SRCS ${HAPI_SRCS} HAPI.rc )
+  SET( HAPI_SRCS ${HAPI_SRCS} ${HAPI_SOURCE_DIR}/HAPI.rc )
 ENDIF(MSVC)
 
 
@@ -26,8 +62,8 @@ INCLUDE_DIRECTORIES(../OpenHapticsRenderer/include
 IF(WIN32)
   ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS})
   IF(MSVC)
-    SET( OH_SRCS ${OH_SRCS} OpenHapticsRenderer.rc )
-    SET( CHAI_SRCS ${CHAI_SRCS} Chai3DRenderer.rc )
+    SET( OH_SRCS ${OH_SRCS} ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc )
+    SET( CHAI_SRCS ${CHAI_SRCS} ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc )
   ENDIF(MSVC)
   ADD_LIBRARY(OpenHapticsRenderer SHARED ${OH_SRCS})
   ADD_LIBRARY(Chai3DRenderer SHARED ${CHAI_SRCS})
@@ -37,33 +73,33 @@ ENDIF(WIN32)
 
 # make sure that the HAPI.rc contains the correct svn-version
 IF( MSVC )
-  EXECUTE_PROCESS( COMMAND FindSVNVersion ${HAPI_SOURCE_DIR}/../src/.svn/entries 
+  EXECUTE_PROCESS( COMMAND ${H3DUtil_SOURCE_DIR}/FindSVNVersion ${HAPI_SOURCE_DIR}/../src/.svn/entries 
                    OUTPUT_VARIABLE HAPI_SVN_VERSION )
   # autogenerate resource files depending on the version
-  CONFIGURE_FILE( HAPI.rc.cmake HAPI.rc )
-  CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake OpenHapticsRenderer.rc )
-  CONFIGURE_FILE( Chai3DRenderer.rc.cmake Chai3DRenderer.rc )
+  CONFIGURE_FILE( HAPI.rc.cmake ${HAPI_SOURCE_DIR}/HAPI.rc )
+  CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc )
+  CONFIGURE_FILE( Chai3DRenderer.rc.cmake ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc )
   
   ADD_CUSTOM_COMMAND( TARGET HAPI 
                       PRE_BUILD 
-                      COMMAND UpdateResourceFile 
-                      ARGS HAPI HAPI.rc HAPI.rc.cmake
+                      COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                      ARGS HAPI ${HAPI_SOURCE_DIR}/HAPI.rc HAPI.rc.cmake
                       ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                       ${HAPI_BUILD_VERSION}
                       ${HAPI_SOURCE_DIR}/../src/.svn/entries )
 
   ADD_CUSTOM_COMMAND( TARGET OpenHapticsRenderer
                       PRE_BUILD 
-                      COMMAND UpdateResourceFile 
-                      ARGS HAPI OpenHapticsRenderer.rc OpenHapticsRenderer.rc.cmake
+                      COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                      ARGS HAPI ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc OpenHapticsRenderer.rc.cmake
                       ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                       ${HAPI_BUILD_VERSION}
                       ${HAPI_SOURCE_DIR}/../src/.svn/entries )
 
   ADD_CUSTOM_COMMAND( TARGET Chai3DRenderer
                       PRE_BUILD 
-                      COMMAND UpdateResourceFile 
-                      ARGS HAPI Chai3DRenderer.rc Chai3DRenderer.rc.cmake
+                      COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                      ARGS HAPI ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc Chai3DRenderer.rc.cmake
                       ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                       ${HAPI_BUILD_VERSION}
                       ${HAPI_SOURCE_DIR}/../src/.svn/entries )
@@ -84,7 +120,7 @@ IF(NOT WIN32)
 SET(requiredLibs ${requiredLibs} H3DUtil)
 ENDIF(NOT WIN32)
 
-INCLUDE_DIRECTORIES( ../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
+INCLUDE_DIRECTORIES(  ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
 
 IF(WIN32)
   SET(requiredLibs ${requiredLibs} winmm.lib )
@@ -201,7 +237,7 @@ IF( WIN32 )
 ENDIF( WIN32 )
 
 # autogenerate HAPI.h depending on the libraries available.
-CONFIGURE_FILE( ../include/HAPI/HAPI.cmake ../include/HAPI/HAPI.h )
+CONFIGURE_FILE( ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.cmake ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.h )
 
 INSTALL( TARGETS HAPI 
          LIBRARY DESTINATION lib
@@ -222,11 +258,7 @@ ELSE(WIN32)
   INSTALL( DIRECTORY ../include/HAPI ../OpenHapticsRenderer/include/HAPI ../Chai3DRenderer/include/HAPI
            DESTINATION /usr/local/include 
            PATTERN .svn EXCLUDE )
-ENDIF(WIN32)    
-
-# include H3DUtil in the build
-ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
-                  ${HAPI_SOURCE_DIR}/../../H3DUtil/build )
+ENDIF(WIN32)
 
 # HAPI is dependent on H3DUtil
 ADD_DEPENDENCIES( HAPI H3DUtil )
