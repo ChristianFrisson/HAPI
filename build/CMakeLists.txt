@@ -1,6 +1,7 @@
 PROJECT (HAPI)
 
 # include H3DUtil in the build
+# Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../../H3DUtil/build BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
 ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
                   ${BINARY_DIR_FOR_H3DUTIL} )
@@ -11,6 +12,9 @@ SET( HAPI_BUILD_VERSION 0 )
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform device independent haptics library.")
 SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
+SET(CPACK_PACKAGE_DESCRIPTION_FILE "${HAPI_SOURCE_DIR}/../ReadMe.txt")
+SET(CPACK_RESOURCE_FILE_LICENSE "${HAPI_SOURCE_DIR}/../LICENSE")
+
 SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
 SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
 SET(CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION})
@@ -57,6 +61,92 @@ AUX_SOURCE_DIRECTORY(../Chai3DRenderer/src CHAI_SRCS)
 INCLUDE_DIRECTORIES(../OpenHapticsRenderer/include
                     ../Chai3DRenderer/include )
 
+
+# add all optional libraries to this variable
+SET(optionalLibs)
+
+# add all required libraries to this variable
+SET(requiredLibs)
+
+SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
+
+FIND_PACKAGE(PTHREAD REQUIRED)
+IF(PTHREAD_FOUND)
+  INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
+  IF(WIN32)
+    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${PTHREAD_LIBRARIES})
+  ELSE(WIN32)
+    SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
+  ENDIF(WIN32)
+ENDIF(PTHREAD_FOUND)
+
+FIND_PACKAGE(OpenHaptics)
+IF(OPENHAPTICS_FOUND)
+  SET(HAVE_OPENHAPTICS 1)
+  INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} )
+  IF(WIN32)
+    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${OPENHAPTICS_LIBRARIES} )
+  ELSE(WIN32)
+    SET(optionalLibs ${optionalLibs} ${OPENHAPTICS_LIBRARIES} )
+  ENDIF(WIN32)
+ENDIF(OPENHAPTICS_FOUND)
+
+FIND_PACKAGE(Chai3D)
+IF(CHAI3D_FOUND)
+  SET(HAVE_CHAI3D 1)
+  INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR} )
+  IF(WIN32)
+    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${CHAI3D_LIBRARIES} )
+  ELSE(WIN32)
+    SET(optionalLibs ${optionalLibs} ${CHAI3D_LIBRARIES} )
+  ENDIF(WIN32)
+ENDIF(CHAI3D_FOUND)
+
+FIND_PACKAGE(DHD)
+IF(DHD_FOUND)
+  SET(HAVE_DHDAPI 1)
+  INCLUDE_DIRECTORIES( ${DHD_INCLUDE_DIR} )
+  IF(WIN32)
+    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${DHD_LIBRARIES} )
+  ELSE(WIN32)
+    SET(optionalLibs ${optionalLibs} ${DHD_LIBRARIES} )
+  ENDIF(WIN32)
+ENDIF(DHD_FOUND)
+
+FIND_PACKAGE(FalconAPI)
+IF(FALCONAPI_FOUND)
+  SET(HAVE_FALCONAPI 1)
+  INCLUDE_DIRECTORIES( ${FALCONAPI_INCLUDE_DIR} )
+  IF(WIN32)
+    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${FALCONAPI_LIBRARIES} )
+  ELSE(WIN32)
+    SET(optionalLibs ${optionalLibs} ${FALCONAPI_LIBRARIES} )
+  ENDIF(WIN32)
+ENDIF(FALCONAPI_FOUND)
+
+FIND_PACKAGE(Haptik)
+IF(HAPTIK_FOUND)
+  SET(HAVE_HAPTIK_LIBRARY 1)
+  INCLUDE_DIRECTORIES( ${HAPTIK_INCLUDE_DIR} )
+  IF(WIN32)
+    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${HAPTIK_LIBRARIES} )
+  ELSE(WIN32)
+    SET(optionalLibs ${optionalLibs} ${HAPTIK_LIBRARIES} )
+  ENDIF(WIN32)
+ENDIF(HAPTIK_FOUND)
+
+FIND_PACKAGE(OpenGL REQUIRED)
+IF(OPENGL_FOUND)
+  SET(HAVE_OPENGL 1)
+  INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIR} )
+  IF(WIN32)
+    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${OPENGL_LIBRARIES} )
+  ELSE(WIN32)
+    SET(requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
+  ENDIF(WIN32)
+ENDIF(OPENGL_FOUND)
+
+
 # OpenHapticsRenderer and Chai3DRenderer are compiled as separate dlls 
 # on Windows 
 IF(WIN32)
@@ -73,7 +163,7 @@ ENDIF(WIN32)
 
 # make sure that the HAPI.rc contains the correct svn-version
 IF( MSVC )
-  EXECUTE_PROCESS( COMMAND ${H3DUtil_SOURCE_DIR}/FindSVNVersion ${HAPI_SOURCE_DIR}/../src/.svn/entries 
+  EXECUTE_PROCESS( COMMAND ${HAPI_SOURCE_DIR}/FindSVNVersion ${HAPI_SOURCE_DIR}/../src/.svn/entries 
                    OUTPUT_VARIABLE HAPI_SVN_VERSION )
   # autogenerate resource files depending on the version
   CONFIGURE_FILE( HAPI.rc.cmake ${HAPI_SOURCE_DIR}/HAPI.rc )
@@ -110,12 +200,6 @@ IF(WIN32)
  SET( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../..)
 ENDIF(WIN32)
 
-# add all optional libraries to this variable
-SET(optionalLibs)
-
-# add all required libraries to this variable
-SET(requiredLibs)
-
 IF(NOT WIN32)
 SET(requiredLibs ${requiredLibs} H3DUtil)
 ENDIF(NOT WIN32)
@@ -123,58 +207,9 @@ ENDIF(NOT WIN32)
 INCLUDE_DIRECTORIES(  ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
 
 IF(WIN32)
-  SET(requiredLibs ${requiredLibs} winmm.lib )
+  SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )
 ENDIF(WIN32)
 
-SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
-
-FIND_PACKAGE(PTHREAD REQUIRED)
-IF(PTHREAD_FOUND)
-  INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
-ENDIF(PTHREAD_FOUND)
-
-FIND_PACKAGE(OpenHaptics)
-IF(OPENHAPTICS_FOUND)
-  SET(HAVE_OPENHAPTICS 1)
-  INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${OPENHAPTICS_LIBRARIES} )
-ENDIF(OPENHAPTICS_FOUND)
-
-FIND_PACKAGE(Chai3D)
-IF(CHAI3D_FOUND)
-  SET(HAVE_CHAI3D 1)
-  INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${CHAI3D_LIBRARIES} )
-ENDIF(CHAI3D_FOUND)
-
-FIND_PACKAGE(DHD)
-IF(DHD_FOUND)
-  SET(HAVE_DHDAPI 1)
-  INCLUDE_DIRECTORIES( ${DHD_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${DHD_LIBRARIES} )
-ENDIF(DHD_FOUND)
-
-FIND_PACKAGE(FalconAPI)
-IF(FALCONAPI_FOUND)
-  SET(HAVE_FALCONAPI 1)
-  INCLUDE_DIRECTORIES( ${FALCONAPI_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${FALCONAPI_LIBRARIES} )
-ENDIF(FALCONAPI_FOUND)
-
-FIND_PACKAGE(Haptik)
-IF(HAPTIK_FOUND)
-  SET(HAVE_HAPTIK_LIBRARY 1)
-  INCLUDE_DIRECTORIES( ${HAPTIK_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${HAPTIK_LIBRARIES} )
-ENDIF(HAPTIK_FOUND)
-
-FIND_PACKAGE(OpenGL REQUIRED)
-IF(OPENGL_FOUND)
-  SET(HAVE_OPENGL 1)
-  INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
-ENDIF(OPENGL_FOUND)
 
 # make sure symbols are exported.
 SET_TARGET_PROPERTIES( HAPI PROPERTIES COMPILE_FLAGS "-DHAPI_EXPORTS" )
@@ -234,6 +269,22 @@ IF( WIN32 )
   ELSEIF(MSCV90)
     SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc9 )
   ENDIF(MSVC70 OR MSVC71)
+  
+  # delay load information, not working for some reason when the / is there. For version 2.4.8 of cmake
+  # According to some information it should work with latest trunk of cmake.
+  # It is also not really correct in the fact that it does not add the choice in the properties
+  # of the microsoft visual studio target but rather put it on the command prompt.
+  # Only tested with microsoft visual studio c++ 2003 and 2005 express.
+  SET_TARGET_PROPERTIES( OpenHapticsRenderer HAPI
+                         PROPERTIES
+                         LINK_FLAGS "/DELAYLOAD:\"HD.dll\"" )
+  
+  SET_TARGET_PROPERTIES( HAPI
+                         PROPERTIES
+                         LINK_FLAGS "/DELAYLOAD:\"dhd.dll\""
+                         LINK_FLAGS "/DELAYLOAD:\"hdl.dll\""
+                         LINK_FLAGS "/DELAYLOAD:\"Haptik.Library.dll\"" )
+
 ENDIF( WIN32 )
 
 # autogenerate HAPI.h depending on the libraries available.

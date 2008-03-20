@@ -23,8 +23,8 @@ IF(WIN32)
                                      ../../External/lib    )
 ELSE(WIN32)
   FIND_LIBRARY(PTHREAD_LIBRARY NAMES pthread)
-MARK_AS_ADVANCED(PTHREAD_LIBRARY)
 ENDIF(WIN32)
+MARK_AS_ADVANCED(PTHREAD_LIBRARY)
 
 # Copy the results to the output variables.
 IF(PTHREAD_INCLUDE_DIR AND PTHREAD_LIBRARY)

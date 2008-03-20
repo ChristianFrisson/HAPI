@@ -9,19 +9,21 @@
 # Look for the header file.
 FIND_PATH(FALCONAPI_INCLUDE_DIR NAMES hdl/hdl.h 
                                 PATHS $ENV{NOVINT_FALCON_SUPPORT}/include
-                                      "/Program Files/Novint/Falcon/HDAL/include")
+                                      "/Program Files/Novint/Falcon/HDAL/include"
+                                      $ENV{NOVINT_DEVICE_SUPPORT}/include )
 MARK_AS_ADVANCED(FALCONAPI_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(HDL_LIBRARY NAMES hdl 
                         PATHS $ENV{NOVINT_FALCON_SUPPORT}/lib
-                              "/Program Files/Novint/Falcon/HDAL/lib")
+                              "/Program Files/Novint/Falcon/HDAL/lib"
+                              $ENV{NOVINT_DEVICE_SUPPORT}/lib)
 MARK_AS_ADVANCED(HDL_LIBRARY)
 
 # Copy the results to the output variables.
 IF(FALCONAPI_INCLUDE_DIR AND HDL_LIBRARY)
   SET(FALCONAPI_FOUND 1)
-  SET(FALCONAPI_LIBRARIES ${HD_LIBRARY} ${HL_LIBRARY} ${HDU_LIBRARY})
+  SET(FALCONAPI_LIBRARIES ${HDL_LIBRARY} )
   SET(FALCONAPI_INCLUDE_DIRS ${FALCONAPI_INCLUDE_DIR})
 ELSE(FALCONAPI_INCLUDE_DIR AND HDL_LIBRARY)
   SET(FALCONAPI_FOUND 0)
