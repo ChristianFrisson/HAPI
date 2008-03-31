@@ -46,6 +46,22 @@ using namespace HAPI;
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "chai3d_complete.lib" )
+#pragma comment( lib, "atls.lib" )
+#endif
+
+#ifdef HAVE_OPENGL
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#pragma comment( lib, "OpenGL32.lib" )
+#pragma comment( lib, "glu32.lib" )
+#endif
 #endif
 
 

@@ -235,7 +235,7 @@ ENDIF(MSVC70 OR MSVC71)
 
 IF( WIN32 )
   TARGET_LINK_LIBRARIES( OpenHapticsRenderer ${requiredLibs} ${optionalLibs} )
-  TARGET_LINK_LIBRARIES( Chai3DRenderer ${requiredLibs} ${optionalLibs} atls.lib )
+  TARGET_LINK_LIBRARIES( Chai3DRenderer ${requiredLibs} ${optionalLibs} )
 
   # make sure symbols are exported.       
   SET_TARGET_PROPERTIES( OpenHapticsRenderer 
@@ -277,7 +277,7 @@ IF( WIN32 )
   # Only tested with microsoft visual studio c++ 2003 and 2005 express.
   SET_TARGET_PROPERTIES( OpenHapticsRenderer HAPI
                          PROPERTIES
-                         LINK_FLAGS "/DELAYLOAD:\"HD.dll\"" )
+                         LINK_FLAGS " /DELAYLOAD:\"HD.dll\"" )
   
   SET_TARGET_PROPERTIES( HAPI
                          PROPERTIES
