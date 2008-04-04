@@ -13,13 +13,23 @@ FIND_PATH(wxWidgets_INCLUDE_DIR NAMES wx/wx.h
 MARK_AS_ADVANCED(wxWidgets_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(wxWidgets_core_LIBRARY NAMES wxmsw28_core   
-                                    PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                          ../../External/lib )
+IF( NOT MSVC80 )
+  FIND_LIBRARY(wxWidgets_core_LIBRARY NAMES wxmsw28_core   
+                                      PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                            ../../External/lib )
 
-FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase28   
-                                     PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                           ../../External/lib )
+  FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase28   
+                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                             ../../External/lib )
+ELSE( NOT MSVC80 )
+  FIND_LIBRARY(wxWidgets_core_LIBRARY NAMES wxmsw28_core_vc8   
+                                      PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                            ../../External/lib )
+
+  FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase28_vc8
+                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                             ../../External/lib )
+ENDIF( NOT MSVC80 )
 MARK_AS_ADVANCED(wxWidgets_base_LIBRARY)
 MARK_AS_ADVANCED(wxWidgets_core_LIBRARY)
 

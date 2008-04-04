@@ -10,38 +10,38 @@ SET( HAPI_MAJOR_VERSION 1 )
 SET( HAPI_MINOR_VERSION 0 )
 SET( HAPI_BUILD_VERSION 0 )
 
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform device independent haptics library.")
-SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
-SET(CPACK_PACKAGE_DESCRIPTION_FILE "${HAPI_SOURCE_DIR}/../ReadMe.txt")
-SET(CPACK_RESOURCE_FILE_LICENSE "${HAPI_SOURCE_DIR}/../LICENSE")
+#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform device independent haptics library.")
+#SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
+#SET(CPACK_PACKAGE_DESCRIPTION_FILE "${HAPI_SOURCE_DIR}/../ReadMe.txt")
+#SET(CPACK_RESOURCE_FILE_LICENSE "${HAPI_SOURCE_DIR}/../LICENSE")
 
-SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
-SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
-SET(CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION})
+#SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
+#SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
+#SET(CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION})
 # TODO: fix different for windows and unix if needed.
-IF(WIN32 AND NOT UNIX)
-  SET(CPACK_IGNORE_FILES /\\\\.svn/
-                         \\\\.obj$
-                         \\\\.vcproj$
-                         \\\\.ncb$
-                         \\\\.log$
-                         \\\\.suo$
-                         \\\\.sln$
-                         \\\\.zip$
-                         \\\\.dir/
-                         \\\\.user$
-                         \\\\.cv$
-                         /Debug
-                         /debug
-                         /Release
-                         /release
-                         /linux
-                         /win32
-                         /osx )
-  SET(CPACK_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
-                                  "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
-ENDIF(WIN32 AND NOT UNIX)
-INCLUDE(CPack)
+#IF(WIN32 AND NOT UNIX)
+#  SET(CPACK_IGNORE_FILES /\\\\.svn/
+#                         \\\\.obj$
+#                         \\\\.vcproj$
+#                         \\\\.ncb$
+#                         \\\\.log$
+#                         \\\\.suo$
+#                         \\\\.sln$
+#                         \\\\.zip$
+#                         \\\\.dir/
+#                         \\\\.user$
+#                         \\\\.cv$
+#                         /Debug
+#                         /debug
+#                         /Release
+#                         /release
+#                         /linux
+#                         /win32
+#                         /osx )
+#  SET(CPACK_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
+#                                  "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
+#ENDIF(WIN32 AND NOT UNIX)
+#INCLUDE(CPack)
 
 
 SET( HAPI_FULL_VERSION
