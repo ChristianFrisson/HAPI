@@ -244,7 +244,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   // eventcallbacks to shapes. Only those shapes that are rendered in a
   // specific frame are allowed to have callbacks set up. The reason for this
   // is because of OpenHaptics, see HL API documentation for hlGetShapeDoublev.
-  // Without this there will be a number of HL_INVALID_VALUE erros when using
+  // Without this there will be a number of HL_INVALID_VALUE errors when using
   // multiple devices.
   previous_shape_ids_copy = previous_shape_ids;
   previous_shape_ids.clear();
