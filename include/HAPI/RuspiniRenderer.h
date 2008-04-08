@@ -71,7 +71,7 @@ namespace HAPI {
       return proxy_radius;
     }
 
-    /// Set the radius of the proxy(in millimetres)
+    /// Set the radius of the proxy.
     inline void setProxyRadius( HAPIFloat r ) {
       proxy_radius = r;
     }
