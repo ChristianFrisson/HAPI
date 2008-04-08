@@ -163,7 +163,7 @@ namespace HAPI {
       else return 0;
     }
 
-    /// Set the radius of the proxy(in millimetres)
+    /// Set the radius of the proxy.
     inline void setProxyRadius( HAPIFloat r ) {
       cProxyPointForceAlgo *p = chai3d_tool->getProxy();
       if( p ) p->setProxyRadius( r );

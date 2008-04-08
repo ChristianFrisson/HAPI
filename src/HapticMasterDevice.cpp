@@ -326,7 +326,6 @@ HapticMasterDevice::com_func( void *data ) {
     GetCurrentForce( hd->device_handle, force );
     hd->driver_lock.unlock();
 
-    // convert to millimetres
     Vec3 position = Vec3(pos[1], pos[2], pos[0]);
     Vec3 velocity = Vec3(vel[1], vel[2], vel[0]);
 

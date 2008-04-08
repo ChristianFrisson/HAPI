@@ -29,7 +29,7 @@
 // DirectX code is based on the tutorial found on this site.
 // http://www.riemers.net/eng/Tutorials/dxcpp.php
 
-// In this example we pretend that the world coordinates are given in mm.
+// In this example we pretend that the world coordinates are given in m.
 // Therefore no transformation will be done when sending vertex information to
 // HAPI.
 // Note that there is no co-location in this example.

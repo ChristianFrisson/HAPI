@@ -182,19 +182,25 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
   if( hd->device_id != -1 ) {
     double x, y, z, rx, ry, rz;
     dhdGetPosition( &z, &x, &y, hd->device_id );
-    dhdGetOrientationRad( &rz, &rx, &ry, hd->device_id );    
+    dhdGetOrientationRad( &rz, &rx, &ry, hd->device_id );
+
     // TODO: multiple buttons
     bool button = (dhdGetButton( 0, hd->device_id ) == DHD_ON);
-    
-    Rotation orientation = Rotation( Vec3( rx, ry, rz ) );
-    // convert to millimetres
+
     Vec3 position = Vec3( x, y, z );
+
+    Rotation orientation = Rotation( 1, 0, 0, H3DUtil::Constants::pi / 4 ) *
+                           Rotation( 0, 0, 1, rz ) *
+                           Rotation( 1, 0, 0, rx ) *
+                           Rotation( 0, 1, 0, ry ) *
+                           Rotation( 1, 0, 0, -H3DUtil::Constants::pi / 2);
 
     hd->com_lock.lock();
 
     hd->current_values.position = position;
     hd->current_values.velocity = Vec3( 0, 0, 0 );
     hd->current_values.button_status = button;
+    hd->current_values.orientation = orientation;
  
     Vec3 force = hd->current_values.force;
     Vec3 torque = hd->current_values.torque;
