@@ -5,7 +5,6 @@ PROJECT (HAPI)
 IF( NOT DEFINED GENERATE_CPACK_PROJECT )
   SET( GENERATE_CPACK_PROJECT "NO" CACHE BOOL "Decides if a cpack project should be generated. The project in the first loaded CMakeLists will configure CPack." )
   MARK_AS_ADVANCED(GENERATE_CPACK_PROJECT)
-  MESSAGE( "generate cpack project" )
 ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
 
 # include H3DUtil in the build
