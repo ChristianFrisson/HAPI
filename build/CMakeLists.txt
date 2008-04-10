@@ -1,5 +1,13 @@
 PROJECT (HAPI)
 
+# Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
+# for packaging HAPI. Default is NO since most people will not use this.
+IF( NOT DEFINED GENERATE_CPACK_PROJECT )
+  SET( GENERATE_CPACK_PROJECT "NO" CACHE BOOL "Decides if a cpack project should be generated. The project in the first loaded CMakeLists will configure CPack." )
+  MARK_AS_ADVANCED(GENERATE_CPACK_PROJECT)
+  MESSAGE( "generate cpack project" )
+ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
+
 # include H3DUtil in the build
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../../H3DUtil/build BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
@@ -10,39 +18,45 @@ SET( HAPI_MAJOR_VERSION 1 )
 SET( HAPI_MINOR_VERSION 0 )
 SET( HAPI_BUILD_VERSION 0 )
 
-#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform device independent haptics library.")
-#SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
-#SET(CPACK_PACKAGE_DESCRIPTION_FILE "${HAPI_SOURCE_DIR}/../ReadMe.txt")
-#SET(CPACK_RESOURCE_FILE_LICENSE "${HAPI_SOURCE_DIR}/../LICENSE")
+# Set here already in case a special NSIS template needs to be used by cpack.
+SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
 
-#SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
-#SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
-#SET(CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION})
-# TODO: fix different for windows and unix if needed.
-#IF(WIN32 AND NOT UNIX)
-#  SET(CPACK_IGNORE_FILES /\\\\.svn/
-#                         \\\\.obj$
-#                         \\\\.vcproj$
-#                         \\\\.ncb$
-#                         \\\\.log$
-#                         \\\\.suo$
-#                         \\\\.sln$
-#                         \\\\.zip$
-#                         \\\\.dir/
-#                         \\\\.user$
-#                         \\\\.cv$
-#                         /Debug
-#                         /debug
-#                         /Release
-#                         /release
-#                         /linux
-#                         /win32
-#                         /osx )
-#  SET(CPACK_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
-#                                  "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
-#ENDIF(WIN32 AND NOT UNIX)
-#INCLUDE(CPack)
+# If cpack should be configured.
+IF( GENERATE_CPACK_PROJECT )
+  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform device independent haptics library.")
+  SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
+  SET(CPACK_PACKAGE_DESCRIPTION_FILE "${HAPI_SOURCE_DIR}/../ReadMe.txt")
+  SET(CPACK_RESOURCE_FILE_LICENSE "${HAPI_SOURCE_DIR}/../LICENSE")
+  SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};HAPI;ALL;/" )
 
+  SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
+  SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
+  SET(CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION})
+  # TODO: fix different for windows and unix if needed.
+  IF(WIN32 AND NOT UNIX)
+    SET(CPACK_IGNORE_FILES /\\\\.svn/
+                           \\\\.obj$
+                           \\\\.ncb$
+                           \\\\.log$
+                          \\\\.suo$
+                          \\\\.zip$
+                          \\\\.dir/
+                          \\\\.user$
+                          \\\\.cv$
+                          "/Debug(.)*/"
+                          "/debug(.)*/"
+                          /Release
+                          /release
+                          /linux
+                          /build/win32/
+                          /build/vc8
+                          /build/vc7
+                          /osx )
+    SET(CPACK_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
+                                    "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
+  ENDIF(WIN32 AND NOT UNIX)
+  INCLUDE(CPack)
+ENDIF( GENERATE_CPACK_PROJECT )
 
 SET( HAPI_FULL_VERSION
 ${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION} ) 
@@ -67,8 +81,6 @@ SET(optionalLibs)
 
 # add all required libraries to this variable
 SET(requiredLibs)
-
-SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
 
 FIND_PACKAGE(PTHREAD REQUIRED)
 IF(PTHREAD_FOUND)
@@ -146,6 +158,36 @@ IF(OPENGL_FOUND)
   ENDIF(WIN32)
 ENDIF(OPENGL_FOUND)
 
+# If cpack project should be generated and windows is the system on which to generate
+# a number of extra directories needs to be added. They are added to an internal cached
+# variable which can be used by other cmakelists that use HAPI as subdirectory (e.g. H3DAPI).
+IF( WIN32 AND GENERATE_CPACK_PROJECT )
+  
+  IF( PTHREAD_FOUND )
+    SET( HAPI_CPACK_INSTALLED_DIRECTORIES "${PTHREAD_INCLUDE_DIR};External/include/pthread"
+         CACHE INTERNAL "Installed directories of HAPI." )
+  ENDIF( PTHREAD_FOUND )
+  
+  IF( CHAI3D_FOUND )
+    SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
+                                          "${CHAI3D_INCLUDE_DIR}/..;External/include/chai3d"
+         CACHE INTERNAL "Installed directories of HAPI." )
+  ENDIF( CHAI3D_FOUND )
+  
+  IF( DHD_FOUND )
+    SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
+                                          "${DHD_INCLUDE_DIR};External/include/DHD-API"
+         CACHE INTERNAL "Installed directories of HAPI." )
+  ENDIF( DHD_FOUND )
+  
+  IF( OPENGL_FOUND AND OPENGL_INCLUDE_DIR )
+    SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
+                                          "${OPENGL_INCLUDE_DIR}/GL;External/include/GL"
+         CACHE INTERNAL "Installed directories of HAPI." )
+
+  ENDIF( OPENGL_FOUND AND OPENGL_INCLUDE_DIR )
+
+ENDIF( WIN32 AND GENERATE_CPACK_PROJECT )
 
 # OpenHapticsRenderer and Chai3DRenderer are compiled as separate dlls 
 # on Windows 
