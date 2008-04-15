@@ -1,9 +1,9 @@
-# The name of our project is "HELLO".  CMakeLists files in this project can
-# refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
-# to the root binary directory of the project as ${HELLO_BINARY_DIR}.
+# The name of our project is "HAPIDemo".  CMakeLists files in this project can
+# refer to the root source directory of the project as ${HAPIDemo_SOURCE_DIR} and
+# to the root binary directory of the project as ${HAPIDemo_BINARY_DIR}.
 project (HAPIDemo)
 
-# Create a library called "Hello" which includes the source file "hello.cxx".
+# Create a library called "Hello" which include sourcefiles.
 # The extension is already found.  Any number of sources could be listed here.
 
 AUX_SOURCE_DIRECTORY(.. HAPIDemo_SRCS)
@@ -58,7 +58,11 @@ ADD_EXECUTABLE(HAPIDemo WIN32 MACOSX_BUNDLE ${HAPIDemo_SRCS})
 
 TARGET_LINK_LIBRARIES( HAPIDemo ${requiredLibs} ${optionalLibs} )
 
-#INSTALL( TARGETS HAPIDemo
-#	 LIBRARY DESTINATION lib
-#	 RUNTIME DESTINATION bin )
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${HAPIDemo_SOURCE_DIR}/../..)
+ENDIF(WIN32)
 
+INSTALL( TARGETS HAPIDemo
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )

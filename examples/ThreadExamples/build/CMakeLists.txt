@@ -31,3 +31,21 @@ ADD_EXECUTABLE(PeriodicThreadCallbacks ${PeriodicThreadCallbacks_SRCS})
 TARGET_LINK_LIBRARIES( SimpleThreadPrint ${requiredLibs})
 TARGET_LINK_LIBRARIES( SimpleThreadPrintLock ${requiredLibs})
 TARGET_LINK_LIBRARIES( PeriodicThreadCallbacks ${requiredLibs})
+
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${ThreadExamples_SOURCE_DIR}/../..)
+ENDIF(WIN32)
+
+INSTALL( TARGETS SimpleThreadPrint
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )
+
+INSTALL( TARGETS SimpleThreadPrintLock
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )
+
+INSTALL( TARGETS PeriodicThreadCallbacks
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )
+

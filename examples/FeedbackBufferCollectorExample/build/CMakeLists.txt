@@ -56,3 +56,12 @@ ENDIF(GLUT_FOUND)
 ADD_EXECUTABLE(FeedbackBufferCollector ${FeedbackBufferCollector_SRCS})
 
 TARGET_LINK_LIBRARIES( FeedbackBufferCollector ${requiredLibs} )
+
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${FeedbackBufferCollector_SOURCE_DIR}/../..)
+ENDIF(WIN32)
+
+INSTALL( TARGETS FeedbackBufferCollector
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )

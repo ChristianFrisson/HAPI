@@ -1,9 +1,9 @@
-# The name of our project is "HELLO".  CMakeLists files in this project can
-# refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
-# to the root binary directory of the project as ${HELLO_BINARY_DIR}.
+# The name of our project is "SpringExample".  CMakeLists files in this project can
+# refer to the root source directory of the project as ${SpringExample_SOURCE_DIR} and
+# to the root binary directory of the project as ${SpringExample_BINARY_DIR}.
 PROJECT(SpringExample)
 
-# Create a library called "Hello" which includes the source file "hello.cxx".
+# Create a library called "SpringExample" which includes the source file "SpringExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
 
 AUX_SOURCE_DIRECTORY(.. SpringExample_SRCS)
@@ -34,5 +34,12 @@ ADD_EXECUTABLE(SpringExample ${SpringExample_SRCS})
 
 TARGET_LINK_LIBRARIES( SpringExample ${requiredLibs} ${optionalLibs} )
 
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${SpringExample_SOURCE_DIR}/../..)
+ENDIF(WIN32)
 
+INSTALL( TARGETS SpringExample
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )
 

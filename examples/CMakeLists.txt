@@ -26,3 +26,8 @@ IF( WIN32 )
   ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/DirectXExample/build
                     ${BINARY_DIR_FOR_Example} )
 ENDIF( WIN32 )
+
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${HAPIExamples_SOURCE_DIR} )
+ENDIF(WIN32)
