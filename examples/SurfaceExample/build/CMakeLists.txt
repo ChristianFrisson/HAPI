@@ -1,9 +1,9 @@
-# The name of our project is "HELLO".  CMakeLists files in this project can
-# refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
-# to the root binary directory of the project as ${HELLO_BINARY_DIR}.
+# The name of our project is "SurfaceExample".  CMakeLists files in this project can
+# refer to the root source directory of the project as ${SurfaceExample_SOURCE_DIR} and
+# to the root binary directory of the project as ${SurfaceExample_BINARY_DIR}.
 project (SurfaceExample)
 
-# Create a library called "Hello" which includes the source file "hello.cxx".
+# Create a library called "SurfaceExample" which includes the source file "SurfaceExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
 
 AUX_SOURCE_DIRECTORY(.. SurfaceExample_SRCS)
@@ -34,5 +34,12 @@ ADD_EXECUTABLE(SurfaceExample ${SurfaceExample_SRCS})
 
 TARGET_LINK_LIBRARIES( SurfaceExample ${requiredLibs} ${optionalLibs} )
 
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${SurfaceExample_SOURCE_DIR}/../..)
+ENDIF(WIN32)
 
+INSTALL( TARGETS SurfaceExample
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )
 

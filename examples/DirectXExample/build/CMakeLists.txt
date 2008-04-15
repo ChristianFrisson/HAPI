@@ -39,3 +39,12 @@ ENDIF( DirectX_FOUND )
 ADD_EXECUTABLE(DirectXExample WIN32 ${DirectXExample_SRCS})
 
 TARGET_LINK_LIBRARIES( DirectXExample ${requiredLibs} )
+
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${DirectXExample_SOURCE_DIR}/../..)
+ENDIF(WIN32)
+
+INSTALL( TARGETS DirectXExample
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )
