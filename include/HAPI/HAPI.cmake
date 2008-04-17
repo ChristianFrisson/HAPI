@@ -59,6 +59,11 @@
 /// HaptikDevice will not be usable.
 #cmakedefine HAVE_HAPTIK_LIBRARY 
 
+/// Undef if you do not have SimballMedical API from GCoder
+/// (http://www.g-coder.com/ installed. Required for the 
+/// SimballHapticsDevice class.
+#cmakedefine HAVE_SIMBALLMEDICAL_API
+
 /// Undef if you do not have the API(s) required for supporting Quanser
 /// devices.
 /// www.quanser.com
