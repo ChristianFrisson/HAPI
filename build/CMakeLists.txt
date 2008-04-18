@@ -378,7 +378,7 @@ ENDIF(WIN32)
 
 
 # make sure symbols are exported.
-SET_TARGET_PROPERTIES( HAPI PROPERTIES COMPILE_FLAGS "-DHAPI_EXPORTS" )
+SET( HAPI_COMPILE_FLAGS "-DHAPI_EXPORTS" )
 
 # add the libraries needed for linking
 TARGET_LINK_LIBRARIES( HAPI ${requiredLibs} ${optionalLibs} )
@@ -396,9 +396,12 @@ IF(MSVC70 OR MSVC71)
 ELSEIF(MSVC80)
   SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc8 )
 ELSEIF(MSVC90)
-  SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc9
-                                         COMPILE_FLAGS "/MP" )
+  SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc9 )
+  SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
 ENDIF(MSVC70 OR MSVC71)
+
+# set compile flags for HAPI project
+SET_TARGET_PROPERTIES( HAPI PROPERTIES COMPILE_FLAGS "${HAPI_COMPILE_FLAGS}" )
 
 IF( WIN32 )
   TARGET_LINK_LIBRARIES( OpenHapticsRenderer ${requiredLibs} ${optionalLibs} )
@@ -448,9 +451,7 @@ IF( WIN32 )
   
   SET_TARGET_PROPERTIES( HAPI
                          PROPERTIES
-                         LINK_FLAGS "/DELAYLOAD:\"dhd.dll\""
-                         LINK_FLAGS "/DELAYLOAD:\"hdl.dll\""
-                         LINK_FLAGS "/DELAYLOAD:\"Haptik.Library.dll\"" )
+                         LINK_FLAGS "/DELAYLOAD:\"dhd.dll\" /DELAYLOAD:\"hdl.dll\" /DELAYLOAD:\"Haptik.Library.dll\"" )
 
 ENDIF( WIN32 )
 
