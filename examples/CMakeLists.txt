@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 2.4.8)
 PROJECT (HAPIExamples)
 
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.

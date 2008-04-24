@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 2.4.8)
 # The name of our project is "SpringExample".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${SpringExample_SOURCE_DIR} and
 # to the root binary directory of the project as ${SpringExample_BINARY_DIR}.

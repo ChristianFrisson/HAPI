@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 2.4.8)
 PROJECT (HAPI)
 
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
@@ -39,7 +40,9 @@ IF( GENERATE_CPACK_PROJECT )
       
       FIND_PACKAGE(wxWidgetsWin)
       IF(wxWidgets_FOUND)
-        SET( CPACK_INSTALLED_DIRECTORIES "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
+        SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
+                                              "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx"
+           CACHE INTERNAL "Installed directories of HAPI." )
       ENDIF(wxWidgets_FOUND)
 
     ENDIF( WIN32 )
@@ -264,7 +267,8 @@ IF( GENERATE_CPACK_PROJECT )
   IF( WIN32 )
   
     IF( PTHREAD_FOUND )
-      SET( HAPI_CPACK_INSTALLED_DIRECTORIES "${PTHREAD_INCLUDE_DIR};External/include/pthread"
+      SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
+                                            "${PTHREAD_INCLUDE_DIR};External/include/pthread"
            CACHE INTERNAL "Installed directories of HAPI." )
     ENDIF( PTHREAD_FOUND )
   

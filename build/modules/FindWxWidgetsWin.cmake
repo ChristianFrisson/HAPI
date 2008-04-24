@@ -13,7 +13,7 @@ FIND_PATH(wxWidgets_INCLUDE_DIR NAMES wx/wx.h
 MARK_AS_ADVANCED(wxWidgets_INCLUDE_DIR)
 
 # Look for the library.
-IF( NOT MSVC80 )
+IF( MSVC70 OR MSVC71 )
   FIND_LIBRARY(wxWidgets_core_LIBRARY NAMES wxmsw28_core   
                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                             ../../External/lib )
@@ -21,7 +21,16 @@ IF( NOT MSVC80 )
   FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase28   
                                        PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                              ../../External/lib )
-ELSE( NOT MSVC80 )
+  IF(WXWINDOWS_USE_GL)
+    FIND_LIBRARY(wxWidgets_gl_LIBRARY NAMES wxmsw28_gl   
+                                      PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                            ../../External/lib )
+
+    FIND_LIBRARY(wxWidgets_adv_LIBRARY NAMES wxmsw28_adv   
+                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                             ../../External/lib )
+  ENDIF(WXWINDOWS_USE_GL)
+ELSE( MSVC70 OR MSVC71 )
   FIND_LIBRARY(wxWidgets_core_LIBRARY NAMES wxmsw28_core_vc8   
                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                             ../../External/lib )
@@ -29,19 +38,45 @@ ELSE( NOT MSVC80 )
   FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase28_vc8
                                        PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                              ../../External/lib )
-ENDIF( NOT MSVC80 )
+  IF(WXWINDOWS_USE_GL)
+    FIND_LIBRARY(wxWidgets_gl_LIBRARY NAMES wxmsw28_gl_vc8
+                                      PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                            ../../External/lib )
+
+    FIND_LIBRARY(wxWidgets_adv_LIBRARY NAMES wxmsw28_adv_vc8
+                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                             ../../External/lib )
+  ENDIF(WXWINDOWS_USE_GL)
+ENDIF( MSVC70 OR MSVC71 )
 MARK_AS_ADVANCED(wxWidgets_base_LIBRARY)
 MARK_AS_ADVANCED(wxWidgets_core_LIBRARY)
+IF(WXWINDOWS_USE_GL)
+  MARK_AS_ADVANCED(wxWidgets_gl_LIBRARY)
+  MARK_AS_ADVANCED(wxWidgets_adv_LIBRARY)
+ENDIF(WXWINDOWS_USE_GL)
 
 # Copy the results to the output variables.
 IF(wxWidgets_INCLUDE_DIR AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY)
-  SET(wxWidgets_FOUND 1)
-  SET(wxWidgets_LIBRARIES ${wxWidgets_core_LIBRARY}
-  ${wxWidgets_base_LIBRARY} comctl32 Rpcrt4)
-  SET(wxWidgets_INCLUDE_DIRS ${wxWidgets_INCLUDE_DIR})
+  IF( WXWINDOWS_USE_GL )
+    IF( wxWidgets_gl_LIBRARY AND wxWidgets_adv_LIBRARY )
+      SET(wxWidgets_FOUND 1)
+      SET( wxWidgets_LIBRARIES ${wxWidgets_core_LIBRARY}
+           ${wxWidgets_base_LIBRARY} ${wxWidgets_gl_LIBRARY} ${wxWidgets_adv_LIBRARY} comctl32 Rpcrt4)
+      SET(wxWidgets_INCLUDE_DIR ${wxWidgets_INCLUDE_DIR})
+    ELSE( wxWidgets_gl_LIBRARY AND wxWidgets_adv_LIBRARY )
+      SET(wxWidgets_FOUND 0)
+      SET(wxWidgets_LIBRARIES)
+      SET(wxWidgets_INCLUDE_DIR)
+    ENDIF( wxWidgets_gl_LIBRARY AND wxWidgets_adv_LIBRARY )
+  ELSE( WXWINDOWS_USE_GL )
+    SET(wxWidgets_FOUND 1)
+    SET( wxWidgets_LIBRARIES ${wxWidgets_core_LIBRARY}
+         ${wxWidgets_base_LIBRARY} comctl32 Rpcrt4)
+    SET(wxWidgets_INCLUDE_DIR ${wxWidgets_INCLUDE_DIR})
+  ENDIF( WXWINDOWS_USE_GL )
 ELSE(wxWidgets_INCLUDE_DIR AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY)
   SET(wxWidgets_FOUND 0)
   SET(wxWidgets_LIBRARIES)
-  SET(wxWidgets_INCLUDE_DIRS)
+  SET(wxWidgets_INCLUDE_DIR)
 ENDIF(wxWidgets_INCLUDE_DIR  AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY)
 
