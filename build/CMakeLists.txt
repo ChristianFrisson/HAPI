@@ -479,7 +479,7 @@ IF(WIN32)
            ARCHIVE DESTINATION lib )
 ELSE(WIN32)
   INSTALL( DIRECTORY ../include/HAPI ../OpenHapticsRenderer/include/HAPI ../Chai3DRenderer/include/HAPI
-           DESTINATION /usr/local/include 
+           DESTINATION include 
            PATTERN .svn EXCLUDE )
 ENDIF(WIN32)
 
