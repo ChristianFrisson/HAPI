@@ -9,10 +9,12 @@ IF( NOT DEFINED GENERATE_CPACK_PROJECT )
 ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
 
 # include H3DUtil in the build
-# Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../../H3DUtil/build BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
-ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
-                  ${BINARY_DIR_FOR_H3DUTIL} )
+IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
+  # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
+  STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../../H3DUtil/build BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
+  ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
+                    ${BINARY_DIR_FOR_H3DUTIL} )
+ENDIF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
 
 SET( HAPI_MAJOR_VERSION 1 )
 SET( HAPI_MINOR_VERSION 0 )
@@ -23,12 +25,15 @@ SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
 
 # If cpack should be configured.
 IF( GENERATE_CPACK_PROJECT )
-  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform device independent haptics library.")
+  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform, device independent haptics library.")
   SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
+  SET(CPACK_PACKAGE_CONTACT "support@sensegraphics.com" )
   SET(CPACK_PACKAGE_DESCRIPTION_FILE "${HAPI_SOURCE_DIR}/../ReadMe.txt")
   SET(CPACK_RESOURCE_FILE_LICENSE "${HAPI_SOURCE_DIR}/../LICENSE")
   SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};HAPI;ALL;/" )
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY "H3D" )
+
+  SET(DEBIAN_PACKAGE_DEPENDS "libgl-dev, h3dutil(>=1.0.0)" )	 
 
   SET( HAPIExamples_cmake_install "" CACHE PATH "Needs to be set if examples for HAPI is desired to be packed in the install. Set to location of cmake_install.cmake for the examples." )
   MARK_AS_ADVANCED(HAPIExamples_cmake_install)
@@ -315,6 +320,11 @@ IF( GENERATE_CPACK_PROJECT )
   ENDIF( WIN32 )
   
   INCLUDE(CPack)
+  INCLUDE(UseDebian)
+  IF(DEBIAN_FOUND)
+    ADD_DEBIAN_TARGETS(HAPI)
+  ENDIF(DEBIAN_FOUND)
+  
 ENDIF( GENERATE_CPACK_PROJECT )
 
 # OpenHapticsRenderer and Chai3DRenderer are compiled as separate dlls 
