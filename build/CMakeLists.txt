@@ -12,6 +12,10 @@ ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
 IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
   # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
   STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../../H3DUtil/build BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
+  STRING( COMPARE EQUAL ${BINARY_DIR_FOR_H3DUTIL} ${CMAKE_CURRENT_BINARY_DIR} SPECIAL_BINARY_DIR )
+  IF( SPECIAL_BINARY_DIR )
+    SET( BINARY_DIR_FOR_H3DUTIL ${HAPI_SOURCE_DIR}/../../H3DUtil/build )
+  ENDIF( SPECIAL_BINARY_DIR )
   ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
                     ${BINARY_DIR_FOR_H3DUTIL} )
 ENDIF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
@@ -34,6 +38,11 @@ IF( GENERATE_CPACK_PROJECT )
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY "H3D" )
 
   SET(DEBIAN_PACKAGE_DEPENDS "libgl-dev, h3dutil(>=1.0.0)" )	 
+  
+  IF( WIN32 )
+    SET( HAPI_CPACK_INSTALLED_DIRECTORIES ""
+        CACHE INTERNAL "Installed directories of HAPI." )
+  ENDIF( WIN32 )
 
   SET( HAPIExamples_cmake_install "" CACHE PATH "Needs to be set if examples for HAPI is desired to be packed in the install. Set to location of cmake_install.cmake for the examples." )
   MARK_AS_ADVANCED(HAPIExamples_cmake_install)
