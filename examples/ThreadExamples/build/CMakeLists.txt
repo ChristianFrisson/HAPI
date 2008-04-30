@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 2.4.8)
 # from the manual.
 project (ThreadExamples)
 
-AUX_SOURCE_DIRECTORY(../SimpleThreadPrint SimpleThreadPrint_SRCS)
-AUX_SOURCE_DIRECTORY(../SimpleThreadPrintLock SimpleThreadPrintLock_SRCS)
-AUX_SOURCE_DIRECTORY(../PeriodicThreadCallbacks PeriodicThreadCallbacks_SRCS)
+AUX_SOURCE_DIRECTORY(${ThreadExamples_SOURCE_DIR}/../SimpleThreadPrint SimpleThreadPrint_SRCS)
+AUX_SOURCE_DIRECTORY(${ThreadExamples_SOURCE_DIR}/../SimpleThreadPrintLock SimpleThreadPrintLock_SRCS)
+AUX_SOURCE_DIRECTORY(${ThreadExamples_SOURCE_DIR}/../PeriodicThreadCallbacks PeriodicThreadCallbacks_SRCS)
 
 SET(requiredLibs)
 
@@ -28,6 +28,11 @@ ENDIF(PTHREAD_FOUND)
 ADD_EXECUTABLE(SimpleThreadPrint ${SimpleThreadPrint_SRCS})
 ADD_EXECUTABLE(SimpleThreadPrintLock ${SimpleThreadPrintLock_SRCS})
 ADD_EXECUTABLE(PeriodicThreadCallbacks ${PeriodicThreadCallbacks_SRCS})
+
+# make the name of debug libraries end in _d.
+SET_TARGET_PROPERTIES( SimpleThreadPrint PROPERTIES DEBUG_POSTFIX "_d" )
+SET_TARGET_PROPERTIES( SimpleThreadPrintLock PROPERTIES DEBUG_POSTFIX "_d" )
+SET_TARGET_PROPERTIES( PeriodicThreadCallbacks PROPERTIES DEBUG_POSTFIX "_d" )
 
 TARGET_LINK_LIBRARIES( SimpleThreadPrint ${requiredLibs})
 TARGET_LINK_LIBRARIES( SimpleThreadPrintLock ${requiredLibs})

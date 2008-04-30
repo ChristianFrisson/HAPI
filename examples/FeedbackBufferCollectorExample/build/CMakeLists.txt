@@ -1,4 +1,17 @@
 cmake_minimum_required(VERSION 2.4.8)
+IF( WIN32 )
+  # Macro used to set include directories on windows.
+  MACRO( STRIP_AND_ADD_LIBRARY_DIRECTORIES )
+    FOREACH(TEMP_LIST_ITEM ${ARGV})
+      STRING(REGEX REPLACE  "[/]([^/])*\\.lib$" "" TEMP_LINK_DIR ${TEMP_LIST_ITEM})
+      STRING( COMPARE NOTEQUAL ${TEMP_LIST_ITEM} ${TEMP_LINK_DIR} LINK_STRING_NOT_EQUAL )
+      IF( ${LINK_STRING_NOT_EQUAL} )
+        LINK_DIRECTORIES( ${TEMP_LINK_DIR} )
+      ENDIF( ${LINK_STRING_NOT_EQUAL} )
+    ENDFOREACH(TEMP_LIST_ITEM ${ARGV})
+  ENDMACRO( STRIP_AND_ADD_LIBRARY_DIRECTORIES )
+ENDIF( WIN32 )
+
 # The name of our project is "FeedbackBufferCollector".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${FeedbackBufferCollector_SOURCE_DIR} and
 # to the root binary directory of the project as ${FeedbackBufferCollector_BINARY_DIR}.
@@ -7,9 +20,9 @@ project (FeedbackBufferCollector)
 # Create a library called "FeedbackBufferCollector" which includes the source files.
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(.. FeedbackBufferCollector_SRCS)
+AUX_SOURCE_DIRECTORY(${FeedbackBufferCollector_SOURCE_DIR}/.. FeedbackBufferCollector_SRCS)
 
-INCLUDE_DIRECTORIES( .. )
+INCLUDE_DIRECTORIES( ${FeedbackBufferCollector_SOURCE_DIR}/.. )
 
 SET(requiredLibs)
 
@@ -40,8 +53,8 @@ ENDIF(PTHREAD_FOUND)
 IF(WIN32)
   FIND_PACKAGE(GLUTWin REQUIRED)
   IF(GLUT_FOUND)
-    INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} ) 
-    SET(requiredLibs ${requiredLibs} ${GLUT_LIBRARIES} )
+    INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
+    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
   ENDIF(GLUT_FOUND)
 ENDIF(WIN32)
 
@@ -55,6 +68,9 @@ ELSE(GLUT_FOUND)
 ENDIF(GLUT_FOUND)
 
 ADD_EXECUTABLE(FeedbackBufferCollector ${FeedbackBufferCollector_SRCS})
+
+# make the name of debug libraries end in _d.
+SET_TARGET_PROPERTIES( FeedbackBufferCollector PROPERTIES DEBUG_POSTFIX "_d" )
 
 TARGET_LINK_LIBRARIES( FeedbackBufferCollector ${requiredLibs} )
 

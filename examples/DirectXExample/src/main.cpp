@@ -311,7 +311,7 @@ inline HAPI::Vec3 myCustomVertex2Vec3f( const MyCustomVertex & cv ) {
 // Set up camera for the scene.
 void setUpCamera( LPDIRECT3DDEVICE9 p_dx_device )
 {
-  D3DXVECTOR3 eye_pos(0, 0, -0.09);
+  D3DXVECTOR3 eye_pos(0, 0, -0.09f);
   D3DXVECTOR3 target_pos(0, 0, 0);
   D3DXVECTOR3 up_vector(0, 1, 0);
   D3DXMATRIXA16 view_matrix;

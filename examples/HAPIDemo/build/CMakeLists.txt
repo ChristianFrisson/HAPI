@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 2.4.8)
+if( COMMAND cmake_policy )
+  cmake_policy( SET CMP0003 NEW )
+endif( COMMAND cmake_policy )
 # The name of our project is "HAPIDemo".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${HAPIDemo_SOURCE_DIR} and
 # to the root binary directory of the project as ${HAPIDemo_BINARY_DIR}.
@@ -7,9 +10,9 @@ project (HAPIDemo)
 # Create a library called "Hello" which include sourcefiles.
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(.. HAPIDemo_SRCS)
+AUX_SOURCE_DIRECTORY(${HAPIDemo_SOURCE_DIR}/.. HAPIDemo_SRCS)
 
-INCLUDE_DIRECTORIES( .. )
+INCLUDE_DIRECTORIES( ${HAPIDemo_SOURCE_DIR}/.. )
 
 SET(requiredLibs)
 
@@ -56,6 +59,9 @@ IF(PTHREAD_FOUND)
 ENDIF(PTHREAD_FOUND)
 
 ADD_EXECUTABLE(HAPIDemo WIN32 MACOSX_BUNDLE ${HAPIDemo_SRCS})
+
+# make the name of debug libraries end in _d.
+SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES DEBUG_POSTFIX "_d" )
 
 TARGET_LINK_LIBRARIES( HAPIDemo ${requiredLibs} ${optionalLibs} )
 
