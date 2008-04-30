@@ -7,9 +7,9 @@ PROJECT(SpringExample)
 # Create a library called "SpringExample" which includes the source file "SpringExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(.. SpringExample_SRCS)
+AUX_SOURCE_DIRECTORY(${SpringExample_SOURCE_DIR}/.. SpringExample_SRCS)
 
-INCLUDE_DIRECTORIES( .. )
+INCLUDE_DIRECTORIES( ${SpringExample_SOURCE_DIR}/.. )
 
 SET(requiredLibs)
 
@@ -32,6 +32,9 @@ IF(HAPI_FOUND)
 ENDIF(HAPI_FOUND)
 
 ADD_EXECUTABLE(SpringExample ${SpringExample_SRCS})
+
+# make the name of debug libraries end in _d.
+SET_TARGET_PROPERTIES( SpringExample PROPERTIES DEBUG_POSTFIX "_d" )
 
 TARGET_LINK_LIBRARIES( SpringExample ${requiredLibs} ${optionalLibs} )
 

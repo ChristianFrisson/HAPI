@@ -7,9 +7,9 @@ project (SurfaceExample)
 # Create a library called "SurfaceExample" which includes the source file "SurfaceExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(.. SurfaceExample_SRCS)
+AUX_SOURCE_DIRECTORY(${SurfaceExample_SOURCE_DIR}/.. SurfaceExample_SRCS)
 
-INCLUDE_DIRECTORIES( .. )
+INCLUDE_DIRECTORIES( ${SurfaceExample_SOURCE_DIR}/.. )
 
 SET(requiredLibs)
 
@@ -32,6 +32,9 @@ IF(HAPI_FOUND)
 ENDIF(HAPI_FOUND)
 
 ADD_EXECUTABLE(SurfaceExample ${SurfaceExample_SRCS})
+
+# make the name of debug libraries end in _d.
+SET_TARGET_PROPERTIES( SurfaceExample PROPERTIES DEBUG_POSTFIX "_d" )
 
 TARGET_LINK_LIBRARIES( SurfaceExample ${requiredLibs} ${optionalLibs} )
 

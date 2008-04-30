@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 2.4.8)
+if( COMMAND cmake_policy )
+  cmake_policy( SET CMP0003 NEW )
+endif( COMMAND cmake_policy )
 # The name of our project is "DirectXExample".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${DirectXExample_SOURCE_DIR} and
 # to the root binary directory of the project as ${DirectXExample_BINARY_DIR}.
@@ -7,9 +10,9 @@ project (DirectXExample)
 # Create a library called "DirectXExample" which includes the source files.
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(../src DirectXExample_SRCS)
+AUX_SOURCE_DIRECTORY(${DirectXExample_SOURCE_DIR}/../src DirectXExample_SRCS)
 
-INCLUDE_DIRECTORIES( ../src )
+INCLUDE_DIRECTORIES( ${DirectXExample_SOURCE_DIR}/../src )
 
 SET(requiredLibs)
 
@@ -38,6 +41,9 @@ IF( DirectX_FOUND )
 ENDIF( DirectX_FOUND )
 
 ADD_EXECUTABLE(DirectXExample WIN32 ${DirectXExample_SRCS})
+
+# make the name of debug libraries end in _d.
+SET_TARGET_PROPERTIES( DirectXExample PROPERTIES DEBUG_POSTFIX "_d" )
 
 TARGET_LINK_LIBRARIES( DirectXExample ${requiredLibs} )
 
