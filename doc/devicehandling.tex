@@ -3,15 +3,15 @@
 HAPI is device independent and can be used with a wide variety of haptics devices. The haptics devices currently supported by HAPI are:
 
 \begin{itemize}
-\item PHANToM Devices from SensAble Technologies (implemented in the
-  PhantomHapticsDevice class) \cite{sensable}
-\item Delta and Omega devices from ForceDimension(implemented in the
-  ForceDimensionHapticsDevice class. \cite{forcedimension} 
+\item PHANToM Devices from SensAble Technologies ( implemented in the
+  PhantomHapticsDevice class ) \cite{sensable}
+\item Delta and Omega devices from ForceDimension ( implemented in the
+  ForceDimensionHapticsDevice class ). \cite{forcedimension} 
 \item 2 DOF Pantograph and something else (TODO) from Quanser.
- (implemented in the QuanserHapticsDevice class). This feature is not yet fully
+ ( implemented in the QuanserHapticsDevice class ). This feature is not yet fully
  tested and should be considered prototype. \cite{quanser}
-\item Falcon from Novint (implemented in the FalconHapticsDevice class ). \cite{novint} 
-\item HapticMaster from Moog/FCS (implemented in the HapticMasterDevice class ).\cite{moogfcs} \cite{linde02hapticmaster} 
+\item Falcon from Novint ( implemented in the FalconHapticsDevice class ). \cite{novint} 
+\item HapticMaster from Moog/FCS ( implemented in the HapticMasterDevice class ).\cite{moogfcs} \cite{linde02hapticmaster} 
 \end{itemize}
 
 Each of these devices has a special class implementing the interface to the device. These classes also provide device specific functions that can be used. Most of the time the user does not care what haptics device is used and can then use the AnyHapticsDevice class when specifying the haptics device instead. The AnyHapticsDevice class will try to find a haptics device to use by trying to initialize all the devices that are supported. The haptics devices used will be the first one that initializes successfully.
@@ -20,7 +20,7 @@ Each of these devices has a special class implementing the interface to the devi
 By default the coordinates given by the haptics device classes are
 given in metres in the local coordinate space of the haptics
 device. Often this is not the coordinate system a user wants
-though, and therefore HAPI provides a mean to change the coordinate
+though, and therefore HAPI provides a means to change the coordinate
 system by adding a calibration matrix. The position given by the
 getPosition() function will then be pos = matrix * orig\_pos. It is
 also possible to calibrate the orientation and the result will be in
@@ -29,7 +29,7 @@ calibration value will not be a matrix, but a Rotation object.
 
 \section{Layering}
 When adding shapes to be rendered at the haptics device, one can
-specify what ``layer'' in which it should be rendered. Each layer have
+specify what ``layer'' in which it should be rendered. Each layer has
 its own haptics rendering algorithm, which makes it possible to render
 different shapes with different haptics rendering algorithms on one
 haptics device. The resulting force will be the sum of the forces from
@@ -41,7 +41,8 @@ possible to feel the hard bone through the soft skin. If the shapes
 were specified in only one layer, the user would feel only the skin
 geometry, since the proxy stays on the surface. Specifying the bone in
 a second layer will add a new separate proxy for all the shapes in
-that layer. 
+that layer. See the functions in section \ref{ssHapticsRenderingFunctions} for
+information on how to add shapes to a specific layer.
 
 \begin{figure} 
   \centering 
@@ -60,7 +61,7 @@ By default all operations use layer 0.
 \section{The HAPIHapticsDevice abstract base class}
 The HAPIHapticsDevice abstract base class is the base class for all
 haptics device implementations. It contains the functions that are
-available for all haptics devices.  The functions available can be divided into three classes:
+available for all haptics devices.  The functions available can be divided into three categories:
 
 \begin{itemize}
 \item Device handling functions.

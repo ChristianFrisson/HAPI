@@ -176,8 +176,8 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
   nr_of_scheduled--;
   hdMakeCurrentDevice( device_handle );
 
+  hdStopScheduler();
   if( scheduler_started && nr_of_scheduled == 0 ) {
-    hdStopScheduler();
     scheduler_started = false;
   }
 
@@ -193,6 +193,8 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
   if( nr_of_scheduled == 0)
     hl_thread->setActive( false );
   thread = NULL;
+  if( scheduler_started )
+    hdStartScheduler();
   return true;
 }
 
