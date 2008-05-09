@@ -87,6 +87,7 @@ namespace HAPI {
       transform( _transform ),
       clean_up_func( _clean_up_func ) {
       inverse = transform.inverse();
+      setNonUniformScalingFlag();
     }
 
     /// Constructor.
@@ -126,6 +127,7 @@ namespace HAPI {
       have_transform = true;
       have_inverse = false;
       transform = t * transform;
+      setNonUniformScalingFlag();
     }
 
     /// Set the transformation matrix from local to global space.
@@ -133,6 +135,7 @@ namespace HAPI {
       have_transform = true;
       have_inverse = false;
       transform = t;
+      setNonUniformScalingFlag();
     }
 
     /// Get the transformation matrix from local to global space.
@@ -304,6 +307,22 @@ namespace HAPI {
 
     bool have_transform;
     bool have_inverse;
+    /// Flag used internally to check if normals need to be transformed
+    /// differently due to non uniform scaling.
+    bool non_uniform_scaling;
+
+    /// Sets the non_uniform_scaling flag.
+    inline void setNonUniformScalingFlag() {
+      Vec3 scaling = transform.getScalePart();
+      if( H3DUtil::H3DAbs( scaling.x - scaling.y ) <
+          H3DUtil::Constants::f_epsilon
+          && H3DUtil::H3DAbs( scaling.y - scaling.z ) <
+             H3DUtil::Constants::f_epsilon ) {
+        non_uniform_scaling = false;
+      } else {
+        non_uniform_scaling = true;
+      }
+    }
 
     Matrix4 transform;
     Matrix4 inverse;
