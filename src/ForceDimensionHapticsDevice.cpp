@@ -189,11 +189,12 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
 
     Vec3 position = Vec3( x, y, z );
 
-    Rotation orientation = Rotation( 1, 0, 0, H3DUtil::Constants::pi / 4 ) *
-                           Rotation( 0, 0, 1, rz ) *
-                           Rotation( 1, 0, 0, rx ) *
-                           Rotation( 0, 1, 0, ry ) *
-                           Rotation( 1, 0, 0, -H3DUtil::Constants::pi / 2);
+    Rotation orientation =
+      Rotation( 1, 0, 0, (float)( H3DUtil::Constants::pi / 4 ) ) *
+      Rotation( 0, 0, 1, (float)rz ) *
+      Rotation( 1, 0, 0, (float)rx ) *
+      Rotation( 0, 1, 0, (float)ry ) *
+      Rotation( 1, 0, 0, (float)( -H3DUtil::Constants::pi / 2 ) );
 
     hd->com_lock.lock();
 

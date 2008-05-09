@@ -72,11 +72,25 @@ void HAPIHapticShape::getConstraints( const Vec3 &point,
     Vec3 scale = inverse.getScalePart();
     HAPIFloat s = max( scale.x, max( scale.y, scale.z ) );    
     getConstraintsOfShape( inverse * point, constraints, face, radius * s );
-    for( unsigned int i = nr_constraints; i < constraints.size(); ++i ) {
-      PlaneConstraint &pc = constraints[i];
-      pc.normal = transform.getRotationPart() * pc.normal;
-      pc.point = transform * pc.point;
-    }
+    if( non_uniform_scaling ) {
+      for( unsigned int i = nr_constraints; i < constraints.size(); ++i ) {
+        PlaneConstraint &pc = constraints[i];
+        pc.normal = transform.getRotationPart() * pc.normal;
+        pc.normal.x *= scale.x;
+        pc.normal.y *= scale.y;
+        pc.normal.z *= scale.z;
+        pc.normal = inverse.getRotationPart() * pc.normal;
+        pc.normal = transform.getRotationPart() * pc.normal;
+        pc.normal.normalizeSafe();
+        pc.point = transform * pc.point;
+      }
+    } else {
+      for( unsigned int i = nr_constraints; i < constraints.size(); ++i ) {
+        PlaneConstraint &pc = constraints[i];
+        pc.normal = transform.getRotationPart() * pc.normal;
+        pc.point = transform * pc.point;
+      }
+    }    
   } else {
     getConstraintsOfShape( point, constraints, face, radius );
   }
@@ -100,7 +114,18 @@ void HAPIHapticShape::closestPoint( const Vec3 &p, Vec3 &cp,
     closestPointOnShape( inverse * p, cp, n, tc );
     Matrix4 inv = inverse;
     cp = transform * cp;
-    n = transform.getRotationPart() * n;
+    if( non_uniform_scaling ) {
+      Vec3 scaling = inverse.getScalePart();
+      n = transform.getRotationPart() * n;
+      n.x *= scaling.x;
+      n.y *= scaling.y;
+      n.z *= scaling.z;
+      n = inverse.getRotationPart() * n;
+      n = transform.getRotationPart() * n;
+      n.normalizeSafe();
+    } else {
+      n = transform.getRotationPart() * n;
+    }
   } else {
     closestPointOnShape( p, cp, n, tc );
   }
@@ -118,7 +143,18 @@ bool HAPIHapticShape::lineIntersect( const Vec3 &from,
       lineIntersectShape( local_from, local_to, result, face );
     if( have_intersection ) {
       result.point = transform * result.point;
-      result.normal = transform.getRotationPart() * result.normal;
+      if( non_uniform_scaling ) {
+        Vec3 scale = inverse.getScalePart();
+        result.normal = transform.getRotationPart() * result.normal;
+        result.normal.x *= scale.x;
+        result.normal.y *= scale.y;
+        result.normal.z *= scale.z;
+        result.normal = inverse.getRotationPart() * result.normal;
+        result.normal = transform.getRotationPart() * result.normal;
+        result.normal.normalizeSafe();
+      } else {
+        result.normal = transform.getRotationPart() * result.normal;
+      }
     }
     return have_intersection;
   } else {
