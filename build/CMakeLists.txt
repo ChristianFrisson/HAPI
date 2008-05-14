@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.4.8)
+cmake_minimum_required(VERSION 2.6.0)
 PROJECT (HAPI)
 
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
@@ -26,6 +26,7 @@ SET( HAPI_BUILD_VERSION 0 )
 
 # Set here already in case a special NSIS template needs to be used by cpack.
 SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
+INCLUDE( StripAndAddLibraryDirectories )
 
 # If cpack should be configured.
 IF( GENERATE_CPACK_PROJECT )
@@ -173,13 +174,6 @@ IF(MSVC)
   SET( HAPI_SRCS ${HAPI_SRCS} ${HAPI_SOURCE_DIR}/HAPI.rc )
 ENDIF(MSVC)
 
-
-AUX_SOURCE_DIRECTORY(../OpenHapticsRenderer/src OH_SRCS)
-AUX_SOURCE_DIRECTORY(../Chai3DRenderer/src CHAI_SRCS)
-INCLUDE_DIRECTORIES(../OpenHapticsRenderer/include
-                    ../Chai3DRenderer/include )
-
-
 # add all optional libraries to this variable
 SET(optionalLibs)
 
@@ -199,23 +193,31 @@ ENDIF(PTHREAD_FOUND)
 FIND_PACKAGE(OpenHaptics)
 IF(OPENHAPTICS_FOUND)
   SET(HAVE_OPENHAPTICS 1)
-  INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} )
+  AUX_SOURCE_DIRECTORY(../OpenHapticsRenderer/src OH_SRCS)
+  INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} 
+                       ../OpenHapticsRenderer/include )
   IF(WIN32)
     STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${OPENHAPTICS_LIBRARIES} )
   ELSE(WIN32)
     SET(optionalLibs ${optionalLibs} ${OPENHAPTICS_LIBRARIES} )
   ENDIF(WIN32)
+ELSEIF( NOT WIN32 )
+  INCLUDE_DIRECTORIES( ../OpenHapticsRenderer/include )
 ENDIF(OPENHAPTICS_FOUND)
 
 FIND_PACKAGE(Chai3D)
 IF(CHAI3D_FOUND)
   SET(HAVE_CHAI3D 1)
-  INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR} )
+  AUX_SOURCE_DIRECTORY(../Chai3DRenderer/src CHAI_SRCS)
+  INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR}
+                       ../Chai3DRenderer/include )
   IF(WIN32)
     STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${CHAI3D_LIBRARIES} )
   ELSE(WIN32)
     SET(optionalLibs ${optionalLibs} ${CHAI3D_LIBRARIES} )
   ENDIF(WIN32)
+ELSEIF( NOT WIN32 )
+  INCLUDE_DIRECTORIES( ../Chai3DRenderer/include )
 ENDIF(CHAI3D_FOUND)
 
 FIND_PACKAGE(DHD)
@@ -336,69 +338,85 @@ IF( GENERATE_CPACK_PROJECT )
   
 ENDIF( GENERATE_CPACK_PROJECT )
 
-# OpenHapticsRenderer and Chai3DRenderer are compiled as separate dlls 
-# on Windows 
 IF(WIN32)
+
+  # OpenHapticsRenderer and Chai3DRenderer are compiled as separate dlls 
+  # on Windows 
   ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS})
-  IF(MSVC)
-    SET( OH_SRCS ${OH_SRCS} ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc )
-    SET( CHAI_SRCS ${CHAI_SRCS} ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc )
+  IF(OPENHAPTICS_FOUND)
+    IF(MSVC)
+      SET( OH_SRCS ${OH_SRCS} ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc )
+    ENDIF(MSVC)
+    ADD_LIBRARY(OpenHapticsRenderer SHARED ${OH_SRCS})
+  ENDIF(OPENHAPTICS_FOUND)
+  
+  IF(CHAI3D_FOUND)
+    IF(MSVC)
+      SET( CHAI_SRCS ${CHAI_SRCS} ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc )
+    ENDIF(MSVC)
+    ADD_LIBRARY(Chai3DRenderer SHARED ${CHAI_SRCS})
+  ENDIF(CHAI3D_FOUND)
+
+  IF( MSVC )
+    # make sure that HAPI.rc contains the correct svn-version
+    EXECUTE_PROCESS( COMMAND ${HAPI_SOURCE_DIR}/FindSVNVersion ${HAPI_SOURCE_DIR}/../src/.svn/entries 
+                     OUTPUT_VARIABLE HAPI_SVN_VERSION )
+
+    ADD_CUSTOM_COMMAND( TARGET HAPI 
+                        PRE_BUILD 
+                        COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                        ARGS HAPI ${HAPI_SOURCE_DIR}/HAPI.rc HAPI.rc.cmake
+                        ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
+                        ${HAPI_BUILD_VERSION}
+                        ${HAPI_SOURCE_DIR}/../src/.svn/entries )
+
+    # autogenerate resource files depending on the version
+    CONFIGURE_FILE( HAPI.rc.cmake ${HAPI_SOURCE_DIR}/HAPI.rc )
+
+    # make sure that HAPI.rc, OpenHapticsRenderer.rc and Chai3DRenderer.rc contains the correct svn-version
+    # and autogenerate the resource files.
+    IF(OPENHAPTICS_FOUND)
+      CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc )
+      
+      ADD_CUSTOM_COMMAND( TARGET OpenHapticsRenderer
+                          PRE_BUILD 
+                          COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                          ARGS HAPI ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc OpenHapticsRenderer.rc.cmake
+                          ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
+                          ${HAPI_BUILD_VERSION}
+                          ${HAPI_SOURCE_DIR}/../src/.svn/entries )
+    ENDIF(OPENHAPTICS_FOUND)
+
+    IF(CHAI3D_FOUND)
+      CONFIGURE_FILE( Chai3DRenderer.rc.cmake ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc )
+      
+      ADD_CUSTOM_COMMAND( TARGET Chai3DRenderer
+                          PRE_BUILD 
+                          COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                          ARGS HAPI ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc Chai3DRenderer.rc.cmake
+                          ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
+                          ${HAPI_BUILD_VERSION}
+                          ${HAPI_SOURCE_DIR}/../src/.svn/entries )
+    ENDIF(CHAI3D_FOUND)
   ENDIF(MSVC)
-  ADD_LIBRARY(OpenHapticsRenderer SHARED ${OH_SRCS})
-  ADD_LIBRARY(Chai3DRenderer SHARED ${CHAI_SRCS})
+  
+  # set the install directory to the H3D directory on Windows
+  SET( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../..)
+ 
+  # is this only for msvc or for all windows compilers?
+  SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )
 ELSE(WIN32)
   ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS} ${OH_SRCS} ${CHAI_SRCS} )
 ENDIF(WIN32)
 
-# make sure that the HAPI.rc contains the correct svn-version
-IF( MSVC )
-  EXECUTE_PROCESS( COMMAND ${HAPI_SOURCE_DIR}/FindSVNVersion ${HAPI_SOURCE_DIR}/../src/.svn/entries 
-                   OUTPUT_VARIABLE HAPI_SVN_VERSION )
-  # autogenerate resource files depending on the version
-  CONFIGURE_FILE( HAPI.rc.cmake ${HAPI_SOURCE_DIR}/HAPI.rc )
-  CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc )
-  CONFIGURE_FILE( Chai3DRenderer.rc.cmake ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc )
-  
-  ADD_CUSTOM_COMMAND( TARGET HAPI 
-                      PRE_BUILD 
-                      COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                      ARGS HAPI ${HAPI_SOURCE_DIR}/HAPI.rc HAPI.rc.cmake
-                      ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
-                      ${HAPI_BUILD_VERSION}
-                      ${HAPI_SOURCE_DIR}/../src/.svn/entries )
+# Needed to link correctly on MSVC70 and MSVC71 because the dependency is not enough
+# to generate correct project files with this version of CMake.
+IF(NOT WIN32 OR MSVC70 OR MSVC71)
+  SET(requiredLibs ${requiredLibs} H3DUtil)
+ENDIF(NOT WIN32 OR MSVC70 OR MSVC71)
 
-  ADD_CUSTOM_COMMAND( TARGET OpenHapticsRenderer
-                      PRE_BUILD 
-                      COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                      ARGS HAPI ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc OpenHapticsRenderer.rc.cmake
-                      ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
-                      ${HAPI_BUILD_VERSION}
-                      ${HAPI_SOURCE_DIR}/../src/.svn/entries )
-
-  ADD_CUSTOM_COMMAND( TARGET Chai3DRenderer
-                      PRE_BUILD 
-                      COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                      ARGS HAPI ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc Chai3DRenderer.rc.cmake
-                      ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
-                      ${HAPI_BUILD_VERSION}
-                      ${HAPI_SOURCE_DIR}/../src/.svn/entries )
-ENDIF(MSVC)
-
-# set the install directory to the H3D directory on Windows
-IF(WIN32) 
- SET( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../..)
-ENDIF(WIN32)
-
-IF(NOT WIN32)
-SET(requiredLibs ${requiredLibs} H3DUtil)
-ENDIF(NOT WIN32)
-
+# Add the last include directories needed.
 INCLUDE_DIRECTORIES(  ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
-
-IF(WIN32)
-  SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )
-ENDIF(WIN32)
-
 
 # make sure symbols are exported.
 SET( HAPI_COMPILE_FLAGS "-DHAPI_EXPORTS" )
@@ -412,102 +430,130 @@ SET_TARGET_PROPERTIES( HAPI PROPERTIES DEBUG_POSTFIX "_d" )
 # set the version of the library
 SET_TARGET_PROPERTIES( HAPI PROPERTIES VERSION ${HAPI_FULL_VERSION} )
 
-# change the name depending on compiler to be able to tell them apart
-# since they are not compatible with each other. 
-IF(MSVC70 OR MSVC71)
-  SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc7 )
-ELSEIF(MSVC80)
-  SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc8 )
-ELSEIF(MSVC90)
-  SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc9 )
-  SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
-ENDIF(MSVC70 OR MSVC71)
+IF( WIN32 )
+  
+  # change the name depending on compiler to be able to tell them apart
+  # since they are not compatible with each other. 
+  IF(MSVC70 OR MSVC71)
+    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc7 )
+  ELSEIF(MSVC80)
+    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc8 )
+  ELSEIF(MSVC90)
+    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc9 )
+    SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
+  ENDIF(MSVC70 OR MSVC71)
+
+  # Set properties for OpenHapticsRenderer if the project is created.
+  IF(OPENHAPTICS_FOUND)
+    TARGET_LINK_LIBRARIES( OpenHapticsRenderer ${requiredLibs} ${optionalLibs} HAPI )
+    # make sure symbols are exported.
+    SET( OpenHapticsRenderer_COMPILE_FLAGS "-DOPENHAPTICSRENDERER_EXPORTS" )
+    
+    # make the name of debug libraries end in _d.
+    SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES DEBUG_POSTFIX "_d" )
+    # set the version of the library
+    SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES VERSION ${HAPI_FULL_VERSION} )
+    
+    # change the name depending on compiler to be able to tell them apart
+    # since they are not compatible with each other. 
+    IF(MSVC70 OR MSVC71)
+      SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc7 )
+    ELSEIF(MSVC80)
+      SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc8 )
+    ELSEIF(MSVC90)
+      SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc9 )
+      SET( OpenHapticsRenderer_COMPILE_FLAGS "${OpenHapticsRenderer_COMPILE_FLAGS} /MP -D_CRT_SECURE_NO_DEPRECATE" )
+    ENDIF(MSVC70 OR MSVC71)
+
+    # Set compile flags
+    SET_TARGET_PROPERTIES( OpenHapticsRenderer 
+                           PROPERTIES COMPILE_FLAGS
+                           "${OpenHapticsRenderer_COMPILE_FLAGS}" )
+
+    # Set link flags
+    SET_TARGET_PROPERTIES( OpenHapticsRenderer HAPI
+                           PROPERTIES
+                           LINK_FLAGS "/DELAYLOAD:\"HD.dll\"" )
+    
+    # When using OpenHaptics HAPI also need to delayload HD.dll.
+    SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /DELAYLOAD:\"HD.dll\"" )
+  ENDIF(OPENHAPTICS_FOUND)
+
+  # Set properties for Chai3DRenderer if the project is created.
+  IF(CHAI3D_FOUND)
+    TARGET_LINK_LIBRARIES( Chai3DRenderer ${requiredLibs} ${optionalLibs} HAPI )
+    # make sure symbols are exported.
+    SET_TARGET_PROPERTIES( Chai3DRenderer 
+                           PROPERTIES COMPILE_FLAGS "-DCHAI3DRENDERER_EXPORTS" )
+    # make the name of debug libraries end in _d.
+    SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES DEBUG_POSTFIX "_d" )
+    # set the version of the library
+    SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES VERSION ${HAPI_FULL_VERSION} )
+
+    # change the name depending on compiler to be able to tell them apart
+    # since they are not compatible with each other. 
+    IF(MSVC70 OR MSVC71)
+      SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc7 )
+    ELSEIF(MSVC80)
+      SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc8 )
+    ELSEIF(MSVC90)
+      SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc9 )
+    ENDIF(MSVC70 OR MSVC71)
+
+    # Set link flags
+    SET_TARGET_PROPERTIES( Chai3DRenderer
+                           PROPERTIES
+                           LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
+  ENDIF(CHAI3D_FOUND)
+
+  # Set link flags for HAPI
+  SET_TARGET_PROPERTIES( HAPI
+                         PROPERTIES
+                         LINK_FLAGS "${HAPI_LINK_FLAGS} /DELAYLOAD:\"dhd.dll\" /DELAYLOAD:\"hdl.dll\" /DELAYLOAD:\"Haptik.Library.dll\" /DELAYLOAD:\"SimballMedicalHID.dll\"" )
+ENDIF( WIN32 )
 
 # set compile flags for HAPI project
 SET_TARGET_PROPERTIES( HAPI PROPERTIES COMPILE_FLAGS "${HAPI_COMPILE_FLAGS}" )
 
-IF( WIN32 )
-  TARGET_LINK_LIBRARIES( OpenHapticsRenderer ${requiredLibs} ${optionalLibs} )
-  TARGET_LINK_LIBRARIES( Chai3DRenderer ${requiredLibs} ${optionalLibs} )
-
-  # make sure symbols are exported.       
-  SET_TARGET_PROPERTIES( OpenHapticsRenderer 
-                         PROPERTIES COMPILE_FLAGS
-                         "-DOPENHAPTICSRENDERER_EXPORTS" )
-  SET_TARGET_PROPERTIES( Chai3DRenderer 
-                         PROPERTIES COMPILE_FLAGS "-DCHAI3DRENDERER_EXPORTS" )
-
-  # make the name of debug libraries end in _d.
-  SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES DEBUG_POSTFIX "_d" )
-  SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES DEBUG_POSTFIX "_d" )
-
-  # set the version of the library
-  SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES VERSION ${HAPI_FULL_VERSION} )   
-  SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES VERSION ${HAPI_FULL_VERSION} )   
-
-  # change the name depending on compiler to be able to tell them apart
-  # since they are not compatible with each other. 
-  IF(MSVC70 OR MSVC71)
-    SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc7 )
-  ELSEIF(MSVC80)
-    SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc8 )
-  ELSEIF(MSVC90)
-    SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc9 )
-  ENDIF(MSVC70 OR MSVC71)
-
-  IF(MSVC70 OR MSVC71)
-    SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc7 )
-  ELSEIF(MSVC80)
-    SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc8 )
-  ELSEIF(MSVC90)
-    SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc9 )
-  ENDIF(MSVC70 OR MSVC71)
-  
-  # delay load information, not working for some reason when the / is there. For version 2.4.8 of cmake
-  # According to some information it should work with latest trunk of cmake.
-  # It is also not really correct in the fact that it does not add the choice in the properties
-  # of the microsoft visual studio target but rather put it on the command prompt.
-  # Only tested with microsoft visual studio c++ 2003 and 2005 express.
-  SET_TARGET_PROPERTIES( OpenHapticsRenderer HAPI
-                         PROPERTIES
-                         LINK_FLAGS "/DELAYLOAD:\"HD.dll\"" )
-  
-  SET_TARGET_PROPERTIES( HAPI
-                         PROPERTIES
-                         LINK_FLAGS "/DELAYLOAD:\"dhd.dll\" /DELAYLOAD:\"hdl.dll\" /DELAYLOAD:\"Haptik.Library.dll\"" )
-
-ENDIF( WIN32 )
-
 # autogenerate HAPI.h depending on the libraries available.
 CONFIGURE_FILE( ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.cmake ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.h )
 
+# Where to install HAPI
 INSTALL( TARGETS HAPI 
          LIBRARY DESTINATION lib
          RUNTIME DESTINATION bin
          ARCHIVE DESTINATION lib )
 
-IF(WIN32)
-  INSTALL( TARGETS OpenHapticsRenderer
-           LIBRARY DESTINATION lib
-           RUNTIME DESTINATION bin
-           ARCHIVE DESTINATION lib )
-
-  INSTALL( TARGETS Chai3DRenderer 
-           LIBRARY DESTINATION lib
-           RUNTIME DESTINATION bin
-           ARCHIVE DESTINATION lib )
-ELSE(WIN32)
-  INSTALL( DIRECTORY ../include/HAPI ../OpenHapticsRenderer/include/HAPI ../Chai3DRenderer/include/HAPI
-           DESTINATION include 
-           PATTERN .svn EXCLUDE )
-ENDIF(WIN32)
-
 # HAPI is dependent on H3DUtil
 ADD_DEPENDENCIES( HAPI H3DUtil )
 
 IF(WIN32)
-  ADD_DEPENDENCIES( OpenHapticsRenderer HAPI )
-  ADD_DEPENDENCIES( OpenHapticsRenderer H3DUtil )
-  ADD_DEPENDENCIES( Chai3DRenderer HAPI )
-  ADD_DEPENDENCIES( Chai3DRenderer H3DUtil )
+  IF(OPENHAPTICS_FOUND)
+    # Where to install OpenHapticsRenderer
+    INSTALL( TARGETS OpenHapticsRenderer
+             LIBRARY DESTINATION lib
+             RUNTIME DESTINATION bin
+             ARCHIVE DESTINATION lib )
+
+    # OpenHapticsRenderer is dependent on HAPI and H3DUtil
+    ADD_DEPENDENCIES( OpenHapticsRenderer HAPI )
+    ADD_DEPENDENCIES( OpenHapticsRenderer H3DUtil )
+  ENDIF(OPENHAPTICS_FOUND)
+
+  IF(CHAI3D_FOUND)
+    # Where to install Chai3DRenderer
+    INSTALL( TARGETS Chai3DRenderer 
+             LIBRARY DESTINATION lib
+             RUNTIME DESTINATION bin
+             ARCHIVE DESTINATION lib )
+
+    # Chai3DRenderer is dependent on HAPI and H3DUtil
+    ADD_DEPENDENCIES( Chai3DRenderer HAPI )
+    ADD_DEPENDENCIES( Chai3DRenderer H3DUtil )
+  ENDIF(CHAI3D_FOUND)
+ELSE(WIN32)
+  # Install header files on non-windows system (e.g. Unix).
+  INSTALL( DIRECTORY ../include/HAPI ../OpenHapticsRenderer/include/HAPI ../Chai3DRenderer/include/HAPI
+           DESTINATION include 
+           PATTERN .svn EXCLUDE )
 ENDIF(WIN32)

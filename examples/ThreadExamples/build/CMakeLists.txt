@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.4.8)
+cmake_minimum_required(VERSION 2.6.0)
 # This will set up three projects. These three projects are examples
 # from the manual.
 project (ThreadExamples)
