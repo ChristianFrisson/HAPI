@@ -1,16 +1,4 @@
-cmake_minimum_required(VERSION 2.4.8)
-IF( WIN32 )
-  # Macro used to set include directories on windows.
-  MACRO( STRIP_AND_ADD_LIBRARY_DIRECTORIES )
-    FOREACH(TEMP_LIST_ITEM ${ARGV})
-      STRING(REGEX REPLACE  "[/]([^/])*\\.lib$" "" TEMP_LINK_DIR ${TEMP_LIST_ITEM})
-      STRING( COMPARE NOTEQUAL ${TEMP_LIST_ITEM} ${TEMP_LINK_DIR} LINK_STRING_NOT_EQUAL )
-      IF( ${LINK_STRING_NOT_EQUAL} )
-        LINK_DIRECTORIES( ${TEMP_LINK_DIR} )
-      ENDIF( ${LINK_STRING_NOT_EQUAL} )
-    ENDFOREACH(TEMP_LIST_ITEM ${ARGV})
-  ENDMACRO( STRIP_AND_ADD_LIBRARY_DIRECTORIES )
-ENDIF( WIN32 )
+cmake_minimum_required(VERSION 2.6.0)
 
 # The name of our project is "FeedbackBufferCollector".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${FeedbackBufferCollector_SOURCE_DIR} and
@@ -27,6 +15,7 @@ INCLUDE_DIRECTORIES( ${FeedbackBufferCollector_SOURCE_DIR}/.. )
 SET(requiredLibs)
 
 SET(CMAKE_MODULE_PATH ${FeedbackBufferCollector_SOURCE_DIR}/../../../build/modules )
+INCLUDE( StripAndAddLibraryDirectories )
 
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)

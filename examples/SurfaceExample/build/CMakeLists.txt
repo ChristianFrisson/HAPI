@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.4.8)
+cmake_minimum_required(VERSION 2.6.0)
 # The name of our project is "SurfaceExample".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${SurfaceExample_SOURCE_DIR} and
 # to the root binary directory of the project as ${SurfaceExample_BINARY_DIR}.

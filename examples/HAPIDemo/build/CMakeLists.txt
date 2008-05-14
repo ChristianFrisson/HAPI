@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.4.8)
+cmake_minimum_required(VERSION 2.6.0)
 if( COMMAND cmake_policy )
   cmake_policy( SET CMP0003 NEW )
 endif( COMMAND cmake_policy )
@@ -63,6 +63,17 @@ ADD_EXECUTABLE(HAPIDemo WIN32 MACOSX_BUNDLE ${HAPIDemo_SRCS})
 # make the name of debug libraries end in _d.
 SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES DEBUG_POSTFIX "_d" )
 
+IF(MSVC70 OR MSVC71)
+  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
+ELSEIF(MSVC80)
+  # remove some warnings about deprecated functions.
+  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
+ELSEIF(MSVC90)
+  # remove some warnings about deprecated functions.
+  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
+ENDIF(MSVC70 OR MSVC71)
+
 TARGET_LINK_LIBRARIES( HAPIDemo ${requiredLibs} ${optionalLibs} )
 
 # set the install directory to the H3D directory on Windows
@@ -71,5 +82,5 @@ IF(WIN32)
 ENDIF(WIN32)
 
 INSTALL( TARGETS HAPIDemo
-	 LIBRARY DESTINATION lib
-	 RUNTIME DESTINATION bin )
+         LIBRARY DESTINATION lib
+         RUNTIME DESTINATION bin )
