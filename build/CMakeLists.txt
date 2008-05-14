@@ -171,7 +171,7 @@ AUX_SOURCE_DIRECTORY(../src HAPI_SRCS)
 
 # add the HAPI.rc resource file if Visual Studio
 IF(MSVC)
-  SET( HAPI_SRCS ${HAPI_SRCS} ${HAPI_SOURCE_DIR}/HAPI.rc )
+  SET( HAPI_SRCS ${HAPI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
 ENDIF(MSVC)
 
 # add all optional libraries to this variable
@@ -345,14 +345,14 @@ IF(WIN32)
   ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS})
   IF(OPENHAPTICS_FOUND)
     IF(MSVC)
-      SET( OH_SRCS ${OH_SRCS} ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc )
+      SET( OH_SRCS ${OH_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
     ENDIF(MSVC)
     ADD_LIBRARY(OpenHapticsRenderer SHARED ${OH_SRCS})
   ENDIF(OPENHAPTICS_FOUND)
   
   IF(CHAI3D_FOUND)
     IF(MSVC)
-      SET( CHAI_SRCS ${CHAI_SRCS} ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc )
+      SET( CHAI_SRCS ${CHAI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
     ENDIF(MSVC)
     ADD_LIBRARY(Chai3DRenderer SHARED ${CHAI_SRCS})
   ENDIF(CHAI3D_FOUND)
@@ -365,35 +365,35 @@ IF(WIN32)
     ADD_CUSTOM_COMMAND( TARGET HAPI 
                         PRE_BUILD 
                         COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                        ARGS HAPI ${HAPI_SOURCE_DIR}/HAPI.rc HAPI.rc.cmake
+                        ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc HAPI.rc.cmake
                         ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                         ${HAPI_BUILD_VERSION}
                         ${HAPI_SOURCE_DIR}/../src/.svn/entries )
 
     # autogenerate resource files depending on the version
-    CONFIGURE_FILE( HAPI.rc.cmake ${HAPI_SOURCE_DIR}/HAPI.rc )
+    CONFIGURE_FILE( HAPI.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
 
     # make sure that HAPI.rc, OpenHapticsRenderer.rc and Chai3DRenderer.rc contains the correct svn-version
     # and autogenerate the resource files.
     IF(OPENHAPTICS_FOUND)
-      CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc )
+      CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
       
       ADD_CUSTOM_COMMAND( TARGET OpenHapticsRenderer
                           PRE_BUILD 
                           COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                          ARGS HAPI ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc OpenHapticsRenderer.rc.cmake
+                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc OpenHapticsRenderer.rc.cmake
                           ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                           ${HAPI_BUILD_VERSION}
                           ${HAPI_SOURCE_DIR}/../src/.svn/entries )
     ENDIF(OPENHAPTICS_FOUND)
 
     IF(CHAI3D_FOUND)
-      CONFIGURE_FILE( Chai3DRenderer.rc.cmake ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc )
+      CONFIGURE_FILE( Chai3DRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
       
       ADD_CUSTOM_COMMAND( TARGET Chai3DRenderer
                           PRE_BUILD 
                           COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                          ARGS HAPI ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc Chai3DRenderer.rc.cmake
+                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc Chai3DRenderer.rc.cmake
                           ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                           ${HAPI_BUILD_VERSION}
                           ${HAPI_SOURCE_DIR}/../src/.svn/entries )
