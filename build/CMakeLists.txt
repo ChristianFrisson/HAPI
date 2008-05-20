@@ -38,19 +38,44 @@ IF( GENERATE_CPACK_PROJECT )
   SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};HAPI;ALL;/" )
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY "H3D" )
 
-  SET(DEBIAN_PACKAGE_DEPENDS "libgl-dev, h3dutil(>=1.0.0)" )	 
+  # Our project depends on these debian packages for Linux.
+  SET(DEBIAN_PACKAGE_DEPENDS "libgl-dev, h3dutil(>=1.0.0)" )
+
+  # File patterns to ignore, common for all operating systems.
+  SET( HAPI_CPACK_IGNORE_PATTERNS /\\\\.svn/
+                                  \\\\.obj$
+                                  \\\\.ncb$
+                                  \\\\.log$
+                                  \\\\.suo$
+                                  \\\\.zip$
+                                  \\\\.dir/
+                                  \\\\.user$
+                                  \\\\.cv$
+                                  "/Debug(.)*/"
+                                  "/debug(.)*/"
+                                  /Release
+                                  /release
+                                  /linux
+                                  /build/win32/
+                                  /build/vc8
+                                  /build/vc7
+                                  /osx/
+                                  /doc/H3DAPI/ )
   
-  IF( WIN32 )
+  SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
+  SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
+  SET(CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION})
+  # TODO: fix different for windows and unix if needed.
+  IF(WIN32 AND NOT UNIX)
+    # Cached variable used by H3DAPIs GENERATE_CPACK_PROJECT to get the correct installation directories.
     SET( HAPI_CPACK_INSTALLED_DIRECTORIES ""
         CACHE INTERNAL "Installed directories of HAPI." )
-  ENDIF( WIN32 )
 
-  SET( HAPIExamples_cmake_install "" CACHE PATH "Needs to be set if examples for HAPI is desired to be packed in the install. Set to location of cmake_install.cmake for the examples." )
-  MARK_AS_ADVANCED(HAPIExamples_cmake_install)
-  IF( HAPIExamples_cmake_install )
-    SET(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
-                                     "${HAPIExamples_cmake_install};Examples;ALL;/" )
-    IF( WIN32 )
+    SET( HAPIExamples_cmake_install "" CACHE PATH "Needs to be set if examples for HAPI is desired to be packed in the install. Set to location of cmake_install.cmake for the examples." )
+    MARK_AS_ADVANCED(HAPIExamples_cmake_install)
+    IF( HAPIExamples_cmake_install )
+      SET(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
+                                       "${HAPIExamples_cmake_install};Examples;ALL;/" )
       SET( CPACK_ADD_HAPIEXAMPLES_LINKS "ON" )
       
       FIND_PACKAGE(wxWidgetsWin)
@@ -59,96 +84,70 @@ IF( GENERATE_CPACK_PROJECT )
                                               "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx"
            CACHE INTERNAL "Installed directories of HAPI." )
       ENDIF(wxWidgets_FOUND)
+    ENDIF( HAPIExamples_cmake_install )  
 
-    ENDIF( WIN32 )
-  ENDIF( HAPIExamples_cmake_install )  
-
-  SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
-  SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
-  SET(CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION})
-  # TODO: fix different for windows and unix if needed.
-  IF(WIN32 AND NOT UNIX)
     # This might be cleaned up a bit after cleaning External.
-    SET(CPACK_IGNORE_FILES /\\\\.svn/
-                           \\\\.obj$
-                           \\\\.ncb$
-                           \\\\.log$
-                          \\\\.suo$
-                          \\\\.zip$
-                          \\\\.dir/
-                          \\\\.user$
-                          \\\\.cv$
-                          "/Debug(.)*/"
-                          "/debug(.)*/"
-                          /Release
-                          /release
-                          /linux
-                          /build/win32/
-                          /build/vc8
-                          /build/vc7
-                          /osx/
-                          /H3DAPI/Util/
-                          /fparser\\\\.lib$
-                          /teem\\\\.lib$
-                          /wxbase28_net\\\\.lib$
-                          /wxbase28_odbc\\\\.lib$
-                          /wxbase28_xml\\\\.lib$
-                          /wxbase28_net\\\\.lib$
-                          /wxbase28_odbc\\\\.lib$
-                          /wxbase28_xml\\\\.lib$
-                          /wxexpat\\\\.lib$
-                          /wxjpeg\\\\.lib$
-                          /wxmsw28_aui\\\\.lib$
-                          /wxmsw28_dbgrid\\\\.lib$
-                          /wxmsw28_html\\\\.lib$
-                          /wxmsw28_media\\\\.lib$
-                          /wxmsw28_qa\\\\.lib$
-                          /wxmsw28_richtext\\\\.lib$
-                          /wxmsw28_xrc\\\\.lib$
-                          /wxpng\\\\.lib$
-                          /wxregex\\\\.lib$
-                          /wxtiff\\\\.lib$
-                          /wxzlib\\\\.lib$
-                          /pthreadGC2\\\\.dll$
-                          /pthreadGCE2\\\\.dll$
-                          /pthreadVSE2\\\\.dll$
-                          /doc/H3DAPI/
-                          /audiofile\\\\.dll$
-                          /cg\\\\.dll$
-                          /cgGL\\\\.dll$
-                          /ftgl_dynamic_MTD\\\\.dll$
-                          /libcurl\\\\.dll$
-                          /ogg\\\\.dll$
-                          /ogg_d\\\\.dll$
-                          /OpenAL32\\\\.dll$
-                          /vorbis\\\\.dll$
-                          /vorbisfile\\\\.dll$
-                          /wrap_oal\\\\.dll$
-                          /xerces-c_2_7\\\\.dll$
-                          /xerces-c_2_7D\\\\.dll$
-                          /ALut\\\\.lib$
-                          /audiofile\\\\.lib$
-                          /cg\\\\.lib$
-                          /cgGL\\\\.lib$
-                          /freetype219MT\\\\.lib$
-                          /freetype235\\\\.lib$
-                          /ftgl_dynamic_MTD\\\\.lib$
-                          /ftgl_static_MTD\\\\.lib$
-                          /libaudiofile\\\\.lib$
-                          /libcurl\\\\.lib$
-                          /libcurl_static\\\\.lib$
-                          /ogg\\\\.lib$
-                          /ogg_static\\\\.lib$
-                          /OpenAL32\\\\.lib$
-                          /siapp\\\\.lib$
-                          /spwmath\\\\.lib$
-                          /strmbase\\\\.lib$
-                          /vorbis\\\\.lib$
-                          /vorbis_static\\\\.lib$
-                          /vorbisfile\\\\.lib$
-                          /vorbisfile_static\\\\.lib$
-                          /xerces-c_2\\\\.lib$
-                          /Xerces-c_static_2\\\\.lib$ )
+    SET(CPACK_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS }
+                           /fparser\\\\.lib$
+                           /teem\\\\.lib$
+                           /wxbase28_net\\\\.lib$
+                           /wxbase28_odbc\\\\.lib$
+                           /wxbase28_xml\\\\.lib$
+                           /wxbase28_net\\\\.lib$
+                           /wxbase28_odbc\\\\.lib$
+                           /wxbase28_xml\\\\.lib$
+                           /wxexpat\\\\.lib$
+                           /wxjpeg\\\\.lib$
+                           /wxmsw28_aui\\\\.lib$
+                           /wxmsw28_dbgrid\\\\.lib$
+                           /wxmsw28_html\\\\.lib$
+                           /wxmsw28_media\\\\.lib$
+                           /wxmsw28_qa\\\\.lib$
+                           /wxmsw28_richtext\\\\.lib$
+                           /wxmsw28_xrc\\\\.lib$
+                           /wxpng\\\\.lib$
+                           /wxregex\\\\.lib$
+                           /wxtiff\\\\.lib$
+                           /wxzlib\\\\.lib$
+                           /pthreadGC2\\\\.dll$
+                           /pthreadGCE2\\\\.dll$
+                           /pthreadVSE2\\\\.dll$
+                           /audiofile\\\\.dll$
+                           /cg\\\\.dll$
+                           /cgGL\\\\.dll$
+                           /ftgl_dynamic_MTD\\\\.dll$
+                           /libcurl\\\\.dll$
+                           /ogg\\\\.dll$
+                           /ogg_d\\\\.dll$
+                           /OpenAL32\\\\.dll$
+                           /vorbis\\\\.dll$
+                           /vorbisfile\\\\.dll$
+                           /wrap_oal\\\\.dll$
+                           /xerces-c_2_7\\\\.dll$
+                           /xerces-c_2_7D\\\\.dll$
+                           /ALut\\\\.lib$
+                           /audiofile\\\\.lib$
+                           /cg\\\\.lib$
+                           /cgGL\\\\.lib$
+                           /freetype219MT\\\\.lib$
+                           /freetype235\\\\.lib$
+                           /ftgl_dynamic_MTD\\\\.lib$
+                           /ftgl_static_MTD\\\\.lib$
+                           /libaudiofile\\\\.lib$
+                           /libcurl\\\\.lib$
+                           /libcurl_static\\\\.lib$
+                           /ogg\\\\.lib$
+                           /ogg_static\\\\.lib$
+                           /OpenAL32\\\\.lib$
+                           /siapp\\\\.lib$
+                           /spwmath\\\\.lib$
+                           /strmbase\\\\.lib$
+                           /vorbis\\\\.lib$
+                           /vorbis_static\\\\.lib$
+                           /vorbisfile\\\\.lib$
+                           /vorbisfile_static\\\\.lib$
+                           /xerces-c_2\\\\.lib$
+                           /Xerces-c_static_2\\\\.lib$ )
     SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
                                     "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
                                     "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
@@ -159,7 +158,10 @@ IF( GENERATE_CPACK_PROJECT )
     
     # Do not modify path since this is done by the NSIS template.
     SET( CPACK_NSIS_MODIFY_PATH "OFF" )
-    
+  ELSE(WIN32 AND NOT UNIX)
+    SET(CPACK_SOURCE_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS} )
+    SET(CPACK_SOURCE_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
+                                           "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
   ENDIF(WIN32 AND NOT UNIX)
 ENDIF( GENERATE_CPACK_PROJECT )
 
