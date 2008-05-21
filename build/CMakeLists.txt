@@ -87,7 +87,7 @@ IF( GENERATE_CPACK_PROJECT )
     ENDIF( HAPIExamples_cmake_install )  
 
     # This might be cleaned up a bit after cleaning External.
-    SET(CPACK_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS }
+    SET(CPACK_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS}
                            /fparser\\\\.lib$
                            /teem\\\\.lib$
                            /wxbase28_net\\\\.lib$

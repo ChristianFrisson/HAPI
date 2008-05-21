@@ -66,7 +66,8 @@ int main(int argc, char* argv[]) {
 
   // Wait for user input.
   cout << "Provided you have a haptics device connected you should ";
-  cout << "find a sphere to the right in the device workspace." <<endl << endl;
+  cout << "find a sphere in the middle of the device workspace."
+       <<endl << endl;
   string temp_string;
   cerr << "Press ENTER to exit" << endl;
   getline( cin, temp_string );
