@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6.0)
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.6.0)
+ENDIF(WIN32)
 PROJECT (HAPIExamples)
 
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.

@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6.0)
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.6.0)
+ENDIF(WIN32)
 PROJECT (HAPI)
 
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project

@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6.0)
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.6.0)
+ENDIF(WIN32)
 if( COMMAND cmake_policy )
   cmake_policy( SET CMP0003 NEW )
 endif( COMMAND cmake_policy )
@@ -10,7 +12,7 @@ project (HAPIDemo)
 # Create a library called "Hello" which include sourcefiles.
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(${HAPIDemo_SOURCE_DIR}/.. HAPIDemo_SRCS)
+AUX_SOURCE_DIRECTORY(.. HAPIDemo_SRCS)
 
 INCLUDE_DIRECTORIES( ${HAPIDemo_SOURCE_DIR}/.. )
 
@@ -53,10 +55,10 @@ ELSE(wxWidgets_FOUND)
 ENDIF(wxWidgets_FOUND)
 
 FIND_PACKAGE(PTHREAD REQUIRED)
-IF(PTHREAD_FOUND)
+IF(PTHREAD_FOUND AND WIN32)
   INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
-ENDIF(PTHREAD_FOUND)
+ENDIF(PTHREAD_FOUND AND WIN32)
 
 ADD_EXECUTABLE(HAPIDemo WIN32 MACOSX_BUNDLE ${HAPIDemo_SRCS})
 

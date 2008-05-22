@@ -47,6 +47,10 @@
 #include <GL/glut.h>
 #endif
 
+#ifdef FREEGLUT
+#include <GL/freeglut.h>
+#endif
+
 // Pointer to the haptics device.
 HAPI::AnyHapticsDevice *hd = 0;
 
@@ -63,12 +67,15 @@ void display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
+  glDepthMask(GL_TRUE);
+  glEnable(GL_CULL_FACE);
 	glShadeModel(GL_SMOOTH);
   glEnable( GL_LIGHTING );
-  glEnable(GL_LIGHT0);  
+  glEnable(GL_LIGHT0);
   glLoadIdentity();
 
   gluLookAt(0, 0, 0.2, 0, 0, 0, 0, 1, 0);
+  glEnable( GL_NORMALIZE );
 
   // Draw the center sphere.
   draw();
@@ -80,7 +87,6 @@ void display() {
       HAPI::Vec3 proxy_pos =
         static_cast< HAPI::HAPIProxyBasedRenderer * >(hr)->getProxyPosition();
 
-      glDisable( GL_LIGHTING );
       glPushMatrix();
       glTranslatef( (GLfloat)proxy_pos.x,
                     (GLfloat)proxy_pos.y,
@@ -88,7 +94,6 @@ void display() {
       glScalef( 0.1f, 0.1f, 0.1f );
       draw();
       glPopMatrix();
-      glEnable( GL_LIGHTING );
     }
   }
 
@@ -111,8 +116,9 @@ int main(int argc, char* argv[]) {
 
   // Create a glut window
   glutInit(&argc, argv);
+  glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
   glutInitWindowSize( 640, 480 );
-  glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE );
+  glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
   int window_id = glutCreateWindow( "FeedbackBufferCollectorExample" );
   glutSetWindow( window_id );
 
@@ -165,7 +171,8 @@ int main(int argc, char* argv[]) {
   // Start gluts mainloop.
   glutMainLoop();
 
-  // Should find a way to call releaserenderer.
-  // Did not work with callback setup with onexit
-  // because it is called after all auto_ptr are out of scope.
+  // This will only be called if freeglut is found and used.
+  hd->disableDevice();
+  hd->releaseDevice();
 }
+
