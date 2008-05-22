@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6.0)
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.6.0)
+ENDIF(WIN32)
 # The name of our project is "SurfaceExample".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${SurfaceExample_SOURCE_DIR} and
 # to the root binary directory of the project as ${SurfaceExample_BINARY_DIR}.
@@ -7,7 +9,7 @@ project (SurfaceExample)
 # Create a library called "SurfaceExample" which includes the source file "SurfaceExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(${SurfaceExample_SOURCE_DIR}/.. SurfaceExample_SRCS)
+AUX_SOURCE_DIRECTORY(.. SurfaceExample_SRCS)
 
 INCLUDE_DIRECTORIES( ${SurfaceExample_SOURCE_DIR}/.. )
 

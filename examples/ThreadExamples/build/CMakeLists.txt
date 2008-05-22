@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 2.6.0)
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.6.0)
+ENDIF(WIN32)
 # This will set up three projects. These three projects are examples
 # from the manual.
 project (ThreadExamples)
 
-AUX_SOURCE_DIRECTORY(${ThreadExamples_SOURCE_DIR}/../SimpleThreadPrint SimpleThreadPrint_SRCS)
-AUX_SOURCE_DIRECTORY(${ThreadExamples_SOURCE_DIR}/../SimpleThreadPrintLock SimpleThreadPrintLock_SRCS)
-AUX_SOURCE_DIRECTORY(${ThreadExamples_SOURCE_DIR}/../PeriodicThreadCallbacks PeriodicThreadCallbacks_SRCS)
+AUX_SOURCE_DIRECTORY(../SimpleThreadPrint SimpleThreadPrint_SRCS)
+AUX_SOURCE_DIRECTORY(../SimpleThreadPrintLock SimpleThreadPrintLock_SRCS)
+AUX_SOURCE_DIRECTORY(../PeriodicThreadCallbacks PeriodicThreadCallbacks_SRCS)
 
 SET(requiredLibs)
 

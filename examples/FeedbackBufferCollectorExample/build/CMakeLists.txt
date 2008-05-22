@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6.0)
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.6.0)
+ENDIF(WIN32)
 
 # The name of our project is "FeedbackBufferCollector".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${FeedbackBufferCollector_SOURCE_DIR} and
@@ -8,7 +10,7 @@ project (FeedbackBufferCollector)
 # Create a library called "FeedbackBufferCollector" which includes the source files.
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(${FeedbackBufferCollector_SOURCE_DIR}/.. FeedbackBufferCollector_SRCS)
+AUX_SOURCE_DIRECTORY(.. FeedbackBufferCollector_SRCS)
 
 INCLUDE_DIRECTORIES( ${FeedbackBufferCollector_SOURCE_DIR}/.. )
 
@@ -34,10 +36,10 @@ IF(HAPI_FOUND)
 ENDIF(HAPI_FOUND)
 
 FIND_PACKAGE(PTHREAD REQUIRED)
-IF(PTHREAD_FOUND)
+IF(PTHREAD_FOUND AND WIN32)
   INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
-ENDIF(PTHREAD_FOUND)
+ENDIF(PTHREAD_FOUND AND WIN32)
 
 IF(WIN32)
   FIND_PACKAGE(GLUTWin REQUIRED)

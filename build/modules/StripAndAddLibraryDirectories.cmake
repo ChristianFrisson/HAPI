@@ -1,6 +1,5 @@
-cmake_minimum_required(VERSION 2.6.0)
-
 IF( WIN32 )
+  cmake_minimum_required(VERSION 2.6.0)
   # Macro used to set include directories on windows.
   MACRO( STRIP_AND_ADD_LIBRARY_DIRECTORIES )
     FOREACH(TEMP_LIST_ITEM ${ARGV})
@@ -12,3 +11,4 @@ IF( WIN32 )
     ENDFOREACH(TEMP_LIST_ITEM ${ARGV})
   ENDMACRO( STRIP_AND_ADD_LIBRARY_DIRECTORIES )
 ENDIF( WIN32 )
+

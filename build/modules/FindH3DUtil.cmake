@@ -66,7 +66,10 @@ IF(H3DUTIL_INCLUDE_DIR AND HAVE_H3DUTIL_LIBRARY )
   ENDIF(H3DUTIL_DEBUG_LIBRARY)
   
   SET(H3DUTIL_INCLUDE_DIR ${H3DUTIL_INCLUDE_DIR} )
-  SET(H3DUTIL_LIBRARIES ${H3DUTIL_LIBRARIES} ${PTHREAD_LIBRARIES} )
+  # Why does it make a difference whether pthread is linked or not on gcc? When it is linked the HAPI/examples will return an error about pure virtual function called when exiting. The problem is in libHL.
+  IF(WIN32)
+    SET(H3DUTIL_LIBRARIES ${H3DUTIL_LIBRARIES} ${PTHREAD_LIBRARIES} )
+  ENDIF(WIN32)
 
 ELSE(H3DUTIL_INCLUDE_DIR AND HAVE_H3DUTIL_LIBRARY )
   SET(H3DUTIL_FOUND 0)
