@@ -1,0 +1,93 @@
+HAPI is a cross-platform, device independent easily extendable API that can be
+used to add haptics to an application. For information on how you are allowed
+to use HAPI see the LICENSE file in the same folder as this file.
+
+This file contains complete installation instructions for Linux, Mac and Windows.
+
+-------------------------------------------------------------------------------
+
+Installation on Linux:
+Currently you need to build HAPI on Linux yourself. Since you have this file
+you have already obtained and unpacked the source for HAPI. To build HAPI
+on Linux follow these steps.
+
+1. Install version 2.4.7 or later of CMake. To do this on Ubuntu open a
+   terminal and write:
+    sudo apt-get install cmake
+
+2. HAPI depends on other libraries. These need to be installed if the feature
+   is required. The build system used by HAPI will detect which libraries
+   are installed on the system and only enable the features that the system can
+   support. The libraries used by HAPI are:
+
+   Required libraries. Without this HAPI will not function.
+    - pthread. Most probably included with your linux distribution.
+
+   Optional libraries, without these some features of HAPI will be disabled
+   and some of the distributed examples will not work.
+    - openGL, to support FeedbackBufferCollectorExample and features.
+    - glut, used as the window system. Needed for
+      FeedbackBufferCollectorExample.
+    - freeglut, extended functions of the windows system. Needed for
+      FeedbackBufferCollectorExample.
+    - OpenHaptics, for support of devices from SensAble. Obtained through
+      SensAble.
+    - DHD-API, obtained through ForceDimension.
+    - Devices from NovInt, Quanser and also using the Haptik Library.
+      None of this is tested yet with linux.
+
+   If using Ubuntu, several of these libraries can be obtained by using the
+   apt-get feature. In a terminal write:
+    sudo apt-get update sudo apt-get install gcc g++ libglew-dev libglut \
+    libglut3-dev alien
+
+   The first two are the C++ compilers needed to compile HAPI.
+
+   Freeglut can be obtained using the following commands:
+    wget http://ovh.dl.sourceforge.net/sourceforge/freeglut/freeglut-2.4.0.tar.gz
+    tar -xzvf freeglut-2.4.0.tar.gz
+    cd freeglut-2.4.0
+    ./configure CFLAGS="-fexceptions" CXXFLAGS="-fexceptions"
+    make
+    sudo make install
+
+   HAPI support more devices but only the two mentioned are tested. See the wiki
+   and/or manual for more information.
+
+3. In the terminal change folder to the HAPI/build folder. Write:
+    cmake .
+   This will generate a make file. To use the makefile write:
+    make
+
+   HAPI will be built. When the make finished write:
+    sudo make install
+
+   HAPI libraries are now installed on your system. But there is no
+   application installed that use HAPI libraries.
+
+4. There are example applications in this distribution that use HAPI. To build
+   these simply do the following:
+    Change folder to HAPI/examples.
+    cmake .
+
+   To test one of the examples do the following.
+    Change folder to HAPI/examples/SurfaceExample/build
+    ./SurfaceExample
+
+-------------------------------------------------------------------------------
+
+Installation on Windows:
+To install HAPI on Windows follow these steps:
+1. Download Windows installation file from www.h3d.org.
+2. Install HAPI using this file.
+3. Run examples through start menu.
+
+For information on how to build HAPI on Windows see the pdf-manual
+and/or the wiki.
+
+-------------------------------------------------------------------------------
+
+Installation on Mac:
+ - To be written.
+
+
