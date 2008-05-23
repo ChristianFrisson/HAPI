@@ -32,12 +32,12 @@ on Linux follow these steps.
       FeedbackBufferCollectorExample.
     - OpenHaptics, for support of devices from SensAble. Obtained through
       SensAble.
-    - DHD-API, obtained through ForceDimension.
-    - Devices from NovInt, Quanser and also using the Haptik Library.
-      None of this is tested yet with linux.
+    - DHD-API, obtained through ForceDimension. libusb needs to be installed
+      to compile DHD-API. PCISCAN_LIBRARY should also be set if the library
+      is not found in default location.
 
-   If using Ubuntu, several of these libraries can be obtained by using the
-   apt-get feature. In a terminal write:
+   If using Ubuntu 7.10 or later, several of these libraries can be obtained
+   by using the apt-get feature. In a terminal write:
     sudo apt-get update sudo apt-get install gcc g++ libglew-dev libglut \
     libglut3-dev alien
 
@@ -53,6 +53,10 @@ on Linux follow these steps.
 
    HAPI support more devices but only the two mentioned are tested. See the wiki
    and/or manual for more information.
+
+   To install libusb required by DHD-api from ForceDimension on Ubuntu do the
+   following:
+    sudo apt-get install libusb++-dev
 
 3. In the terminal change folder to the HAPI/build folder. Write:
     cmake .
