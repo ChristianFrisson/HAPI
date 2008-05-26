@@ -1272,83 +1272,34 @@ cerr << "FD";
   }
 
   HAPIFloat cyl_t;
-  bool intersect = Collision::intersectSegmentCylinder(
-    from, to, a, b, radius, cyl_t );
-  HAPIFloat intersection_point_t;
-  if( intersect ) {
-    intersection_point_t = cyl_t;
+  if( Collision::intersectSegmentCylinder( from, to, a, b, radius, cyl_t ) ) {
     return true;
   }
 
   if( Collision::intersectSegmentCylinder( from, to, a, c, radius, cyl_t ) ) {
-    if( intersect ) {
-      if( cyl_t < intersection_point_t )
-        intersection_point_t = cyl_t;
-    }
-    else {
-      return true;
-      intersect = true;
-      intersection_point_t = cyl_t;
-    }
+    return true;
   }
 
   if( Collision::intersectSegmentCylinder( from, to, b, c, radius, cyl_t ) ) {
-    if( intersect ) {
-      if( cyl_t < intersection_point_t )
-        intersection_point_t = cyl_t;
-    }
-    else {
-      return true;
-      intersect = true;
-      intersection_point_t = cyl_t;
-    }
+    return true;
   }
 
-  if( intersect )
-    return true;
-
   Sphere sphere( a, radius );
-  intersect = sphere.lineIntersect( from, to, info );
-  HAPIFloat square_dist;
-  if( intersect ) {
+  if( sphere.lineIntersect( from, to, info ) ) {
     return true;
-    P = info.point;
-    square_dist = ( P - from ).lengthSqr();
   }
 
   sphere.center = b;
   if( sphere.lineIntersect( from, to, info ) ) {
-    if( intersect ) {
-      HAPIFloat temp_dist = ( info.point - from ).lengthSqr();
-      if( temp_dist < square_dist ) {
-        square_dist = temp_dist;
-        P = info.point;
-      }
-    }
-    else {
-      return true;
-      intersect = true;
-      P = info.point;
-    }
+    return true;
   }
 
   sphere.center = c;
   if( sphere.lineIntersect( from, to, info ) ) {
-    if( intersect ) {
-      HAPIFloat temp_dist = ( info.point - from ).lengthSqr();
-      if( temp_dist < square_dist ) {
-        square_dist = temp_dist;
-        P = info.point;
-      }
-    }
-    else {
-      return true;
-      intersect = true;
-      P = info.point;
-    }
+    return true;
   }
 
-  return intersect;
+  return false;
 }
 
 bool Triangle::movingSphereIntersect( HAPIFloat radius,

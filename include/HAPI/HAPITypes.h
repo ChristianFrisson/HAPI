@@ -34,17 +34,17 @@
 
 namespace HAPI {
   // TODO: double versions of Rotation and Quaternion
-  typedef H3DUtil::Rotation Rotation;
-  typedef H3DUtil::Quaternion Quaternion;
+  using H3DUtil::ArithmeticTypes::Rotation;
+  using H3DUtil::ArithmeticTypes::Quaternion;
 
   namespace Constants {
     const double epsilon = 1e-13;
   }
   
-  typedef H3DUtil::TimeStamp TimeStamp;
+  using H3DUtil::TimeStamp;
   typedef int HAPIInt32;
   typedef double HAPITime;
-  typedef H3DUtil::RGBA RGBA;
+  using H3DUtil::RGBA;
 
 #ifdef USE_DOUBLE_PRECISION
   typedef H3DUtil::Vec2d Vec2;
