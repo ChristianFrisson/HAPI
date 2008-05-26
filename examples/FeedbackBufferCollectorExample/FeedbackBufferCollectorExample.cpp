@@ -69,7 +69,7 @@ void display() {
   glDepthFunc(GL_LESS);
   glDepthMask(GL_TRUE);
   glEnable(GL_CULL_FACE);
-	glShadeModel(GL_SMOOTH);
+  glShadeModel(GL_SMOOTH);
   glEnable( GL_LIGHTING );
   glEnable(GL_LIGHT0);
   glLoadIdentity();
@@ -116,7 +116,9 @@ int main(int argc, char* argv[]) {
 
   // Create a glut window
   glutInit(&argc, argv);
+#ifdef FREEGLUT
   glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+#endif
   glutInitWindowSize( 640, 480 );
   glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
   int window_id = glutCreateWindow( "FeedbackBufferCollectorExample" );
