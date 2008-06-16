@@ -7,9 +7,6 @@ HAPI is device independent and can be used with a wide variety of haptics device
   PhantomHapticsDevice class ) \cite{sensable}
 \item Delta and Omega devices from ForceDimension ( implemented in the
   ForceDimensionHapticsDevice class ). \cite{forcedimension} 
-\item 2 DOF Pantograph and something else (TODO) from Quanser.
- ( implemented in the QuanserHapticsDevice class ). This feature is not yet fully
- tested and should be considered prototype. \cite{quanser}
 \item Falcon from Novint ( implemented in the FalconHapticsDevice class ). \cite{novint} 
 \item HapticMaster from Moog/FCS ( implemented in the HapticMasterDevice class ).\cite{moogfcs} \cite{linde02hapticmaster} 
 \end{itemize}
@@ -46,9 +43,9 @@ information on how to add shapes to a specific layer.
 
 \begin{figure} 
   \centering 
-  \includegraphics{images/layering.pdf}
-  \caption{To the left all surface are part of layer 0. The proxy is then stopped at the first surface and the
-underlying surface will never be felt. To the right the two surfaces are put in two different layers which
+  \includegraphics{images/layering2.pdf}
+  \caption{To the right all surface are part of layer 0. The proxy is then stopped at the first surface and the
+underlying surface will never be felt. To the left the two surfaces are put in two different layers which
 each has its own proxy, which means it will be felt.} 
   \label{Layering_fig} 
 \end{figure}

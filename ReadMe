@@ -5,6 +5,33 @@ to use HAPI see the LICENSE file in the same folder as this file.
 This file contains complete installation instructions for Linux, Mac and Windows.
 
 -------------------------------------------------------------------------------
+External Libraries:
+HAPI depends on other libraries. Some of them are required for HAPI to
+compile others are optional. The build system used by HAPI will detect which
+libraries are installed on the system and only enable the features that the
+system can support. For Windows most libraries are included. Those missing must
+be downloaded, compiled and installed on the system used if that feature is
+desired. The libraries used by HAPI are:
+ 
+ Required libraries. Without these HAPI will not function.
+  - pthread. Included with Windows distribution, most probably installed on
+    other systems.
+ 
+ Optional libraries, without these some features of HAPI will be disabled
+ and some of the distributed examples will not work.
+  - wxWidgets. Needed for one of the examples distributed. http://www.wxwidgets.org/
+  - OpenGL. Installed on all systems. For those interested see http://www.opengl.org/
+  - GLUT or Freeglut. Freeglut is a better choice. http://freeglut.sourceforge.net/
+    Must be compiled with -fexceptions as a compiler flag to allow c++ exceptions.
+    Used by one of the examples.
+  - OpenHaptics, for support of devices from SensAble. Obtained through SensAble.
+    OpenHaptics is not open source. http://www.sensable.com
+  - DHD-API, obtained through ForceDimension. http://www.forcedimension.com
+  - CHAI3D. Extra haptic rendering feature. http://www.chai3d.org
+  
+  Note that the haptics libraries does not exist for all operating systems.
+
+-------------------------------------------------------------------------------
 
 Installation on Linux:
 Currently you need to build HAPI on Linux yourself. Since you have this file
@@ -15,26 +42,16 @@ on Linux follow these steps.
    terminal and write:
     sudo apt-get install cmake
 
-2. HAPI depends on other libraries. These need to be installed if the feature
-   is required. The build system used by HAPI will detect which libraries
-   are installed on the system and only enable the features that the system can
-   support. The libraries used by HAPI are:
-
-   Required libraries. Without this HAPI will not function.
-    - pthread. Most probably included with your linux distribution.
-
-   Optional libraries, without these some features of HAPI will be disabled
-   and some of the distributed examples will not work.
-    - openGL, to support FeedbackBufferCollectorExample and features.
-    - glut, used as the window system. Needed for
-      FeedbackBufferCollectorExample.
-    - freeglut, extended functions of the windows system. Needed for
-      FeedbackBufferCollectorExample.
-    - OpenHaptics, for support of devices from SensAble. Obtained through
-      SensAble.
-    - DHD-API, obtained through ForceDimension. libusb needs to be installed
-      to compile DHD-API. PCISCAN_LIBRARY should also be set if the library
-      is not found in default location.
+2. HAPI depends on other libraries. The build system used by HAPI will 
+   detect which libraries are installed on the system and only enable the
+   features that the system can support. If more features are desired the
+   corresponding library has to be installed. Note that some libraries are
+   required for HAPI to compile. See the list of external libraries in the
+   beginning of this ReadMe.
+   
+   If DHD-API is obtained then libusb needs to be installed .
+   PCISCAN_LIBRARY should also be set if the library is not found in
+   default location.
 
    If using Ubuntu 7.10 or later, several of these libraries can be obtained
    by using the apt-get feature. In a terminal write:
@@ -57,6 +74,9 @@ on Linux follow these steps.
    To install libusb required by DHD-api from ForceDimension on Ubuntu do the
    following:
     sudo apt-get install libusb++-dev
+   
+   In version 8.04 of Ubuntu another library might need to be installed:
+     sudo apt-get install libxi-dev libxmu-dev   
 
 3. In the terminal change folder to the HAPI/build folder. Write:
     cmake .
@@ -91,7 +111,33 @@ and/or the wiki.
 
 -------------------------------------------------------------------------------
 
-Installation on Mac:
- - To be written.
+Installation on MacOS X:
+Currently you need to build HAPI on MacOS X yourself. Since you have this
+file you have already obtained and unpacked the source for HAPI. To build
+HAPI on MacOS X follow these steps.
+1. Install version 2.4.7 or later of CMake.
+2. Install XCode. If gcc is an unrecognized command in the terminal after
+   installing XCode there is a high probability that CMake will not be able to
+   generate build files for gcc and/or XCode. Another version of XCode could be
+   used or fix it in some other way.
+3. Download the source for HAPI. Build and install HAPI on your system. HAPI
+   requires HAPI.
+4. HAPI depends on other libraries. The build system used by HAPI will 
+   detect which libraries are installed on the system and only enable the
+   features that the system can support. If more features are desired the
+   corresponding library has to be installed. Note that some libraries are
+   required for HAPI to compile. See the list of external libraries in the
+   beginning of this ReadMe.
+5. Generate build files for your build system using CMake. Either use the
+   console version as in the guide for linux above or use the GUI version in
+   which the first textbox should contain the location of the CMakeLists.txt
+   file. This can be located in HAPI/build. The second box is the location
+   of where the build files will be created. Use for example HAPI/build/OSX.
+   Press configure, choose which system to generate build files for wait and
+   press configure again until the generate button can be used. Press generate
+   and then the build files will be in the choosen folder. If "Unix Makefile"
+   are choosen then proceed from point 3 in the linux above.
+6. There are example applications in this distribution that use HAPI. To build
+   these use the CMakeLists.txt located in the folder HAPI/examples.
 
-
+   Run any of the built examples to test your HAPI build.

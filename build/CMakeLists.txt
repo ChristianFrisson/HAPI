@@ -1,6 +1,9 @@
 IF(WIN32)
   cmake_minimum_required(VERSION 2.6.0)
 ENDIF(WIN32)
+# Make include files in paths like /usr/local/include have preference before
+# files in OSX frameworks. 
+SET(CMAKE_FIND_FRAMEWORK "LAST")
 PROJECT (HAPI)
 
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
@@ -81,11 +84,9 @@ IF( GENERATE_CPACK_PROJECT )
       SET( CPACK_ADD_HAPIEXAMPLES_LINKS "ON" )
       
       FIND_PACKAGE(wxWidgetsWin)
-      IF(wxWidgets_FOUND)
-        SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                              "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx"
-           CACHE INTERNAL "Installed directories of HAPI." )
-      ENDIF(wxWidgets_FOUND)
+    ELSE( HAPIExamples_cmake_install )
+      SET(HAPI_CPACK_IGNORE_PATTERNS ${HAPI_CPACK_IGNORE_PATTERNS}
+                                       /External/include/wx )
     ENDIF( HAPIExamples_cmake_install )  
 
     # This might be cleaned up a bit after cleaning External.
@@ -149,7 +150,21 @@ IF( GENERATE_CPACK_PROJECT )
                            /vorbisfile\\\\.lib$
                            /vorbisfile_static\\\\.lib$
                            /xerces-c_2\\\\.lib$
-                           /Xerces-c_static_2\\\\.lib$ )
+                           /Xerces-c_static_2\\\\.lib$
+                           /include/3dconnexion
+                           /include/AL
+                           /include/Cg
+                           /include/curl
+                           /include/DirectShow
+                           /include/fparser
+                           /include/freetype
+                           /include/FTGL
+                           /include/libaudiofile
+                           /include/ogg
+                           /include/teem
+                           /include/vorbis
+                           /include/xercesc
+                           /HAPI/doc/ )
     SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
                                     "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
                                     "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
@@ -285,51 +300,18 @@ ENDIF(OPENGL_FOUND)
 IF( GENERATE_CPACK_PROJECT )
   
   IF( WIN32 )
-  
     IF( PTHREAD_FOUND )
       SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                            "${PTHREAD_INCLUDE_DIR};External/include/pthread"
+                                            "${PTHREAD_INCLUDE_DIR}/../../include;External/include"
            CACHE INTERNAL "Installed directories of HAPI." )
     ENDIF( PTHREAD_FOUND )
-  
-    IF( CHAI3D_FOUND )
-      SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                            "${CHAI3D_INCLUDE_DIR}/..;External/include/chai3d"
-           CACHE INTERNAL "Installed directories of HAPI." )
-    ENDIF( CHAI3D_FOUND )
-  
-    IF( DHD_FOUND )
-      SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                            "${DHD_INCLUDE_DIR};External/include/DHD-API"
-           CACHE INTERNAL "Installed directories of HAPI." )
-    ENDIF( DHD_FOUND )
-
-    IF( SIMBALLMEDICAL_FOUND )
-      SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                            "${SIMBALLMEDICAL_INCLUDE_DIR}/Simball;External/include/Simball"
-           CACHE INTERNAL "Installed directories of HAPI." )
-    ENDIF( SIMBALLMEDICAL_FOUND )
-
-    IF( OPENGL_FOUND )
-      IF( OPENGL_INCLUDE_DIR )
-        SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                              "${OPENGL_INCLUDE_DIR}/GL;External/include/GL"
-             CACHE INTERNAL "Installed directories of HAPI." )
-      ELSE( OPENGL_INCLUDE_DIR )
-        SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                              "${HAPI_SOURCE_DIR}/../../External/include/GL;External/include/GL"
-             CACHE INTERNAL "Installed directories of HAPI." )
-      ENDIF( OPENGL_INCLUDE_DIR )
-    ENDIF( OPENGL_FOUND )
     
-    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                    ${H3DUTIL_CPACK_INSTALLED_DIRECTORIES} )
-    
-    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                    "${HAPI_SOURCE_DIR}/../../External/bin;External/bin" )  
-    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                    "${HAPI_SOURCE_DIR}/../../External/lib;External/lib" )
-    
+    SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
+                                          "${HAPI_SOURCE_DIR}/../../External/bin;External/bin"
+         CACHE INTERNAL "Installed directories of HAPI." )  
+    SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
+                                          "${HAPI_SOURCE_DIR}/../../External/lib;External/lib"
+         CACHE INTERNAL "Installed directories of HAPI." )
     SET( CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
                                      ${HAPI_CPACK_INSTALLED_DIRECTORIES} )
   ENDIF( WIN32 )
