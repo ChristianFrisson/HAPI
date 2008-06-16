@@ -1,0 +1,68 @@
+Changes for version 1.0 beta 1:
+
+- Build files for different systems are no longer provided. They should be
+generated through CMake. www.cmake.org. The CMakeLists.txt used for this
+can be found in the build folder.
+- Surfaces can be specified to use stiffness relative to the maximum force that
+the device can handle.
+- Support for multiple falcon devices. Requires latest version of HDAL.
+- Added function movingSphereIntersect which is like the old one but returns
+information about closest intersection.
+- Standardized render functions of CollisionObjects.
+- When initializing a haptics device a desired haptic rate can be given. The
+actual values that can be used depends on the haptics device.
+- Added and updated examples.
+- HAPIForceEffects no longer have the interpolate member. Interpolation (if desired)
+are done when adding/removing forces to/from the haptics device. Need to call
+transferObjects function for HAPIForceEffects now.
+- Header files moved to separate directory to make it into the standard
+way for include files.
+- A couple of HAPIHapticsShape classes are merged into one class called
+HapticPrimitive. One or two of these classes are removed.
+- Velocity calculated for devices. Damping property added to surfaces.
+- Reference counting are now thread safe, this can be shut off for custom made
+classes if desired.
+- Fixed compile issues with linux.
+- HAPI now uses m instead of mm.
+- Added virtual function getTangentSpaceMatrix for GeometryPrimitive and
+HAPIHapticsShape. Can be used to get transformation from coordinate space to
+texture space.
+- All haptics device and haptics renderers classes now report correct values.
+- Fixed a number of bugs in GodObjectRenderer and RuspiniRenderer.
+- Separated proxy movement and force generation calculations for surfaces.
+- Fixed a couple of major bugs with OpenHapticsRenderer and
+PhantomHapticsDevice.
+- Optimized code in various places.
+- Fixed bugs with surfaces that caused really bad surface generation in
+the alpha release.
+- Fixed a lot of minor bugs. See svn changelog at www.h3d.org:8080 for details.
+
+New Classes:
+DepthMapSurface
+HAPIVariableDepthSurface
+HapticPrimitive
+ImageInterfaceObject
+
+Compability issues:
+- OnConctact function in HAPISurfaceObject is split into two functions
+called getProxyMovement and getForces.
+- Units in m now. Used to be mm.
+- namespace HAPI::Bounds renamed to HAPI::Collision.
+- HapticBox, HapticPlane, HapticSphere and HapticTriangle removed since
+HapticPrimitive can be used instead.
+- HapticCone and HapticCylinder removed.
+- Renamed HapticBinaryTreePrimitive to HapticPrimitiveTree.
+- Header files moved to include/HAPI. Include them with HAPI/ prefix. Note that
+file for OpenHapticsRenderer are in OpenHapticsRenderer/include/HAPI and files
+for Chai3DRenderer are in Chai3DRenderer are in Chai3DRenderer/include/HAPI.
+H3DUtil files should have the H3DUtil/ prefix when including.
+- The transferObjects function must be called to transfer HAPIForceEffects to
+the haptics loop, as it was intended earlier to, but not needed.
+- The render function in BinaryBoundTree and BBPrimitiveTree now render the 
+primitives in the tree. Outlines are rendered in renderBounds function.
+- calculateForces takes an EffectInput struct as argument instead of several
+arguments. Note, this will only be a problem when upgrading from alpha to beta.
+H3D API 1.5 had this struct.
+- On Windows, some external libraries are moved around. This might cause
+problem with old project files but will not cause problems for project
+generated through CMake.

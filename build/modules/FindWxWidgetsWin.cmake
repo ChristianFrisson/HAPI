@@ -80,3 +80,17 @@ ELSE(wxWidgets_INCLUDE_DIR AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY
   SET(wxWidgets_INCLUDE_DIR)
 ENDIF(wxWidgets_INCLUDE_DIR  AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY)
 
+# Report the results.
+IF(NOT wxWidgets_FOUND)
+  SET(wxWidgets_DIR_MESSAGE
+    "WxWidgets was not found. Make sure wxWidgets_core_LIBRARY, wxWidgets_base_LIBRARY")
+  IF( WXWINDOWS_USE_GL )
+    SET( wxWidgets_DIR_MESSAGE "${wxWidgets_DIR_MESSAGE}, wxWidgets_gl_LIBRARY, wxWidgets_adv_LIBRARY")
+  ENDIF( WXWINDOWS_USE_GL )
+  SET( wxWidgets_DIR_MESSAGE "${wxWidgets_DIR_MESSAGE} and wxWidgets_INCLUDE_DIR are set to where you have your wxWidgets header and lib files.")
+  IF(wxWidgets_FIND_REQUIRED)
+      MESSAGE(FATAL_ERROR "${wxWidgets_DIR_MESSAGE}")
+  ELSEIF(NOT wxWidgets_FIND_QUIETLY)
+    MESSAGE(STATUS "${wxWidgets_DIR_MESSAGE}")
+  ENDIF(wxWidgets_FIND_REQUIRED)
+ENDIF(NOT wxWidgets_FOUND)
