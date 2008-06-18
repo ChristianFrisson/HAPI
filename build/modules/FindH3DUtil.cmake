@@ -9,7 +9,8 @@
 # Look for the header file.
 FIND_PATH(H3DUTIL_INCLUDE_DIR NAMES H3DUtil/H3DUtil.h 
                               PATHS $ENV{H3D_ROOT}/../H3DUtil/include
-                                    ../../H3DUtil/include )
+                                    ../../H3DUtil/include
+                                    ${CMAKE_MODULE_PATH}/../../../H3DUtil/include )
 MARK_AS_ADVANCED(H3DUTIL_INCLUDE_DIR)
 
 # Look for the library.
@@ -25,11 +26,13 @@ ENDIF(MSVC70 OR MSVC71)
 
 FIND_LIBRARY(H3DUTIL_LIBRARY NAMES ${H3DUTIL_NAME}
                              PATHS $ENV{H3D_ROOT}/../lib
-                                   ../../lib)
+                                   ../../lib
+                                   ${CMAKE_MODULE_PATH}/../../../lib )
 
 FIND_LIBRARY(H3DUTIL_DEBUG_LIBRARY NAMES ${H3DUTIL_NAME}_d
                                    PATHS $ENV{H3D_ROOT}/../lib
-                                   ../../lib)
+                                   ../../lib
+                                   ${CMAKE_MODULE_PATH}/../../../lib )
 
 MARK_AS_ADVANCED(H3DUTIL_LIBRARY)
 MARK_AS_ADVANCED(H3DUTIL_DEBUG_LIBRARY)
@@ -66,10 +69,7 @@ IF(H3DUTIL_INCLUDE_DIR AND HAVE_H3DUTIL_LIBRARY )
   ENDIF(H3DUTIL_DEBUG_LIBRARY)
   
   SET(H3DUTIL_INCLUDE_DIR ${H3DUTIL_INCLUDE_DIR} )
-  # Why does it make a difference whether pthread is linked or not on gcc? When it is linked the HAPI/examples will return an error about pure virtual function called when exiting. The problem is in libHL.
-  IF(WIN32)
-    SET(H3DUTIL_LIBRARIES ${H3DUTIL_LIBRARIES} ${PTHREAD_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(H3DUTIL_LIBRARIES ${H3DUTIL_LIBRARIES} ${PTHREAD_LIBRARIES} )
 
 ELSE(H3DUTIL_INCLUDE_DIR AND HAVE_H3DUTIL_LIBRARY )
   SET(H3DUTIL_FOUND 0)
