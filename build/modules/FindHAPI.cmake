@@ -9,7 +9,8 @@
 # Look for the header file.
 FIND_PATH(HAPI_INCLUDE_DIR NAMES HAPI/HAPI.h 
                            PATHS $ENV{H3D_ROOT}/../HAPI/include
-                           ../../HAPI/include)
+                                 ../../HAPI/include
+                                 ${CMAKE_MODULE_PATH}/../../../HAPI/include)
 MARK_AS_ADVANCED(HAPI_INCLUDE_DIR)
 
 
@@ -26,11 +27,13 @@ ENDIF(MSVC70 OR MSVC71)
 
 FIND_LIBRARY(HAPI_LIBRARY NAMES ${HAPI_NAME}
                           PATHS $ENV{H3D_ROOT}/../lib
-                                ../../lib)
+                                ../../lib
+                                ${CMAKE_MODULE_PATH}/../../../lib)
 
 FIND_LIBRARY( HAPI_DEBUG_LIBRARY NAMES ${HAPI_NAME}_d
               PATHS $ENV{H3D_ROOT}/../lib
-                    ../../lib )
+                    ../../lib
+                    ${CMAKE_MODULE_PATH}/../../../lib )
 MARK_AS_ADVANCED(HAPI_LIBRARY)
 MARK_AS_ADVANCED(HAPI_DEBUG_LIBRARY)
 

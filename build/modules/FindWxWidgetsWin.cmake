@@ -9,43 +9,61 @@
 # Look for the header file.
 FIND_PATH(wxWidgets_INCLUDE_DIR NAMES wx/wx.h 
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                      ../../External/include )
+                                      $ENV{H3D_ROOT}/../External/include
+                                      ../../External/include
+                                      ${CMAKE_MODULE_PATH}/../../../External/include )
 MARK_AS_ADVANCED(wxWidgets_INCLUDE_DIR)
 
 # Look for the library.
 IF( MSVC70 OR MSVC71 )
   FIND_LIBRARY(wxWidgets_core_LIBRARY NAMES wxmsw28_core   
                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                            ../../External/lib )
+                                            $ENV{H3D_ROOT}/../External/lib
+                                            ../../External/lib
+                                            ${CMAKE_MODULE_PATH}/../../../External/lib )
 
   FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase28   
                                        PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                             ../../External/lib )
+                                             $ENV{H3D_ROOT}/../External/lib
+                                             ../../External/lib
+                                             ${CMAKE_MODULE_PATH}/../../../External/lib )
   IF(WXWINDOWS_USE_GL)
     FIND_LIBRARY(wxWidgets_gl_LIBRARY NAMES wxmsw28_gl   
                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                            ../../External/lib )
+                                            $ENV{H3D_ROOT}/../External/lib
+                                            ../../External/lib
+                                            ${CMAKE_MODULE_PATH}/../../../External/lib )
 
     FIND_LIBRARY(wxWidgets_adv_LIBRARY NAMES wxmsw28_adv   
                                        PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                             ../../External/lib )
+                                             $ENV{H3D_ROOT}/../External/lib
+                                             ../../External/lib
+                                             ${CMAKE_MODULE_PATH}/../../../External/lib )
   ENDIF(WXWINDOWS_USE_GL)
 ELSE( MSVC70 OR MSVC71 )
   FIND_LIBRARY(wxWidgets_core_LIBRARY NAMES wxmsw28_core_vc8   
                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                            ../../External/lib )
+                                            $ENV{H3D_ROOT}/../External/lib
+                                            ../../External/lib 
+                                            ${CMAKE_MODULE_PATH}/../../../External/lib )
 
   FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase28_vc8
                                        PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                             ../../External/lib )
+                                             $ENV{H3D_ROOT}/../External/lib
+                                             ../../External/lib 
+                                             ${CMAKE_MODULE_PATH}/../../../External/lib )
   IF(WXWINDOWS_USE_GL)
     FIND_LIBRARY(wxWidgets_gl_LIBRARY NAMES wxmsw28_gl_vc8
                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                            ../../External/lib )
+                                            $ENV{H3D_ROOT}/../External/lib
+                                            ../../External/lib 
+                                            ${CMAKE_MODULE_PATH}/../../../External/lib )
 
     FIND_LIBRARY(wxWidgets_adv_LIBRARY NAMES wxmsw28_adv_vc8
                                        PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                             ../../External/lib )
+                                             $ENV{H3D_ROOT}/../External/lib
+                                             ../../External/lib 
+                                             ${CMAKE_MODULE_PATH}/../../../External/lib )
   ENDIF(WXWINDOWS_USE_GL)
 ENDIF( MSVC70 OR MSVC71 )
 MARK_AS_ADVANCED(wxWidgets_base_LIBRARY)

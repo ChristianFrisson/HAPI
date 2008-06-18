@@ -10,8 +10,12 @@
 FIND_PATH(DHD_INCLUDE_DIR NAMES dhdc.h 
                           PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                                 $ENV{H3D_EXTERNAL_ROOT}/include/DHD-API
-                                 ../../External/include
-                                 ../../External/include/DHD-API )
+                                $ENV{H3D_ROOT}/../External/include
+                                $ENV{H3D_ROOT}/../External/include/DHD-API
+                                ../../External/include
+                                ../../External/include/DHD-API 
+                                ${CMAKE_MODULE_PATH}/../../../External/include
+                                ${CMAKE_MODULE_PATH}/../../../External/include/DHD-API )
 MARK_AS_ADVANCED(DHD_INCLUDE_DIR)
 
 
@@ -19,11 +23,15 @@ MARK_AS_ADVANCED(DHD_INCLUDE_DIR)
 IF(WIN32)
   FIND_LIBRARY(DHD_LIBRARY NAMES dhdms
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 ../../External/lib)
+                                 $ENV{H3D_ROOT}/../External/lib
+                                 ../../External/lib
+                                 ${CMAKE_MODULE_PATH}/../../../External/lib)
 ELSE(WIN32)
   FIND_LIBRARY(DHD_LIBRARY NAMES dhd
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 ../../External/lib)
+                                 $ENV{H3D_ROOT}/../External/lib
+                                 ../../External/lib
+                                 ${CMAKE_MODULE_PATH}/../../../External/lib)
 
   IF(UNIX)
     FIND_LIBRARY( USB_LIBRARY NAMES usb )

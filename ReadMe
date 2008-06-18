@@ -120,24 +120,22 @@ HAPI on MacOS X follow these steps.
    installing XCode there is a high probability that CMake will not be able to
    generate build files for gcc and/or XCode. Another version of XCode could be
    used or fix it in some other way.
-3. Download the source for HAPI. Build and install HAPI on your system. HAPI
-   requires HAPI.
-4. HAPI depends on other libraries. The build system used by HAPI will 
+3. HAPI depends on other libraries. The build system used by HAPI will 
    detect which libraries are installed on the system and only enable the
    features that the system can support. If more features are desired the
    corresponding library has to be installed. Note that some libraries are
    required for HAPI to compile. See the list of external libraries in the
    beginning of this ReadMe.
-5. Generate build files for your build system using CMake. Either use the
+4. Generate build files for your build system using CMake. Either use the
    console version as in the guide for linux above or use the GUI version in
    which the first textbox should contain the location of the CMakeLists.txt
-   file. This can be located in HAPI/build. The second box is the location
+   file. This file is located in HAPI/build. The second box is the location
    of where the build files will be created. Use for example HAPI/build/OSX.
    Press configure, choose which system to generate build files for wait and
    press configure again until the generate button can be used. Press generate
    and then the build files will be in the choosen folder. If "Unix Makefile"
-   are choosen then proceed from point 3 in the linux above.
-6. There are example applications in this distribution that use HAPI. To build
+   are choosen then proceed from step 3 in the linux guide above.
+5. There are example applications in this distribution that use HAPI. To build
    these use the CMakeLists.txt located in the folder HAPI/examples.
 
    Run any of the built examples to test your HAPI build.

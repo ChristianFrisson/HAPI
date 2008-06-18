@@ -20,8 +20,12 @@ IF( SEARCH_FOR_CHAI3D )
   FIND_PATH(CHAI3D_INCLUDE_DIR NAMES cWorld.h
                                PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                                      $ENV{H3D_EXTERNAL_ROOT}/include/Chai3D/include
+                                     $ENV{H3D_ROOT}/../External/include
+                                     $ENV{H3D_ROOT}/../External/include/Chai3D/include
                                      ../../External/include
-                                     ../../External/include/Chai3D/include)
+                                     ../../External/include/Chai3D/include
+                                     ${CMAKE_MODULE_PATH}/../../../External/include
+                                     ${CMAKE_MODULE_PATH}/../../../External/include/Chai3D/include)
   MARK_AS_ADVANCED(CHAI3D_INCLUDE_DIR)
 
 
@@ -29,7 +33,9 @@ IF( SEARCH_FOR_CHAI3D )
   IF(WIN32)
     FIND_LIBRARY(CHAI3D_LIBRARY NAMES chai3d_complete  
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                      ../../External/lib )
+                                      $ENV{H3D_ROOT}/../External/lib
+                                      ../../External/lib
+                                      ${CMAKE_MODULE_PATH}/../../../External/lib )
   ELSE(WIN32)
     FIND_LIBRARY(CHAI3D_LIBRARY NAMES chai3d_linux)
   ENDIF(WIN32)
