@@ -33,6 +33,8 @@
 #ifndef __HAPI_H__
 #define __HAPI_H__
 
+#include <H3DUtil/H3DUtil.h>
+
 #define USE_DOUBLE_PRECISION
 
 /// Undef if you do not have OpenHaptics(www.sensable.com) installed. 
