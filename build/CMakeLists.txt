@@ -13,6 +13,16 @@ IF( NOT DEFINED GENERATE_CPACK_PROJECT )
   MARK_AS_ADVANCED(GENERATE_CPACK_PROJECT)
 ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
 
+IF( NOT DEFINED PREFER_STATIC_LIBRARIES )
+  SET( PREFER_STATIC_LIBRARIES "NO" CACHE BOOL "Decides if CMake should prefer static libraries to dynamic libraries when both exist." )
+  MARK_AS_ADVANCED(PREFER_STATIC_LIBRARIES)
+ENDIF( NOT DEFINED PREFER_STATIC_LIBRARIES )
+
+IF( PREFER_STATIC_LIBRARIES )
+  SET( CMAKE_FIND_LIBRARY_SUFFIXES .a;${CMAKE_FIND_LIBRARY_SUFFIXES} )	
+ENDIF( PREFER_STATIC_LIBRARIES )
+
+
 # include H3DUtil in the build
 IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
   # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
