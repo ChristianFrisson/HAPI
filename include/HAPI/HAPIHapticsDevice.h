@@ -100,9 +100,8 @@ namespace HAPI {
     HAPIHapticsDevice() :
       thread( NULL ),
       switching_effects( false ),
-      tmp_switching_effects( false ),
-      time_in_last_loop( 0 ),
       tmp_switch_effects_duration( 0 ),
+      time_in_last_loop( 0 ),
       device_state( UNINITIALIZED ),
       delete_thread( false ),
       setup_haptic_rendering_callback( true ),
@@ -318,12 +317,12 @@ namespace HAPI {
 
       if( i < tmp_current_force_effects.size() ) {
         force_effects_to_remove.push_back( make_pair( effect, fade_out_time ));
-        for( vector< pair< int, HAPITime > >::iterator j =
+        for( vector< pair< unsigned int, HAPITime > >::iterator j =
                added_effects_indices.begin();
              j != added_effects_indices.end(); j++ ) {
           if( i == (*j).first ) {
             added_effects_indices.erase( j );
-            for( vector< pair< int, HAPITime > >::iterator k =
+            for( vector< pair< unsigned int, HAPITime > >::iterator k =
                    added_effects_indices.begin();
                  k != added_effects_indices.end(); k++ ) {
               (*k).first--;
@@ -939,7 +938,7 @@ namespace HAPI {
     HAPITime tmp_switch_effects_duration;
 
     // Used to know which effects was added through the addEffect function.
-    vector< pair< int, HAPITime > > added_effects_indices;
+    vector< pair< unsigned int, HAPITime > > added_effects_indices;
 
     // Used to know which effects was removed through the removeEffect
     // function.

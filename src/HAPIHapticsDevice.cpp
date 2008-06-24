@@ -70,7 +70,7 @@ H3DUtil::PeriodicThread::CallbackCode
 
   // If addEffect was called
   if( !hd->added_effects_indices.empty() ) {
-    for( vector< pair< int, HAPITime > >::iterator i =
+    for( vector< pair< unsigned int, HAPITime > >::iterator i =
            hd->added_effects_indices.begin();
          i != hd->added_effects_indices.end(); i++ ) {
       unsigned int index = (*i).first;

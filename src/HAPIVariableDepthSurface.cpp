@@ -48,9 +48,9 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
   damping( _damping ),
   static_friction( _static_friction ),
   dynamic_friction( _dynamic_friction ),
+  use_relative_values( _use_relative_values ),
   func( _func ),
   minimization_epsilon( _minimization_epsilon ),
-  use_relative_values( _use_relative_values ),
   max_iterations( _max_iterations ),
   depth_invert( false ),
   in_static_contact( true ) {
