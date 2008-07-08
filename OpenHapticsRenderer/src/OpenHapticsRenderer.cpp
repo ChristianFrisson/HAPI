@@ -74,7 +74,7 @@ namespace OpenHapticsRendererInternals {
   }
 }
 
-bool OpenHapticsRenderer::no_context = true;
+int OpenHapticsRenderer::nr_of_context = 0;
 
 OpenHapticsRenderer::OpenHapticsSurface::OpenHapticsSurface(  
                           HAPIFloat _stiffness,
@@ -113,27 +113,6 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
 /// Release all resources that has been used in the renderer for
 /// the given haptics device.
 void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
-  // Ugly solution to clean up stuff correctly when the device is removed.
-  // TODO: Find a better solution.
-  if( dummy_context ) {
-    bool add_dummy = true;
-    for( unsigned int i = 0; i < clean_up_stuff[hd].size(); i++ ) {
-      OpenHapticsWorkAroundToCleanUpHLContext * temp_ptr = 
-        dynamic_cast< OpenHapticsWorkAroundToCleanUpHLContext * >
-        ( clean_up_stuff[hd][i] );
-      if( temp_ptr ) {
-        if( temp_ptr->dummy_context == dummy_context )
-          add_dummy = false;
-      }
-    }
-    if( add_dummy ) {
-      OpenHapticsWorkAroundToCleanUpHLContext * temp_ptr =
-        new OpenHapticsWorkAroundToCleanUpHLContext();
-      temp_ptr->dummy_context = dummy_context;
-      clean_up_stuff[ hd ].push_back( temp_ptr );
-    }
-  }
-
   callback_data.clear();
   ContextMap::iterator i = context_map.find( hd );
   if( i != context_map.end() ) {
@@ -148,8 +127,11 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
 
     hlMakeCurrent( NULL );
     hlDeleteContext( context_map[ hd ] );
+    nr_of_context--;
     context_map.erase( i );
   }
+  if( nr_of_context == 0 )
+    PhantomHapticsDevice::stopScheduler( false );
   
   id_map.clear();
   if( !contacts.empty() ) {
@@ -437,16 +419,19 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
       // around a problem with openhaptics if the scheduler is started
       // before a hlcontext is created. Has to be made this way (only once)
       // in order to not get strange behaviour when using dual device setup.
-      if( PhantomHapticsDevice::isSchedulerStarted() && no_context )
-        hdStopScheduler();
+      bool restart = false;
+      if( PhantomHapticsDevice::isSchedulerStarted() && nr_of_context == 0 ) {
+        PhantomHapticsDevice::stopScheduler();
+        restart = true;
+      }
       context_map[ pd ] = hlCreateContext( jj );
-      if( PhantomHapticsDevice::isSchedulerStarted() && no_context ) {
+      if( restart ) {
         PhantomHapticsDevice::startScheduler();
       }
-      no_context = false;
+      nr_of_context++;
 
-      if( !dummy_context )
-        dummy_context = hlCreateContext( jj );
+      /*if( !dummy_context )
+        dummy_context = hlCreateContext( jj );*/
       hlMakeCurrent( context_map[ pd ] );  
 
       hlEnable(HL_HAPTIC_CAMERA_VIEW);

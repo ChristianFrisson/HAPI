@@ -197,7 +197,6 @@ namespace HAPI {
       default_adaptive_viewport( _default_adaptive_viewport ),
       default_haptic_camera_view( _default_haptic_camera_view ) {
         already_removed_id.reserve( 3 );
-        dummy_context = NULL;
     }
                          
     
@@ -294,29 +293,6 @@ namespace HAPI {
     static HapticsRendererRegistration renderer_registration;
 
   protected:
-
-    /// \internal
-    /// Needed because there need to be a context available in order to not
-    /// accidently stop the scheduler at the wrong time. This dummy_context is
-    /// cleaned up by destructor.
-    class OPENHAPTICSRENDERER_API OpenHapticsWorkAroundToCleanUpHLContext :
-    public WorkAroundToCleanUpHLContext {
-    public:
-      OpenHapticsWorkAroundToCleanUpHLContext() {
-        dummy_context = NULL;
-      }
-      virtual void cleanUp() {
-        if( dummy_context ) {
-          hlMakeCurrent( NULL );
-          hlDeleteContext( dummy_context );
-          dummy_context = NULL;
-        }
-      }
-      HHLRC dummy_context;
-    };
-
-    HHLRC dummy_context;
-
     ShapeType default_gl_shape;
     bool default_adaptive_viewport;
     bool default_haptic_camera_view;
@@ -450,7 +426,7 @@ namespace HAPI {
     vector< int > already_removed_id;
 
     /// True if there has been no hlcontext created at all yet.
-    static bool no_context;
+    static int nr_of_context;
   };
 }
 

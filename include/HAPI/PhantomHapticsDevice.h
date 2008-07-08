@@ -181,6 +181,11 @@ namespace HAPI {
       return scheduler_started;
     }
 
+    // Stop the scheduler. Sometimes the scheduler
+    // is already stopped (when all hl_contexts are deleted )
+    // and then just the flag needs to be set.
+    static void stopScheduler( bool call_hd = true );
+
   protected:
     double device_firmware_version;
     string hdapi_version;
@@ -222,7 +227,7 @@ namespace HAPI {
     /// The OpenHaptics device handle for this device.
     HHD device_handle;
 
-    /// Handle for the callback for rendering ForceEffects.  
+    /// Handle for all setup callbacks.
     vector< HDCallbackCode > hd_handles;
 
     // If true the scheduler will be started when enableDevice is called.
