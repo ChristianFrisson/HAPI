@@ -175,16 +175,17 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
   nr_of_scheduled--;
   hdMakeCurrentDevice( device_handle );
 
-  hdStopScheduler();
-  if( scheduler_started && nr_of_scheduled == 0 ) {
-    scheduler_started = false;
-  }
+  bool restart = true;
+  if( !scheduler_started || ( scheduler_started && nr_of_scheduled == 0 ) )
+    restart = false;
+  stopScheduler();
 
   for( vector< HDCallbackCode >::iterator i = hd_handles.begin();
        i != hd_handles.end();
        i++ ) {
     hdUnschedule(*i);
   }
+  hd_handles.clear();
 
   hdDisableDevice( device_handle );
   device_handle = 0;
@@ -192,8 +193,8 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
   if( nr_of_scheduled == 0)
     hl_thread->setActive( false );
   thread = NULL;
-  if( scheduler_started )
-    hdStartScheduler();
+  if( restart )
+    startScheduler();
   return true;
 }
 
@@ -265,9 +266,19 @@ bool PhantomHapticsDevice::calibrateDevice() {
 }
 
 void PhantomHapticsDevice::startScheduler() {
-  hdStartScheduler();
-  HLThread::getInstance()->setActive( true );
-  scheduler_started = true;
+  if( !scheduler_started ) {
+    hdStartScheduler();
+    HLThread::getInstance()->setActive( true );
+    scheduler_started = true;
+  }
+}
+
+void PhantomHapticsDevice::stopScheduler( bool call_hd ) {
+  if( scheduler_started ) {
+    if( call_hd )
+      hdStopScheduler();
+    scheduler_started = false;
+  }
 }
 
 #endif
