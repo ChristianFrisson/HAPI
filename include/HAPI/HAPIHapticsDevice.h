@@ -163,6 +163,7 @@ namespace HAPI {
       for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
         if( haptics_renderers[i] ) {
           haptics_renderers[i]->releaseRenderer( this );
+          haptics_renderers[i]->cleanUpStuff( this );
         }
       }
 

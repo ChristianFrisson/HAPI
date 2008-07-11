@@ -113,6 +113,28 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
 /// Release all resources that has been used in the renderer for
 /// the given haptics device.
 void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
+  // Ugly solution to clean up stuff correctly when the device is removed.
+  // TODO: Find a better solution.
+  if( dummy_context ) {
+    bool add_dummy = true;
+    for( unsigned int i = 0; i < clean_up_stuff[hd].size(); i++ ) {
+      OpenHapticsWorkAroundToCleanUpHLContext * temp_ptr = 
+        dynamic_cast< OpenHapticsWorkAroundToCleanUpHLContext * >
+        ( clean_up_stuff[hd][i] );
+      if( temp_ptr ) {
+        if( temp_ptr->dummy_context == dummy_context )
+          add_dummy = false;
+      }
+    }
+    if( add_dummy ) {
+      OpenHapticsWorkAroundToCleanUpHLContext * temp_ptr =
+        new OpenHapticsWorkAroundToCleanUpHLContext();
+      temp_ptr->dummy_context = dummy_context;
+      clean_up_stuff[ hd ].push_back( temp_ptr );
+    }
+    dummy_context = NULL;
+  }
+
   callback_data.clear();
   ContextMap::iterator i = context_map.find( hd );
   if( i != context_map.end() ) {
@@ -430,8 +452,10 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
       }
       nr_of_context++;
 
-      /*if( !dummy_context )
-        dummy_context = hlCreateContext( jj );*/
+      if( !dummy_context ) {
+        dummy_context = hlCreateContext( jj );
+        nr_of_context++;
+      }
       hlMakeCurrent( context_map[ pd ] );  
 
       hlEnable(HL_HAPTIC_CAMERA_VIEW);
@@ -724,6 +748,17 @@ void OpenHapticsRenderer::hlRenderAbsolute( HAPIFloat stiffness,
                     dynamic_friction,
                     magnetic,
                     snap_distance );
+}
+
+void OpenHapticsRenderer::OpenHapticsWorkAroundToCleanUpHLContext::cleanUp() {
+  if( dummy_context ) {
+    hlMakeCurrent( NULL );
+    hlDeleteContext( dummy_context );
+    dummy_context = NULL;
+    nr_of_context--;
+    if( nr_of_context == 0 )
+      PhantomHapticsDevice::stopScheduler( false );
+  }
 }
 
 #endif

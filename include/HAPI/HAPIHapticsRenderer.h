@@ -249,6 +249,16 @@ namespace HAPI {
     H3DUtil::MutexLock contacts_lock;
     Contacts contacts;
     static bool initialized;
+
+    /// \internal
+    class HAPI_API WorkAroundToCleanUpHLContext {
+    public:
+    virtual ~WorkAroundToCleanUpHLContext() {}
+      virtual void cleanUp() {}
+    };
+
+    static map< HAPIHapticsDevice *,
+      vector< WorkAroundToCleanUpHLContext * > > clean_up_stuff;
   };
 }
 

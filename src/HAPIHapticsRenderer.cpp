@@ -38,5 +38,21 @@ HAPIHapticsRenderer::registered_renderers(NULL);
 
 bool HAPIHapticsRenderer::initialized = false; 
 
+map< HAPIHapticsDevice *,
+vector< HAPIHapticsRenderer::WorkAroundToCleanUpHLContext * > >
+      HAPIHapticsRenderer::clean_up_stuff;
+
 HAPIHapticsRenderer::~HAPIHapticsRenderer() { }
 
+void HAPIHapticsRenderer::cleanUpStuff( HAPIHapticsDevice *hd ) {
+  if( clean_up_stuff.find( hd ) != clean_up_stuff.end() ) {
+    vector< WorkAroundToCleanUpHLContext * >
+      &clean_up_classes = clean_up_stuff[ hd ];
+    for( unsigned int i = 0; i < clean_up_classes.size(); i++ ) {
+      clean_up_classes[i]->cleanUp();
+      delete clean_up_classes[i];
+      clean_up_classes[i] = 0;
+    }
+    clean_up_stuff.erase( hd );
+  }
+}
