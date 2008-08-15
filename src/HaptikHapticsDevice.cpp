@@ -35,10 +35,10 @@
 using namespace HAPI;
 
 void HaptikHapticsDevice::changeHaptikDevice(
-#ifdef WIN32
-      UINT32
-#else
+#ifdef HAPTIK_SDK_VERSION
       uint32
+#else
+      UINT32
 #endif
                                             device_id ) {
   if( haptik_device ) {
@@ -48,10 +48,10 @@ void HaptikHapticsDevice::changeHaptikDevice(
 
     // find the index of the current device
     for(
-#ifdef WIN32
-      UINT32
-#else
+#ifdef HAPTIK_SDK_VERSION
       uint32
+#else
+      UINT32
 #endif
          i = 0 ; i<haptik.numberOfDevices ; i++) {
       if( haptik.device[i].id == info.id ) {
