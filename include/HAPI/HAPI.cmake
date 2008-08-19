@@ -66,6 +66,11 @@
 /// SimballHapticsDevice class.
 #cmakedefine HAVE_SIMBALLMEDICAL_API
 
+/// Undef if you do not want HAPI to have support for Haptic Master.
+/// (http://www.moog.com/SimulationAndTesting/products/models/-/p_13598/t_1735/)
+/// Required for the HapticMasterDevice class.
+#cmakedefine HAVE_HAPTIC_MASTER_API
+
 /// Undef if you do not have the API(s) required for supporting Quanser
 /// devices.
 /// www.quanser.com

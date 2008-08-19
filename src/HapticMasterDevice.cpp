@@ -56,41 +56,48 @@ enum FCSSTATE
 //---------------------------------------------------------------------------
 
 
-typedef int		(*LPFNDLLOpenHapticMaster)			(char *DeviceName);
-typedef void	(*LPFNDLLCloseHapticMaster)			(int Device);
-typedef int		(*LPFNDLLInitialiseHapticMaster)	(int Device);
-typedef void	(*LPFNDLLSetForceGetPosition)		(int Device, double Force[3], double CurrentPosition[3]);
-typedef void	(*LPFNDLLSetForceGetPV)				(int Device, double Force[3], double CurrentPosition[3], double CurrentVelocity[3]);
-typedef void	(*LPFNDLLSetInertia)				(int Device, double Inertia);
-typedef int		(*LPFNDLLGetState)					(int Device);
-typedef void	(*LPFNDLLSetState)					(int Device, int State);
-typedef int	(*LPFNDLLCreateSphere)			(int Device,
-                                           double center[3],
-                                           double Radius,
-                                           double ExtSpringStiffness,
-                                           double IntSpringStiffness,
-                                           double ExtDampingFactor,
-                                           double IntDampingFactor,
-                                           double ExtThickness,
-                                           double IntThickness);
-typedef int	(*LPFNDLLDeleteSphere)		  (int Device, int Sphere);
-typedef int	(*LPFNDLLSetSphereRadius)		(int Sphere, double radius);
-typedef int	(*LPFNDLLSetSpherePosition) (int Sphere, double pos[3]);
-typedef void	(*LPFNDLLGetCurrentForce) (int Device, double force[3]);
+typedef int  (*LPFNDLLOpenHapticMaster)      (char *DeviceName);
+typedef void (*LPFNDLLCloseHapticMaster)     (int Device);
+typedef int  (*LPFNDLLInitialiseHapticMaster)(int Device);
+typedef void (*LPFNDLLSetForceGetPosition)   (int Device,
+                                              double Force[3],
+                                              double CurrentPosition[3]);
+typedef void (*LPFNDLLSetForceGetPV)         (int Device,
+                                              double Force[3],
+                                              double CurrentPosition[3],
+                                              double CurrentVelocity[3]);
+typedef void (*LPFNDLLSetInertia)            (int Device,
+                                              double Inertia);
+typedef int  (*LPFNDLLGetState)              (int Device);
+typedef void (*LPFNDLLSetState)              (int Device,
+                                              int State);
+typedef int  (*LPFNDLLCreateSphere)          (int Device,
+                                              double center[3],
+                                              double Radius,
+                                              double ExtSpringStiffness,
+                                              double IntSpringStiffness,
+                                              double ExtDampingFactor,
+                                              double IntDampingFactor,
+                                              double ExtThickness,
+                                              double IntThickness);
+typedef int  (*LPFNDLLDeleteSphere)          (int Device, int Sphere);
+typedef int  (*LPFNDLLSetSphereRadius)       (int Sphere, double radius);
+typedef int  (*LPFNDLLSetSpherePosition)     (int Sphere, double pos[3]);
+typedef void (*LPFNDLLGetCurrentForce)       (int Device, double force[3]);
 
-LPFNDLLOpenHapticMaster			OpenHapticMaster; 
-LPFNDLLCloseHapticMaster		CloseHapticMaster; 
-LPFNDLLInitialiseHapticMaster	InitialiseHapticMaster; 
-LPFNDLLSetForceGetPosition		SetForceGetPosition;
-LPFNDLLSetForceGetPV			SetForceGetPV;
-LPFNDLLSetInertia				SetInertia;
-LPFNDLLGetState					GetState;
-LPFNDLLSetState					SetState;
-LPFNDLLCreateSphere     CreateSphere;
-LPFNDLLDeleteSphere     DeleteSphere;
-LPFNDLLSetSphereRadius  SetSphereRadius;
-LPFNDLLSetSpherePosition  SetSpherePosition;
-LPFNDLLGetCurrentForce  GetCurrentForce;
+LPFNDLLOpenHapticMaster       OpenHapticMaster; 
+LPFNDLLCloseHapticMaster      CloseHapticMaster; 
+LPFNDLLInitialiseHapticMaster InitialiseHapticMaster; 
+LPFNDLLSetForceGetPosition    SetForceGetPosition;
+LPFNDLLSetForceGetPV          SetForceGetPV;
+LPFNDLLSetInertia             SetInertia;
+LPFNDLLGetState               GetState;
+LPFNDLLSetState               SetState;
+LPFNDLLCreateSphere           CreateSphere;
+LPFNDLLDeleteSphere           DeleteSphere;
+LPFNDLLSetSphereRadius        SetSphereRadius;
+LPFNDLLSetSpherePosition      SetSpherePosition;
+LPFNDLLGetCurrentForce        GetCurrentForce;
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
 HapticMasterDevice::device_registration(
@@ -115,17 +122,17 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
       CloseHapticMaster =
         (LPFNDLLCloseHapticMaster) GetProcAddress(dll_handle,
                                                   "CloseHapticMaster"); 
-      SetForceGetPosition	= 
+      SetForceGetPosition = 
         (LPFNDLLSetForceGetPosition) GetProcAddress(dll_handle,
                                                     "SetForceGetPosition"); 
-      SetForceGetPV	= 
+      SetForceGetPV =
         (LPFNDLLSetForceGetPV) GetProcAddress(dll_handle,
                                               "SetForceGetPV"); 
-      InitialiseHapticMaster	= 
-        (LPFNDLLInitialiseHapticMaster)	GetProcAddress(dll_handle,
-                                                       "InitialiseHapticMaster"); 
-      SetInertia = 
-        (LPFNDLLSetInertia)	GetProcAddress(dll_handle,"SetInertia"); 
+      InitialiseHapticMaster  = 
+        (LPFNDLLInitialiseHapticMaster) GetProcAddress(dll_handle,
+                                                     "InitialiseHapticMaster");
+      SetInertia =
+        (LPFNDLLSetInertia) GetProcAddress(dll_handle,"SetInertia"); 
       GetState = (LPFNDLLGetState) GetProcAddress(dll_handle,"GetState"); 
       SetState = (LPFNDLLSetState) GetProcAddress(dll_handle,"SetState"); 
 
@@ -136,19 +143,20 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
         (LPFNDLLDeleteSphere) GetProcAddress(dll_handle,"DeleteSphere"); 
 
       SetSphereRadius = 
-        (LPFNDLLSetSphereRadius) GetProcAddress(dll_handle,"SetSphereRadius"); 
+        (LPFNDLLSetSphereRadius) GetProcAddress(dll_handle,"SetSphereRadius");
 
       SetSpherePosition = 
-        (LPFNDLLSetSpherePosition) GetProcAddress(dll_handle,"SetSpherePosition"); 
+        (LPFNDLLSetSpherePosition) GetProcAddress(dll_handle,
+                                                  "SetSpherePosition");
       GetCurrentForce = 
-        (LPFNDLLGetCurrentForce) GetProcAddress(dll_handle,"GetCurrentForce"); 
+        (LPFNDLLGetCurrentForce) GetProcAddress(dll_handle,"GetCurrentForce");
     }
 
     // If we failed to load the library or any of the functions, quit...
     if (dll_handle==NULL) {
        stringstream s;
        s << "Could not initialize HapticMasterDevice. "
-         << "HapticMasterDriver.dll not found. ";
+         << "HapticMasterDriver.dll or HapticAPI.dll not found. ";
        setErrorMsg( s.str() );
        return false;
     }
@@ -189,7 +197,7 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
     is.close();
     setErrorMsg( s.str() );
     return false;
-  }	
+  }  
 }
 
 bool HapticMasterDevice::releaseHapticsDevice() {
@@ -226,7 +234,7 @@ void HapticMasterDevice::updateDeviceValues( DeviceValues &dv,
     dv.velocity = current_values.velocity;
     dv.orientation = current_values.orientation;
     dv.button_status = current_values.button_status;
-	dv.force = current_values.force;
+    dv.force = current_values.force;
     com_lock.unlock();
   }
     
@@ -250,9 +258,9 @@ int HapticMasterDevice::createSphere( Vec3 pos, double radius,
                                       double ext_thickness,
                                       double int_thickness ) {
  /* Matrix4 position_calibration_inverse = Matrix4( 0.5, 0, 0, 0,
-	  0, 0.5, 0, 0,
-	  0, 0, 0.5, 0,
-	  0, 0, 0, 1 );
+    0, 0.5, 0, 0,
+    0, 0, 0.5, 0,
+    0, 0, 0, 1 );
 */
   Vec3 local_pos = position_calibration_inverse * pos;
 
@@ -277,7 +285,7 @@ int HapticMasterDevice::createSphere( Vec3 pos, double radius,
 
 
 int HapticMasterDevice::deleteSphere( int sphere ) {
-	if( device_handle == -1 ) return -1;
+  if( device_handle == -1 ) return -1;
 
   driver_lock.lock();
   int res =  DeleteSphere( device_handle, sphere );
@@ -286,7 +294,7 @@ int HapticMasterDevice::deleteSphere( int sphere ) {
 }
 
 int HapticMasterDevice::setSphereRadius( int sphere, double radius ) {
-	if( device_handle == -1 ) return -1;
+  if( device_handle == -1 ) return -1;
   Vec3 scaling = position_calibration_inverse.getScalePart();
   double local_radius = radius * max( scaling.x, max( scaling.y, scaling.z ) );
   driver_lock.lock();
@@ -295,8 +303,8 @@ int HapticMasterDevice::setSphereRadius( int sphere, double radius ) {
   return res;
 }
 int HapticMasterDevice::setSpherePosition( int sphere, Vec3 pos ) {
-	if( device_handle == -1 ) return -1;
-	Vec3 local_pos = position_calibration_inverse * pos;
+  if( device_handle == -1 ) return -1;
+  Vec3 local_pos = position_calibration_inverse * pos;
   double p[] = { local_pos.z, local_pos.x, local_pos.y };
   driver_lock.lock();
   int res = SetSpherePosition( sphere, p ); 
