@@ -304,6 +304,13 @@ IF(OPENGL_FOUND)
   ENDIF(WIN32)
 ENDIF(OPENGL_FOUND)
 
+# The current implementation only have support for Haptic Master on Windows.
+# No use in looking for the libs/dlls on the system since the dlls for
+# haptic master are run-time loaded.
+IF(WIN32)
+  SET(HAVE_HAPTIC_MASTER_API 1)
+ENDIF(WIN32)
+
 # If cpack project should be generated and windows is the system on which to generate
 # a number of extra directories needs to be added. They are added to an internal cached
 # variable which can be used by other cmakelists that use HAPI as subdirectory (e.g. H3DAPI).
