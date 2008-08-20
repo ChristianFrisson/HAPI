@@ -26,7 +26,6 @@ IF( SEARCH_FOR_CHAI3D )
                                      ../../External/include/Chai3D/include
                                      ${CMAKE_MODULE_PATH}/../../../External/include
                                      ${CMAKE_MODULE_PATH}/../../../External/include/Chai3D/include)
-  MARK_AS_ADVANCED(CHAI3D_INCLUDE_DIR)
 
 
   # Look for the library.
@@ -39,8 +38,13 @@ IF( SEARCH_FOR_CHAI3D )
   ELSE(WIN32)
     FIND_LIBRARY(CHAI3D_LIBRARY NAMES chai3d_linux)
   ENDIF(WIN32)
-  MARK_AS_ADVANCED(CHAI3D_LIBRARY)
+ELSE( SEARCH_FOR_CHAI3D )
+  SET( CHAI3D_INCLUDE_DIR "" CACHE PATH "Path to include files for Chai3d." )
+  SET( CHAI3D_LIBRARY "" CACHE FILEPATH "Path to Chai3d library file." )
 ENDIF( SEARCH_FOR_CHAI3D )
+
+MARK_AS_ADVANCED(CHAI3D_INCLUDE_DIR)
+MARK_AS_ADVANCED(CHAI3D_LIBRARY)
 
 # Copy the results to the output variables.
 IF(CHAI3D_INCLUDE_DIR AND CHAI3D_LIBRARY)

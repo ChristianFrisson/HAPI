@@ -37,7 +37,7 @@
   SetCompressor @CPACK_NSIS_COMPRESSOR@
 
 ;--------------------------------
-; H3DAPI added parameters.
+; HAPI added parameters.
 ; CPACK_ADD_HAPIEXAMPLES_LINKS - If set to "ON" extra start menu links to demos will be added.
 ; CPACK_ADD_HAPIDOC_LINKS - If set to "ON" extra start menu links to documentation will be added.
 
@@ -577,7 +577,7 @@ Section "Installer Section" InstSection
   WriteRegStr SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
+  WriteUninstaller "$INSTDIR\@CPACK_PACKAGE_INSTALL_DIRECTORY@_Uninstall.exe"
   Push "DisplayName"
   Push "@CPACK_NSIS_DISPLAY_NAME@"
   Call ConditionalAddToRegisty
@@ -588,7 +588,7 @@ Section "Installer Section" InstSection
   Push "@CPACK_PACKAGE_VENDOR@"
   Call ConditionalAddToRegisty
   Push "UninstallString"
-  Push "$INSTDIR\Uninstall.exe"
+  Push "$INSTDIR\@CPACK_PACKAGE_INSTALL_DIRECTORY@_Uninstall.exe"
   Call ConditionalAddToRegisty
 
   ; Optional registration
@@ -634,7 +634,7 @@ Section "Installer Section" InstSection
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\Reference Guide.lnk" "$INSTDIR\doc\HAPI\html\index.html"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\HAPI Manual.lnk" "$INSTDIR\doc\HAPI Manual.pdf"
 
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\@CPACK_PACKAGE_INSTALL_DIRECTORY@_Uninstall.exe"
 
   ; Write special uninstall registry entries
   Push "StartMenu"
@@ -718,7 +718,7 @@ Section "Uninstall"
 @CPACK_NSIS_DELETE_DIRECTORIES@
 
   ;Remove the uninstaller itself.
-  Delete "$INSTDIR\Uninstall.exe"
+  Delete "$INSTDIR\@CPACK_PACKAGE_INSTALL_DIRECTORY@_Uninstall.exe"
   DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
   ;Remove the installation directory if it is empty.
