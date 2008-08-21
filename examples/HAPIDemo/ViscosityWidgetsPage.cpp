@@ -61,7 +61,10 @@ ViscosityWidgetsPage::ViscosityWidgetsPage( wxBookCtrlBase *book,
                                           Radius_ValueText,
                                           &m_txt_radius,
                                           Damping_Factor_ValueText,
-                                          &m_txt_damping_factor ),
+                                          &m_txt_damping_factor,
+                                          _T("viscosity(Pa s):"),
+                                          _T("radius(m):      "),
+                                          _T("damping:        ") ),
                   0, wxALL | wxGROW, 5 );
 
   sizerTop->Add( sizerLeft, 0, wxALL, 10 );
@@ -80,7 +83,7 @@ void ViscosityWidgetsPage::Reset()
   viscosity = 0.01;
   m_txt_radius->SetValue( _T("0.0025" ) );
   radius = 0.0025;
-  m_txt_damping_factor->SetValue( _T("0.5" ) );
+  m_txt_damping_factor->SetValue( _T("1" ) );
   damping_factor = 0.5;
 }
 

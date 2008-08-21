@@ -77,6 +77,10 @@ namespace HAPI {
     /// to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt ) {
       if( hd.get() ) hd->updateDeviceValues( dv, dt );
+      // Needed to correctly calculate device velocity for devices that
+      // base this on current_raw_device_values, for example
+      // FalconHapticsDevice
+      hd->current_raw_device_values = last_raw_device_values;
     }
 
     /// Implementation of sendOutput, calling sendOutput of the contained
