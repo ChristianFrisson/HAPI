@@ -39,13 +39,22 @@ namespace HAPI {
   ///
   /// HapticViscosity uses stokes law to calculate the force
   /// exerted on a sphere of radius r in a fluid with a certain viscosity.
-  /// The flow is assumed to be laminar.
+  /// The flow is assumed to be laminar. It will only be valid for fairly small
+  /// values of viscosity and radius. Also the speed of the haptics device can
+  /// not be to high. The algorithm is very simple all it does is calculating
+  /// a force in the opposite direction of the velocity of the haptics device.
   class HAPI_API HapticViscosity: public HAPIForceEffect {
   public:
     /// Constructor
+    /// _viscosity is the viscosity in Pas
+    /// _radius is the radius of the ball in meters.
+    /// _damping_factor is best left as its initial value unless
+    /// there is a need to stop vibrations that comes from a to large
+    /// constant e.g. when the force calculated exceeds the force inputed by
+    /// the user when moving the proxy.
     HapticViscosity( const HAPIFloat &_viscosity,
                      const HAPIFloat &_radius,
-                     const HAPIFloat &_damping_factor );
+                     const HAPIFloat &_damping_factor = 1 );
     
     /// The force of the EffectOutput will be calculated using stokes law.
     EffectOutput virtual calculateForces( const EffectInput &input );
