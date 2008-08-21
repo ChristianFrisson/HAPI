@@ -112,7 +112,7 @@ Chai3DRenderer::renderHapticsOneStep(
     cTriangle *t0, *t1, *t2;
 
     cVector3d cp =  p->getContactPoint();
- 
+
     unsigned int nr_contacts = p->getContacts( t0, t1, t2 );
     if( nr_contacts > 0 ) {
       HAPISurfaceObject::ContactInfo ci;
@@ -123,6 +123,10 @@ Chai3DRenderer::renderHapticsOneStep(
       ci.y_axis = Vec3( n.y, n.z, n.x );
       ci.contact_point_global = Vec3( cp.y, cp.z, cp.x );
       ci.force_global = Vec3( f.y, f.z, f.x );
+      HAPIFloat dot_product = ci.force_global * ci.y_axis;
+      if( H3DUtil::H3DAbs(dot_product) > Constants::epsilon 
+          && dot_product < 0 )
+        ci.y_axis = -ci.y_axis;
       map< cMesh *, HAPIHapticShape * >::iterator i = 
         mesh_map.find( t0->getParent() );
       if( i != mesh_map.end() ) {
@@ -209,6 +213,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           mesh->newTriangle(index,index+1,index+2);
           index += 3;
         }
+        mesh->computeAllNormals();
         cMaterial mat;
         if( chai3d_surface )
           chai3d_surface->chai3dMaterial( mat );
