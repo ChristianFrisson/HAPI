@@ -115,6 +115,7 @@ bool HLThread::removeAsynchronousCallback( int callback_handle )  {
 H3DUtil::PeriodicThread::CallbackCode HLThread::setThreadId( void * data ) {
   HLThread *thread = static_cast< HLThread * >( data );
   thread->thread_id = H3DUtil::PeriodicThread::getCurrentThreadId();
+  thread->setThreadName( "OpenHaptics HD Scheduler Thread" );
   return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
 
