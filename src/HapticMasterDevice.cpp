@@ -29,7 +29,6 @@
 
 #include <HAPI/HapticMasterDevice.h>
 
-#ifdef HAVE_HAPTIC_MASTER_API
 // This header file was empty, so we skip including it.
 //#include <HapticMasterDriver.h>
 #include <fstream>
@@ -175,6 +174,7 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
 #ifdef WIN32
     com_thread = 
       new H3DUtil::PeriodicThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+    com_thread->setThreadName( "HapticMASTER com thread" );
 #else
     com_thread = new H3DUtil::PeriodicThread( 20, 1000 );
 #endif
@@ -346,6 +346,4 @@ HapticMasterDevice::com_func( void *data ) {
                           
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
-
-#endif  // HAVE_HAPTIC_MASTER_API
 

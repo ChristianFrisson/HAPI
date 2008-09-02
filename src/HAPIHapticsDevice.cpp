@@ -357,6 +357,8 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice(
 #ifdef WIN32
       thread = new H3DUtil::HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL,
                                           _thread_frequency );
+      
+      thread->setThreadName( "HAPI Haptics Thread" );
 #else
       thread = new H3DUtil::HapticThread( 20, _thread_frequency );
 #endif
