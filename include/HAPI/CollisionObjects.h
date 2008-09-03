@@ -19,12 +19,13 @@
 //
 //    A commercial license is also available. Please contact us at 
 //    www.sensegraphics.com for more information.
-// TODO: 
-// Base code that this code was built upon was contributed by .....
 //
 //
 /// \file CollisionObjects.h
-/// \brief Header file for CollisionObjects, 
+/// \brief Header file for CollisionObjects. The collision algorithm codes
+/// are written with help of the book "Real-Time Collision Detection" by
+/// Christer Ericson (Morgan Kaufmann, 2005). Home page of book
+/// http://realtimecollisiondetection.net/
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -53,7 +54,7 @@ class Constraints;
                                             HAPIFloat & t );
 
     class PlaneConstraint; 
-	
+
     
     /// \ingroup AbstractClasses
     /// \class CollisionObject
@@ -484,6 +485,9 @@ class Constraints;
       /// \param to The end position of the sphere.
       /// object
       /// \returns true if intersected, false otherwise.
+      /// NOTE: This function is deprecated, kept for backwards
+      /// compability, all it does is call the corresponding
+      /// movingSphereIntersect version.
       bool movingSphereIntersectRobust( HAPIFloat radius,
                                           const Vec3 &from, 
                                           const Vec3 &to );
@@ -710,7 +714,7 @@ class Constraints;
         
         if (dims.x >= dims.y && dims.x >= dims.z) return Vec3(1,0,0);
         if (dims.y >= dims.x && dims.y >= dims.z) return Vec3(0,1,0);
-        else													return Vec3(0,0,1);
+        else                          return Vec3(0,0,1);
       }
 
       /// Update the bound primitive to contain all the given points.

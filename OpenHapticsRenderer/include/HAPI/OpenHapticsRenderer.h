@@ -438,7 +438,7 @@ namespace HAPI {
     }
 
     /// Used because of a supposed OpenHaptics Bug when untouchCallback is
-    /// called before touchCallback for a specific shape.
+    /// called before touchCallback for a specific hlshape id.
     // TODO: confirm that it is indeed a OpenHaptics Bug by setting up a simple
     // example that gives the same result.
     vector< int > already_removed_id;

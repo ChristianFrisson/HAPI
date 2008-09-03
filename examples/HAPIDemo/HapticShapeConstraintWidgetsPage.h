@@ -88,6 +88,7 @@ protected:
 
   wxPanel *rightPanel;
   wxSizer *panel_sizer;
+  wxSizer *sizerTop;
 
   wxRadioBox *m_radio_shapes;
   int choosen_shape;

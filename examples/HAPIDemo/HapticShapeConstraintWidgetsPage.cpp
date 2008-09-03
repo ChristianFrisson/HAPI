@@ -95,7 +95,7 @@ HapticShapeConstraintWidgetsPage::HapticShapeConstraintWidgetsPage(
   m_radio_shapes = ( wxRadioBox * )NULL;
   panel_sizer = 0;
 
-  wxSizer *sizerTop = new wxBoxSizer( wxHORIZONTAL );
+  sizerTop = new wxBoxSizer( wxHORIZONTAL );
 
   wxSizer *sizerLeft = new wxStaticBoxSizer( wxVERTICAL, this, _T("Shapes") );
 
@@ -377,7 +377,6 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(
   wxCommandEvent& WXUNUSED(event) )
 {
 
-  // TODO: Hide all before this and just show the one selected.
   switch ( m_radio_shapes->GetSelection() )
   {
     case Button_Sphere: 
@@ -406,7 +405,8 @@ void HapticShapeConstraintWidgetsPage::OnCheckOrRadioBox(
       panel_sizer->Clear();
       panel_sizer->Add( triangle_panel, 0, wxALL | wxGROW, 0 );
       triangle_panel->Show();
-      panel_sizer->Layout();  
+      panel_sizer->Layout();
+      sizerTop->Layout();
       break;
     }
 
@@ -671,7 +671,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
       plane_normal.normalizeSafe();
 
       if( plane_normal.lengthSqr() > Constants::epsilon )
-		  force_effect.reset( new HapticShapeConstraint(
+        force_effect.reset( new HapticShapeConstraint(
                             new Collision::Plane( plane_point,
                                                   plane_normal ),
                             spring_constant ) );
@@ -684,3 +684,4 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
     hd->transferObjects();
   }
 }
+

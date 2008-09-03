@@ -83,7 +83,7 @@ void FrictionSurface::getProxyMovement( ContactInfo &contact_info ) {
 
     if( !in_static_contact ) {
       HAPIFloat b = 1;
-      HAPIFloat dt = 1e-3;
+      HAPIFloat dt = 1.0 / contact_info.hapticsDevice()->getHapticsRate();
       HAPIFloat velocity = 
         ( force_t.length() - dynamic_friction * force.y ) / b;
 
@@ -95,7 +95,7 @@ void FrictionSurface::getProxyMovement( ContactInfo &contact_info ) {
         // The max_movement should be in m. The velocity gotten is in m/s.
         // The maximum movement in one haptic frame is therefore
         // velocity * 0.001 where 0.001 is the time in seconds for one haptic
-        // frame. TODO: make this correct even for other frame rates.
+        // frame.
         HAPIFloat max_movement = velocity * dt;
         Vec2 proxy_movement = Vec2( local_probe.x, local_probe.z );
         HAPIFloat l = proxy_movement.length();

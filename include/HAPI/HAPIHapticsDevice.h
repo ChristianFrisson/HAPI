@@ -621,7 +621,7 @@ namespace HAPI {
         if( r )
           r->initRenderer( this );
       }
- 
+
       renderer_change_lock.lock();
       // Give ownership to temporary auto_ptr to get correct deletion of 
       // the renderer that is replaced since the auto_ptr_vector does not

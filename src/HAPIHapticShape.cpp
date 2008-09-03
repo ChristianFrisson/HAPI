@@ -54,7 +54,6 @@ int HAPIHapticShape::genShapeId() {
 }
 
 void HAPIHapticShape::delShapeId( int id ) {
-  // todo: remove all resources used by id, e.g. hl shape id, done i think.
   free_ids.push_front( id );
 }
 

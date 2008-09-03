@@ -55,13 +55,13 @@ int FalconHapticsDevice::nr_of_initalized = 0;
 
 bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device_handle = hdlInitNamedDevice( device_name == "" ? 
-  HDL_DEFAULT_DEVICE_ID : device_name.c_str() );
+    HDL_DEFAULT_DEVICE_ID : device_name.c_str() );
   HDLError error = hdlGetError();
   if ( device_handle == -1 || error != HDL_NO_ERROR ) {
     stringstream s;
     s << "Could not init Falcon device. ";
-	if( error != HDL_NO_ERROR ) 
-	  s << "Error code: " << error << endl;
+  if( error != HDL_NO_ERROR ) 
+    s << "Error code: " << error << endl;
      
     setErrorMsg( s.str() );
     return false;
@@ -110,8 +110,9 @@ void FalconHapticsDevice::updateDeviceValues( DeviceValues &dv,
   HDLError error;
   error = hdlGetError();
   if ( error != HDL_NO_ERROR )
-    // TODO: do error handling
-	H3DUtil::Console(4) << "Device error: " << error << endl;
+    // TODO: Verify that error handling is working. Never caught any error
+    // here. Also construct some sort of error handling and not just cerr.
+    cerr << "Device error: " << error << endl;
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
   hdlMakeCurrent( device_handle );
 
@@ -126,7 +127,7 @@ void FalconHapticsDevice::updateDeviceValues( DeviceValues &dv,
                                       v[1], v[5], v[9],
                                       v[2], v[6], v[10] ) );
 
-  hdlToolButtons(&dv.button_status );    
+  hdlToolButtons(&dv.button_status );
 }
 
 void FalconHapticsDevice::sendOutput( DeviceOutput &dv,
@@ -142,9 +143,9 @@ void FalconHapticsDevice::sendOutput( DeviceOutput &dv,
   HDLError error;
   error = hdlGetError();
   if (error != HDL_NO_ERROR )
-    // TODO: do error handling
+    // TODO: Verify that error handling is working. Never caught any error
+    // here. Also construct some sort of error handling and not just cerr.
     cerr << "Device error: " << error << endl;
-
 }
 
 
@@ -216,9 +217,8 @@ bool FalconHapticsDevice::FalconThread::
 H3DUtil::PeriodicThread::CallbackCode FalconHapticsDevice::FalconThread
   ::setThreadId( void * data ) {
   FalconHapticsDevice::FalconThread *thread = 
-	  static_cast< FalconHapticsDevice::FalconThread * >( data );
+    static_cast< FalconHapticsDevice::FalconThread * >( data );
   thread->thread_id = H3DUtil::PeriodicThread::getCurrentThreadId();
-  thread->setThreadName( "Novint Falcon Scheduler Thread" );
   return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
 

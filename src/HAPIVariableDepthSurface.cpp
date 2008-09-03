@@ -153,7 +153,6 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
       // If the direction of force and the direction of movement is kind of the
       // the same then calculate the normal a bit differently.
       // This is an ad hoc solution that seems to give the best result.
-      // TODO: review this when the friction system works better.
       if( !normal_found ) {
         HAPIFloat depth_diff = depth - start_depth;
         if( H3DUtil::H3DAbs( depth_diff ) > Constants::epsilon &&
@@ -195,7 +194,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
     if( !in_static_contact ) {
 
       HAPIFloat b = 1;
-      HAPIFloat dt = 1e-3;
+      HAPIFloat dt = 1.0 / contact.hapticsDevice()->getHapticsRate();
       HAPIFloat velocity = 
         ( tangent_force - dynamic_friction * normal_force ) / b;
 
@@ -207,7 +206,7 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
         // The max_movement should be in m. The velocity gotten is in m/s.
         // The maximum movement in one haptic frame is therefore
         // velocity * 0.001 where 0.001 is the time in seconds for one haptic
-        // frame. TODO: make this correct even for other frame rates.
+        // frame.
         HAPIFloat max_movement = velocity * dt;
         
         HAPIFloat l = res_l;
