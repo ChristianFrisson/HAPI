@@ -114,7 +114,6 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
 /// the given haptics device.
 void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   // Ugly solution to clean up stuff correctly when the device is removed.
-  // TODO: Find a better solution.
   if( dummy_context ) {
     bool add_dummy = true;
     for( unsigned int i = 0; i < clean_up_stuff[hd].size(); i++ ) {
@@ -218,9 +217,6 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   hlLoadIdentity();
   hlMatrixMode( HL_TOUCHWORKSPACE );
   hlLoadIdentity();
-
-  // TODO: fix matrices
-  //hlPushMatrix();
 
   const Matrix4 &pcal = Matrix4( 1e3, 0, 0, 0,
                                  0, 1e3, 0, 0,
@@ -408,11 +404,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 #endif
 
   hlEndFrame(); 
-  //hlMatrixMode( HL_VIEWTOUCH );
-  //hlPopMatrix();
-  //hlMatrixMode( HL_TOUCHWORKSPACE );
-  //hlPopMatrix();
-    
+
   // check for any errors
   HLerror error;
   while ( HL_ERROR(error = hlGetError()) ) {
@@ -522,7 +514,7 @@ void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
                                                 HLcache *cache,
                                                 void *userdata ) {
   CallbackData *cb_data = static_cast< CallbackData * >( userdata ); 
-  
+
   OpenHapticsRenderer *renderer = cb_data->renderer;
   HAPIHapticShape *shape = cb_data->shape.get();
 
@@ -654,9 +646,6 @@ HLboolean HLCALLBACK OpenHapticsRenderer::closestFeaturesCallback(
 
   Vec3 closest, normal, tex_coord;
   object->closestPoint( qp, closest, normal, tex_coord );
-  // TODO: do we want the normal of the geometry or the normal below
-  //Vec3 normal = qp - closest;
-  //normal.normalizeSafe();
 
   HLdouble cn[] = { normal.x, 
                     normal.y,
@@ -706,10 +695,10 @@ bool OpenHapticsRenderer::surfaceSupported( HAPISurfaceObject *s ) {
          dynamic_cast< FrictionSurface * >( s ) != NULL;
 }
 
-/// Sets up the surface parameters for HL API. All values are given in
-/// values between 0 and 1(except snapDistance which is in mm) just
-/// as normally done in OpenHaptics. If you want to specify absolute
-/// values instead use hlRenderAbsolute instead.
+// Sets up the surface parameters for HL API. All values are given in
+// values between 0 and 1(except snapDistance which is in mm) just
+// as normally done in OpenHaptics. If you want to specify absolute
+// values instead use hlRenderAbsolute instead.
 void OpenHapticsRenderer::hlRenderRelative( HAPIFloat stiffness,
                                             HAPIFloat damping,
                                             HAPIFloat static_friction,
@@ -729,11 +718,6 @@ void OpenHapticsRenderer::hlRenderRelative( HAPIFloat stiffness,
   hlTouchModelf( HL_SNAP_DISTANCE, (HLfloat)snap_distance );
 }
 
-// Sets up the surface parameters for HL API. 
-// TODO: Fix comment
-// stiffness is given as N/mm
-// damping as ...
-// ..
 void OpenHapticsRenderer::hlRenderAbsolute( HAPIFloat stiffness,
                                             HAPIFloat damping,
                                             HAPIFloat static_friction,
