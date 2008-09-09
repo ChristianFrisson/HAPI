@@ -93,8 +93,11 @@ namespace HAPI {
       if( nr_triangles == -1 || nr_lines == -1 || nr_points == - 1 )
         return -1;
       else
-        //return nr_triangles * 11 + nr_lines * 7 + nr_points * 4;  
-        return nr_triangles * 19 + nr_lines * 15 + nr_points * 12;  
+        // FeedbackBufferCollector requires 35 blocks for triangles.
+        // 11 * 3 + 1 + 1 = 35 since this is how many times it reads the memory
+        // for one triangle. Similar for lines is 11*2 + 1 = 23 and points = 
+        // 11 + 1  = 12
+        return nr_triangles * 35 + nr_lines * 23 + nr_points * 12;  
     }
   };
 }
