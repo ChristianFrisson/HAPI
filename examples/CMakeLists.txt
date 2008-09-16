@@ -25,12 +25,17 @@ ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/ThreadExamples/build
                   ${BINARY_DIR_FOR_Example} )
 
 IF( WIN32 )
-  STRING( REPLACE ${HAPIExamples_SOURCE_DIR} ${HAPIExamples_SOURCE_DIR}/DirectXExample/build BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
-  ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/DirectXExample/build
-                    ${BINARY_DIR_FOR_Example} )
+  FIND_PACKAGE( DirectX REQUIRED )
+  IF( DirectX_FOUND )
+    STRING( REPLACE ${HAPIExamples_SOURCE_DIR} ${HAPIExamples_SOURCE_DIR}/DirectXExample/build BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
+    ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/DirectXExample/build
+                      ${BINARY_DIR_FOR_Example} )
+  ELSE( DirectX_FOUND )
+    MESSAGE( STATUS "DirectX headers and libraries were not found. DirectXExample will not be generated." )
+  ENDIF( DirectX_FOUND )
 ENDIF( WIN32 )
 
 # set the install directory to the H3D directory on Windows
-IF(WIN32) 
+IF(WIN32)
  SET( CMAKE_INSTALL_PREFIX ${HAPIExamples_SOURCE_DIR} )
 ENDIF(WIN32)
