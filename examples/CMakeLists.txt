@@ -25,7 +25,7 @@ ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/ThreadExamples/build
                   ${BINARY_DIR_FOR_Example} )
 
 IF( WIN32 )
-  FIND_PACKAGE( DirectX REQUIRED )
+  FIND_PACKAGE( DirectX )
   IF( DirectX_FOUND )
     STRING( REPLACE ${HAPIExamples_SOURCE_DIR} ${HAPIExamples_SOURCE_DIR}/DirectXExample/build BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
     ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/DirectXExample/build
