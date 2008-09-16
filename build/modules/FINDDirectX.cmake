@@ -34,9 +34,9 @@ ENDIF(DirectX_INCLUDE_DIR AND DirectX_d3d9_LIBRARY AND DirectX_d3dx9_LIBRARY )
 # Report the results.
 IF(NOT DirectX_FOUND)
   SET(DirectX_DIR_MESSAGE
-    "DirectX was not found. Make sure to set DirectX_d3d9_LIBRARY and DirectX_d3dx9_LIBRARY and DirectX_INCLUDE_DIR to the location of the library and include files. If you do not have it you will not be able to use the Omega or Delta haptics devices from ForceDimension.")
+    "DirectX was not found. Make sure to set DirectX_d3d9_LIBRARY and DirectX_d3dx9_LIBRARY and DirectX_INCLUDE_DIR to the location of the library and include files. If you do not have it you will not be able to build the DirectXExample of HAPI.")
   IF(DirectX_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "${DirectX_DIR_MESSAGE}")
+    MESSAGE(FATAL_ERROR "${DirectX_DIR_MESSAGE}")
   ELSEIF(NOT DirectX_FIND_QUIETLY)
     MESSAGE(STATUS "${DirectX_DIR_MESSAGE}")
   ENDIF(DirectX_FIND_REQUIRED)
