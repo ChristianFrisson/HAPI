@@ -29,6 +29,8 @@
 
 #include <HAPI/HapticMasterDevice.h>
 
+#ifdef HAVE_HAPTIC_MASTER_API
+
 // This header file was empty, so we skip including it.
 //#include <HapticMasterDriver.h>
 #include <fstream>
@@ -346,4 +348,6 @@ HapticMasterDevice::com_func( void *data ) {
                           
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
+#endif
+
 
