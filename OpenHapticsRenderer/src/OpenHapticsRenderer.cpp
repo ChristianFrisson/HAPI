@@ -110,8 +110,8 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
   }
 }
 
-/// Release all resources that has been used in the renderer for
-/// the given haptics device.
+// Release all resources that has been used in the renderer for
+// the given haptics device.
 void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   // Ugly solution to clean up stuff correctly when the device is removed.
   if( dummy_context ) {
@@ -661,8 +661,8 @@ HLboolean HLCALLBACK OpenHapticsRenderer::closestFeaturesCallback(
 }
 
 
-/// Renders a HAPISurface object with OpenHaptics. Returns true if it 
-/// succeeded, false otherwise. Not all surface types are valid.
+// Renders a HAPISurface object with OpenHaptics. Returns true if it 
+// succeeded, false otherwise. Not all surface types are valid.
 bool OpenHapticsRenderer::hlRenderHAPISurface( HAPISurfaceObject *s,
                                                HAPIHapticsDevice *hd ) {
   if( HLSurface *hl_surface = dynamic_cast< HLSurface * >( s ) ) {

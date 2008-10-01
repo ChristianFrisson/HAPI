@@ -347,8 +347,12 @@ namespace HAPI {
 
     /// Swap the vector of effects currently being rendered with the
     /// given vector, replacing all effects being rendered.
-    /// Note that if _switch_effects_duration is above zero the input variable
-    /// effects will NOT contain the force effects that were rendered before.
+    /// \param effects The new effects which should be rendered on the
+    /// haptics device.
+    /// \param _switch_effects_duration Duration in seconds before the old
+    /// effects are fully replaced by the new. Linear interpolation between
+    /// old and new effects. The start time of the interpolation is the call
+    /// to transferObjects().
     inline void swapEffects( HapticEffectVector &effects,
                              HAPITime _switch_effects_duration = 0 ) {
       force_effect_lock.lock();
@@ -379,8 +383,9 @@ namespace HAPI {
     // Functions for getting/settings device values
     //
     
-    /// \brief Set the position calibraion matrix, i.e. the transform matrix
-    /// from the local device coordinate space to HAPI coordinate space.
+    /// \brief Set the position calibration matrix, i.e. the transform matrix
+    /// from the local device coordinate space to HAPI coordinate space. Also
+    /// sets the inverse matrix.
     inline void setPositionCalibration( const Matrix4 &m,
                                         const Matrix4 &m_inv ) {
       device_values_lock.lock();
@@ -855,10 +860,15 @@ namespace HAPI {
 
     /// Updates the current_device_values member to contain
     /// current values.
+    /// \param dt Time since last haptic loop.
     void updateDeviceValues( HAPITime dt );
     
     /// Calculates instant velocity using current_raw_device_values
     /// and the device values sent as input.
+    /// \param dv DeviceValues struct containing the current position
+    /// and the velocity that should be set.
+    /// \param dt Time since last call to this function (usually the time
+    /// between two haptic loops).
     inline void calculateVelocity( DeviceValues &dv,
                                    HAPITime dt ) {
       dv.velocity = ( dv.position - current_raw_device_values.position ) / dt;
@@ -866,10 +876,11 @@ namespace HAPI {
 
     /// Sends the data in the output member to be rendered at
     /// the haptics device.
-    inline void sendOutput() {
+    /// \param dt Time since last call to this function.
+    inline void sendOutput( HAPITime dt = 0 ) {
       if( device_state == ENABLED ) {
         device_values_lock.lock();
-        sendOutput( output, 0 );
+        sendOutput( output, dt );
         device_values_lock.unlock();
       }
     }
@@ -883,6 +894,8 @@ namespace HAPI {
     /// This function should be overriden by all subclasses of 
     /// HAPIHapticsDevice in order to fill in the given DeviceValues
     /// structure with current values of the devie.
+    /// \param dv Contains values that should be updated.
+    /// \param dt Time since last call to this function.
     virtual void updateDeviceValues( DeviceValues &dv,
                                      HAPITime dt ) {
       dv.force = output.force;
@@ -892,6 +905,9 @@ namespace HAPI {
     /// This function should be overridden by all subclasses of 
     /// HAPIHapticsDevice in order to send the values in the
     /// given DeviceOutput structure to the haptics device.
+    /// \param dv Struct which contains force values to send to the haptics
+    /// device.
+    /// \param dt Time since last call to this function.
     virtual void sendOutput( DeviceOutput &dv,
                              HAPITime dt ) = 0;
 
@@ -1089,7 +1105,7 @@ namespace HAPI {
     void * haptic_rendering_callback_data;
 
     /// Callback function to transfer haptic objects to render to the 
-    /// haptics loop.
+    /// haptics loop. Used by transferObjects() function.
     static H3DUtil::PeriodicThread::CallbackCode
       transferObjectsCallback( void *data );
 

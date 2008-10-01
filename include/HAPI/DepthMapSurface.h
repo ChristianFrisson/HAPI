@@ -66,10 +66,13 @@ namespace HAPI {
     /// Get the value of the texture at texture coordinate tex_coord.
     /// For any image other than a grayscale image the red channel of
     /// the returned RGBA value will be used.
+    /// \param tex_coord The texture coordinate at which to get the value.
+    /// \returns A value 0-1 at the specified tex_coord. Value of red channel
+    /// used for more than one channel textures.
     HAPIFloat getDepthMapValue( Vec3 tex_coord );
 
     /// Function used as function parameter to HAPIVariableDepthSurface.
-    /// \param local_point point in local coordinate of the contact on the
+    /// \param local_point Point in local coordinate of the contact on the
     /// the surface.
     /// \param data contains a pointer to the DepthMapSurface calling this
     /// function.

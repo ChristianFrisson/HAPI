@@ -128,25 +128,25 @@ int ForceDimensionHapticsDevice::getDeviceType() {
   return -1;
 }
 
-/// Puts the device in RESET mode. In this mode, the user is expected
-/// to put the device end-effector at its rest position. This is how
-/// the device performs its calibration. 
+// Puts the device in RESET mode. In this mode, the user is expected
+// to put the device end-effector at its rest position. This is how
+// the device performs its calibration. 
 void ForceDimensionHapticsDevice::reset() {
   if( device_id != -1 ) {
     dhdReset( device_id );
   }
 }
 
-/// Puts the device in RESET mode and wait for the user to calibrate
-/// the device.  Optionally, a timeout can be defined after which the 
-/// call returns even if calibration has not occured.
+// Puts the device in RESET mode and wait for the user to calibrate
+// the device.  Optionally, a timeout can be defined after which the 
+// call returns even if calibration has not occured.
 void ForceDimensionHapticsDevice::waitForReset( int timeout ) {
   if( device_id != -1 ) {
     dhdWaitForReset( timeout );
   }
 }
 
-/// Enable/disable gravity compensation. A value of true enables it.
+// Enable/disable gravity compensation. A value of true enables it.
 void ForceDimensionHapticsDevice::useGravityCompensation( bool b ) {
   if( device_id != -1 ) {
     dhdSetGravityCompensation( b ? DHD_ON : DHD_OFF,
@@ -154,20 +154,20 @@ void ForceDimensionHapticsDevice::useGravityCompensation( bool b ) {
   }
 }
 
-/// Define the mass of the end-effector. This function is required
-/// to provide accurate gravity compensation when custom-made or 
-/// modified end-effectors are used.
+// Define the mass of the end-effector. This function is required
+// to provide accurate gravity compensation when custom-made or 
+// modified end-effectors are used.
 void ForceDimensionHapticsDevice::setEffectorMass( double mass ) {
   if( device_id != -1 ) {
     dhdSetEffectorMass( mass, device_id );
   }
 }
 
-/// Enable/disable the device electromagnetic brakes. If enabled
-/// the device motor circuits are shortcut to produce electromagnetic
-/// viscosity. The viscosity is sufficient to prevent the device from
-/// falling too hard onto if forces are disabled abruptly, either by
-/// pressing the force button or by action of a safety feature.
+// Enable/disable the device electromagnetic brakes. If enabled
+// the device motor circuits are shortcut to produce electromagnetic
+// viscosity. The viscosity is sufficient to prevent the device from
+// falling too hard onto if forces are disabled abruptly, either by
+// pressing the force button or by action of a safety feature.
 void ForceDimensionHapticsDevice::useBrakes( bool enable ) {
   if( device_id != -1 ) {
     dhdSetBrakes(  enable ? DHD_ON : DHD_OFF,

@@ -83,7 +83,7 @@ namespace HAPI {
     void reset();
 
     /// Puts the device in RESET mode and wait for the user to calibrate
-    /// the device.  Optionally, a timeout can be defined after which the 
+    /// the device. Optionally, a timeout can be defined after which the 
     /// call returns even if calibration has not occured.
     void waitForReset( int timeout = 0 );
 

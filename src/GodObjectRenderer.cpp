@@ -35,6 +35,8 @@
 
 using namespace HAPI;
 
+const Vec3 UNINITIALIZED_PROXY_POS = Vec3( -200, -200, -202 );
+
 HAPIHapticsRenderer::HapticsRendererRegistration 
 GodObjectRenderer::renderer_registration(
                             "GodObject",
@@ -51,6 +53,10 @@ const HAPIFloat length_sqr_point_epsilon = 1e-15; //12
 
 // epsilon value for deciding if a normal is the same.
 const HAPIFloat length_sqr_normal_epsilon = 1e-15;
+
+GodObjectRenderer::GodObjectRenderer():
+  proxy_position( UNINITIALIZED_PROXY_POS ) {
+}
 
 inline bool planeIntersect( Vec3 p1, Vec3 n1, Vec3 p2, Vec3 n2,
                             Vec3 &p, Vec3 &dir ) {
@@ -418,6 +424,10 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                                          const HapticShapeVector &shapes ) {
   // get the current device values
   HAPIHapticsDevice::DeviceValues input = hd->getDeviceValues();
+
+  if( proxy_position == UNINITIALIZED_PROXY_POS ) {
+    proxy_position = input.position;
+  }
 
   // clear all previous contacts
   tmp_contacts.clear();

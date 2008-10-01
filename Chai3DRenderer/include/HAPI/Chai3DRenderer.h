@@ -72,6 +72,8 @@ namespace HAPI {
       virtual ~Chai3DShape() {}
       /// This function performs all the Chai3DAPI calls that are needed
       /// to render the shape. 
+      /// \param hd The haptics device on which the Chai3DShape should be
+      /// rendered.
       virtual void chai3dRender( HAPIHapticsDevice *hd ) = 0;
     };
 

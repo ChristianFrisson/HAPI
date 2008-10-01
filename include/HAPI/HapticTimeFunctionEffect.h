@@ -56,6 +56,7 @@ namespace HAPI {
                               const HAPITime &_z_zero_time );
     
     /// The force of the EffectOutput is calculated from the provided functions
+    /// and the time of evaluation.
     EffectOutput virtual calculateForces( const EffectInput &input );
 
   protected:

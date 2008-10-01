@@ -81,8 +81,8 @@ void Chai3DRenderer::initRenderer( HAPIHapticsDevice *hd ) {
   setProxyRadius( 0.0025 );
 }
 
-/// Release all resources that has been used in the renderer for
-/// the given haptics device.
+// Release all resources that has been used in the renderer for
+// the given haptics device.
 void Chai3DRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   chai3d_tool->setForcesOFF();
   chai3d_tool->stop();

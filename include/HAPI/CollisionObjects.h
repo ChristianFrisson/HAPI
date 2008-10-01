@@ -172,8 +172,8 @@ class Constraints;
                 movingSphereIntersect( radius, from, to ) );
       }
 
-      /// The closest point on the bound to the point. To know the closest
-      /// point to the primitives in the bound, use closestPoint
+      /// The closest point on the bound to the given point. To know the
+      /// closest point to the primitives in the bound, use closestPoint.
       virtual Vec3 boundClosestPoint( const Vec3 &p ) = 0;
 
     };
@@ -774,7 +774,7 @@ class Constraints;
                                  Vec3 &normal,
                                  Vec3 &tex_coord );
 
-      /// The closest point on the bound to the point. 
+      /// The closest point on the bound to the given point.
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
         Vec3 result;
         // for each coordinate axis, if the point coordinate value
@@ -888,7 +888,7 @@ class Constraints;
                                  Vec3 &normal,
                                  Vec3 &tex_coord );
 
-      /// The closest point on the bound to the point. 
+      /// The closest point on the bound to the given point.
       virtual Vec3 boundClosestPoint( const Vec3 &p ) {
         Vec3 cp, tmp;
         closestPoint( p, cp, tmp, tmp );
@@ -1120,7 +1120,7 @@ class Constraints;
                                  Vec3 &normal,
                                  Vec3 &tex_coord );
 
-      /// The closest point on the bound to the point. If tree is a leaf,
+      /// The closest point on the bound to the given point. If tree is a leaf,
       /// the closest point to the triangles, lines or points in the leaf is
       /// returned. To know the closest point to the primitives in the bound,
       /// use closestPoint.
@@ -1404,7 +1404,7 @@ class Constraints;
                                  Vec3 &normal,
                                  Vec3 &tex_coord );
 
-      /// The closest point on the bound to the point. If tree is a leaf,
+      /// The closest point on the bound to the given point. If tree is a leaf,
       /// the closest point to the primitives in the leaf is returned.
       /// To know the closest point to the primitives in the bound,
       /// use closestPoint

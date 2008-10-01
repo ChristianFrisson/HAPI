@@ -226,7 +226,8 @@ bool HapticMasterDevice::releaseHapticsDevice() {
   return true;
 }
 
-void HapticMasterDevice::updateDeviceValues( DeviceValues &dv,
+// Doxygen documentation reasons for adding HAPI::
+void HAPI::HapticMasterDevice::updateDeviceValues( DeviceValues &dv,
                                              HAPITime dt ) {
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
   
