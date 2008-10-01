@@ -47,7 +47,7 @@ namespace HAPI {
   class HAPI_API PhantomHapticsDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.
-    /// device_name is the name of the device, as defined in the 
+    /// \param _device_name is the name of the device, as defined in the 
     /// "Phantom Configuration" tool. A device_name of "" will use the first
     /// available device.
     PhantomHapticsDevice( string _device_name = "" ):
@@ -101,6 +101,8 @@ namespace HAPI {
     /// \brief Get the maximum workspace dimensions of the device, i.e. the
     /// mechanical limits of the device. Undefined if
     /// device not initialized.
+    /// \param min The minimum values of the workspace dimensions.
+    /// \param max The maximum values of the workspace dimensions.
     inline void getMaxWorkspaceDimensions( Vec3 &min, Vec3&max ) {
       min = max_workspace_min;
       max = max_workspace_max;
@@ -109,6 +111,8 @@ namespace HAPI {
     /// \brief Get the usable workspace dimensions of the device, i.e. the 
     /// workspace in which forces are guaranteed to be reliably render.
     /// Undefined if device not initialized.
+    /// \param min The minimum values of the usable workspace dimensions.
+    /// \param max The maximum values of the usable workspace dimensions.
     inline void getUsableWorkspaceDimensions( Vec3 &min, Vec3&max ) {
       min = usable_workspace_min;
       max = usable_workspace_max;
@@ -209,9 +213,11 @@ namespace HAPI {
                              HAPITime dt );
 
     /// Implementation of initHapticsDevice using HD API.
-    /// PCI and EPP support 500, 1000, and 2000 Hz.
-    /// Firewire supports 500, 1000, 1600 Hz, plus some increments in between
-    /// based on the following expression: floor(8000/N + 0.5).
+    /// \param _thread_frequency The desired haptic frequency.
+    /// Frequencies of 500, 1000, and 2000 Hz are valid when using a device
+    /// connecting through PCI and EPP. Frequencies of 500, 1000, 1600Hz plus
+    /// values in between based on the formula floor(8000/N + 0.5) are valid
+    /// for devices connecting through Firewire.
     /// The first successful initialization of PhantomHapticsDevice will decide
     /// the haptics thread rate since only one scheduler is used by
     /// OpenHaptics even for dual device configurations.

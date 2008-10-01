@@ -77,6 +77,7 @@ namespace HAPI {
 
       /// Set the flag indicating if the Falcon servo loop has been
       /// started or not.
+      /// \param _active Value used to set the flag.
       void setActive( bool _active );
 
       /// Add a callback function to be executed in this thread. The calling
@@ -105,8 +106,8 @@ namespace HAPI {
     };
 
     /// Constructor.
-    /// device_name is the name of the device.
-    /// A device_name of "" will use the first available device.
+    /// \param _device_name The name of the device.
+    /// A _device_name of "" will use the first available device.
     FalconHapticsDevice( string _device_name = "" ):
       device_name( _device_name ) {
     }
@@ -134,6 +135,8 @@ namespace HAPI {
     /// Get the workspace dimensions of the device, i.e. the
     /// mechanical limits of the device. Undefined if
     /// device not initialized.
+    /// \param min The minimum values of the workspace dimensions.
+    /// \param max The maximum values of the workspace dimensions.
     inline void getWorkspaceDimensions( Vec3 &min, Vec3&max ) {
       min = workspace_min;
       max = workspace_max;

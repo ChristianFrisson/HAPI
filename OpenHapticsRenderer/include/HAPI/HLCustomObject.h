@@ -84,7 +84,8 @@ namespace HAPI {
     /// the object. It sets the object up as a HL_SHAPE_CALLBACK shape and uses
     /// the instersectSurface and closestPointOnSurface function in the callback
     /// functions.
-    /// 
+    /// \param hd The haptics device for which the surface should be rendered.
+    /// \param shape_id The HL-id for the shape.
     virtual void hlRender( HAPIHapticsDevice *hd,
                            HLuint shape_id );
 

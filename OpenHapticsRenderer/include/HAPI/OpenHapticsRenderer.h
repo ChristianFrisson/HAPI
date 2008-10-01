@@ -66,7 +66,9 @@ namespace HAPI {
       /// Destructor.
       virtual ~HLShape() {}
       /// This function performs all the HLAPI calls that are needed to render
-      /// the surface. 
+      /// the surface.
+      /// \param hd The haptics device for which the surface should be rendered.
+      /// \param shape_id The HL-id for the shape.
       virtual void hlRender( HAPI::HAPIHapticsDevice *hd,
                              HLuint shape_id ) = 0;
     };
@@ -258,6 +260,8 @@ namespace HAPI {
 
     /// Renders a HAPISurface object with OpenHaptics. Returns true if it 
     /// succeeded, false otherwise. Not all surface types are valid.
+    /// \param s Surface object to render.
+    /// \param hd The haptics device for which the surface should be rendered.
     static bool hlRenderHAPISurface( HAPISurfaceObject *s,
                                      HAPIHapticsDevice *hd );
 
@@ -316,7 +320,7 @@ namespace HAPI {
     bool default_haptic_camera_view;
 
     /// Callback function for finding the intersection between a line segment
-    /// and the object. Used for custom shapes. 
+    /// and the object. Used for custom shapes.
     static HLboolean HLCALLBACK intersectCallback( 
                                       const HLdouble *start_point, 
                                       const HLdouble *end_point,

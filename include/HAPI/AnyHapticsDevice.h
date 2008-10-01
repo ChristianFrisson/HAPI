@@ -75,16 +75,22 @@ namespace HAPI {
   protected:
     /// Implementation of updateDeviceValues using the contained device
     /// to get the values.
+    /// \param dv Contains values that should be updated.
+    /// \param dt Time since last call to this function.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt ) {
-      if( hd.get() ) hd->updateDeviceValues( dv, dt );
-      // Needed to correctly calculate device velocity for devices that
-      // base this on current_raw_device_values, for example
-      // FalconHapticsDevice
-      hd->current_raw_device_values = last_raw_device_values;
+      if( hd.get() ) {
+        hd->updateDeviceValues( dv, dt );
+        // Needed to correctly calculate device velocity for devices that
+        // base this on current_raw_device_values, for example
+        // FalconHapticsDevice
+        hd->current_raw_device_values = last_raw_device_values;
+      }
     }
 
     /// Implementation of sendOutput, calling sendOutput of the contained
     /// device.
+    /// \param dv Contains force values to send to the haptics device.
+    /// \param dt Time since last call to this function.
     virtual void sendOutput( DeviceOutput &dv,
                              HAPITime dt ) {
       if( hd.get() ) {

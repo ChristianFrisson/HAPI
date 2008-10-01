@@ -83,7 +83,6 @@ namespace HAPI {
     /// the given haptics device.
     virtual void releaseRenderer( HAPIHapticsDevice *hd ) {}
 
-
     /// This function will be called in the main loop when new shapes are
     /// transferred to be rendered in the haptics loop. It can be used
     /// to make some last changes to the shapes before moving them over
@@ -93,14 +92,13 @@ namespace HAPI {
 
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~HAPIHapticsRenderer();
-    
-    ///
+
     /// \brief The main function in any haptics renderer. Given a haptics
     /// device and a group of shapes generate the force and torque to send
     /// to the device.
     virtual HAPIForceEffect::EffectOutput 
-    renderHapticsOneStep( HAPIHapticsDevice *hd,
-                          const HapticShapeVector &shapes ) {
+      renderHapticsOneStep( HAPIHapticsDevice *hd,
+                            const HapticShapeVector &shapes ) {
       return HAPIForceEffect::EffectOutput();
     };
 

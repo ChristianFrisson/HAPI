@@ -86,8 +86,10 @@ namespace HAPI {
   
   protected:
     /// Get the device values(position, orientation, etc. )
-    virtual void updateDeviceValues( DeviceValues &dv, 
-                                     HAPITime dt );
+    // Doxygen documentation reasons for adding HAPI::
+    virtual void updateDeviceValues(
+      HAPI::HAPIHapticsDevice::DeviceValues &dv, 
+      HAPITime dt );
 
     /// Send forces and torques to render
     virtual void sendOutput( DeviceOutput &dv,

@@ -110,6 +110,7 @@ namespace HAPI {
     
     /// The function that calculates the forces given by this 
     /// HAPIForceEffect.
+    /// \param input Contains useful information, see EffectInput struct.
     EffectOutput virtual calculateForces( const EffectInput &input ) = 0;
     
     /// Destructor. Virtual to make HAPIForceEffect a polymorphic type.

@@ -139,7 +139,7 @@ namespace HAPI {
     
     /// Get all the primitives rendered with OpenGL calls since the last call 
     /// of the startCollecting function. Also stops the collecting. Primitives
-    /// will be added to the given vector.
+    /// will be added to the given vectors.
     /// \returns SUCCESS if every thing went well. An ErrorType with the error
     /// otherwise. If your GL calls have exceeded the max_feedback_values given 
     /// in startCollecting(), NOT_ENOUGH_MEMORY_ALLOCATED will be returned. 

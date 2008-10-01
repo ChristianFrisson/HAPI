@@ -41,9 +41,9 @@ namespace HAPI {
   class HAPI_API HAPIFunctionObject {
   public:
     /// Virtual destructor
-	virtual ~HAPIFunctionObject() {}
-  
-    /// Evaluate the function. 
+    virtual ~HAPIFunctionObject() {}
+
+    /// Evaluate the function.
     /// Input points to the input values to the function.
     virtual HAPIFloat evaluate( HAPIFloat *input ) = 0; 
   };

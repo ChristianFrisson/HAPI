@@ -57,8 +57,8 @@ namespace HAPI {
 
     /// The main function in any haptics renderer. Given a haptics device and 
     /// a group of shapes generate the force and torque to send to the device.
-    virtual HAPIForceEffect::EffectOutput 
-    renderHapticsOneStep(  HAPIHapticsDevice *hd,
+    virtual HAPIForceEffect::EffectOutput
+      renderHapticsOneStep(  HAPIHapticsDevice *hd,
                           const HapticShapeVector &shapes );
 
     /// Get the current position of the proxy.

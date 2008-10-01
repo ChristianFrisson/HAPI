@@ -404,7 +404,9 @@ IF(WIN32)
   ENDIF(MSVC)
   
   # set the install directory to the H3D directory on Windows
-  SET( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../..)
+  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+    SET( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
  
   # is this only for msvc or for all windows compilers?
   SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )

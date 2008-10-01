@@ -210,7 +210,7 @@ namespace HAPI {
     /// it for reuse.
     static void delShapeId( int id );
 
-    /// Add an HAPIShapeRenderOptions instance with options on how how
+    /// Add an HAPIShapeRenderOptions instance with options on how
     /// to render this shape haptically.
     inline void addRenderOption( HAPIShapeRenderOptions *o ) {
       options.push_back( o );

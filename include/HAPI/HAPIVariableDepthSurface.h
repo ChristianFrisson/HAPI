@@ -59,8 +59,13 @@ namespace HAPI {
           bool _use_ref_count_lock = true );
 
 
+    /// Calculates the movement of the proxy depending on the depth returned
+    /// from getDepth() function and a minimization algorithm. Friction 
+    /// is also applied if the friction parameters are above 0.
     virtual void getProxyMovement( HAPISurfaceObject::ContactInfo &contact );
 
+    /// Calculates the force on the haptics device depending on the depth
+    /// returned from getDepth() function.
     virtual void getForces( HAPISurfaceObject::ContactInfo &contact );
 
     /// The stiffness of the surface.

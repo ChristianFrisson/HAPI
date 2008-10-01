@@ -1568,6 +1568,11 @@ void symmetricSchurDecomposition( const Matrix3 &A,
 
 /// Tries to find eigen values and eigen vectors for the matrix A given as
 /// input.
+/// \param A The matrix to find eigen values and eigen vectors for.
+/// \param eigValues Will contain the calculated eigen values.
+/// \param eigVectors Will contain the calculated eigen vectors.
+/// \param maxIterations Maximum number of iterations before stop trying
+/// to calculate a result.
 void eigenValuesAndEigenVectorsJacobi(const Matrix3& A, 
                                       Vec3& eigValues, 
                                       Matrix3& eigVectors, 

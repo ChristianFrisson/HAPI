@@ -47,16 +47,19 @@ namespace HAPI {
   /// a proxy). This renderer only allows for point proxies.  
   class HAPI_API GodObjectRenderer: public HAPIProxyBasedRenderer {
   public:
-    
+
+    /// Constructor
+    GodObjectRenderer();
+
     /// Destructor.
     virtual ~GodObjectRenderer() {}
 
     /// The main function in any haptics renderer. Given a haptics device and 
     /// a group of shapes, it generates the force and torque to send to the
     /// device.
-    virtual HAPIForceEffect::EffectOutput 
-    renderHapticsOneStep(  HAPIHapticsDevice *hd,
-                          const HapticShapeVector &shapes );
+    virtual HAPIForceEffect::EffectOutput
+      renderHapticsOneStep(  HAPIHapticsDevice *hd,
+                             const HapticShapeVector &shapes );
 
     /// Get the current position of the proxy.
     inline virtual Vec3 getProxyPosition() {
@@ -97,7 +100,7 @@ namespace HAPI {
                            const PlaneConstraint &pc,
                            const HapticShapeVector &shapes,
                            Vec3 &point );
-    
+
     Vec3 proxy_position;
     Contacts tmp_contacts;
   };

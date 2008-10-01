@@ -316,7 +316,7 @@ H3DUtil::PeriodicThread::CallbackCode
   hd->sendForce( output.force );
   hd->sendTorque( output.torque );
 
-  hd->sendOutput();
+  hd->sendOutput( dt );
 
   hd->time_in_last_loop = TimeStamp() - start_time;
 

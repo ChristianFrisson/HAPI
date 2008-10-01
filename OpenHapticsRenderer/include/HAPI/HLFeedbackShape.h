@@ -71,10 +71,12 @@ namespace HAPI {
                              _shape_id, _clean_up_func  ),
       nr_vertices( _nr_vertices ),
       use_haptic_camera( _use_haptic_camera ),
-	  gl_shape( _glshape) {}
+      gl_shape( _glshape) {}
     
     /// This function performs all the HLAPI calls that are needed to render
-    /// the shape. Uses HL_SHAPE_FEEDBACK_BUFFER to render the object.     
+    /// the shape. Uses HL_SHAPE_FEEDBACK_BUFFER to render the object.
+    /// \param hd The haptics device for which the surface should be rendered.
+    /// \param shape_id The HL-id for the shape.
     virtual void hlRender( HAPI::HAPIHapticsDevice *hd,
                            HLuint shape_id );
   protected:
