@@ -21,6 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
+/// \file HAPITypes.h
+/// \brief Header file for types in the HAPI namespace.
 //
 //////////////////////////////////////////////////////////////////////////////
 
