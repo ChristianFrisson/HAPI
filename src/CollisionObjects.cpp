@@ -389,17 +389,6 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     const std::vector< int > &stack_triangles = stack.top().triangles;
     BinaryBoundTree* stack_tree = stack.top().tree;
 
-    if (max_nr_triangles_in_leaf < 0 ||
-        stack_triangles.size() <= max_nr_triangles_in_leaf ) {
-      //  build a leaf
-      stack_tree->triangles.reserve( stack_triangles.size() );
-      for( unsigned int i = 0; i < stack_triangles.size(); i++ ) {
-        stack_tree->triangles.push_back( triangle_vector[stack_triangles[i]] );
-      }
-      stack.pop();
-      continue;
-    }
-
     std::vector<Vec3 > fitting_points;
     points.reserve( stack_triangles.size() * 3 );
     for (unsigned int i=0 ; i<stack_triangles.size() ; i++ ) {
@@ -413,6 +402,18 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     stack_tree->bound.reset( new_func() );
     stack_tree->bound->fitAroundPoints( fitting_points );
     
+    if (max_nr_triangles_in_leaf < 0 ||
+        stack_triangles.size() <= max_nr_triangles_in_leaf ) {
+      //  build a leaf
+      stack_tree->triangles.reserve( stack_triangles.size() );
+      for( unsigned int i = 0; i < stack_triangles.size(); i++ ) {
+        stack_tree->triangles.push_back( triangle_vector[stack_triangles[i]] );
+      }
+      stack.pop();
+      continue;
+    }
+
+
     // DIVIDE SUBSET AND RECURSE
     // longest axis
     Vec3 axis = stack_tree->bound->longestAxis();
@@ -532,30 +533,6 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     const std::vector< int > &stack_points = stack.top().points;
     BinaryBoundTree* stack_tree = stack.top().tree;
 
-    if (max_nr_triangles_in_leaf < 0 ||
-        ( stack_triangles.size() <= max_nr_triangles_in_leaf &&
-          stack_linesegments.size() <= max_nr_triangles_in_leaf &&
-          stack_points.size() <= max_nr_triangles_in_leaf ) ) {
-      // build a leaf
-      stack_tree->triangles.reserve( stack_triangles.size() );
-      for( unsigned int i = 0; i < stack_triangles.size(); i++ ) {
-        stack_tree->triangles.push_back( triangle_vector[stack_triangles[i]] );
-      }
-
-      stack_tree->linesegments.reserve( stack_linesegments.size() );
-      for( unsigned int i = 0; i < stack_linesegments.size(); i++ ) {
-        stack_tree->linesegments.push_back(
-          linesegment_vector[stack_linesegments[i]] );
-      }
-
-      stack_tree->points.reserve( stack_points.size() );
-      for( unsigned int i = 0; i < stack_points.size(); i++ ) {
-        stack_tree->points.push_back( point_vector[stack_points[i]] );
-      }
-      stack.pop();
-      continue;
-    }
-
     std::vector<Vec3 > fitting_points;
     fitting_points.reserve( stack_triangles.size() * 3 +
       stack_linesegments.size() * 2 + stack_points.size() );
@@ -581,6 +558,30 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     stack_tree->bound.reset( new_func() );
     stack_tree->bound->fitAroundPoints( fitting_points );
     
+   if (max_nr_triangles_in_leaf < 0 ||
+        ( stack_triangles.size() <= max_nr_triangles_in_leaf &&
+          stack_linesegments.size() <= max_nr_triangles_in_leaf &&
+          stack_points.size() <= max_nr_triangles_in_leaf ) ) {
+      // build a leaf
+      stack_tree->triangles.reserve( stack_triangles.size() );
+      for( unsigned int i = 0; i < stack_triangles.size(); i++ ) {
+        stack_tree->triangles.push_back( triangle_vector[stack_triangles[i]] );
+      }
+
+      stack_tree->linesegments.reserve( stack_linesegments.size() );
+      for( unsigned int i = 0; i < stack_linesegments.size(); i++ ) {
+        stack_tree->linesegments.push_back(
+          linesegment_vector[stack_linesegments[i]] );
+      }
+
+      stack_tree->points.reserve( stack_points.size() );
+      for( unsigned int i = 0; i < stack_points.size(); i++ ) {
+        stack_tree->points.push_back( point_vector[stack_points[i]] );
+      }
+      stack.pop();
+      continue;
+    }
+
     // DIVIDE SUBSET AND RECURSE
     // longest axis
     Vec3 axis = stack_tree->bound->longestAxis();
