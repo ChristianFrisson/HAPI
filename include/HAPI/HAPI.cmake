@@ -126,6 +126,7 @@
 #define HAPI_MINOR_VERSION ${HAPI_MINOR_VERSION}
 #define HAPI_BUILD_VERSION ${HAPI_BUILD_VERSION}
 
+/// HAPI namespace
 namespace HAPI {
   /// Will return the version of HAPI as a double on the form
   /// HAPI_MAJOR_VERSION.HAPI_MINOR_VERSION

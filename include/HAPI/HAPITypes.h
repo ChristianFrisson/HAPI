@@ -44,23 +44,37 @@ namespace HAPI {
   }
   
   using H3DUtil::TimeStamp;
+  /// \brief Integer in HAPI.
   typedef int HAPIInt32;
+  /// \brief Time in HAPI.
   typedef double HAPITime;
   using H3DUtil::RGBA;
 
 #ifdef USE_DOUBLE_PRECISION
+  /// \brief HAPI use double precision. Vec2 is a H3DUtil::Vec2d.
   typedef H3DUtil::Vec2d Vec2;
+  /// \brief HAPI use double precision. Vec3 is a H3DUtil::Vec3d.
   typedef H3DUtil::Vec3d Vec3;
+  /// \brief HAPI use double precision. Vec4 is a H3DUtil::Vec4d.
   typedef H3DUtil::Vec4d Vec4;
+  /// \brief HAPI use double precision. Matrix3 is a H3DUtil::Matrix3d.
   typedef H3DUtil::Matrix3d Matrix3;
+  /// \brief HAPI use double precision. Matrix4 is a H3DUtil::Matrix4d.
   typedef H3DUtil::Matrix4d Matrix4;
+  /// \brief HAPI use double precision. HAPIFloat is a double.
   typedef double HAPIFloat ;
 #else
+  /// \brief HAPI use float precision. Vec2 is a H3DUtil::Vec2f.
   typedef H3DUtil::Vec2f Vec2;
+  /// \brief HAPI use float precision. Vec3 is a H3DUtil::Vec3f.
   typedef H3DUtil::Vec3f Vec3;
+  /// \brief HAPI use float precision. Vec4 is a H3DUtil::Vec4f.
   typedef H3DUtil::Vec4f Vec4;
+  /// \brief HAPI use float precision. Matrix3 is a H3DUtil::Matrix3f.
   typedef H3DUtil::Matrix3f Matrix3;
+  /// \brief HAPI use float precision. Matrix4 is a H3DUtil::Matrix4f.
   typedef H3DUtil::Matrix4f Matrix4;
+  /// \brief HAPI use double precision. HAPIFloat is a float.
   typedef float HAPIFloat ;
 #endif
 
