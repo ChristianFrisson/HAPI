@@ -89,6 +89,65 @@ namespace HAPI {
       triangles( begin, end ),
       convex( _convex ) {}
 
+
+    /// Constructor.
+    HapticTriangleSet( const Vec3 &_velocity,
+                       const Rotation &_angular_velocity,
+                       const Vec3 &_growth_rate,
+                       const vector< Collision::Triangle > &_triangles,
+                       HAPISurfaceObject *_surface, 
+                       ConvexType _convex = NOT_CONVEX,
+                       Collision::FaceType _touchable_face = 
+                       Collision::FRONT_AND_BACK,
+                       void *_userdata = NULL,
+                       int _shape_id = -1, 
+                       void (*_clean_up_func)( void * ) = 0
+                        ):
+      HAPIHapticShape( _velocity,  _angular_velocity, 
+                       _growth_rate, _surface, _touchable_face, _userdata,
+                       _shape_id, _clean_up_func ),
+      triangles( _triangles ),
+      convex( _convex ) {}
+
+    /// Constructor.
+    HapticTriangleSet( const Matrix4 &_transform,
+                       const Vec3 &_velocity,
+                       const Rotation &_angular_velocity,
+                       const Vec3 & _growth_rate,
+                       const vector< Collision::Triangle > &_triangles,
+                       HAPISurfaceObject *_surface, 
+                       ConvexType _convex = NOT_CONVEX,
+                       Collision::FaceType _touchable_face = 
+                       Collision::FRONT_AND_BACK,
+                       void *_userdata = NULL,
+                       int _shape_id = -1, 
+                       void (*_clean_up_func)( void * ) = 0 ):
+      HAPIHapticShape( _transform, _velocity, _angular_velocity, 
+                       _growth_rate, _surface, _touchable_face, 
+                       _userdata, _shape_id, _clean_up_func ),
+      triangles( _triangles ),
+      convex( _convex ) {}
+
+    template< class Iterator >
+    HapticTriangleSet( const Vec3 &_velocity,
+                       const Rotation &_angular_velocity,
+                       HAPIFloat _growth_rate,
+                       Iterator begin,
+                       Iterator end,
+                       HAPISurfaceObject *_surface, 
+                       ConvexType _convex = NOT_CONVEX,
+                       Collision::FaceType _touchable_face = 
+                       Collision::FRONT_AND_BACK,
+                       void *_userdata = NULL,
+                       int _shape_id = -1, 
+                       void (*_clean_up_func)( void * ) = 0 ): 
+      HAPIHapticShape( _velocity, _angular_velocity, 
+                       _growth_rate,_surface, _touchable_face, _userdata,
+                       _shape_id, _clean_up_func ),
+      triangles( begin, end ),
+      convex( _convex ) {}
+
+
 #ifdef HAVE_OPENGL
     /// Returns the number of triangles in the set.
     inline virtual int nrTriangles() {

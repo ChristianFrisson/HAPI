@@ -421,7 +421,8 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
 
 HAPIForceEffect::EffectOutput 
 GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
-                                         const HapticShapeVector &shapes ) {
+                                         const HapticShapeVector &shapes,
+                                         HAPITime dt ) {
   // get the current device values
   HAPIHapticsDevice::DeviceValues input = hd->getDeviceValues();
 
@@ -429,10 +430,29 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     proxy_position = input.position;
   }
 
+  Vec3 proxy_pos = proxy_position;
+
+  // if any of the previous contacts was moving, move the proxy with 
+  // that contact to the new position.
+  bool done = false;
+
+  for( unsigned int i = 0; !done && i < last_contact_transforms.size(); i++ ) {
+      for( HapticShapeVector::const_iterator s = shapes.begin();
+           s != shapes.end();
+           s++ ) {
+        if( (*s)->getShapeId() == last_contact_transforms[i].first ) {
+          // move proxy with shape.
+          Matrix4 last_transform_inv = last_contact_transforms[i].second;
+          Matrix4 current_transform = (*s)->getTransform(); 
+          proxy_pos = current_transform * last_transform_inv * proxy_pos;
+          break;
+        } 
+      }
+  }
+
   // clear all previous contacts
   tmp_contacts.clear();
 
-  Vec3 proxy_pos = proxy_position;
   HAPIForceEffect::EffectOutput output;
   bool has_intersection = false;
 
@@ -536,7 +556,51 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
 
     new_force = contact.force_global;
   }
-  
+
+  // In order to prevent fallthrough of moving shapes when holding the proxy
+  // still we try to move the proxy with moving shapes. 
+  for( HapticShapeVector::const_iterator i = shapes.begin();
+       i != shapes.end();
+       i++ ) {
+    // only check if the shape is moving 
+    if( (*i)->isDynamic() ) {
+      bool move_proxy = true;
+
+      // see if there is already a contact with current shape
+      for( unsigned int j = 0; j < tmp_contacts.size(); j++ ) {
+        if( tmp_contacts[j].first->getShapeId() == (*i)->getShapeId() ) {
+          move_proxy = false;
+          break;
+        } 
+      }
+
+      // skip all shapes that have contact since they are taken care of in
+      // a separate step in the beginning of each loop.
+      if( move_proxy ) {
+        // we move the proxy back using the dynamic of the shape. This approximates
+        // the relative positions in the next time step. If intersection occurs here
+        // the shape will probably come into contact with the object between now
+        // and next time step so we move the proxy with the shape to not miss it.
+        Vec3 new_target = (*i)->moveTimestep( new_proxy_pos, -dt );
+        Collision::IntersectionInfo intersection;
+        if( (*i)->lineIntersect( new_proxy_pos, new_target, intersection,
+                                 (*i)->getTouchableFace()) ){
+          new_proxy_pos = (*i)->moveTimestep( new_proxy_pos, dt );
+        }
+      }
+    }
+  }
+
+  // we save the transformations of the shapes in contact to be able to move the proxy
+  // with them in next timestep if they have moved.
+  last_contact_transforms.clear();
+  for( unsigned int i = 0; i < tmp_contacts.size(); i++ ) {
+    if( tmp_contacts[i].first->isDynamic() ) {
+      last_contact_transforms.push_back( make_pair( tmp_contacts[i].first->getShapeId(),
+                                                    tmp_contacts[i].first->getInverse() ) );
+    } 
+  }
+
   proxy_position = new_proxy_pos;
   output.force = new_force;
     

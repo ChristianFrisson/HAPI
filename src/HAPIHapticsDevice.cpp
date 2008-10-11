@@ -306,7 +306,7 @@ H3DUtil::PeriodicThread::CallbackCode
     if( hd->haptics_renderers[s] && s < hd->current_shapes.size() ) {
       output = output + 
         hd->haptics_renderers[s]->
-          renderHapticsOneStep( hd, hd->current_shapes[s] );
+        renderHapticsOneStep( hd, hd->current_shapes[s], dt );
     }
   }
 
@@ -317,6 +317,15 @@ H3DUtil::PeriodicThread::CallbackCode
   hd->sendTorque( output.torque );
 
   hd->sendOutput( dt );
+
+  // move shapes according to velocity, etc
+  for( unsigned int r = 0; r < hd->haptics_renderers.size(); r++ ) {
+    if( r < hd->current_shapes.size() ) {
+      for( unsigned int s = 0; s < hd->current_shapes[r].size(); s++ ) {
+        hd->current_shapes[r][s]->moveTimestep( dt );
+      } 
+    }
+  }
 
   hd->time_in_last_loop = TimeStamp() - start_time;
 

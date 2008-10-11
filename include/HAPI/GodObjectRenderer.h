@@ -59,7 +59,8 @@ namespace HAPI {
     /// device.
     virtual HAPIForceEffect::EffectOutput
       renderHapticsOneStep(  HAPIHapticsDevice *hd,
-                             const HapticShapeVector &shapes );
+                             const HapticShapeVector &shapes,
+                             HAPITime dt );
 
     /// Get the current position of the proxy.
     inline virtual Vec3 getProxyPosition() {
@@ -101,8 +102,16 @@ namespace HAPI {
                            const HapticShapeVector &shapes,
                            Vec3 &point );
 
+    /// The position of the proxy.
     Vec3 proxy_position;
+
+    /// Tmp container to store contacts in while rendering a new loop.
     Contacts tmp_contacts;
+    
+    // vector with pairs shape_id, transform matrix. It contains the id
+    // of the shapes that were in contact during last haptics loop and
+    // their transform matrices at the time.
+    vector< pair< int, Matrix4 > > last_contact_transforms;
   };
 }
 

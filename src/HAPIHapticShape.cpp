@@ -29,6 +29,8 @@
 
 #include <HAPI/HAPIHapticShape.h>
 #include <HAPI/PlaneConstraint.h>
+#include <H3DUtil/Rotationd.h>
+
 
 #ifdef HAVE_OPENGL
 #ifdef MACOSX
@@ -130,21 +132,136 @@ void HAPIHapticShape::closestPoint( const Vec3 &p, Vec3 &cp,
   }
 }
 
+void HAPIHapticShape::transformShape( const Matrix4 &t ) {
+  setTransform( t * transform );
+}
+
+void HAPIHapticShape::setTransform( const Matrix4 &t ) {
+  have_transform = true;
+  have_inverse = false;
+  transform = t;
+
+  position = t.getTranslationPart();
+  rotation = Rotation( t.getRotationPart() );
+  scale_factor = t.getScalePart();
+
+  setNonUniformScalingFlag();
+}
+
+bool HAPIHapticShape::isDynamic() {
+  return ( forced_dynamic ||
+           velocity != Vec3( 0, 0, 0 ) ||
+           angular_velocity.angle != 0 ||
+           growth_rate != Vec3( 0, 0, 0 ) );
+    
+}
+
+const Matrix4 &HAPIHapticShape::getInverse() {
+  if( !have_inverse ) {
+    inverse = transform.inverse();
+    have_inverse = true;
+  }
+  return inverse;
+}
+
+Matrix4 HAPIHapticShape::getTransform() {
+  return transform;
+}
+
+void HAPIHapticShape::moveTimestep( HAPITime dt ) {
+  have_transform = true;
+  have_inverse = false;
+  
+  position += velocity*dt;
+  rotation = (angular_velocity * dt) * rotation; 
+  scale_factor += growth_rate * dt;
+
+  updateTransform();
+}
+
+
+Vec3 HAPIHapticShape::moveTimestep( const HAPI::Vec3 &p, HAPITime dt ) {
+  // move to local space
+  Vec3 new_p = getInverse() * p;
+
+  // calculate matrix for next time step.
+  Vec3 new_pos = position +  velocity*dt;
+  Rotation new_rot = (angular_velocity * dt) * rotation; 
+  Vec3 new_scale = scale_factor + growth_rate * dt;
+
+  Matrix4  new_transform = Matrix4( new_scale.x, 0, 0, 0,
+                                    0, new_scale.y, 0, 0,
+                                    0, 0, new_scale.z, 0,
+                                    0, 0, 0, 1 );
+  new_transform = ((Matrix4)new_rot) * new_transform;
+  new_transform[0][3] += new_pos.x;
+  new_transform[1][3] += new_pos.y;
+  new_transform[2][3] += new_pos.z;
+  
+  // move back to global space.
+  return new_transform * new_p; 
+}
+
+Vec3 HAPIHapticShape::moveTimestepVec( const HAPI::Vec3 &p, HAPITime dt ) {
+  return (angular_velocity * dt) * p;
+}
+
+Vec3 HAPIHapticShape::toGlobal( const Vec3 &p ) {
+
+  Vec3 new_p = p;
+
+  new_p = getTransform() * new_p;
+
+  /*
+  // scale
+  new_p = new_p * shape->getScale();
+
+  // rotate
+  new_p = shape->getRotation() * new_p;
+
+  // translate to position
+  new_p = new_p + shape->getPosition();
+
+  */
+  return new_p;
+}
+
+Vec3 HAPIHapticShape::toLocal( const Vec3 &p ) {
+  Vec3 new_p = p;
+  
+  new_p = getInverse() * new_p;
+
+  /*
+  // translate
+  new_p = new_p - shape->getPosition();
+
+  // rotate
+  new_p = (-shape->getRotation()) * new_p;
+
+  // scale
+  new_p = new_p / shape->getScale();
+  */
+
+  return new_p;
+}
+
 bool HAPIHapticShape::lineIntersect( const Vec3 &from, 
                                      const Vec3 &to,
                                      Collision::IntersectionInfo &result,
                                      Collision::FaceType face ) { 
   if( have_transform ) {
     bool have_intersection;
-    Vec3 local_from = inverse * from;
-    Vec3 local_to = inverse * to;
+    Vec3 local_from =  toLocal( from );
+    //cerr << local_from.y << endl;
+    Vec3 local_to = toLocal( to );
+
     have_intersection = 
       lineIntersectShape( local_from, local_to, result, face );
     if( have_intersection ) {
-      result.point = transform * result.point;
+      result.point = toGlobal( result.point );
       if( non_uniform_scaling ) {
         Vec3 scale = inverse.getScalePart();
-        result.normal = transform.getRotationPart() * result.normal;
+        result.normal = rotation * result.normal;
         result.normal.x *= scale.x;
         result.normal.y *= scale.y;
         result.normal.z *= scale.z;
@@ -152,7 +269,7 @@ bool HAPIHapticShape::lineIntersect( const Vec3 &from,
         result.normal = transform.getRotationPart() * result.normal;
         result.normal.normalizeSafe();
       } else {
-        result.normal = transform.getRotationPart() * result.normal;
+        result.normal = toGlobalVec( result.normal );
       }
     }
     return have_intersection;
@@ -208,26 +325,16 @@ void HAPIHapticShape::scale( HAPIFloat s ) {
   have_transform = true;
   have_inverse = false;
 
-  transform[0][0] *= s;
-  transform[0][1] *= s;
-  transform[0][2] *= s;
-  transform[0][3] *= s;
-
-  transform[1][0] *= s;
-  transform[1][1] *= s;
-  transform[1][2] *= s;  
-  transform[1][3] *= s;
-  
-  transform[2][0] *= s;
-  transform[2][1] *= s;
-  transform[2][2] *= s;
-  transform[2][3] *= s;
+  scale_factor = scale_factor * s;
+  updateTransform();
+  setNonUniformScalingFlag();
 }
 
 /// Translate object.
 void HAPIHapticShape::translate( const Vec3 &t ) {
   have_transform = true;
   have_inverse = false;
+  position += t;
   transform[0][3] += t.x;
   transform[1][3] += t.y;
   transform[2][3] += t.z;
@@ -237,5 +344,6 @@ void HAPIHapticShape::translate( const Vec3 &t ) {
 void HAPIHapticShape::rotate( const Rotation &r ) {
   have_transform = true;
   have_inverse = false;
-  transform  = ((Matrix4)r) * transform; 
+  rotation = r * rotation;
+  updateTransform();
 }
