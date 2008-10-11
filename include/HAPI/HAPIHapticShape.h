@@ -66,7 +66,7 @@ namespace HAPI {
   {
   public:
 
-   /// Constructor.
+    /// Constructor.
     HAPIHapticShape( const Matrix4 &_transform,
                      HAPISurfaceObject *_surface,
                      Collision::FaceType _touchable_face = 
@@ -85,9 +85,12 @@ namespace HAPI {
       have_transform( true ),
       have_inverse( false ),
       transform( _transform ),
+      forced_dynamic( false ),
+      first_use_time( -1 ),
       clean_up_func( _clean_up_func ) {
-      inverse = transform.inverse();
-      setNonUniformScalingFlag();
+        setTransform( _transform );
+        inverse = transform.inverse();
+        setNonUniformScalingFlag();
     }
 
     /// Constructor.
@@ -107,7 +110,83 @@ namespace HAPI {
       surface( _surface ),
       have_transform( false ),
       have_inverse( false ),
+      forced_dynamic( false ),
+      first_use_time( -1 ),
       clean_up_func( _clean_up_func ) {}
+
+    /// Constructor.
+
+    /// \params velocity The velocity(m/s) the shape center of mass of the shape
+    /// is moving in.
+    /// \params angular_velocity The rotational velocity around the center 
+    /// of mass(in radians/s)
+    /// \params growth_rate The time derivative of the scale factor(scale units/s)
+    HAPIHapticShape( const Matrix4 &_transform,
+                     const Vec3 &_velocity,
+                     const Rotation &_angular_velocity,
+                     const Vec3 &_growth_rate,
+                     HAPISurfaceObject *_surface,
+                     Collision::FaceType _touchable_face = 
+                     Collision::FRONT_AND_BACK,
+                     void *_userdata = NULL,
+                     int _shape_id = -1,
+                     void (*_clean_up_func)( void * ) = 0
+                     ):
+      HAPIHapticObject( ),
+      Collision::CollisionObject( true ),
+
+      userdata( _userdata ),
+      shape_id( _shape_id ),
+      touchable_face( _touchable_face ),
+      surface( _surface ),
+      have_transform( true ),
+      have_inverse( false ),
+      transform( _transform ),
+      velocity( _velocity ),
+      angular_velocity( _angular_velocity ),
+      growth_rate( _growth_rate ),
+      forced_dynamic( false ),
+      first_use_time( -1 ),
+      clean_up_func( _clean_up_func ) {
+        
+        setTransform( _transform );
+        inverse = transform.inverse();
+        setNonUniformScalingFlag();
+    }
+
+    /// Constructor.
+
+    /// \params velocity The velocity(m/s) the shape center of mass of the shape
+    /// is moving in.
+    /// \params angular_velocity The rotational velocity around the center 
+    /// of mass(in radians/s)
+    /// \params growth_rate The time derivative of the scale factor(scale units/s)
+    HAPIHapticShape( const Vec3 &_velocity,
+                     const Rotation &_angular_velocity,
+                     const Vec3 & _growth_rate,
+                     HAPISurfaceObject *_surface,
+                     Collision::FaceType _touchable_face = 
+                     Collision::FRONT_AND_BACK,
+                     void *_userdata = NULL,
+                     int _shape_id = -1,
+                     void (*_clean_up_func)( void * ) = 0
+                     ):
+      HAPIHapticObject( ),
+      Collision::CollisionObject( true ),
+
+      userdata( _userdata ),
+      shape_id( _shape_id ),
+      touchable_face( _touchable_face ),
+      surface( _surface ),
+      have_transform( false ),
+      have_inverse( false ),
+      velocity( _velocity ),
+      angular_velocity( _angular_velocity ),
+      growth_rate( _growth_rate ),
+      forced_dynamic( false ),
+      first_use_time( -1 ),
+      clean_up_func( _clean_up_func ) {}
+
 
     /// Destructor.
     virtual ~HAPIHapticShape();
@@ -123,33 +202,132 @@ namespace HAPI {
 
     /// Transform the object using the given transform matrix. Must be
     /// a transformation matrix or the result will be undefined.
-    inline void transformShape( const Matrix4 &t ) {
-      have_transform = true;
-      have_inverse = false;
-      transform = t * transform;
-      setNonUniformScalingFlag();
-    }
+    void transformShape( const Matrix4 &t );
 
     /// Set the transformation matrix from local to global space.
-    inline void setTransform( const Matrix4 &t ) {
-      have_transform = true;
-      have_inverse = false;
-      transform = t;
+    void setTransform( const Matrix4 &t );
+
+    /// Get the transformation matrix from local to global space.
+    Matrix4 getTransform();
+
+    /// Advance the object according to velocity, angular velocity etc
+    /// to new position given a time step. This will update the position,
+    /// rotation and scale parameters of the shape.
+    void moveTimestep( HAPITime dt );
+
+    /// Advance the point according to velocity, angular velocity etc
+    /// to new position given a time step. The new position is returned.
+    Vec3 moveTimestep( const HAPI::Vec3 &p, HAPITime dt );
+
+    /// Advance the vector according to angular velocity etc
+    /// to new direction given a time step. The new direction is returned.
+    Vec3 moveTimestepVec( const HAPI::Vec3 &p, HAPITime dt );
+
+    /// Get the transformation matrix from global to local space.
+    const Matrix4 &getInverse();
+
+    /// Returns true if the object is a dynamic object, i.e. it is moving,
+    /// rotating or changing size.
+    bool isDynamic();
+
+    /// Transform a point from shape local space to global space.
+    Vec3 toGlobal( const Vec3 &p );
+
+    /// Transform a vector from shape local space to global space.
+    inline Vec3 toGlobalVec( const Vec3 &v ) {
+      return getRotation() * v;
+    }
+
+    /// Transform a point from global space to shape local space.
+    Vec3 toLocal( const Vec3 &p );
+
+    /// Transform a vector from global space to shape local space.
+    inline Vec3 toLocalVec( const Vec3 &v ) {
+      return (-getRotation()) * v;
+    }
+
+    /// Get the position of the shape.
+    inline const Vec3 &getPosition() const {
+      return position;
+    }
+
+    /// Set the position of the shape.
+    inline void setPosition( const Vec3 &p) {
+      position = p;
+      updateTransform();
+    }
+
+    /// Get the rotation of the shape.
+    inline const Rotation & getRotation() const {
+      return rotation;
+    }
+
+    /// Set the rotation of the shape.
+    inline void setRotation( const Rotation &r) {
+      rotation = r;
+      updateTransform();
+    }
+
+    /// Get the scaling factor of the shape.
+    inline const Vec3 &getScale() const {
+      return scale_factor;
+    }
+
+    /// Set the (non-uniform) scaling factor of the shape.
+    inline void setScale( HAPIFloat s ) {
+      scale_factor = Vec3( s, s, s );
+      updateTransform();
+    }
+
+    /// Set the (uniform) scaling factor of the shape.
+    inline void setScale( const Vec3 &s) {
+      scale_factor = s;
+      updateTransform();
       setNonUniformScalingFlag();
     }
 
-    /// Get the transformation matrix from local to global space.
-    inline const Matrix4 &getTransform() {
-      return transform;
+    /// Get the velocity of the shape(m/s).
+    inline const Vec3 &getVelocity() const {
+      return velocity;
     }
 
-    /// Get the transformation matrix from global to local space.
-    inline const Matrix4 &getInverse() {
-     if( !have_inverse ) {
-        inverse = transform.inverse();
-        have_inverse = true;
-      }
-      return inverse;
+    /// Set the velocity of the shape(m/s).
+    inline void setVelocity( const Vec3 &v) {
+      velocity = v;
+    }
+
+    /// Get the angular velocity of the shape(radians per second).
+    inline const Rotation &getAngularVelocity() {
+      return angular_velocity;
+    }
+
+    /// Set the angular velocity of the shape(radians per second).
+    inline void setAngularVelocity( const Rotation &r) {
+      angular_velocity = r;
+    }
+
+    /// Get the growth rate of the shape(scale units per second).
+    inline const Vec3 &getGrowthRate() {
+      return growth_rate;
+    }
+
+    /// Set the (uniform) growth rate of the shape(radians per second).
+    inline void setGrowthRate( HAPIFloat g ) {
+      growth_rate = Vec3( g, g, g );
+    }
+
+    /// Set the growth rate of the shape(radians per second).
+    inline void setGrowthRate( const Vec3 &g ) {
+      growth_rate = g;
+    }
+
+    /// If set to true the shape is considered to be dynamic even if it does
+    /// not have velocity, angular velocity or growth. Can be used if you are
+    /// moving the object manually by setPosition and want to avoid fallthrough
+    /// caused by the object moving. If a shape is dynamic some renderers will
+    /// do extra calculations to avoid fallthrough.
+    inline setForceDynamic( bool s ) {
+      forced_dynamic = s;
     }
 
     /// Get the closest point and normal on the object to the given point p.
@@ -292,6 +470,18 @@ namespace HAPI {
                                         Matrix4 &result_mtx );
 
   protected:
+    /// Update the transform matrix from its parts.
+    inline void updateTransform() {
+      transform = Matrix4( scale_factor.x, 0, 0, 0,
+                           0, scale_factor.y, 0, 0,
+                           0, 0, scale_factor.z, 0,
+                           0, 0, 0, 1 );
+      transform = ((Matrix4)rotation) * transform;
+      transform[0][3] += position.x;
+      transform[1][3] += position.y;
+      transform[2][3] += position.z;
+    }
+    
     H3DUtil::AutoPtrVector< HAPIShapeRenderOptions > options;
 
     void *userdata;
@@ -327,7 +517,14 @@ namespace HAPI {
     Matrix4 transform;
     Matrix4 inverse;
     
-
+    Vec3 velocity;
+    Rotation angular_velocity;
+    Vec3 growth_rate;
+    HAPITime first_use_time;
+    Vec3 position;
+    Rotation rotation;
+    Vec3 scale_factor;
+    bool forced_dynamic;
     void (*clean_up_func)( void * );
 
     /// Get the closest point and normal on the object to the given point p.

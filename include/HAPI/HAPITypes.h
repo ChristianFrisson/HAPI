@@ -36,8 +36,8 @@
 
 namespace HAPI {
   // TODO: double versions of Rotation and Quaternion
-  using H3DUtil::ArithmeticTypes::Rotation;
-  using H3DUtil::ArithmeticTypes::Quaternion;
+  typedef H3DUtil::ArithmeticTypes::Rotationd Rotation;
+  typedef H3DUtil::ArithmeticTypes::Quaterniond Quaternion;
 
   namespace Constants {
     const double epsilon = 1e-13;

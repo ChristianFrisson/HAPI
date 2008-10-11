@@ -53,7 +53,9 @@ namespace HAPI {
   /// following function that does this: 
   /// -   HapticForceEffect::EffectOutput 
   ///     renderHapticsOneStep( HAPIHapticsDevice *hd, 
-  ///                           const HapticShapeVector &shapes )
+  ///                           const HapticShapeVector &shapes,
+  ///                           H3DTime dt )
+  ///                          
   ///
   /// Other functions that can be optionally overridden and does not do anything 
   /// by default are:
@@ -93,13 +95,22 @@ namespace HAPI {
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~HAPIHapticsRenderer();
 
+    /// This function is kept for backwards compatibility with older haptic
+    /// renderers that do not accept dt.
+    virtual HAPIForceEffect::EffectOutput 
+      renderHapticsOneStep( HAPIHapticsDevice *hd,
+                            const HapticShapeVector &shapes ) {
+      return HAPIForceEffect::EffectOutput();
+    };
+
     /// \brief The main function in any haptics renderer. Given a haptics
     /// device and a group of shapes generate the force and torque to send
     /// to the device.
     virtual HAPIForceEffect::EffectOutput 
       renderHapticsOneStep( HAPIHapticsDevice *hd,
-                            const HapticShapeVector &shapes ) {
-      return HAPIForceEffect::EffectOutput();
+                            const HapticShapeVector &shapes,
+                            HAPITime dt ) {
+      return renderHapticsOneStep( hd, shapes );
     };
 
     typedef std::vector< pair< H3DUtil::AutoRef< HAPI::HAPIHapticShape >,
