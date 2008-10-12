@@ -70,9 +70,10 @@ void HAPIHapticShape::getConstraints( const Vec3 &point,
                                       HAPIFloat radius ) {
   if( have_transform ) {
     unsigned int nr_constraints = constraints.size();
+    Vec3 local_point = toLocal( point );
     Vec3 scale = inverse.getScalePart();
     HAPIFloat s = max( scale.x, max( scale.y, scale.z ) );    
-    getConstraintsOfShape( inverse * point, constraints, face, radius * s );
+    getConstraintsOfShape( local_point, constraints, face, radius * s );
     if( non_uniform_scaling ) {
       for( unsigned int i = nr_constraints; i < constraints.size(); ++i ) {
         PlaneConstraint &pc = constraints[i];
@@ -252,7 +253,6 @@ bool HAPIHapticShape::lineIntersect( const Vec3 &from,
   if( have_transform ) {
     bool have_intersection;
     Vec3 local_from =  toLocal( from );
-    //cerr << local_from.y << endl;
     Vec3 local_to = toLocal( to );
 
     have_intersection = 
