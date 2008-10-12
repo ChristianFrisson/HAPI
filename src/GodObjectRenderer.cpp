@@ -437,17 +437,17 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   bool done = false;
 
   for( unsigned int i = 0; !done && i < last_contact_transforms.size(); i++ ) {
-      for( HapticShapeVector::const_iterator s = shapes.begin();
-           s != shapes.end();
-           s++ ) {
-        if( (*s)->getShapeId() == last_contact_transforms[i].first ) {
-          // move proxy with shape.
-          Matrix4 last_transform_inv = last_contact_transforms[i].second;
-          Matrix4 current_transform = (*s)->getTransform(); 
-          proxy_pos = current_transform * last_transform_inv * proxy_pos;
-          break;
-        } 
-      }
+    for( HapticShapeVector::const_iterator s = shapes.begin();
+         s != shapes.end();
+         s++ ) {
+      if( (*s)->getShapeId() == last_contact_transforms[i].first ) {
+        // move proxy with shape.
+        Matrix4 last_transform_inv = last_contact_transforms[i].second;
+        Matrix4 current_transform = (*s)->getTransform(); 
+        proxy_pos = current_transform * last_transform_inv * proxy_pos;
+        break;
+      } 
+    }
   }
 
   // clear all previous contacts
