@@ -73,7 +73,8 @@ namespace HAPI {
   protected:
     /// If the proxy is in contact with only one single plane this function
     /// will take care of force calculations and proxy movement.
-    void onOnePlaneContact( const PlaneConstraint &c, 
+    void onOnePlaneContact( const Vec3& proxy_pos,
+                            const PlaneConstraint &c, 
                             HAPISurfaceObject::ContactInfo &contact,
                             const HapticShapeVector &shapes );
 
@@ -81,7 +82,8 @@ namespace HAPI {
     /// will take care of force calculations and proxy movement.
     /// Might call onOnePlaneContact after further reducing the problem of
     /// how many planes the proxy is in contact with.
-    void onTwoPlaneContact( const PlaneConstraint &p0,
+    void onTwoPlaneContact( const Vec3& proxy_pos,
+                            const PlaneConstraint &p0,
                             const PlaneConstraint &p1,
                             HAPISurfaceObject::ContactInfo &contact,
                             const HapticShapeVector &shapes );
@@ -90,7 +92,8 @@ namespace HAPI {
     /// will take care of force calculations and proxy movement.
     /// Might call onTwoPlaneContact after further reducing the problem of
     /// how many planes the proxy is in contact with.
-    void onThreeOrMorePlaneContact(  vector< PlaneConstraint > &constraints,
+    void onThreeOrMorePlaneContact(  const Vec3& proxy_pos,
+                                     vector< PlaneConstraint > &constraints,
                                      HAPISurfaceObject::ContactInfo &contact,
                                      const HapticShapeVector &shapes );
 

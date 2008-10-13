@@ -55,8 +55,9 @@ RuspiniRenderer::RuspiniRenderer( HAPIFloat _proxy_radius ):
   proxy_position( UNINITIALIZED_PROXY_POS ) {
 }
 
-void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c, 
-                                    HAPISurfaceObject::ContactInfo &contact ) {
+void RuspiniRenderer::onOnePlaneContact( const Vec3& proxy_pos,
+                                         const PlaneConstraint &c, 
+                                         HAPISurfaceObject::ContactInfo &contact ) {
   // create a local coordinate system with the PlaneConstraint normal
   // as y-axis
   contact.y_axis = c.normal;
@@ -77,7 +78,7 @@ void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c,
     contact.proxy_movement_local.x * contact.x_axis + 
     contact.proxy_movement_local.y * contact.z_axis;
 
-  contact.setGlobalOrigin(  tryProxyMovement( proxy_position, 
+  contact.setGlobalOrigin(  tryProxyMovement( proxy_pos, 
                                               new_proxy_pos, c.normal ) );
   
   // call the surface to determine forces and proxy movement
@@ -87,7 +88,8 @@ void RuspiniRenderer::onOnePlaneContact( const PlaneConstraint &c,
   tmp_contacts.push_back( make_pair( c.haptic_shape, contact ) );
 }
 
-void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
+void RuspiniRenderer::onTwoPlaneContact( const Vec3& proxy_pos,
+                                         const PlaneConstraint &p0,
                                          const PlaneConstraint &p1,
                                     HAPISurfaceObject::ContactInfo &contact ) {
   Vec3 contact_global = contact.globalContactPoint();
@@ -112,9 +114,9 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
   // check that both planes constrain, if not just do one plane contact
   // calculations
   if( local_pos.x > Constants::epsilon ) {
-    onOnePlaneContact( p1, contact );
+    onOnePlaneContact( proxy_pos, p1, contact );
   } else if( local_pos.y > Constants::epsilon ) {
-    onOnePlaneContact( p0, contact );
+    onOnePlaneContact( proxy_pos, p0, contact );
   } else {
     // both planes constrains
 
@@ -181,7 +183,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
       contact.proxy_movement_local.x * contact.x_axis + 
       contact.proxy_movement_local.y * contact.z_axis;
     
-    contact.setGlobalOrigin( tryProxyMovement( proxy_position, 
+    contact.setGlobalOrigin( tryProxyMovement( proxy_pos, 
                                              new_proxy_pos, contact.y_axis ) );
 
     contact.haptic_shape = p0.haptic_shape.get();
@@ -204,6 +206,7 @@ void RuspiniRenderer::onTwoPlaneContact( const PlaneConstraint &p0,
 
 
 void RuspiniRenderer::onThreeOrMorePlaneContact(  
+          const Vec3& proxy_pos,
           Constraints &constraints,
           HAPISurfaceObject::ContactInfo &contact ) {
   assert( constraints.size() >= 3 );
@@ -281,11 +284,11 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
   // check that all three planes constrain, if not just do two plane contact
   // calculations
   if( probe_local_pos.x > Constants::epsilon ) {
-    onTwoPlaneContact( p1, p2, contact );
+    onTwoPlaneContact( proxy_pos, p1, p2, contact );
   } else if( probe_local_pos.y > Constants::epsilon ) {
-    onTwoPlaneContact( p0, p2, contact );
+    onTwoPlaneContact( proxy_pos, p0, p2, contact );
   } else if( probe_local_pos.z > Constants::epsilon ) {
-    onTwoPlaneContact( p0, p1, contact );
+    onTwoPlaneContact( proxy_pos, p0, p1, contact );
   } else {
 
     // find weighting factors between different planes
@@ -433,8 +436,6 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     counter++;
   }
 
-  proxy_position = proxy_pos;
-
   // the constraints which contraint point is closest to the proxy.
   // if more than one the constraint point is the same
 
@@ -566,12 +567,12 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     new_proxy_pos = proxy_pos + (input.position-proxy_pos)*0.05;
   } else {
     if( nr_constraints == 1 ) {
-      onOnePlaneContact( closest_constraints.front(), contact );
+      onOnePlaneContact( proxy_pos, closest_constraints.front(), contact );
     } else if( nr_constraints == 2 ) {
-      onTwoPlaneContact( closest_constraints.front(),
+      onTwoPlaneContact( proxy_pos, closest_constraints.front(),
                          *(closest_constraints.begin() + 1), contact );
     } if( nr_constraints >= 3 ) {
-      onThreeOrMorePlaneContact( closest_constraints,
+      onThreeOrMorePlaneContact( proxy_pos, closest_constraints,
                                  contact );
     } 
 

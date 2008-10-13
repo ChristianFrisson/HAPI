@@ -113,6 +113,7 @@ inline Vec3 projectOntoPlaneIntersection( const Vec3 &p,
 
 
 void GodObjectRenderer::onOnePlaneContact( 
+                            const Vec3& proxy_pos,
                             const PlaneConstraint &c, 
                             HAPISurfaceObject::ContactInfo &contact,
                             const HapticShapeVector &shapes ) {
@@ -143,7 +144,7 @@ void GodObjectRenderer::onOnePlaneContact(
   // new_proxy_pos projected onto the plane created by intersection point
   // and its normal and the previous constraint planes.
   Vec3 o;
-  tryProxyMovement( proxy_position, 
+  tryProxyMovement( proxy_pos, 
                     new_proxy_pos,
                     1, 
                     c, 
@@ -160,6 +161,7 @@ void GodObjectRenderer::onOnePlaneContact(
 }
 
 void GodObjectRenderer::onTwoPlaneContact( 
+           const Vec3& proxy_pos,                           
            const PlaneConstraint &p0,
            const PlaneConstraint &p1,
            HAPISurfaceObject::ContactInfo &contact,
@@ -187,9 +189,9 @@ void GodObjectRenderer::onTwoPlaneContact(
   // check that both planes constrain, if not just do one plane contact
   // calculations
   if( local_pos.x > Constants::epsilon ) {
-    onOnePlaneContact( p1, contact, shapes );
+    onOnePlaneContact( proxy_pos, p1, contact, shapes );
   } else if( local_pos.y > Constants::epsilon ) {
-    onOnePlaneContact( p0, contact, shapes );
+    onOnePlaneContact( proxy_pos, p0, contact, shapes );
   } else {
     // both planes constrains
 
@@ -261,7 +263,7 @@ void GodObjectRenderer::onTwoPlaneContact(
     // new_proxy_pos projected onto the plane created by intersection point
     // and its normal and the previous constraint planes.
     Vec3 o;
-    tryProxyMovement( proxy_position,
+    tryProxyMovement( proxy_pos,
                       new_proxy_pos,
                       2, 
                       p0, 
@@ -289,6 +291,7 @@ void GodObjectRenderer::onTwoPlaneContact(
 
 
 void GodObjectRenderer::onThreeOrMorePlaneContact(  
+          const Vec3 &proxy_pos,                                        
           vector< PlaneConstraint > &constraints,
           HAPISurfaceObject::ContactInfo &contact,
           const HapticShapeVector &shapes ) {
@@ -342,11 +345,11 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
   // check that all three planes constrain, if not just do two plane contact
   // calculations
   if( probe_local_pos.x > Constants::epsilon ) {
-    onTwoPlaneContact( p1, p2, contact, shapes );
+    onTwoPlaneContact( proxy_pos, p1, p2, contact, shapes );
   } else if( probe_local_pos.y > Constants::epsilon ) {
-    onTwoPlaneContact( p0, p2, contact, shapes );
+    onTwoPlaneContact( proxy_pos, p0, p2, contact, shapes );
   } else if( probe_local_pos.z > Constants::epsilon ) {
-    onTwoPlaneContact( p0, p1, contact, shapes );
+    onTwoPlaneContact( proxy_pos, p0, p1, contact, shapes );
   } else {
 
     // find weighting factors between different planes
@@ -542,12 +545,14 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     new_proxy_pos = proxy_pos + (input.position-proxy_pos)*0.05;
   } else {
     if( nr_constraints == 1 ) {
-      onOnePlaneContact( closest_constraints[0], contact, shapes );
+      onOnePlaneContact( proxy_pos, closest_constraints[0], contact, shapes );
     } else if( nr_constraints == 2 ) {
-      onTwoPlaneContact( closest_constraints[0],
+      onTwoPlaneContact( proxy_pos,
+                         closest_constraints[0],
                          closest_constraints[1], contact, shapes );
     } if( nr_constraints >= 3 ) {
-      onThreeOrMorePlaneContact( closest_constraints,
+      onThreeOrMorePlaneContact( proxy_pos,
+                                 closest_constraints,
                                  contact, shapes );
     } 
 
