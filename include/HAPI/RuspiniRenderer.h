@@ -83,14 +83,16 @@ namespace HAPI {
   protected:
     /// If the proxy is in contact with only one single plane this function
     /// will take care of force calculations and proxy movement.
-    void onOnePlaneContact( const PlaneConstraint &c, 
+    void onOnePlaneContact( const Vec3& proxy_pos,
+                            const PlaneConstraint &c, 
                             HAPISurfaceObject::ContactInfo &contact );
 
     /// If the proxy is in contact with two planes this function
     /// will take care of force calculations and proxy movement.
     /// Might call onOnePlaneContact after further reducing the problem of
     /// how many planes the proxy is in contact with.
-    void onTwoPlaneContact( const PlaneConstraint &p0,
+    void onTwoPlaneContact( const Vec3& proxy_pos,
+                            const PlaneConstraint &p0,
                             const PlaneConstraint &p1,
                             HAPISurfaceObject::ContactInfo &contact );
 
@@ -98,7 +100,8 @@ namespace HAPI {
     /// will take care of force calculations and proxy movement.
     /// Might call onTwoPlaneContact after further reducing the problem of
     /// how many planes the proxy is in contact with.
-    void onThreeOrMorePlaneContact(  Constraints &constraints,
+    void onThreeOrMorePlaneContact(  const Vec3& proxy_pos,
+                                     Constraints &constraints,
                                      HAPISurfaceObject::ContactInfo &contact );
 
     /// Try to move the proxy to a new location. Will stop at the first
