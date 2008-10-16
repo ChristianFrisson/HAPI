@@ -326,7 +326,7 @@ namespace HAPI {
     /// moving the object manually by setPosition and want to avoid fallthrough
     /// caused by the object moving. If a shape is dynamic some renderers will
     /// do extra calculations to avoid fallthrough.
-    inline setForceDynamic( bool s ) {
+    inline void setForceDynamic( bool s ) {
       forced_dynamic = s;
     }
 
