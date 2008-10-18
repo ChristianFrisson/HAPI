@@ -139,13 +139,13 @@ void HAPIHapticShape::transformShape( const Matrix4 &t ) {
 
 void HAPIHapticShape::setTransform( const Matrix4 &t ) {
   have_transform = true;
-  have_inverse = false;
+  have_inverse = true;
   transform = t;
 
   position = t.getTranslationPart();
   rotation = Rotation( t.getRotationPart() );
   scale_factor = t.getScalePart();
-
+  inverse = transform.inverse();
   setNonUniformScalingFlag();
 }
 
@@ -257,6 +257,8 @@ bool HAPIHapticShape::lineIntersect( const Vec3 &from,
 
     have_intersection = 
       lineIntersectShape( local_from, local_to, result, face );
+
+    //cerr << local_from.x << " " << local_to.x << " " << have_intersection << endl;
     if( have_intersection ) {
       result.point = toGlobal( result.point );
       if( non_uniform_scaling ) {
@@ -346,4 +348,17 @@ void HAPIHapticShape::rotate( const Rotation &r ) {
   have_inverse = false;
   rotation = r * rotation;
   updateTransform();
+}
+
+void HAPIHapticShape::updateTransform() {
+  transform = Matrix4( scale_factor.x, 0, 0, 0,
+                       0, scale_factor.y, 0, 0,
+                       0, 0, scale_factor.z, 0,
+                       0, 0, 0, 1 );
+  transform = ((Matrix4)rotation) * transform;
+  transform[0][3] += position.x;
+  transform[1][3] += position.y;
+  transform[2][3] += position.z;
+  inverse = transform.inverse();
+  have_inverse = true;
 }
