@@ -471,16 +471,7 @@ namespace HAPI {
 
   protected:
     /// Update the transform matrix from its parts.
-    inline void updateTransform() {
-      transform = Matrix4( scale_factor.x, 0, 0, 0,
-                           0, scale_factor.y, 0, 0,
-                           0, 0, scale_factor.z, 0,
-                           0, 0, 0, 1 );
-      transform = ((Matrix4)rotation) * transform;
-      transform[0][3] += position.x;
-      transform[1][3] += position.y;
-      transform[2][3] += position.z;
-    }
+    void updateTransform();
     
     H3DUtil::AutoPtrVector< HAPIShapeRenderOptions > options;
 
