@@ -382,8 +382,18 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         // move proxy with shape.
         Matrix4 last_transform_inv = last_contact_transforms[i].second;
         Matrix4 current_transform = (*s)->getTransform(); 
-        proxy_pos = current_transform * last_transform_inv * proxy_pos;
-        break;
+        Vec3 moved_proxy_pos = current_transform * last_transform_inv * proxy_pos;
+
+
+        // only move proxy with the shape if it is moving away from the device
+        // position. if it is moving towards the device position we might
+        // move it too far and have a fallthrough. This will not happen if we
+        // just let it be.
+        if( (proxy_pos - moved_proxy_pos).dotProduct( proxy_pos - input.position ) <= 0 ) {
+          proxy_pos = moved_proxy_pos;
+          done = true;
+          break;
+        } 
       } 
     }
   }
