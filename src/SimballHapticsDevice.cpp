@@ -33,10 +33,6 @@
 #ifdef HAVE_SIMBALLMEDICAL_API
 #include <Simball/SimballMedicalHID.h>
 
-#if defined(_MSC_VER) 
-#pragma comment( lib, "SimballMedicalHID.lib" )
-#endif
-
 using namespace HAPI;
 
 namespace SimballHapticsDeviceInternal {

@@ -41,7 +41,6 @@ SET( HAPI_BUILD_VERSION 0 )
 
 # Set here already in case a special NSIS template needs to be used by cpack.
 SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
-INCLUDE( StripAndAddLibraryDirectories )
 
 # If cpack should be configured.
 IF( GENERATE_CPACK_PROJECT )
@@ -72,6 +71,7 @@ IF( GENERATE_CPACK_PROJECT )
                                   /release
                                   /linux
                                   /build/win32/
+                                  /build/vc9
                                   /build/vc8
                                   /build/vc7
                                   /osx/
@@ -85,6 +85,7 @@ IF( GENERATE_CPACK_PROJECT )
     # Cached variable used by H3DAPIs GENERATE_CPACK_PROJECT to get the correct installation directories.
     SET( HAPI_CPACK_INSTALLED_DIRECTORIES ""
         CACHE INTERNAL "Installed directories of HAPI." )
+    SET( CPACK_PACKAGE_START_MENU_NAME "HAPI 1.0" )
 
     SET( HAPIExamples_cmake_install "" CACHE PATH "Needs to be set if examples for HAPI is desired to be packed in the install. Set to location of cmake_install.cmake for the examples." )
     MARK_AS_ADVANCED(HAPIExamples_cmake_install)
@@ -138,6 +139,7 @@ IF( GENERATE_CPACK_PROJECT )
                            /wrap_oal\\\\.dll$
                            /xerces-c_2_7\\\\.dll$
                            /xerces-c_2_7D\\\\.dll$
+                           /xerces-c_2_8.dll\\\\.dll$
                            /ALut\\\\.lib$
                            /audiofile\\\\.lib$
                            /cg\\\\.lib$
@@ -174,11 +176,33 @@ IF( GENERATE_CPACK_PROJECT )
                            /include/teem
                            /include/vorbis
                            /include/xercesc
-                           /HAPI/doc/ )
+                           /HAPI/doc/
+                           /H3DUtil/doc/
+                           /HapticAPI2
+                           /ftgl_static_MTD_d\\\\.lib$
+                           /ftgl_static_MTD_vc8\\\\.lib$
+                           /ftgl_static_MTD_vc8_d\\\\.lib$
+                           /ftgl_static_MTD_vc9\\\\.lib$
+                           /ftgl_static_MTD_vc9_d\\\\.lib$
+                           /Xerces-c_static_2_d\\\\.lib$
+                           /xerces-c_static_2_vc8\\\\.lib$
+                           /xerces-c_static_2_vc8_d\\\\.lib$
+                           /xerces-c_static_2_vc9\\\\.lib$
+                           /xerces-c_static_2_vc9_d\\\\.lib$
+                           /dcmdata\\\\.lib$
+                           /dcmimage\\\\.lib$
+                           /dcmimgle\\\\.lib$
+                           /z\\\\.lib$
+                           /png\\\\.lib$
+                           /bz2\\\\.lib$
+                           /ofstd\\\\.lib$
+                           /Definitions.h$ )
     SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
                                     "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
                                     "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
-                                    "${HAPI_SOURCE_DIR}/../../doc;doc" )
+                                    "${HAPI_SOURCE_DIR}/../../doc;doc"
+                                    "${HAPI_SOURCE_DIR}/../../bin;bin"
+                                    "${HAPI_SOURCE_DIR}/../../lib;lib" )
     
     #Extra links to start menu if values are "ON"
     SET( CPACK_ADD_HAPIDOC_LINKS "ON" )
@@ -212,11 +236,7 @@ SET(requiredLibs)
 FIND_PACKAGE(PTHREAD REQUIRED)
 IF(PTHREAD_FOUND)
   INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${PTHREAD_LIBRARIES})
-  ELSE(WIN32)
-    SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
 ENDIF(PTHREAD_FOUND)
 
 FIND_PACKAGE(OpenHaptics)
@@ -225,11 +245,7 @@ IF(OPENHAPTICS_FOUND)
   AUX_SOURCE_DIRECTORY(../OpenHapticsRenderer/src OH_SRCS)
   INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} 
                        ../OpenHapticsRenderer/include )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${OPENHAPTICS_LIBRARIES} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${OPENHAPTICS_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${OPENHAPTICS_LIBRARIES} )
 ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../OpenHapticsRenderer/include )
 ENDIF(OPENHAPTICS_FOUND)
@@ -240,11 +256,7 @@ IF(CHAI3D_FOUND)
   AUX_SOURCE_DIRECTORY(../Chai3DRenderer/src CHAI_SRCS)
   INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR}
                        ../Chai3DRenderer/include )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${CHAI3D_LIBRARIES} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${CHAI3D_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${CHAI3D_LIBRARIES} )
 ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../Chai3DRenderer/include )
 ENDIF(CHAI3D_FOUND)
@@ -253,55 +265,35 @@ FIND_PACKAGE(DHD)
 IF(DHD_FOUND)
   SET(HAVE_DHDAPI 1)
   INCLUDE_DIRECTORIES( ${DHD_INCLUDE_DIR} )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${DHD_LIBRARIES} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${DHD_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${DHD_LIBRARIES} )
 ENDIF(DHD_FOUND)
 
 FIND_PACKAGE(FalconAPI)
 IF(FALCONAPI_FOUND)
   SET(HAVE_FALCONAPI 1)
   INCLUDE_DIRECTORIES( ${FALCONAPI_INCLUDE_DIR} )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${FALCONAPI_LIBRARIES} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${FALCONAPI_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${FALCONAPI_LIBRARIES} )
 ENDIF(FALCONAPI_FOUND)
 
 FIND_PACKAGE(Haptik)
 IF(HAPTIK_FOUND)
   SET(HAVE_HAPTIK_LIBRARY 1)
   INCLUDE_DIRECTORIES( ${HAPTIK_INCLUDE_DIR} )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${HAPTIK_LIBRARIES} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${HAPTIK_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${HAPTIK_LIBRARIES} )
 ENDIF(HAPTIK_FOUND)
 
 FIND_PACKAGE(SimballMedical)
 IF(SIMBALLMEDICAL_FOUND)
   SET(HAVE_SIMBALLMEDICAL_API 1)
   INCLUDE_DIRECTORIES( ${SIMBALLMEDICAL_INCLUDE_DIR} )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${SIMBALLMEDICAL_LIBRARIES} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${SIMBALLMEDICAL_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${SIMBALLMEDICAL_LIBRARIES} )
 ENDIF(SIMBALLMEDICAL_FOUND)
 
 FIND_PACKAGE(OpenGL REQUIRED)
 IF(OPENGL_FOUND)
   SET(HAVE_OPENGL 1)
   INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIR} )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${OPENGL_LIBRARIES} )
-  ELSE(WIN32)
-    SET(requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
 ENDIF(OPENGL_FOUND)
 
 # The current implementation only have support for Haptic Master on Windows.
@@ -416,9 +408,11 @@ ENDIF(WIN32)
 
 # Needed to link correctly on MSVC70 and MSVC71 because the dependency is not enough
 # to generate correct project files with this version of CMake.
-IF(NOT WIN32 OR MSVC70 OR MSVC71)
-  SET(requiredLibs ${requiredLibs} H3DUtil)
-ENDIF(NOT WIN32 OR MSVC70 OR MSVC71)
+IF(NOT WIN32)
+  SET(requiredLibs ${requiredLibs} optimized H3DUtil debug H3DUtil_d )
+ELSEIF(MSVC70 OR MSVC71)
+  SET(requiredLibs ${requiredLibs} H3DUtil )
+ENDIF(NOT WIN32)
 
 # Add the last include directories needed.
 INCLUDE_DIRECTORIES(  ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )

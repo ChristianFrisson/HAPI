@@ -35,10 +35,6 @@
 #include <sstream>
 #include <dhdc.h>
 
-#if defined(_MSC_VER) 
-#pragma comment( lib, "dhdms.lib" )
-#endif
-
 using namespace HAPI;
 
 namespace ForceDimensionHapticsDeviceInternal {

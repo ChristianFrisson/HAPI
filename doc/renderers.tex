@@ -17,7 +17,8 @@ geometry is touched the proxy stays on the surface of the object, even
 if the haptics device actually has penetrated the surface. Forces are
 then generated to bring the haptics device out of the surface, towards
 the proxy, and usally some kind of spring force between the proxy and
-haptics device is used. When the user moves the haptics device inside
+haptics device is used ( see figure \ref{Proxy-probe} ). When the user 
+moves the haptics device inside
 the object the proxy follows the movement, but on the surface. How the
 proxy follows determines how the structure of the surface will
 feel. For example, if the proxy is always moved to a local minimum on
@@ -71,7 +72,10 @@ The god-object algorithm is based on the paper ``A constrained based god-object 
 \end{minipage}
 
 \subsection{Ruspini renderer}
-The RuspiniRenderer is based on the algorithm presented by Ruspini in ``The Haptic Display of Complex Graphical Environments'' \cite{ruspini}. It is different from all the other renderers in that it uses a sphere proxy making it possible to have an interaction object with a size instead of just a point.  
+The RuspiniRenderer is based on the algorithm presented by Ruspini in
+``The Haptic Display of Complex Graphical Environments'' \cite{ruspini}.
+It is different from all the other renderers in HAPI in that it uses a
+sphere proxy making it possible to have an interaction object with a size instead of just a point.  
 
 \begin{minipage}[t]{3in}
 \subsubsection{Pros}
@@ -85,7 +89,7 @@ The RuspiniRenderer is based on the algorithm presented by Ruspini in ``The Hapt
 \begin{minipage}[t]{3in}
 \subsubsection{Cons}
 \begin{itemize}
-\item A little slower than other renderers.
+\item A little slower than other renderers in HAPI.
 \end{itemize}
 \end{minipage}
 
@@ -133,14 +137,14 @@ A surface object in HAPI is an object that defines the haptic properties of a ge
 \begin{itemize}
 \item FrictionSurface - Allows the user to set stiffness, damping, static friction and dynamic friction parameters. The force produced is a linear spring-damper force between the proxy position and probe position, i.e. F = stiffness * (proxy\_pos - probe\_pos) - damping * probe\_velocity. The friction parameters control how the proxy move over the surface during contact. The static friction parameter controls how hard it is to start moving across the surface from a resting contact while the dynamic friction parameter controls how hard it is to move across the surface when the proxy has started moving.
 \item DepthMapSurface - Use a texture to define the depth of the surface (only available for GodObjectRenderer and RuspiniRenderer). A minimization algorithm controls how the proxy move over the surface. If the proxy is in an area on the surface that is considered deep it will be harder to move the proxy to an area on the surface which is considered higher. The depth calculated also modifies the force so that deep (and high) parts of the surface can be felt.
-\item StiffnessFunctionSurface - Use a generic function to generate
-  the normal force. The function takes the penetration depth as input
-  and returns the corresponding force. (NOTE:Not implemented yet). 
+%\item StiffnessFunctionSurface - Use a generic function to generate
+%  the normal force. The function takes the penetration depth as input
+%  and returns the corresponding force. (NOTE:Not implemented yet). 
 \end{itemize}
 
-There are also some surfaces specific for the OpenHaptics and Chai3D
-libraries which allows the user to set the parameters available in
-those libraries directly. They are:
+There is also a surface specific for the OpenHaptics
+library which allows the user to set the parameters available in
+that library directly. That surface is:
 \begin{itemize}
 \item OpenHapticsSurface - Has all the parameters available in
   OpenHaptics, i.e. stiffness, staticFriction, etc, but instead of
@@ -156,9 +160,9 @@ In addition to using the already defined surfaces HAPI provides an interface to 
 
 
 \subsubsection{Moving the proxy}
-The movement of the proxy is often used to control the feeling of an object when moving across the surface, e.g. if the surface should feel smooth or rough. Letting the proxy move along the contact plane as to minimise the distance between proxy and probe will create a totally smooth surface since the forces will always just be normal forces and no tangential forces. Letting the proxy lag behind in different ways can be used to create different friction-like effects and not letting it move at all will mean that you will not be able to move away from the first point of contact of the surface (unless you lift the probe out of the surface). The proxy movement is a 2D movement along the xz-plane of the local contact coordinate system. 
+The movement of the proxy is often used to control the feeling of an object when moving across the surface, e.g. if the surface should feel smooth or rough. Letting the proxy move along the contact plane as to minimise the distance between proxy and probe will create a totally smooth surface since the forces will always just be normal forces and no tangential forces ( see figure \ref{proxy movement} ). Letting the proxy lag behind in different ways can be used to create different friction-like effects and not letting it move at all will mean that you will not be able to move away from the first point of contact of the surface (unless you lift the probe out of the surface). The proxy movement is a 2D movement along the xz-plane of the local contact coordinate system. 
 
-When defining a new surface the virtual function getProxyMovement( ContactInfo \&ci ) in HAPISurfaceObject is used to define the proxy movement. The user should call the ci.setLocalProxyMovement( Vec2f pm ) function here to set the proxy movement. The rendering system will try to move the proxy according to the specified movement but might be stopped by colliding with other geometries along the path to the new position. The proxy will then stay at this collision point instead of moving all the way to the specified position.
+When defining a new surface the virtual function getProxyMovement( ContactInfo \&ci ) in HAPISurfaceObject is used to define the proxy movement. The user should call the ci.setLocalProxyMovement( Vec2f \&pm ) function here to set the proxy movement. The rendering system will try to move the proxy according to the specified movement but might be stopped by colliding with other geometries along the path to the new position. The proxy will then stay at this collision point instead of moving all the way to the specified position.
 
 \begin{figure} 
   \centering 
@@ -185,7 +189,7 @@ When calculating the proxy movement and the interaction force the user has acces
 
 
 All positions can be obtained in either the global coordinate system or
-in a local contact coordinate system. The local coordinate system is constructed with the proxy position as the origin, the contact normal as the y-axis and and two arbitrary perpendicular axis in the plane as x and z-axis. This means that e.g. the penetration depth is the same as -y in the local coordinate system. There are also functions in the ContactInfo object for converting between these two coordinate spaces. 
+in a local contact coordinate system. The local coordinate system is constructed with the proxy position as the origin, the contact normal as the y-axis and and two arbitrary perpendicular axis in the plane as x and z-axis ( see figure \ref{coordsystems} ). This means that e.g. the penetration depth is the same as -y in the local coordinate system. There are also functions in the ContactInfo object for converting between these two coordinate spaces. 
 
 \begin{figure} 
   \centering 

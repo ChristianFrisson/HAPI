@@ -7,16 +7,16 @@ namespace HAPI {
   // This class implements a surface without any friction and with
   // a linear spring interaction force pulling the probe back
   // towards the proxy. The force is defined as 
-  /// F = stiffness * (proxy - probe)
+  // F = stiffness * (proxy - probe)
   class HAPI_API SmoothSurface : public HAPISurfaceObject {
   public:
 
-    /// Constructor. Takes the spring con
+    // Constructor. Takes the spring constant.
     SmoothSurface( HAPIFloat _stiffness = 350 ):
       stiffness( _stiffness ) {}
 
-    /// Moves the proxy along the surface in the direction of the
-    /// probe. 
+    // Moves the proxy along the surface in the direction of the
+    // probe. 
     virtual void getProxyMovement( ContactInfo &contact_info ) {
       // get the position in the local contact coordinate system.
       Vec3 local_probe = contact_info.localProbePosition();
@@ -38,7 +38,7 @@ namespace HAPI {
       contact_info.setGlobalForce(  stiffness*probe_to_origin );
     }
 
-    /// The stiffness of the surface.
+    // The stiffness of the surface.
     HAPIFloat stiffness;
 
   };

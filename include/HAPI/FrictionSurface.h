@@ -29,7 +29,7 @@
 #ifndef __FRICTIONSURFACE_H__
 #define __FRICTIONSURFACE_H__
 
-#include <HAPI/HAPISurfaceObject.h>
+#include <HAPI/HAPIFrictionSurface.h>
 
 namespace HAPI {
   /// \ingroup Surfaces
@@ -42,7 +42,7 @@ namespace HAPI {
   /// parameter must exceed the normal force of the surface multiplied by
   /// the static friction parameter in order for movement along the surface to
   /// start.
-  class HAPI_API FrictionSurface : public HAPISurfaceObject {
+  class HAPI_API FrictionSurface : public HAPIFrictionSurface {
   public:
 
     /// Constructor
@@ -53,9 +53,6 @@ namespace HAPI {
                      bool _use_relative_values = true,
                      bool _use_ref_count_lock = true );
 
-    /// ~Destructor
-    virtual ~FrictionSurface();
-
     /// Moves the proxy along the surface in the direction of the
     /// probe. The friction parameters limit the movement and can
     /// sometimes stop the proxy from being moved at all.
@@ -63,29 +60,6 @@ namespace HAPI {
 
     /// Calculate a force from the probe towards the proxy.
     virtual void getForces( ContactInfo &contact_info );
-
-    /// The stiffness of the surface.
-    HAPIFloat stiffness;
-
-    /// The damping parameter of the surface.
-    HAPIFloat damping;
-    
-    /// The static friction of the surface.
-    HAPIFloat static_friction;
-    
-    /// The dynamic friction of the surface
-    HAPIFloat dynamic_friction;
-
-    /// If false then values (such as stiffness) is in absolute values with
-    /// SI units or equivalent. If true the units are relative to the maximum
-    /// values that the haptics device, on which the surface is rendered on,
-    /// can handle.
-    bool use_relative_values;
-
-  protected:
-    /// Used to determine if the proxy is in static contact with
-    /// the surface. In that case there is no proxy movement.
-    bool in_static_contact;
   };
 }
 

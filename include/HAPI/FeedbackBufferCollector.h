@@ -37,10 +37,6 @@
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
-
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "OpenGL32.lib" )
-#endif
 #endif
 
 namespace HAPI {

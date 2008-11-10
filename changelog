@@ -1,3 +1,21 @@
+Changes for version 1.0:
+
+- Use double versions of Rotations and Quaternions.
+- Added base classes for surfaces.
+- Corrections to CMake build system and additions for compiling against static
+ libraries.
+- Doxygen updates.
+- Fixed bugs reported on www.h3d.org.
+- Correct initialization sequence for PhantomHapticsDevice.
+- Corrections of reporting of device values for different devices.
+- Corrections to collision detection algorithms.
+- Updates to manual.
+
+New Classes:
+HAPIFrictionSurface
+
+
+
 Changes for version 1.0 beta 1:
 
 - Build files for different systems are no longer provided. They should be

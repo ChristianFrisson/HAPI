@@ -32,7 +32,7 @@
 
 #include <HAPI/PhantomHapticsDevice.h>
 #include <HAPI/AnyHapticsDevice.h>
-#include <HAPI/FrictionSurface.h>
+#include <HAPI/HAPIFrictionSurface.h>
 
 #ifdef HAVE_OPENGL
 #ifdef MACOSX
@@ -40,18 +40,10 @@
 #else
 #include <GL/gl.h>
 #endif
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "OpenGL32.lib" )
-#endif
 #endif
 
 #ifdef HAVE_OPENHAPTICS
 #include <HD/hd.h>
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "hl.lib" )
-#pragma comment( lib, "hlu.lib" )
-#pragma comment( lib, "hd.lib" )
-#endif
 
 using namespace HAPI;
 
@@ -669,8 +661,8 @@ bool OpenHapticsRenderer::hlRenderHAPISurface( HAPISurfaceObject *s,
     hl_surface->hlRender();
     return true;
   }
-  if( FrictionSurface *friction_surface =
-      dynamic_cast< FrictionSurface * >( s ) ) {
+  if( HAPIFrictionSurface *friction_surface =
+      dynamic_cast< HAPIFrictionSurface * >( s ) ) {
     if( friction_surface->use_relative_values ) {
       HAPI::OpenHapticsRenderer::hlRenderRelative(
         friction_surface->stiffness,
@@ -692,7 +684,7 @@ bool OpenHapticsRenderer::hlRenderHAPISurface( HAPISurfaceObject *s,
 
 bool OpenHapticsRenderer::surfaceSupported( HAPISurfaceObject *s ) {
   return dynamic_cast< HLSurface * >( s ) != NULL ||
-         dynamic_cast< FrictionSurface * >( s ) != NULL;
+         dynamic_cast< HAPIFrictionSurface * >( s ) != NULL;
 }
 
 // Sets up the surface parameters for HL API. All values are given in

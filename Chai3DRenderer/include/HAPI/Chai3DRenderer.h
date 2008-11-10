@@ -115,7 +115,7 @@ namespace HAPI {
 
       void setNewValues( Vec3 pos,
                          Vec3 vel,
-                         HAPI::Rotation orn,
+                         Rotation orn,
                          int but ) {
         position = pos;
         velocity = vel;
@@ -131,7 +131,7 @@ namespace HAPI {
 
     protected:
       Vec3 position, velocity;
-      HAPI::Rotation orientation;
+      Rotation orientation;
       int buttons;
 
     };

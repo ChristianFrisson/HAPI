@@ -5,6 +5,7 @@
 #  PTHREAD_LIBRARIES    - List of libraries when using pthread.
 #  PTHREAD_FOUND        - True if pthread found.
 
+GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 # Look for the header file.
 FIND_PATH(PTHREAD_INCLUDE_DIR NAMES pthread.h
@@ -14,8 +15,8 @@ FIND_PATH(PTHREAD_INCLUDE_DIR NAMES pthread.h
                                     $ENV{H3D_ROOT}/../External/include/pthread
                                     ../../External/include
                                     ../../External/include/pthread
-                                    ${CMAKE_MODULE_PATH}/../../../External/include
-                                    ${CMAKE_MODULE_PATH}/../../../External/include/pthread)
+                                    ${module_file_path}/../../../External/include
+                                    ${module_file_path}/../../../External/include/pthread)
 
 MARK_AS_ADVANCED(PTHREAD_INCLUDE_DIR)
 
@@ -26,7 +27,7 @@ IF(WIN32)
                                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                      $ENV{H3D_ROOT}/../External/lib
                                      ../../External/lib
-                                     ${CMAKE_MODULE_PATH}/../../../External/lib)
+                                     ${module_file_path}/../../../External/lib)
 ELSE(WIN32)
   FIND_LIBRARY(PTHREAD_LIBRARY NAMES pthread)
 ENDIF(WIN32)

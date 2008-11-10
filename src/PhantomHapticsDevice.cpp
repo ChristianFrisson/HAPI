@@ -36,10 +36,6 @@
 
 using namespace HAPI;
 
-#ifdef _MSC_VER
-#pragma comment( lib, "hd.lib" )
-#endif
-
 namespace PhantomDeviceInternal {
   string libs_array[1] = {"HD.dll"};
   list< string > phantom_device_libs(libs_array, libs_array + 1 );

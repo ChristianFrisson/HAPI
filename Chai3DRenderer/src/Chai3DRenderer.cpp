@@ -35,7 +35,7 @@
 
 #include <HAPI/HapticTriangleSet.h>
 #include <HAPI/HAPIHapticsDevice.h>
-#include <HAPI/FrictionSurface.h>
+#include <HAPI/HAPIFrictionSurface.h>
 
 // Chai3D includes
 #include <CVector3d.h>
@@ -44,11 +44,6 @@
 //using namespace H3D;
 using namespace HAPI;
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "chai3d_complete.lib" )
-#pragma comment( lib, "atls.lib" )
-#endif
-
 #ifdef HAVE_OPENGL
 #ifdef MACOSX
 #include <OpenGL/gl.h>
@@ -56,11 +51,6 @@ using namespace HAPI;
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>
-#endif
-
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "OpenGL32.lib" )
-#pragma comment( lib, "glu32.lib" )
 #endif
 #endif
 
@@ -184,8 +174,8 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     HAPIHapticShape *shape = (*s);
     Chai3DSurface *chai3d_surface = 
       dynamic_cast< Chai3DSurface * >( shape->getSurface() );
-    FrictionSurface *friction_surface = 
-      dynamic_cast< FrictionSurface * >( shape->getSurface() );
+    HAPIFrictionSurface *friction_surface = 
+      dynamic_cast< HAPIFrictionSurface * >( shape->getSurface() );
 
     if( chai3d_surface || friction_surface ) {
       cMesh *mesh = new cMesh(world);

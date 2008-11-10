@@ -43,17 +43,13 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
         HAPIFloat _minimization_epsilon,
         bool _use_relative_values,
         bool _use_ref_count_lock ) :
-  HAPISurfaceObject( _use_ref_count_lock ),
-  stiffness( _stiffness ),
-  damping( _damping ),
-  static_friction( _static_friction ),
-  dynamic_friction( _dynamic_friction ),
-  use_relative_values( _use_relative_values ),
+  HAPIFrictionSurface( _stiffness, _damping, _static_friction,
+                     _dynamic_friction, _use_relative_values,
+                     _use_ref_count_lock ),
   func( _func ),
   minimization_epsilon( _minimization_epsilon ),
   max_iterations( _max_iterations ),
-  depth_invert( false ),
-  in_static_contact( true ) {
+  depth_invert( false ) {
 }
 
 void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
@@ -183,39 +179,13 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
     } else
       depth_get_lock.unlock();
 
-    if( in_static_contact ) {
-      if( tangent_force <= static_friction * normal_force ) {
-        contact.setLocalProxyMovement( Vec2( 0, 0 ) );
-      } else {
-        in_static_contact = false;
-      }
-    }
+    setLocalProxyMovement( contact,
+                           tangent_force,
+                           normal_force,
+                           res,
+                           true,
+                           res_l );
 
-    if( !in_static_contact ) {
-
-      HAPIFloat b = 1;
-      HAPIFloat dt = 1.0 / contact.hapticsDevice()->getHapticsRate();
-      HAPIFloat velocity = 
-        ( tangent_force - dynamic_friction * normal_force ) / b;
-
-      if( velocity < Constants::epsilon ) {
-        in_static_contact = true;
-        velocity = 0;
-        contact.setLocalProxyMovement( Vec2( 0, 0 ) ); 
-      } else {
-        // The max_movement should be in m. The velocity gotten is in m/s.
-        // The maximum movement in one haptic frame is therefore
-        // velocity * 0.001 where 0.001 is the time in seconds for one haptic
-        // frame.
-        HAPIFloat max_movement = velocity * dt;
-        
-        HAPIFloat l = res_l;
-        if( l > max_movement ) {
-          res *= max_movement / l; 
-        }
-        contact.setLocalProxyMovement( res );
-      }
-    }
   }
 }
 
@@ -236,20 +206,7 @@ void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
   }
   else {
     Vec3 real_contact_point = temp_point + depth * contact_info.yAxis();
-
-    Vec3 probe_to_origin = 
-      real_contact_point - contact_info.globalProbePosition();
-    Vec3 n_probe_to_origin = probe_to_origin;
-    n_probe_to_origin.normalizeSafe();
-    HAPIFloat local_stiffness = stiffness;
-    if( use_relative_values ) {
-      local_stiffness = stiffness *
-        contact_info.hapticsDevice()->getMaxStiffness();
-    }
-    contact_info.setGlobalForce(  probe_to_origin * local_stiffness +
-                                  ( n_probe_to_origin *
-                                  contact_info.globalProbeVelocity() *
-                                    damping ) * n_probe_to_origin );
+    getForcesInternal( contact_info, real_contact_point );
   }
 }
 
