@@ -5,13 +5,14 @@
 #  SIMBALLMEDICAL_LIBRARIES    - List of libraries when using SimballMedical.
 #  SIMBALLMEDICAL_FOUND        - True if SimballMedical found.
 
+GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 # Look for the header file.
 FIND_PATH(SIMBALLMEDICAL_INCLUDE_DIR NAMES Simball/SimballMedicalHID.h
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                                       $ENV{H3D_ROOT}/../External/include
                                       ../../External/include
-                                      ${CMAKE_MODULE_PATH}/../../../External/include )
+                                      ${module_file_path}/../../../External/include )
 MARK_AS_ADVANCED(SIMBALLMEDICAL_INCLUDE_DIR)
 
 # Look for the library.
@@ -19,7 +20,7 @@ FIND_LIBRARY(SIMBALLMEDICAL_LIBRARY NAMES SimballMedicalHID
                         PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                               $ENV{H3D_ROOT}/../External/lib
                               ../../External/lib
-                              ${CMAKE_MODULE_PATH}/../../../External/lib)
+                              ${module_file_path}/../../../External/lib)
 MARK_AS_ADVANCED(SIMBALLMEDICAL_LIBRARY)
 
 # Copy the results to the output variables.
@@ -37,9 +38,9 @@ ENDIF(SIMBALLMEDICAL_INCLUDE_DIR  AND SIMBALLMEDICAL_LIBRARY)
 IF(NOT SIMBALLMEDICAL_FOUND)
   SET(SIMBALLMEDICAL_DIR_MESSAGE
     "The SimballMedical API was not found. Make sure to set SIMBALLMEDICAL_LIBRARY and SIMBALLMEDICAL_INCLUDE_DIR to the location of the library. If you do not have it you will not be able to use the Simball device.")
-  IF(SIMBALLMEDICAL_FIND_REQUIRED)
+  IF(SimballMedical_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "${SIMBALLMEDICAL_DIR_MESSAGE}")
-  ELSEIF(NOT SIMBALLMEDICAL_FIND_QUIETLY)
+  ELSEIF(NOT SimballMedical_FIND_QUIETLY)
     MESSAGE(STATUS "${SIMBALLMEDICAL_DIR_MESSAGE}")
-  ENDIF(SIMBALLMEDICAL_FIND_REQUIRED)
+  ENDIF(SimballMedical_FIND_REQUIRED)
 ENDIF(NOT SIMBALLMEDICAL_FOUND)

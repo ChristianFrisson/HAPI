@@ -29,7 +29,7 @@
 #ifndef __HAPIVARIABLEDEPTHSURFACE_H__
 #define __HAPIVARIABLEDEPTHSURFACE_H__
 
-#include <HAPI/HAPISurfaceObject.h>
+#include <HAPI/HAPIFrictionSurface.h>
 #include <H3DUtil/Image.h>
 #include <H3DUtil/AutoRef.h>
 
@@ -42,7 +42,7 @@ namespace HAPI {
   /// shallow area on the surface. The depth is calculated by a function
   /// using local space of the point of contact.
   /// For OpenHapticsRenderer this surface will not work.
-  class HAPI_API HAPIVariableDepthSurface: public HAPISurfaceObject {
+  class HAPI_API HAPIVariableDepthSurface: public HAPIFrictionSurface {
 
   public:
 
@@ -67,21 +67,6 @@ namespace HAPI {
     /// Calculates the force on the haptics device depending on the depth
     /// returned from getDepth() function.
     virtual void getForces( HAPISurfaceObject::ContactInfo &contact );
-
-    /// The stiffness of the surface.
-    HAPIFloat stiffness;
-    /// The damping of the surface
-    HAPIFloat damping;
-    /// The static friction of the surface.
-    HAPIFloat static_friction;
-    /// The dynamic friction of the surface.
-    HAPIFloat dynamic_friction;
-
-    /// If false then values (such as stiffness) is in absolute values with
-    /// SI units or equivalent. If true the units are relative to the maximum
-    /// values that the haptics device, on which the surface is rendered on,
-    /// can handle.
-    bool use_relative_values;
 
   protected:
     /// Lock used when getting depth for the surface.
@@ -113,9 +98,6 @@ namespace HAPI {
     /// class.
     ContactInfo *this_contact_info;
     bool depth_invert;
-
-    /// Used for static friction calculations
-    bool in_static_contact;
   };
 }
 

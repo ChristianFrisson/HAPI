@@ -4,8 +4,10 @@ specify a geometry to do this haptic rendering on. In HAPI these collision
 geometries are called shapes.
 
 \section{Available shapes}
-The following shapes are general and can be used with any renderer. When
-referring to a "primitive" it means that the class inherit from
+The following shapes are general and can be used with any renderer although
+not all renderers support collision with the shape. RuspiniRenderer is for example the
+only implemented renderer for which lines and points can be felt. When
+referring to a "primitive" in the list below it means that the class inherit from
 GeometryPrimitive found in CollisionObjects.h.
 
 \begin{itemize}
@@ -14,12 +16,12 @@ GeometryPrimitive found in CollisionObjects.h.
 \item HapticPrimitive - Contains one primitive.
 \item HapticPrimitiveSet - Contains a set of primitives.
 \item HapticPrimitiveTree - Contains a tree of primitives. The tree used
-allow for faster collision detection through grouping of the primitives
+allows for faster collision detection through grouping of the primitives
 into bounding boxes. Check the doxygen documentation (CollisionObject.h)
 for more information about the predefined tree classes in HAPI.
 \item HapticTriangleSet - Contains a set of Triangle primitives.
 \item HapticTriangleTree - Contains a tree of Triangle primitives. The tree used
-allow for faster collision detection through grouping of the triangles
+allows for faster collision detection through grouping of the triangles
 into bounding boxes. Check the doxygen documentation (CollisionObject.h)
 for more information about the predefined tree classes in HAPI.
 \end{itemize}
@@ -62,7 +64,8 @@ that must be implemented when subclassing HAPIHapticShape.
 - Get constraint planes of the shape. A proxy of a haptics renderer will always stay above any constraints added.
 \item void getTangentSpaceMatrixShape( const Vec3 \&point, Matrix4 \&result\_mtx )
 - Calculates a matrix which transforms from local space of the shape to texture space of the shape.
-\item void glRenderShape() - Render a graphical representation of the shape using OpenGL.
+\item void glRenderShape() - Render a graphical representation of the shape
+using OpenGL. This function only needs to be implemented if HAPI is built with OpenGL support.
 \end{itemize}
 
 The first three functions are used for collision detection. The second and

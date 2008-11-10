@@ -8,7 +8,7 @@ HAPI is device independent and can be used with a wide variety of haptics device
 \item Delta and Omega devices from ForceDimension ( implemented in the
   ForceDimensionHapticsDevice class ). \cite{forcedimension} 
 \item Falcon from Novint ( implemented in the FalconHapticsDevice class ). \cite{novint} 
-\item HapticMaster from Moog/FCS ( implemented in the HapticMasterDevice class ).\cite{moogfcs} \cite{linde02hapticmaster} 
+\item HapticMaster from Moog FCS Robotics( implemented in the HapticMasterDevice class ).\cite{moogfcs} \cite{linde02hapticmaster} 
 \end{itemize}
 
 Each of these devices has a special class implementing the interface to the device. These classes also provide device specific functions that can be used. Most of the time the user does not care what haptics device is used and can then use the AnyHapticsDevice class when specifying the haptics device instead. The AnyHapticsDevice class will try to find a haptics device to use by trying to initialize all the devices that are supported. The haptics devices used will be the first one that initializes successfully.
@@ -30,7 +30,8 @@ specify what ``layer'' in which it should be rendered. Each layer has
 its own haptics rendering algorithm, which makes it possible to render
 different shapes with different haptics rendering algorithms on one
 haptics device. The resulting force will be the sum of the forces from
-each layer. A common use is, for example in medical simulation, to
+each layer as illustrated in figure \ref{Layering_fig}. A common use is,
+for example in medical simulation, to
 specify shapes for different tissue layers in different haptic
 layers. For example, if rendering a hand, one might use one layer for
 the skin and one layer for the bone of the hand. This will make it

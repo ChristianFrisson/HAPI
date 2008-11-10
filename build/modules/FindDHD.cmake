@@ -5,6 +5,7 @@
 #  DHD_LIBRARIES    - List of libraries when using DHD.
 #  DHD_FOUND        - True if DHD found.
 
+GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 # Look for the header file.
 FIND_PATH(DHD_INCLUDE_DIR NAMES dhdc.h 
@@ -14,8 +15,8 @@ FIND_PATH(DHD_INCLUDE_DIR NAMES dhdc.h
                                 $ENV{H3D_ROOT}/../External/include/DHD-API
                                 ../../External/include
                                 ../../External/include/DHD-API 
-                                ${CMAKE_MODULE_PATH}/../../../External/include
-                                ${CMAKE_MODULE_PATH}/../../../External/include/DHD-API )
+                                ${module_file_path}/../../../External/include
+                                ${module_file_path}/../../../External/include/DHD-API )
 MARK_AS_ADVANCED(DHD_INCLUDE_DIR)
 
 
@@ -25,13 +26,13 @@ IF(WIN32)
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                  $ENV{H3D_ROOT}/../External/lib
                                  ../../External/lib
-                                 ${CMAKE_MODULE_PATH}/../../../External/lib)
+                                 ${module_file_path}/../../../External/lib)
 ELSE(WIN32)
   FIND_LIBRARY(DHD_LIBRARY NAMES dhd
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                  $ENV{H3D_ROOT}/../External/lib
                                  ../../External/lib
-                                 ${CMAKE_MODULE_PATH}/../../../External/lib)
+                                 ${module_file_path}/../../../External/lib)
 
   IF(UNIX)
     FIND_LIBRARY( USB_LIBRARY NAMES usb )

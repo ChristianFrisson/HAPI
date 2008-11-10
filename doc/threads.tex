@@ -10,6 +10,20 @@ and geometries that are rendered on a haptics device. There also has to be a way
 to send this information to other threads if they should ask for it (figure
 \ref{haptics thread}).
 
+\begin{figure} 
+  \centering 
+  \includegraphics{images/hapticsthread.pdf}
+  \caption{The flow of execution in the haptics thread.}
+  \label{haptics thread} 
+\end{figure}
+
+\begin{figure} 
+  \centering 
+  \includegraphics{images/threads.pdf}
+  \caption{Thread communication}
+  \label{threads} 
+\end{figure}
+
 \section{Thread handling classes}
 All classes and everything needed to do proper thread handling in HAPI can be
 found in the H3DUtil library. The most commonly used
@@ -25,12 +39,12 @@ remove callbacks.
 \end{itemize}
 
 See doxygen documentation for Threads.h and Threads.cpp (in H3DUtil) for more
-information and classes
+information and classes.
 
 \section{Setting up a simple thread}
 \label{secSimpleThread}
 Setting up a thread using the SimpleThread class is very easy.
-The arguments to SimpleThread are what function that to run in a
+The arguments to SimpleThread are what function to run in a
 separate thread and arguments to that function if there are any. If the
 function depends on more than one argument these should be collected in a
 custom made struct and a pointer to an instance of the struct should be sent
@@ -105,9 +119,11 @@ implemented.
 The argument "func" in the above functions contains the callback function to
 execute. The callback function has to be of the form
 "CallbackCode myCallbackFunc( void *data )" where myCallbackFunc is the name of
-the function. It shall return the CallbackCode CALLBACK\_DONE or
-CALLBACK\_CONTINUE. As long as the return code is CALLBACK\_CONTINUE the
-callback will be called in the next thread loop.
+the function. A callback function used with synchronousCallback shall
+return the CallbackCode CALLBACK\_DONE. A callback functions used with
+asynchronousCallback should return either CALLBACK\_DONE or CALLBACK\_CONTINUE.
+As long as the return code is CALLBACK\_CONTINUE the callback will be called in
+the next thread loop.
 
 Here follows an example on how to create a thread and set up different
 callbacks.
@@ -127,8 +143,9 @@ Haptics rendering have to be done for each device which means that each device
 will have its own haptic thread. Most of the time it is enough to use the
 functions in section \ref{ssHapticsRenderingFunctions} but sometimes one might
 want to access the thread of the haptics device. This can be done through the
-function "H3DUtil::PeriodicThreadBase *getThread()". The thread returned from
-this function can be used to set up new callbacks.
+function "H3DUtil::PeriodicThreadBase *getThread()" defined in the
+HAPIHapticsDevice class. The thread returned from this function can be used
+to set up new callbacks.
 
 By default the thread used is a HapticThread. Most of the time when adding a
 new device to HAPI by subclassing HAPIHapticsDevice the default thread is

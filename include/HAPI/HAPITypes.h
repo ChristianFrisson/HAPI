@@ -35,9 +35,6 @@
 #include <HAPI/HAPI.h>
 
 namespace HAPI {
-  // TODO: double versions of Rotation and Quaternion
-  typedef H3DUtil::ArithmeticTypes::Rotationd Rotation;
-  typedef H3DUtil::ArithmeticTypes::Quaterniond Quaternion;
 
   namespace Constants {
     const double epsilon = 1e-13;
@@ -63,6 +60,10 @@ namespace HAPI {
   typedef H3DUtil::Matrix4d Matrix4;
   /// \brief HAPI use double precision. HAPIFloat is a double.
   typedef double HAPIFloat ;
+  /// \brief HAPI use double precision. Rotation is a H3DUtil::Rotationd.
+  typedef H3DUtil::ArithmeticTypes::Rotationd Rotation;
+  /// \brief HAPI use double precision. Quaternion is a H3DUtil::Quaterniond.
+  typedef H3DUtil::ArithmeticTypes::Quaterniond Quaternion;
 #else
   /// \brief HAPI use float precision. Vec2 is a H3DUtil::Vec2f.
   typedef H3DUtil::Vec2f Vec2;
@@ -74,8 +75,12 @@ namespace HAPI {
   typedef H3DUtil::Matrix3f Matrix3;
   /// \brief HAPI use float precision. Matrix4 is a H3DUtil::Matrix4f.
   typedef H3DUtil::Matrix4f Matrix4;
-  /// \brief HAPI use double precision. HAPIFloat is a float.
+  /// \brief HAPI use float precision. HAPIFloat is a float.
   typedef float HAPIFloat ;
+  /// \brief HAPI use float precision. Rotation is a H3DUtil::Rotation.
+  typedef H3DUtil::ArithmeticTypes::Rotation Rotation;
+  /// \brief HAPI use float precision. Quaternion is a H3DUtil::Quaternion.
+  typedef H3DUtil::ArithmeticTypes::Quaternion Quaternion;
 #endif
 
   // defining "types" for doxygen. That is, different groups used to

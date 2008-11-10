@@ -42,7 +42,9 @@ TARGET_LINK_LIBRARIES( PeriodicThreadCallbacks ${requiredLibs})
 
 # set the install directory to the H3D directory on Windows
 IF(WIN32) 
- SET( CMAKE_INSTALL_PREFIX ${ThreadExamples_SOURCE_DIR}/../..)
+  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+    SET( CMAKE_INSTALL_PREFIX ${ThreadExamples_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
 ENDIF(WIN32)
 
 INSTALL( TARGETS SimpleThreadPrint

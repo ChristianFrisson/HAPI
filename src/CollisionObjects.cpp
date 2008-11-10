@@ -36,10 +36,6 @@
 #else
 #include <GL/glu.h>
 #endif
-
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "glu32.lib" )
-#endif
 #endif
 
 

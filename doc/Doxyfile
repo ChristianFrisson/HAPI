@@ -1,4 +1,4 @@
-# Doxyfile 1.5.5
+# Doxyfile 1.5.7
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -33,7 +33,6 @@ SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = YES
 QT_AUTOBRIEF           = NO
 MULTILINE_CPP_IS_BRIEF = NO
-DETAILS_AT_TOP         = NO
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 2
@@ -45,9 +44,11 @@ OPTIMIZE_OUTPUT_VHDL   = NO
 BUILTIN_STL_SUPPORT    = NO
 CPP_CLI_SUPPORT        = NO
 SIP_SUPPORT            = NO
+IDL_PROPERTY_SUPPORT   = YES
 DISTRIBUTE_GROUP_DOC   = NO
 SUBGROUPING            = YES
 TYPEDEF_HIDES_STRUCT   = NO
+SYMBOL_CACHE_SIZE      = 0
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
@@ -78,7 +79,10 @@ ENABLED_SECTIONS       =
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
 SHOW_DIRECTORIES       = NO
+SHOW_FILES             = YES
+SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    = 
+LAYOUT_FILE            = 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
@@ -152,7 +156,6 @@ VERBATIM_HEADERS       = YES
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
-ALPHABETICAL_INDEX     = NO
 COLS_IN_ALPHA_INDEX    = 5
 IGNORE_PREFIX          = 
 #---------------------------------------------------------------------------
@@ -165,20 +168,27 @@ HTML_HEADER            =
 HTML_FOOTER            = 
 HTML_STYLESHEET        = 
 HTML_ALIGN_MEMBERS     = YES
-GENERATE_HTMLHELP      = NO
+HTML_DYNAMIC_SECTIONS  = NO
 GENERATE_DOCSET        = NO
 DOCSET_FEEDNAME        = "Doxygen generated docs"
 DOCSET_BUNDLE_ID       = org.doxygen.Project
-HTML_DYNAMIC_SECTIONS  = NO
+GENERATE_HTMLHELP      = NO
 CHM_FILE               = 
 HHC_LOCATION           = 
 GENERATE_CHI           = NO
+CHM_INDEX_ENCODING     = 
 BINARY_TOC             = NO
 TOC_EXPAND             = NO
+GENERATE_QHP           = NO
+QCH_FILE               = 
+QHP_NAMESPACE          = org.doxygen.Project
+QHP_VIRTUAL_FOLDER     = doc
+QHG_LOCATION           = 
 DISABLE_INDEX          = NO
 ENUM_VALUES_PER_LINE   = 4
 GENERATE_TREEVIEW      = NO
 TREEVIEW_WIDTH         = 250
+FORMULA_FONTSIZE       = 10
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
@@ -247,9 +257,10 @@ SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
 # Configuration::additions related to external references   
 #---------------------------------------------------------------------------
-TAGFILES               = ../../doc/H3DUtil/H3DUtil.tag=../../H3DUtil/html
+TAGFILES               = ../../doc/H3DUtil/H3DUtil.tag=../../H3DUtil/html \
+                         ../../doc/H3DAPI/H3DAPI.tag=../../H3DAPI/html
 GENERATE_TAGFILE       = ../../doc/HAPI/HAPI.tag
-ALLEXTERNALS           = YES
+ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 PERL_PATH              = /usr/bin/perl
 #---------------------------------------------------------------------------
@@ -259,6 +270,8 @@ CLASS_DIAGRAMS         = YES
 MSCGEN_PATH            = 
 HIDE_UNDOC_RELATIONS   = YES
 HAVE_DOT               = YES
+DOT_FONTNAME           = FreeSans
+DOT_FONTPATH           = 
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = NO
 GROUP_GRAPHS           = YES
@@ -282,4 +295,4 @@ DOT_CLEANUP            = YES
 #---------------------------------------------------------------------------
 # Configuration::additions related to the search engine   
 #---------------------------------------------------------------------------
-SEARCHENGINE           = NO
+SEARCHENGINE           = YES

@@ -36,7 +36,8 @@ method takes the struct EffectInput as input. This struct contains:
 \item hd - A pointer to the HAPIHapticsDevice on which the force is rendered.
 Through this pointer the force effect can access device values such as
 the current position, velocity and orientation of the HAPIHapticsDevice.
-\item deltaT - The change in time since the last haptic frame.
+\item deltaT - The time difference from the last haptic frame to the current
+haptic frame.
 \end{itemize}
 The output of the calculateForces() method is an EffectOutput structure.
 It contains:

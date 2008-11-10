@@ -41,6 +41,13 @@ IF(PTHREAD_FOUND AND WIN32)
   SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
 ENDIF(PTHREAD_FOUND AND WIN32)
 
+FIND_PACKAGE(OpenGL REQUIRED)
+IF(OPENGL_FOUND)
+  SET(HAVE_OPENGL 1)
+  INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIR} )
+  SET(requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
+ENDIF(OPENGL_FOUND)
+
 IF(WIN32)
   FIND_PACKAGE(GLUTWin REQUIRED)
   IF(GLUT_FOUND)
@@ -67,7 +74,9 @@ TARGET_LINK_LIBRARIES( FeedbackBufferCollector ${requiredLibs} )
 
 # set the install directory to the H3D directory on Windows
 IF(WIN32) 
- SET( CMAKE_INSTALL_PREFIX ${FeedbackBufferCollector_SOURCE_DIR}/../..)
+  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+    SET( CMAKE_INSTALL_PREFIX ${FeedbackBufferCollector_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
 ENDIF(WIN32)
 
 INSTALL( TARGETS FeedbackBufferCollector
