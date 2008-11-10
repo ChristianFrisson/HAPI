@@ -2517,8 +2517,8 @@ void BinaryBoundTree::getAllPrimitives( vector< Triangle > &tris,
     lins.insert( lins.end(), linesegments.begin(), linesegments.end() );
     poins.insert( poins.end(), points.begin(), points.end() );
   }  else   {
-    if (left.get()) left->getAllTriangles( tris );
-    if (right.get()) right->getAllTriangles( tris );
+    if (left.get()) left->getAllPrimitives( tris, lins, poins );
+    if (right.get()) right->getAllPrimitives( tris, lins, poins );
   }
 }
 
