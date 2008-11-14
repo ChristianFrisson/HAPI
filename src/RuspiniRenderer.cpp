@@ -717,8 +717,12 @@ Vec3 RuspiniRenderer::tryProxyMovement( const Vec3 &from,
       PlaneConstraint pc = *i;
       Vec3 p = pc.haptic_shape->getInverse() * intersection.point;
       // get updated constraint
-      (*i).primitive->getConstraints( p, constraints, 
-                                      (*i).haptic_shape->getTouchableFace() );
+      if( (*i).primitive )
+        (*i).primitive->getConstraints( p, constraints, 
+                                       (*i).haptic_shape->getTouchableFace() );
+      else
+        (*i).haptic_shape->getConstraints( p, constraints,
+                                       (*i).haptic_shape->getTouchableFace() );
       if( !constraints.empty() ) {
         *i = constraints.front();
         (*i).normal = pc.haptic_shape->getTransform().getRotationPart() *
