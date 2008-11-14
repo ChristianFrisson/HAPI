@@ -556,3 +556,47 @@ ELSE(WIN32)
            DESTINATION include 
            PATTERN .svn EXCLUDE )
 ENDIF(WIN32)
+
+
+IF( NOT DEFINED HAPI_EXAMPLE_PROJECTS )
+  SET( HAPI_EXAMPLE_PROJECTS "NO" CACHE BOOL "If set to YES the example projects distributed with HAPI will be included in the build." )
+ENDIF( NOT DEFINED HAPI_EXAMPLE_PROJECTS )
+
+IF( HAPI_EXAMPLE_PROJECTS )
+  # This is done to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
+  STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../examples HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+  ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../examples
+                    ${HAPI_EXAMPLES_BINARY_DIR} )
+  IF( DEFINED DirectXExample_SOURCE_DIR )
+    ADD_DEPENDENCIES( DirectXExample HAPI )
+  ENDIF( DEFINED DirectXExample_SOURCE_DIR )
+  
+  IF( DEFINED FeedbackBufferCollector_SOURCE_DIR )
+    ADD_DEPENDENCIES( FeedbackBufferCollector HAPI )
+  ENDIF( DEFINED FeedbackBufferCollector_SOURCE_DIR )
+  
+  IF( DEFINED HAPIDemo_SOURCE_DIR )
+    ADD_DEPENDENCIES( HAPIDemo HAPI )
+  ENDIF( DEFINED HAPIDemo_SOURCE_DIR )
+  
+  IF( DEFINED SpringExample_SOURCE_DIR )
+    ADD_DEPENDENCIES( SpringExample HAPI )
+  ENDIF( DEFINED SpringExample_SOURCE_DIR )
+  
+  IF( DEFINED SurfaceExample_SOURCE_DIR )
+    ADD_DEPENDENCIES( SurfaceExample HAPI )
+  ENDIF( DEFINED SurfaceExample_SOURCE_DIR )
+  
+  IF( DEFINED ThreadExamples_SOURCE_DIR )
+    IF( DEFINED H3DUtil_SOURCE_DIR )
+      ADD_DEPENDENCIES( SimpleThreadPrint H3DUtil )
+      ADD_DEPENDENCIES( SimpleThreadPrintLock H3DUtil )
+      ADD_DEPENDENCIES( PeriodicThreadCallbacks H3DUtil )
+    ELSE( DEFINED H3DUtil_SOURCE_DIR )
+      ADD_DEPENDENCIES( SimpleThreadPrint HAPI )
+      ADD_DEPENDENCIES( SimpleThreadPrintLock HAPI )
+      ADD_DEPENDENCIES( PeriodicThreadCallbacks HAPI )
+    ENDIF( DEFINED H3DUtil_SOURCE_DIR )
+  ENDIF( DEFINED ThreadExamples_SOURCE_DIR )
+ENDIF( HAPI_EXAMPLE_PROJECTS )
+
