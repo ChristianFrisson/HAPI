@@ -112,7 +112,9 @@ namespace HAPI {
       have_inverse( false ),
       forced_dynamic( false ),
       first_use_time( -1 ),
-      clean_up_func( _clean_up_func ) {}
+      clean_up_func( _clean_up_func ) {
+        scale_factor = Vec3( 1.0, 1.0, 1.0 );
+    }
 
     /// Constructor.
 
@@ -148,7 +150,6 @@ namespace HAPI {
       forced_dynamic( false ),
       first_use_time( -1 ),
       clean_up_func( _clean_up_func ) {
-        
         setTransform( _transform );
         inverse = transform.inverse();
         setNonUniformScalingFlag();
@@ -185,7 +186,9 @@ namespace HAPI {
       growth_rate( _growth_rate ),
       forced_dynamic( false ),
       first_use_time( -1 ),
-      clean_up_func( _clean_up_func ) {}
+      clean_up_func( _clean_up_func ) {
+        scale_factor = Vec3( 1.0, 1.0, 1.0 );
+    }
 
 
     /// Destructor.
