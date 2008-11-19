@@ -105,7 +105,7 @@ namespace HAPI {
 
       ///////////////////////////////////////////////////
 
-      // The proxy radius(if applicable, -1 if the proxy radius does 
+      // The proxy radius(if applicable, 0 if the proxy radius does 
       // not make sense for the used haptics renderer)
       HAPIFloat proxy_radius;
 
@@ -124,12 +124,6 @@ namespace HAPI {
 
       // The haptics device that has made the contact.
       HAPIHapticsDevice *hd;
-
-      // Set the origin of the local coordinate system.
-      inline void setGlobalOrigin( const Vec3 &o ) {
-        origin_global = o;
-        has_inverse = false;
-      }
 
       // Update the inverse member.
       inline void updateInverse() {
@@ -282,6 +276,11 @@ namespace HAPI {
         return origin_global;
       }
 
+      /// Get the local proxy movement set by getProxyMovement function.
+      inline Vec2 localProxyMovement() {
+        return proxy_movement_local;
+      }
+
       /// Set the output force in local coordinates. 
       inline void setLocalForce( const Vec3 &f ) {
         force_global = vectorToGlobal( f );
@@ -305,6 +304,79 @@ namespace HAPI {
       /// Set the proxy movement in local surface space.
       inline void setLocalProxyMovement( const Vec2 &pm ) {
         proxy_movement_local = pm;
+      }
+
+      /// Set the origin of the local coordinate system.
+      /// This function should only be called by renderers.
+      inline void setGlobalOrigin( const Vec3 &o ) {
+        origin_global = o;
+        has_inverse = false;
+      }
+
+      /// Set the contact_point_global of ContactInfo
+      /// This function should only be called by renderers.
+      inline void setGlobalContactPoint( const Vec3 &point ) {
+        contact_point_global = point;
+      }
+
+      /// Set the x_axis of ContactInfo
+      /// This function should only be called by renderers.
+      inline void setXAxis( const Vec3 &axis ) {
+        x_axis = axis;
+      }
+
+      /// Set the y_axis of ContactInfo
+      /// This function should only be called by renderers.
+      inline void setYAxis( const Vec3 &axis ) {
+        y_axis = axis;
+      }
+
+      /// Set the z_axis of ContactInfo
+      /// This function should only be called by renderers.
+      inline void setZAxis( const Vec3 &axis ) {
+        z_axis = axis;
+      }
+
+      /// Set the haptic_shape member of ContactInfo
+      /// This function should only be called by renderers.
+      inline void setHapticShape( HAPIHapticShape * shape ) {
+        haptic_shape = shape;
+      }
+
+      /// Set the geom_primitive member of ContactInfo
+      /// This function should only be called by renderers.
+      inline void setPrimitive( Collision::GeometryPrimitive * primitive ) {
+        geom_primitive = primitive;
+      }
+
+      /// Set the hd member of ContactInfo
+      /// This function should only be called by renderers.
+      inline void setHapticsDevice( HAPIHapticsDevice *_hd ) {
+        hd = _hd;
+      }
+
+      /// Set the probe_position_global member of ContactInfo.
+      /// This function should only be called by renderers.
+      inline void setGlobalProbePosition( const Vec3 &point ) {
+        probe_position_global = point;
+      }
+
+      /// Set the probe_velocity_global member of ContactInfo.
+      /// This function should only be called by renderers.
+      inline void setGlobalProbeVelocity( const Vec3 &velocity ) {
+        probe_velocity_global = velocity;
+      }
+
+      /// Set the proxy_radius member of ContactInfo.
+      /// This function should only be called by renderers.
+      inline void setProxyRadius( HAPIFloat radius ) {
+        proxy_radius = radius;
+      }
+
+      /// Set the tex_coord member of ContactInfo.
+      /// This function should only be called by renderers.
+      inline void setContactPointTexCoord( const Vec3 &coord ) {
+        tex_coord = coord;
       }
 
       friend class RuspiniRenderer;

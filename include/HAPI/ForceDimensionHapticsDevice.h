@@ -147,6 +147,14 @@ namespace HAPI {
     /// com_lock.
     DeviceValues current_values;
 
+    /// The number of force dimension devices connected to the system.
+    /// Needed because dhdOpen() does not work for multiple devices.
+    /// dhdOpenID( char id ) have to be used.
+    static int nr_of_connected_dhd_devices;
+
+    /// Ids of devices that can be initialized. Needed because dhdOpen
+    /// does not work for multiple devices. dhdOpenID have to be used.
+    static vector< int > free_dhd_ids;
   };
 }
 
