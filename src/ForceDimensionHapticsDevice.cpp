@@ -49,8 +49,30 @@ ForceDimensionHapticsDevice::device_registration(
                     ForceDimensionHapticsDeviceInternal::force_dimension_libs
                             );
 
+vector< int > ForceDimensionHapticsDevice::free_dhd_ids;
+int ForceDimensionHapticsDevice::nr_of_connected_dhd_devices = -1;
 bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-  device_id = dhdOpen();
+  if( nr_of_connected_dhd_devices <= 0 ) {
+    nr_of_connected_dhd_devices = dhdGetDeviceCount();
+    if( nr_of_connected_dhd_devices <= 0 ) {
+      stringstream s;
+      s << "Warning: Failed to open Omega device. No connected devices. "
+        << "Error: " << dhdErrorGetLastStr();
+      setErrorMsg( s.str() );
+      return false;
+    } else {
+      for( int i = 0; i < nr_of_connected_dhd_devices; i++ )
+        free_dhd_ids.push_back( i );
+    }
+  } else if( free_dhd_ids.empty() ) {
+    stringstream s;
+    s << "Warning: Failed to open Omega device. All connected devices are "
+      << "already initialized.";
+    setErrorMsg( s.str() );
+    return false;
+  }
+
+  device_id = dhdOpenID( free_dhd_ids.back() );
   if( device_id == -1 ) {
     stringstream s;
     s << "Warning: Failed to open Omega device. Error: " 
@@ -58,6 +80,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     setErrorMsg( s.str() );
     return false;
   }
+  free_dhd_ids.pop_back();
 
 #ifdef WIN32
   com_thread = 
@@ -87,7 +110,8 @@ bool ForceDimensionHapticsDevice::releaseHapticsDevice() {
     int id = device_id;
     device_id = -1;
     dhdClose( id );
-    
+    free_dhd_ids.push_back( id );
+
   }
   return true;
 }
@@ -138,7 +162,7 @@ void ForceDimensionHapticsDevice::reset() {
 // call returns even if calibration has not occured.
 void ForceDimensionHapticsDevice::waitForReset( int timeout ) {
   if( device_id != -1 ) {
-    dhdWaitForReset( timeout );
+    dhdWaitForReset( timeout, device_id );
   }
 }
 
