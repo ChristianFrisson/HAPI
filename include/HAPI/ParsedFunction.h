@@ -35,6 +35,7 @@
 
 // fparser includes
 #include <HAPI/fparser.hh>
+#include <memory>
 
 namespace HAPI {
   /// \ingroup Others
