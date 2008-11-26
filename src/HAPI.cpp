@@ -29,6 +29,7 @@
 
 #include <HAPI/HAPI.h>
 #include <sstream>
+#include <stdlib.h>
 
 using namespace HAPI;
 

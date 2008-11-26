@@ -37,6 +37,8 @@
 #include <H3DUtil/Threads.h>
 #include <H3DUtil/AutoRefVector.h>
 
+#include <memory>
+
 namespace HAPI {
 
   /// \ingroup AbstractClasses
