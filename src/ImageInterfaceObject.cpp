@@ -48,6 +48,25 @@ ImageInterfaceObject::ImageInterfaceObject( H3DUtil::Image * _image_object ) :
   }
 }
 
+ImageInterfaceObject::ImageInterfaceObject( H3DUtil::Image * _image_object,
+                                           H3DUtil::MutexLock *_image_lock ) :
+  image_object( _image_object ) {
+  image_lock = _image_lock;
+  if( image_object.get() ) {
+    image_data = (unsigned char *) image_object->getImageData();
+    byte_rem = image_object->bitsPerPixel() % 8;
+    bytes_per_pixel = image_object->bitsPerPixel() / 8;
+    isUnsignedLuminance = image_object->pixelType() ==
+                          H3DUtil::Image::LUMINANCE &&
+                          image_object->pixelComponentType() ==
+                          H3DUtil::Image::UNSIGNED &&
+                          bytes_per_pixel == 1;
+    width = image_object->width();
+    height = image_object->height();
+    depth = image_object->depth();
+  }
+}
+
 HAPIFloat ImageInterfaceObject::getSample( Vec3 &tex_coord ) {
 
   HAPIFloat val = 0;
