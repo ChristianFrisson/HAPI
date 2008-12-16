@@ -66,13 +66,51 @@ namespace HAPI {
     /// can handle.
     bool use_relative_values;
 
+    /// Common way of calculating the force for a friction surface.
+    /// Can be used by subclasses to HAPIFrictionSurface.
+    /// \param contact_info A struct containing info about the contact on the
+    /// surface
+    /// \param point_on_surface The point towards which the force should be
+    /// calculated, quite often this is the point of the virtual proxy.
+    /// \param stiffness The stiffness parameter.
+    /// \param damping The damping parameter.
+    static void getForcesInternal( ContactInfo &contact_info,
+                                   const Vec3 &point_on_surface,
+                                   HAPIFloat stiffness,
+                                   HAPIFloat damping,
+                                   bool use_relative_values );
+
   protected:
     /// Used to determine if the proxy is in static contact with
     /// the surface. In that case there is no proxy movement.
     bool in_static_contact;
 
     /// Common way of calculating the proxy movement for a friction surface.
-    /// If friction parameters are non-zero.
+    /// If friction parameters are non-zero. This function is deprecated, use
+    /// the static public function setLocalProxyMovement instead.
+    /// Can be used by subclasses to HAPIFrictionSurface.
+    /// \param contact_info A struct containing info about the contact on the
+    /// surface
+    /// \param t_force_length The magnitude of the tangential force.
+    /// \param n_force_length The magnitude of the normal force.
+    /// \param proxy_movement The estimated proxy movement.
+    /// \param static_friction The static friction parameter.
+    /// \param dynamic_friction The dynamic friction parameter.
+    /// \param have_proxy_mov_length Should be true if the next parameter is
+    /// set.
+    /// \param proxy_mov_length The magnitude of the proxy movement, used if
+    /// have_proxy_mov_length is true.
+    void setLocalProxyMovement( ContactInfo &contact_info,
+                                HAPIFloat t_force_length,
+                                HAPIFloat n_force_length,
+                                Vec2 &proxy_movement,
+                                HAPIFloat static_friction,
+                                HAPIFloat dynamic_friction,
+                                HAPIFloat *proxy_mov_length = 0 );
+
+    /// Common way of calculating the proxy movement for a friction surface.
+    /// If friction parameters are non-zero. THIS FUNCTION IS DEPRECATED, use
+    /// the other version of the function setLocalProxyMovement instead.
     /// Can be used by subclasses to HAPIFrictionSurface.
     /// \param contact_info A struct containing info about the contact on the
     /// surface
@@ -91,7 +129,8 @@ namespace HAPI {
                                 HAPIFloat proxy_mov_length = 0 );
 
     /// Common way of calculating the force for a friction surface.
-    /// Can be used by subclasses to HAPIFrictionSurface.
+    /// Can be used by subclasses to HAPIFrictionSurface. THIS FUNCTION IS
+    /// DEPRECATED, use the static public function getForcesInternal instead.
     /// \param contact_info A struct containing info about the contact on the
     /// surface
     /// \param point_on_surface The point towards which the force should be

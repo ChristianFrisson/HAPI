@@ -183,8 +183,9 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
                            tangent_force,
                            normal_force,
                            res,
-                           true,
-                           res_l );
+                           static_friction,
+                           dynamic_friction,
+                           &res_l );
 
   }
 }
@@ -206,7 +207,8 @@ void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
   }
   else {
     Vec3 real_contact_point = temp_point + depth * contact_info.yAxis();
-    getForcesInternal( contact_info, real_contact_point );
+    getForcesInternal( contact_info, real_contact_point,
+                       stiffness, damping, use_relative_values );
   }
 }
 

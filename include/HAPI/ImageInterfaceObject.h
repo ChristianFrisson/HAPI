@@ -50,6 +50,10 @@ namespace HAPI {
     // Constructor
     ImageInterfaceObject( H3DUtil::Image * _image_object = 0 );
 
+    // Constructor
+    ImageInterfaceObject( H3DUtil::Image * _image_object,
+                          H3DUtil::MutexLock * _image_lock );
+
     // Set internal values thread safe.
     inline void setImage( H3DUtil::Image * image ) {
       if( image_lock )
@@ -71,13 +75,14 @@ namespace HAPI {
         image_lock->unlock();
     }
 
-  protected:
     /// Sample the image at a given normalized position(texture coordinate), 
     /// i.e. coordinates between 0 and 1. Pixel data will be trilinearly
     /// interpolated to  calculate the result.
     ///
     /// \param tex_coord The texture coordinate from which to get data.
     HAPIFloat getSample( Vec3 &tex_coord );
+
+  protected:
 
     /// Help function to getSample
     HAPIFloat getPixel( int x = 0, int y = 0, int z = 0 );

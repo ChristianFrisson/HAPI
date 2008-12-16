@@ -69,11 +69,14 @@ void FrictionSurface::getProxyMovement( ContactInfo &contact_info ) {
     setLocalProxyMovement( contact_info,
                            force_t.length(),
                            force.y,
-                           local_probe_2d );
+                           local_probe_2d,
+                           static_friction,
+                           dynamic_friction );
 
   }
 }
 
 void FrictionSurface::getForces( ContactInfo &contact_info ) {
-  getForcesInternal( contact_info, contact_info.globalOrigin() );
+  getForcesInternal( contact_info, contact_info.globalOrigin(),
+                     stiffness, damping, use_relative_values );
 }

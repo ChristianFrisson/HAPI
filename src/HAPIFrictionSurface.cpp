@@ -51,8 +51,9 @@ void HAPIFrictionSurface::setLocalProxyMovement( ContactInfo &contact_info,
                                                  HAPIFloat t_force_length,
                                                  HAPIFloat n_force_length,
                                                  Vec2 &proxy_movement,
-                                                 bool have_proxy_mov_length,
-                                                 HAPIFloat proxy_mov_length ) {
+                                                 HAPIFloat static_friction,
+                                                 HAPIFloat dynamic_friction,
+                                                 HAPIFloat *proxy_mov_length ) {
   if( in_static_contact ) {
     // Determine if the movement should start.
     if( t_force_length <= static_friction * n_force_length ) {
@@ -78,10 +79,13 @@ void HAPIFrictionSurface::setLocalProxyMovement( ContactInfo &contact_info,
       // velocity * 0.001 where 0.001 is the time in seconds for one haptic
       // frame.
       HAPIFloat max_movement = velocity * dt;
-      if( !have_proxy_mov_length )
-        proxy_mov_length = proxy_movement.length();
-      if( proxy_mov_length > max_movement ) {
-        proxy_movement *= max_movement / proxy_mov_length;
+      if( !proxy_mov_length ) {
+        HAPIFloat tmp_proxy_mov_length = proxy_movement.length();
+        if( tmp_proxy_mov_length > max_movement )
+          proxy_movement *= max_movement / tmp_proxy_mov_length;
+      }
+      else if( *proxy_mov_length > max_movement ) {
+        proxy_movement *= max_movement / *proxy_mov_length;
       }
       contact_info.setLocalProxyMovement( proxy_movement );
     }
@@ -89,7 +93,10 @@ void HAPIFrictionSurface::setLocalProxyMovement( ContactInfo &contact_info,
 }
 
 void HAPIFrictionSurface::getForcesInternal( ContactInfo &contact_info,
-                                             const Vec3 &point_on_surface ) {
+                                             const Vec3 &point_on_surface,
+                                             HAPIFloat stiffness,
+                                             HAPIFloat damping,
+                                             bool use_relative_values ) {
   Vec3 probe_to_origin = point_on_surface - contact_info.globalProbePosition();
 
   Vec3 n_probe_to_origin = probe_to_origin;
@@ -103,5 +110,23 @@ void HAPIFrictionSurface::getForcesInternal( ContactInfo &contact_info,
                                 ( n_probe_to_origin *
                                   contact_info.globalProbeVelocity() *
                                   damping ) * n_probe_to_origin );
+}
+
+
+void HAPIFrictionSurface::setLocalProxyMovement( ContactInfo &contact_info,
+                                                 HAPIFloat t_force_length,
+                                                 HAPIFloat n_force_length,
+                                                 Vec2 &proxy_movement,
+                                                 bool have_proxy_mov_length,
+                                                 HAPIFloat proxy_mov_length ) {
+  setLocalProxyMovement( contact_info, t_force_length, n_force_length,
+                         proxy_movement, static_friction, dynamic_friction,
+                         &proxy_mov_length );
+}
+
+void HAPIFrictionSurface::getForcesInternal( ContactInfo &contact_info,
+                                             const Vec3 &point_on_surface ) {
+  getForcesInternal( contact_info, point_on_surface, stiffness,
+                     damping, use_relative_values );
 }
 
