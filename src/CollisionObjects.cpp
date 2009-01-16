@@ -41,6 +41,11 @@
 
 #include <stack>
 
+#ifdef WIN32
+#undef max
+#endif
+#include <limits>
+
 using namespace HAPI;
 using namespace Collision;
 
@@ -2425,26 +2430,20 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
                                     Vec3 &closest_normal,
                                     Vec3 &tex_coord ) {
   if ( isLeaf() )  {
-    Vec3 cp, cn;
-    HAPIFloat d2;
     if( triangles.size() == 0 && linesegments.size() == 0 &&
         points.size() == 0 ) return;
+    Vec3 cp, cn;
+    HAPIFloat d2 = std::numeric_limits<HAPIFloat>::max();
     for( vector< Triangle >::iterator i = triangles.begin();
          i != triangles.end(); i++ ) {
       Vec3 point, normal;
       (*i).closestPoint( p, point, normal, tex_coord );
-      Vec3 v = p - cp;
-      if( i == triangles.begin() ) {
+      Vec3 v = p - point;
+      HAPIFloat new_d2 = v * v;
+      if( new_d2 < d2 ) {
         cp = point;
         cn = normal;
-        d2 = v * v;
-      } else {
-        HAPIFloat new_d2 = v * v;
-        if( new_d2 < d2 ) {
-          cp = point;
-          cn = normal;
-          d2 = v * v;
-        }
+        d2 = new_d2;
       }
     }
 
@@ -2452,12 +2451,12 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
          i != linesegments.end(); i++ ) {
       Vec3 point, normal;
       (*i).closestPoint( p, point, normal, tex_coord );
-      Vec3 v = p - cp;
+      Vec3 v = p - point;
       HAPIFloat new_d2 = v * v;
       if( new_d2 < d2 ) {
         cp = point;
         cn = normal;
-        d2 = v * v;
+        d2 = new_d2;
       }
     }
 
@@ -2465,12 +2464,12 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
          i != points.end(); i++ ) {
       Vec3 point, normal;
       (*i).closestPoint( p, point, normal, tex_coord );
-      Vec3 v = p - cp;
+      Vec3 v = p - point;
       HAPIFloat new_d2 = v * v;
       if( new_d2 < d2 ) {
         cp = point;
         cn = normal;
-        d2 = v * v;
+        d2 = new_d2;
       }
     }
     closest_point = cp;
@@ -2745,26 +2744,20 @@ void BBPrimitiveTree::closestPoint( const Vec3 &p,
                                     Vec3 &closest_normal,
                                     Vec3 &tex_coord ) {
   if ( isLeaf() )  {
-    Vec3 cp, cn;
-    HAPIFloat d2;
     if( primitives.size() == 0 ) return;
+    Vec3 cp, cn;
+    HAPIFloat d2 = std::numeric_limits<HAPIFloat>::max();
     for( H3DUtil::AutoRefVector< GeometryPrimitive >::const_iterator
           i = primitives.begin();
          i != primitives.end(); i++ ) {
       Vec3 point, normal;
       (*i)->closestPoint( p, point, normal, tex_coord );
-      Vec3 v = p - cp;
-      if( i == primitives.begin() ) {
+      Vec3 v = p - point;
+      HAPIFloat new_d2 = v * v;
+      if( new_d2 < d2 ) {
         cp = point;
         cn = normal;
-        d2 = v * v;
-      } else {
-        HAPIFloat new_d2 = v * v;
-        if( new_d2 < d2 ) {
-          cp = point;
-          cn = normal;
-          d2 = v * v;
-        }
+        d2 = new_d2;
       }
     }
     closest_point = cp;
@@ -3163,3 +3156,4 @@ bool BBPrimitiveTree::movingSphereIntersect( HAPIFloat radius,
     else return false;
   }
 }
+
