@@ -692,6 +692,191 @@ class Constraints;
       /// The position of the point
       Vec3 position;
     };
+
+    /// \ingroup CollisionStructures
+    /// \class Cylinder
+    /// \brief Represents a cylinder primitive. The cylinder is specified
+    /// by radius and height and the center axis of the cylinder is along
+    /// the positive y-axis. The cylinder starts in origo.
+    /// Texture coordinates are calculated as the following:
+    /// On the cylinder part a texture is assumed to wrap counterclockwise
+    /// seen from above, starting at the back of the cylinder. There is a
+    /// vertical seem at the back of the cylinder intersecting x=0.
+    /// On the top and bottom caps a texture is assumed to be centered
+    /// in the middle of the cap. Seen from above a texture would appear
+    /// right side up when up is in the direction of the -z axis.
+    class HAPI_API Cylinder: public Collision::GeometryPrimitive {
+    public:
+      // Used in calculations to know on which part of the cylinder a point
+      // is, for example a point of intersection.
+      typedef enum {
+        CYLINDER = 0,
+        START_CAP = 1,
+        END_CAP = 2
+      } CylinderPart;
+
+      /// Default constructor.
+      Cylinder() {}
+
+      /// Constructor.
+      /// \param _radius The cylinder radius.
+      /// \param _height The height of the cylinder
+      /// \param _start_cap If true then the cylinder has a cap at y = 0.
+      /// \param _end_cap If true then the cylinder has a cap at y = _height.
+      Cylinder( const HAPIFloat &_radius,
+                const HAPIFloat &_height,
+                bool _start_cap = true,
+                bool _end_cap = true ) :
+        height( _height ),
+        radius( _radius ),
+        start_cap( _start_cap ),
+        end_cap( _end_cap ) {}
+
+      /// Get constraint planes of the object. A proxy of a haptics renderer
+      /// will always stay above any constraints added.
+      /// \param point The point to constrain.
+      /// \param constraints Where to add the constraints.
+      /// \param face Determines which faces of the shape will be seen as
+      /// constraining.
+      /// \param radius Only add constraints within this radius. If set to -1
+      /// all constraints will be added.
+      virtual void getConstraints( const Vec3 &point,
+                                   Constraints &constraints,
+                                   FaceType face = Collision::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
+
+      /// Calculates a matrix transforming from local space to texture space.
+      /// \param point The point at which to find the tangent vectors
+      /// \param result_mtx Where the result is stored.
+      virtual void getTangentSpaceMatrix( const Vec3 &point,
+                                          Matrix4 &result_mtx );
+
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord );
+
+      /// Detect collision between a line segment and the object.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param result Contains info about the closest intersection, if 
+      /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
+      /// \returns true if intersected, false otherwise.
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
+                                  IntersectionInfo &result,
+                                  FaceType face = Collision::FRONT_AND_BACK );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Is of course slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result);
+
+      /// Returns a point representing the primitive. In this case it is the 
+      /// center of the cylinder.
+      inline virtual Vec3 pointRepresentation() const {
+        return Vec3( 0, height/2, 0 );
+      }
+
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
+      virtual void render();
+
+      /// Given a point on the cylinder return the texture coordinate.
+      /// \param point The point on the cylinder.
+      /// \param part Which part of the cylinder the point is on.
+      Vec3 Cylinder::getTextureCoordinate( const Vec3 &point,
+                                           Cylinder::CylinderPart part );
+
+      /// If true then the cylinder have a cap at the start_point.
+      /// True by default.
+      bool start_cap;
+
+      /// If true then the cylinder have a cap at the end_point.
+      /// True by default.
+      bool end_cap;
+
+      /// The height of the cylinder.
+      HAPIFloat height;
+
+      /// The radius of the cylinder.
+      HAPIFloat radius;
+
+    protected:
+
+      /// Detect collision between a line segment and the object.
+      /// For internal use.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param start_point The start point of the cylinder. Assumed to be
+      /// somewhere on the y-axis.
+      /// \param end_point The end point of the cylinder. Assumed to be
+      /// somewhere on the y-axis.
+      /// \param _radius The radius of the cylinder to intersect with. In order
+      /// to get intersection with cylinders in the same place but other
+      /// radius.
+      /// \param result Contains info about the closest intersection, if 
+      /// line intersects object
+      /// \param part Returns which part of the cylinder intersection occured
+      /// at.
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
+      /// \returns true if intersected, false otherwise.
+      bool lineIntersect( const Vec3 &from, 
+                          const Vec3 &to,
+                          const HAPIFloat &start_point,
+                          const HAPIFloat &end_point,
+                          HAPIFloat _radius,
+                          IntersectionInfo &result,
+                          CylinderPart &part,
+                          FaceType face = Collision::FRONT_AND_BACK );
+
+      /// Get the closest point and normal on the object to the given point p.
+      /// For internal use.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
+      /// \param inside Set to true if closest point is inside cylinder.
+      /// \param part Set which part of the cylinder the closest point is on.
+      void closestPoint( const Vec3 &p,
+                         Vec3 &closest_point,
+                         Vec3 &normal,
+                         Vec3 &tex_coord,
+                         bool &inside,
+                         CylinderPart &part );
+    };
     
     /// \ingroup CollisionStructures
     /// \class AABoxBound
