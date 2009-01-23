@@ -88,6 +88,39 @@ namespace CollisionInternals {
     }
     nr_of_spheres_lock.unlock();
   }
+
+  H3DUtil::MutexLock nr_of_cylinders_lock;
+  unsigned int nr_of_cylinders = 0;
+  GLuint cylinder_display_list_id;
+  bool cylinder_display_list_created = false;
+  
+  void createCylinderDisplayList() {
+    if( !cylinder_display_list_created ) {
+      cylinder_display_list_id = glGenLists(1);
+      glNewList( cylinder_display_list_id, GL_COMPILE );
+      GLUquadricObj* pObj = gluNewQuadric(); 
+      gluCylinder(pObj, 1, 1, 1, 10, 10); 
+      gluDeleteQuadric(pObj); 
+      glEndList();
+      cylinder_display_list_created = true;
+    }
+  }
+
+  void increaseCylinderCounter() {
+    nr_of_cylinders_lock.lock();
+    nr_of_cylinders++;
+    nr_of_cylinders_lock.unlock();
+  }
+
+  void decreseCylinderCounter() {
+    nr_of_cylinders_lock.lock();
+    nr_of_cylinders--;
+    if( nr_of_cylinders == 0 && cylinder_display_list_created ) {
+      glDeleteLists( cylinder_display_list_id, 1 );
+      cylinder_display_list_created = false;
+    }
+    nr_of_cylinders_lock.unlock();
+  }
 #endif
 }
 
@@ -2918,7 +2951,6 @@ bool Triangle::getConstraint(  const Vec3 &point,
                                FaceType face ) {
   Vec3 closest_point, cp_normal, cp_tex_coord;
   closestPoint( point, closest_point, cp_normal, cp_tex_coord );
-  //cerr << closest_point << endl;
   Vec3 normal = point - closest_point;
   
   if( face == Collision::FRONT ) {
@@ -3155,5 +3187,736 @@ bool BBPrimitiveTree::movingSphereIntersect( HAPIFloat radius,
     }
     else return false;
   }
+}
+
+Vec3 Cylinder::getTextureCoordinate( const Vec3 &point,
+                                     Cylinder::CylinderPart part ) {
+  if( part == Cylinder::CYLINDER ) {
+    return Vec3( ( H3DUtil::Constants::pi +
+                   H3DUtil::H3DAtan2( point.x, point.z ) )
+                   / ( 2 * H3DUtil::Constants::pi ),
+                 point.y / height,
+                 0 );
+  } else {
+    HAPIFloat radius_2 = 2 * radius;
+    return Vec3( (point.x + radius) / radius_2,
+                 (-point.z + radius ) / radius_2, 0 );
+  }
+}
+
+void Cylinder::getTangentSpaceMatrix( const Vec3 &point,
+                                      Matrix4 &result_mtx ) {
+  // Get closest point, if on CYLINDER do one thing otherwise
+  // do another.
+  Vec3 closest, tmp;
+  bool inside;
+  CylinderPart part;
+  closestPoint( point, closest, tmp, tmp, inside, part );
+  if( part == CYLINDER ) {
+    // When the point is on the cylinder a Jacobian is created from the
+    // functions.
+    // s(x,y,z) = pi + arctan( x / z )
+    // t(x,y,z) = y / d Where d = (end_point - start_point).length().
+    // u(x,y,z) = 0.
+    // In order to get an invertable matrix the cross-product is taken
+    // between the two first rows of the jacobian. This is not entirely
+    // correct since a movement perpendicular to the center segment does
+    // not affect the third texture coordinate at all. The z value of a result
+    // between this matrix and a point should therefore be ignored.
+    HAPIFloat constant = CollisionInternals::two_pi_inv / 
+      (closest.x * closest.x + closest.z * closest.z );
+    result_mtx[0][0] = constant * closest.z;
+    result_mtx[0][1] = 0;
+    result_mtx[0][2] = -constant * closest.x;
+    result_mtx[0][3] = 0;
+    result_mtx[1][0] = 0;
+    result_mtx[1][1] = 1 / height;
+    result_mtx[1][2] = 0;
+    result_mtx[1][3] = 0;
+#if 1
+    // Invertable matrix.
+    result_mtx[2][0] = -result_mtx[0][2] * result_mtx[1][1];
+    result_mtx[2][1] = 0;
+    result_mtx[2][2] = result_mtx[0][0] * result_mtx[1][1];
+    result_mtx[2][3] = 0;
+#else
+    // Non invertable matrix.
+    result_mtx[2][0] = 0;
+    result_mtx[2][1] = 0;
+    result_mtx[2][2] = 0;
+    result_mtx[2][3] = 0;
+#endif
+    
+    result_mtx[3][0] = 0;
+    result_mtx[3][1] = 0;
+    result_mtx[3][2] = 0;
+    result_mtx[3][3] = 1;
+  } else {
+    // When the point is on one of the end caps a Jacobian is created from the
+    // functions.
+    // s(x,y,z) = (x + radius) / (2 * radius)
+    // t(x,y,z) = (-z + radius) / (2 * radius)
+    // u(x,y,z) = 0.
+    // In order to get an invertable matrix the cross-product is taken
+    // between the two first rows of the jacobian. This is not entirely
+    // correct since a movement perpendicular to the center segment does
+    // not affect the third texture coordinate at all. The z value of a result
+    // between this matrix and a point should therefore be ignored.
+    result_mtx[0][0] = 1 / ( 2 * radius);
+    result_mtx[0][1] = 0;
+    result_mtx[0][2] = 0;
+    result_mtx[0][3] = 0;
+    
+    result_mtx[1][0] = 0;
+    result_mtx[1][1] = 0;
+    result_mtx[1][2] = -result_mtx[0][0];
+    if( part == END_CAP ) {
+      // result_matrix is multiplied by a transform matrix to transform
+      // the origo into the end cap plane. Since the transformation is
+      // only in the y-direction this is the only component of the matrix
+      // that changes
+      result_mtx[1][3] = -height * result_mtx[1][2];
+    } else {
+      result_mtx[1][3] = 0;
+    }
+    
+#if 1
+    // Invertable matrix
+    result_mtx[2][0] = 0;
+    result_mtx[2][1] = 0;
+    result_mtx[2][2] = - result_mtx[0][0] * result_mtx[0][0];
+    result_mtx[2][3] = 0;
+#else
+    // Non invertable matrix
+    result_mtx[2][0] = 0;
+    result_mtx[2][1] = 0;
+    result_mtx[2][2] = 0;
+    result_mtx[2][3] = 0;
+#endif
+    result_mtx[3][0] = 0;
+    result_mtx[3][1] = 0;
+    result_mtx[3][2] = 0;
+    result_mtx[3][3] = 1;
+  }
+}
+
+void Cylinder::closestPoint( const Vec3 &p,
+                             Vec3 &closest_point,
+                             Vec3 &normal,
+                             Vec3 &tex_coord ) {
+  bool inside;
+  CylinderPart part;
+  closestPoint( p, closest_point, normal, tex_coord, inside, part );
+}
+
+void Cylinder::closestPoint( const Vec3 &p,
+                             Vec3 &closest_point,
+                             Vec3 &normal,
+                             Vec3 &tex_coord,
+                             bool &inside,
+                             CylinderPart &part ) {
+  inside = false;
+  // Check if point is outside or within center segment.
+  if( p.y > height || p.y < 0 ) {
+    // Point is on cap points
+    HAPIFloat cap_center_point_y = 0;
+    HAPIFloat cap_normal_y;
+    if ( p.y > height ) {
+      cap_center_point_y = height;
+      cap_normal_y = 1;
+      if( !end_cap ) part = CYLINDER;
+      else part = END_CAP;
+    } else {
+      cap_center_point_y = 0;
+      cap_normal_y = -1;
+      if( !start_cap ) part = CYLINDER;
+      else part = START_CAP;
+    }
+    // Project onto end-cap plane.
+    // In the following calculations only the y component is
+    // used in those cases where the x and z component are 0.
+    // For example for all dot-products with the cap_center_point
+    // which is Vec3( 0, 0 or height, 0 ) and cap_normal which
+    // is Vec3( 0, -1 or 1, 0 )
+    Vec3 point_on_plane = Vec3( p.x, cap_center_point_y, p.z );
+    Vec3 center_edge = Vec3( p.x, 0, p.z );
+    HAPIFloat center_edge_length_sqr = center_edge.lengthSqr();
+    if( center_edge_length_sqr > radius * radius || part == CYLINDER ) {
+      // TODO: decide what to do if center_edge_length_sqrt is zero.
+      center_edge = center_edge / H3DUtil::H3DSqrt( center_edge_length_sqr );
+      closest_point = center_edge * radius;
+      closest_point.y = cap_center_point_y;
+      normal = p - closest_point;
+      normal.normalizeSafe();
+    } else {
+      closest_point = point_on_plane;
+      normal = Vec3( 0, cap_normal_y, 0 );
+    }
+    tex_coord = getTextureCoordinate( closest_point, part );
+  } else {
+    // Point is between the end cap planes.
+    // Point might be on cylinder curvature or on any of the caps.
+    // Project point onto center cylinder segment
+    Vec3 center_edge = Vec3( p.x, 0, p.z );
+    HAPIFloat center_edge_length_sqr = center_edge.lengthSqr();
+    HAPIFloat dist_sqr = center_edge_length_sqr - radius * radius;
+    // If the squared distance is negative then point is inside cylinder.
+    if( dist_sqr < 0.0f ) {
+      inside = true;
+      dist_sqr = -dist_sqr;
+      bool on_cylinder_curv = false;
+      // This section contains some duplicated code inside the if cases
+      // in order to avoid extra multiplications.
+      // It simply checks which distances to compare and chose the closest
+      // point.
+      if( end_cap && start_cap ) {
+        HAPIFloat dist_end_plane = height - p.y;
+        HAPIFloat dist_end_sqr = dist_end_plane * dist_end_plane;
+        HAPIFloat dist_start_sqr = p.y * p.y;
+
+        if( ( dist_end_sqr < Constants::epsilon ||
+              dist_start_sqr < Constants::epsilon) &&
+            dist_sqr < Constants::epsilon ) {
+          // normal should be a combination of several things.
+          assert(0);
+        }
+
+        // Compare distances to figure out which part of the cylinder the
+        // point is closest to.
+        if( dist_end_plane < p.y ) {
+          if( dist_end_sqr < dist_sqr ) {
+            closest_point = Vec3( p.x, height, p.z );
+            normal = Vec3( 0, 1, 0 );
+            part = END_CAP;
+            tex_coord = getTextureCoordinate( closest_point, part );
+          } else {
+            on_cylinder_curv = true;
+          }
+        } else {
+          if( dist_start_sqr < dist_sqr ) {
+            closest_point = center_edge;
+            normal = Vec3( 0, -1, 0 );
+            tex_coord = getTextureCoordinate( closest_point, part );
+          } else {
+            on_cylinder_curv = true;
+          }
+        }
+      } else if( end_cap ) {
+        HAPIFloat dist_end_plane = height - p.y;
+        if( dist_end_plane * dist_end_plane < dist_sqr ) {
+          closest_point = Vec3( p.x, height, p.z );
+          normal = Vec3( 0, 1, 0 );
+          part = END_CAP;
+          tex_coord = getTextureCoordinate( closest_point, part );
+        } else
+          on_cylinder_curv = true;
+      } else if( start_cap ) {
+        if( p.y * p.y < dist_sqr ) {
+          closest_point = center_edge;
+          normal = Vec3( 0, -1, 0 );
+          part = START_CAP;
+          tex_coord = getTextureCoordinate( closest_point, part );
+        } else {
+          on_cylinder_curv = true;
+        }
+      } else
+        on_cylinder_curv = true;
+
+      if( on_cylinder_curv ) {
+        part = CYLINDER;
+        if( H3DUtil::H3DAbs( center_edge_length_sqr ) > Constants::epsilon ) {
+          center_edge = center_edge /
+                        H3DUtil::H3DSqrt( center_edge_length_sqr );
+          closest_point = center_edge * radius;
+          closest_point.y = p.y;
+          normal = center_edge;
+          tex_coord = getTextureCoordinate( closest_point, CYLINDER );
+        } else {
+          // If for some reason the point is exactly in the middle of the
+          // cylinder (not very likely when dealing with haptics) then
+          // just choose any of the closest point on the cylinder surfaces.
+          // We choose the one that is on the x-axis.
+          normal = Vec3( 1, 0, 0 );
+          closest_point = p + normal * radius;
+          tex_coord = getTextureCoordinate( closest_point, CYLINDER );
+        }
+      }
+    } else {
+      // Point is outside cylinder between end cap planes.
+      // This means that the closest_point is on the cylinder surface.
+      center_edge = center_edge /
+                    H3DUtil::H3DSqrt( center_edge_length_sqr );
+      closest_point = center_edge * radius;
+      closest_point.y = p.y;
+      normal = center_edge;
+      tex_coord = getTextureCoordinate( closest_point, CYLINDER );
+      part = CYLINDER;
+    }
+  }
+}
+
+// Texture coordinates
+// Page 197 in Real time collision detection, with corrections according
+// to errata on book home page.
+// Added checks for detection of line segement with cylinder surface when
+// line segment starts inside cylinder.
+bool Cylinder::lineIntersect( const Vec3 &from, 
+                              const Vec3 &to,
+                              IntersectionInfo &result,
+                              FaceType face ) {
+  CylinderPart part;
+  return lineIntersect( from, to, 0, height, 
+                        radius, result, part, face );
+}
+
+bool Cylinder::lineIntersect( const Vec3 &from, 
+                              const Vec3 &to,
+                              const HAPIFloat &start_point,
+                              const HAPIFloat &end_point,
+                              HAPIFloat _radius,
+                              IntersectionInfo &result,
+                              CylinderPart &part,
+                              FaceType face ) {
+  // tmp_from and tmp_to might be switched to correctly detect collisions
+  // when from is inside cylinder.
+  Vec3 tmp_from = from;
+  Vec3 tmp_to = to;
+  Vec3 m = Vec3( tmp_from.x, tmp_from.y - start_point, tmp_from.z);
+  HAPIFloat d = end_point - start_point;
+  HAPIFloat md = m.y * d;
+  HAPIFloat dd = d * d;
+
+  Vec3 n = tmp_to - tmp_from;
+  HAPIFloat nd = n.y * d;
+
+  // Test if segment fully outside either endcap of cylinder
+  if( md < 0.0f && md + nd < 0.0f )
+    return false; // Segment outside '_start_point' side of cylinder
+  if( md > dd && md + nd > dd )
+    return false; // Segment outside '_end_point' side of cylinder
+
+  HAPIFloat r2 = _radius * _radius;
+  HAPI::Collision::FaceType face_type = FRONT;
+  bool switched = false;
+  // Test if from inside cylinder, added check not in the book.
+  if( face != FRONT ) {
+    // Check if from is inside.
+    if( md >= 0.0f && md <= dd ) {
+      // From is between the cylinder caps, check if outside _radius.
+      Vec3 dist_vec = Vec3( tmp_from.x, 0, tmp_from.z );
+      if( dist_vec * dist_vec >= r2 ) {
+        // From is outside, if collision face is back only return false.
+        if( face == BACK )
+          return false;
+      } else {
+        // Check if to is inside
+        bool to_inside = false;
+        if( tmp_to.y >= start_point && tmp_to.y <= end_point ) {
+          // To is between the cylinder caps, check if outside _radius.
+          dist_vec = Vec3( tmp_to.x, 0, tmp_to.z );
+          if( dist_vec * dist_vec < r2 ) {
+            to_inside = true;
+          }
+        }
+
+        if( to_inside ) {
+          // Line segment is completely inside, return false.
+          return false;
+        } else {
+          // Switch to and from.
+          tmp_from = to;
+          tmp_to = from;
+          m = Vec3( tmp_from.x, tmp_from.y - start_point, tmp_from.z);
+          md = m.y * d;
+          face_type = BACK;
+          n = -n;
+          nd = -nd;
+          switched = true;
+        }
+      }
+    } else if( face == BACK ) {
+      // From is outside, if collision face is back only return false.
+      return false;
+    }
+  }
+
+  HAPIFloat nn = n * n;
+  HAPIFloat mn = m * n;
+  HAPIFloat a = dd * nn - nd * nd;
+  HAPIFloat k = m * m - r2;
+  HAPIFloat c = dd * k - md * md;
+  if( H3DUtil::H3DAbs(a) < Constants::epsilon ) {
+    // Segment runs parallel to cylinder axis
+    if( c > 0.0f )
+      return false; // 'tmp_from' and thus the segment lie outside cylinder.
+    // Now known that segment intersects cylinder; figure out how it intersects
+    if( md < 0.0f ) {
+      result.t = -mn / nn; // Intersect segment against '_start_point' endcap
+      result.normal = Vec3( 0, -1, 0 );
+      part = START_CAP;
+    } else if( md > dd ) {
+      result.t = (nd - mn ) / nn; // Intersect segment 
+                                  // against '_end_point' endcap
+      result.normal = Vec3( 0, 1, 0 );
+      part = END_CAP;
+    } else {
+      if( face == FRONT )
+        return false;
+      // Intersect segment from the inside. It is parallell and we know
+      // already that tmp_from is inside the cylinder.
+      // The algorithm should only come here for very short lines.
+      if( tmp_to.y < start_point || tmp_to.y > end_point ) {
+        HAPIFloat t = -mn / nn;
+        result.t = ( nd - mn ) / nn;
+        if( t > 0.0f && t < result.t ) {
+          part = START_CAP;
+          result.t = t;
+          result.normal = Vec3( 0, -1, 0 );
+        } else {
+          result.normal = Vec3( 0, 1, 0 );
+          part = END_CAP;
+        }
+        if( switched ) result.t = 1.0 - result.t;
+      } else
+        return false;
+    }
+
+    result.intersection = true;
+    result.primitive = this;
+    result.point = tmp_from + result.t * n;
+    result.face = face_type;
+    result.tex_coord = getTextureCoordinate( result.point, START_CAP );
+    return true;
+  }
+
+  HAPIFloat b = dd * mn - nd * md;
+  HAPIFloat discr = b * b - a * c;
+  if( discr < 0.0f )
+    return false; // no real roots; no intersection
+
+  HAPIFloat t = (-b - H3DUtil::H3DSqrt( discr ) ) / a;
+  HAPIFloat t0 = t;
+  if( md + t * nd < 0.0f ) {
+    // Intersection outside cylinder on '_start_point' side
+    if( nd <= 0.0f )
+      return false; //Segment pointing away from endcap.
+    t = -md / nd;
+    // Not in the book or the errata, but without this there will be
+    // false positives. Did I make a mistake somewhere else?
+    if( t < 0.0f )
+      return false;
+    // Keep intersection if Dot(S(t) - p, S(t) - p) <= r^2
+    if(k + t * (2.0f * mn + t * nn) <= 0.0f) {
+      if( start_cap ) {
+        result.face = face_type;
+        result.intersection = true;
+        result.point = tmp_from + t * n;
+        result.normal = Vec3( 0, -1, 0 );
+        result.primitive = this;
+        if( switched ) result.t = 1.0 - t;
+        else result.t = t;
+        part = START_CAP;
+        result.tex_coord = getTextureCoordinate( result.point, START_CAP );
+        return true;
+      } else {
+        if( face == FRONT )
+          return false;
+
+        HAPIFloat t1 = (-b + H3DUtil::H3DSqrt( discr ) ) / a;
+        face_type = BACK;
+        if( end_cap ) {
+          HAPIFloat t2 = (dd - md ) / nd;
+          if( t2 >= 0.0f && t2 <= 1.0f ) {
+            if( t1 <= t2 ) {
+              t0 = t1;
+            } else {
+              result.intersection = true;
+              result.point = tmp_from + t * n;
+              result.normal = Vec3( 0, 1, 0 );
+              result.primitive = this;
+              result.face = face_type;
+              if( switched ) result.t = 1.0 - t;
+              else result.t = t;
+              result.tex_coord = getTextureCoordinate( result.point, END_CAP );
+              part = END_CAP;
+              return true;
+            }
+          } else {
+            t0 = t1;
+          }
+        } else {
+          t0 = t1;
+        }
+      }
+    }
+  } else if (md + t * nd > dd) {
+    // Intersection outside cylinder on ‘_end_point’ side
+    if (nd >= 0.0f)
+      return false; // Segment pointing away from endcap
+    t = (dd - md) / nd;
+    // Not in the book or the errata, but without this there will be
+    // false positives. Did I make a mistake somewhere else?
+    if( t < 0.0f )
+      return false;
+    // Keep intersection if Dot(S(t) - q, S(t) - q) <= r^2
+    if(k + dd - 2.0f * md + t * (2.0f * (mn - nd) + t * nn) <= 0.0f) {
+      if( end_cap ) {
+        result.face = face_type;
+        result.intersection = true;
+        result.point = tmp_from + t * n;
+        result.normal = Vec3( 0, 1, 0 );
+        result.primitive = this;
+        if( switched ) result.t = 1.0 -t;
+        else result.t = t;
+        part = END_CAP;
+        result.tex_coord = getTextureCoordinate( result.point, END_CAP );
+        return true;
+      } else {
+        if( face == FRONT )
+          return false;
+
+        HAPIFloat t1 = (-b + H3DUtil::H3DSqrt( discr ) ) / a;
+        face_type = BACK;
+        if( start_cap ) {
+          HAPIFloat t2 = -md / nd;
+          if( t2 >= 0.0f && t2 <= 1.0f ) {
+            if( t1 <= t2 ) {
+              t0 = t1;
+            } else {
+              result.intersection = true;
+              result.point = tmp_from + t * n;
+              result.normal = Vec3( 0, -1, 0 );
+              result.primitive = this;
+              result.face = face_type;
+              if( switched ) result.t = 1.0 - t;
+              else result.t = t;
+              // Tex coord.
+              part = START_CAP;
+              result.tex_coord = getTextureCoordinate( result.point, START_CAP );
+              return true;
+            }
+          } else {
+            t0 = t1;
+          }
+        } else {
+          t0 = t1;
+        }
+      }
+    }
+  }
+  t = t0;
+  // Intersection if segment intersects cylinder between the end-caps
+  if( t >= 0.0f && t <= 1.0f ) {
+    result.face = face_type;
+    result.intersection = true;
+    result.point = tmp_from + t*n;
+    result.normal = Vec3( result.point.x, 0, result.point.z );
+    result.normal.normalize();
+    result.primitive = this;
+    if( switched ) result.t = 1.0 - t;
+    else result.t = t;
+    part = CYLINDER;
+    result.tex_coord = getTextureCoordinate( result.point, CYLINDER );
+    return true;
+  } else
+    return false;
+}
+
+// Capsule capsule test, not so important that the test is completely
+// accurate. The test is performed by calculating the closest points on
+// two lines and then comparing the distance between these points to
+// the sum of the radii.
+bool Cylinder::movingSphereIntersect( HAPIFloat _radius,
+                                      const Vec3 &from, 
+                                      const Vec3 &to ) {
+  LineSegment line( Vec3(), Vec3( 0, height, 0) );
+  HAPIFloat s, t;
+  Vec3 c0, c1;
+  line.closestPointOnLine( from, to, s, t, c0, c1 );
+  HAPIFloat r_sum = _radius + radius;
+  if( (c0 - c1).lengthSqr() > r_sum * r_sum )
+    return false;
+  else return true;
+}
+
+bool Cylinder::movingSphereIntersect( HAPIFloat _radius,
+                                      const Vec3 &from, 
+                                      const Vec3 &to,
+                                      IntersectionInfo &result) {
+  // movingSphereIntersect will always be done on the full cylinder.
+  // The reason for this is because at the moment it is assumed that the moving
+  // sphere and the cylinder intersects if the moving sphere starts inside the
+  // cylinder.
+  Vec3 closest_point, normal, tex_coord;
+  bool inside;
+  CylinderPart part;
+  closestPoint( from, closest_point, normal, tex_coord, inside, part );
+  if( inside || (closest_point - from).lengthSqr() <= _radius * _radius ) {
+    result.face = FRONT;
+    result.intersection = true;
+    result.normal = normal;
+    result.tex_coord = tex_coord;
+    result.point = closest_point;
+    result.t = 0;
+    result.primitive = this;
+    return true;
+  }
+
+  // This will give false positives but it is simplest this way.
+  HAPIFloat r_sum = radius + _radius;
+  if( lineIntersect( from, to, -_radius,
+                     height + _radius, r_sum, result,
+                     part, FRONT ) ) {
+    if( part == END_CAP ) {
+      // end cap
+      Vec2 diff = Vec2( result.point.x, result.point.z );
+      HAPIFloat diff_sqr = diff.lengthSqr();
+      if( diff_sqr > radius * radius ) {
+        diff = diff / H3DUtil::H3DSqrt( diff_sqr );
+        result.point = Vec3( radius * diff.x, height, radius * diff.y );
+      } else
+        result.point.y = height;
+      result.tex_coord = getTextureCoordinate( result.point, END_CAP );
+    } else if( part == START_CAP ) {
+      // start cap
+      Vec2 diff = Vec2( result.point.x, result.point.z );
+      HAPIFloat diff_sqr = diff.lengthSqr();
+      if( diff_sqr > radius * radius ) {
+        diff = diff / H3DUtil::H3DSqrt( diff_sqr );
+        result.point = Vec3( radius * diff.x, 0, radius * diff.y );
+      } else
+        result.point.y = 0;
+      result.tex_coord = getTextureCoordinate( result.point, START_CAP );
+    } else {
+      // cylinder side
+      result.point = result.point - result.normal * _radius;
+      if( result.point.y < 0 )
+        result.point.y = 0;
+      else if( result.point.y > height )
+        result.point.y = height;
+      result.tex_coord = getTextureCoordinate( result.point, CYLINDER );
+    }
+    return true;
+  }
+
+  return false;
+}
+
+void Cylinder::render() {
+#ifdef HAVE_OPENGL
+  CollisionInternals::createCylinderDisplayList();
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  glRotated( -90, 1, 0, 0 );
+  glScaled( radius, radius, height );
+  glCallList( CollisionInternals::cylinder_display_list_id );
+  glPopMatrix();
+  int nr_faces = 20;
+  if ( end_cap ) {
+    // render end_cap
+    glBegin( GL_POLYGON );
+    glNormal3f( 0, 1, 0 );
+    for( int i = 0; i < nr_faces; i++ ) {
+      float angle = (float)( i * (H3DUtil::Constants::pi*2) /(float) nr_faces);
+      float sina = sin( angle );
+      float cosa = cos( angle );
+      glVertex3d( -radius * sina, height, -radius * cosa );
+    }
+    glEnd();
+  }
+  
+  if ( start_cap ) {
+    // render start_cap
+    glBegin( GL_POLYGON );
+    glNormal3f( 0, -1, 0 );
+    for( int i = nr_faces; i >= 0; i-- ) {
+      float angle = (float)( i * (H3DUtil::Constants::pi*2) /(float) nr_faces);
+      float sina = sin( angle );
+      float cosa = cos( angle );
+      glVertex3d( -radius * sina, 0, -radius * cosa );
+    }
+    glEnd();
+  }
+#endif
+}
+
+void Cylinder::getConstraints( const Vec3 &point,
+                               Constraints &constraints,
+                               FaceType face,
+                               HAPIFloat _radius ) {
+  if( point.y > 0.0f && point.y < height ) {
+    // If inside and close enough to cap return cap constraint to.
+    Vec3 closest_cylinder_normal = Vec3( point.x, 0, point.z );
+    HAPIFloat dist = closest_cylinder_normal.length();
+    if( dist < radius ) {
+      if( face == FRONT )
+        return;
+
+      Vec3 proj_pos = Vec3( 0, point.y, 0 );
+      // Calculate closest point to cylinder
+      HAPIFloat cyl_dist = radius - dist;
+      if( _radius < 0 ||
+          ( dist > Constants::epsilon && cyl_dist <= _radius ) ) {
+        closest_cylinder_normal = closest_cylinder_normal / dist;
+#if 1
+        // This removes vibrations and reduces fall through when touching
+        // the cylinder from inside. The idea is simply to have two planes
+        // intersecting at a line in the direction of the cylinder axis
+        // through the closest point on the cylinder.
+        // TODO: evaluate if the constant should be modified for different
+        // values of the cylinder radius and the _radius inside which
+        // constraints should be found.
+        Rotation offset( Vec3( 0, 1, 0), 0.01 );
+        Vec3 plane_point = proj_pos + radius * closest_cylinder_normal;
+        constraints.push_back(
+          PlaneConstraint( plane_point,
+                           offset * (-closest_cylinder_normal),
+                           getTextureCoordinate( plane_point, CYLINDER ),
+                           NULL, this ) );
+        offset.angle = -offset.angle;
+        constraints.push_back(
+          PlaneConstraint( plane_point,
+                           offset * (-closest_cylinder_normal),
+                           getTextureCoordinate( plane_point, CYLINDER ),
+                           NULL, this ) );
+#else
+        constraints.push_back(
+          PlaneConstraint( plane_point,
+                           -closest_cylinder_normal,
+                           getTextureCoordinate( plane_point, CYLINDER ),
+                           NULL, this ) );
+#endif
+      }
+
+      // Distance from point to start_point cap.
+      if( start_cap ) {
+        if( _radius < 0 || point.y < _radius ) {
+          Vec3 plane_point = Vec3( point.x, 0, point.z );
+          constraints.push_back(
+            PlaneConstraint( plane_point,
+                             Vec3( 0, 1, 0 ),
+                             getTextureCoordinate( plane_point, START_CAP ),
+                             NULL, this ) );
+        }
+      }
+
+      // Distance from point to end_point cap.
+      if( end_cap ) {
+        if( _radius < 0 || height - point.y < _radius ) {
+          Vec3 plane_point = Vec3( point.x, height, point.z );
+          constraints.push_back(
+            PlaneConstraint( plane_point,
+                             Vec3( 0, -1, 0 ),
+                             getTextureCoordinate( plane_point, END_CAP ),
+                             NULL, this ) );
+        }
+      }
+      return;
+    }
+  }
+  // If outside return one constraint.
+  if( face == BACK )
+    return;
+  GeometryPrimitive::getConstraints( point, constraints, face, _radius );
 }
 
