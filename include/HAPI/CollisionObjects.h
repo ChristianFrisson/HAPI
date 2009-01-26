@@ -814,8 +814,8 @@ class Constraints;
       /// Given a point on the cylinder return the texture coordinate.
       /// \param point The point on the cylinder.
       /// \param part Which part of the cylinder the point is on.
-      Vec3 Cylinder::getTextureCoordinate( const Vec3 &point,
-                                           Cylinder::CylinderPart part );
+      Vec3 getTextureCoordinate( const Vec3 &point,
+                                 CylinderPart part );
 
       /// If true then the cylinder have a cap at the start_point.
       /// True by default.
