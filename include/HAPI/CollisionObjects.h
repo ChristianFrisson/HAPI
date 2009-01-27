@@ -814,8 +814,20 @@ class Constraints;
       /// Given a point on the cylinder return the texture coordinate.
       /// \param point The point on the cylinder.
       /// \param part Which part of the cylinder the point is on.
-      Vec3 getTextureCoordinate( const Vec3 &point,
-                                 CylinderPart part );
+      inline Vec3 getTextureCoordinate( const Vec3 &point,
+                                        CylinderPart part ) {
+        if( part == Cylinder::CYLINDER ) {
+          return Vec3( ( H3DUtil::Constants::pi +
+                         H3DUtil::H3DAtan2( point.x, point.z ) )
+                        / ( 2 * H3DUtil::Constants::pi ),
+                       point.y / height,
+                       0 );
+        } else {
+          HAPIFloat radius_2 = 2 * radius;
+          return Vec3( (point.x + radius) / radius_2,
+                       (-point.z + radius ) / radius_2, 0 );
+        }
+      }
 
       /// If true then the cylinder have a cap at the start_point.
       /// True by default.
@@ -876,6 +888,206 @@ class Constraints;
                          Vec3 &tex_coord,
                          bool &inside,
                          CylinderPart &part );
+    };
+
+    /// \ingroup CollisionStructures
+    /// \class AABox
+    /// \brief Represents an axis aligned box primitive.
+    /// Texture coordinates are calculated as if
+    /// textures are applied individually to each face of the box. On the
+    /// front (+Z), back (-Z), right (+X), and left (-X) faces of the box,
+    /// when viewed from the outside with the +Y-axis up, the texture is
+    /// mapped onto each face with the same orientation as if the image were
+    /// displayed normally in 2D. On the top face of the box (+Y), when viewed
+    /// from above and looking down the Y-axis toward the origin with the
+    /// -Z-axis as the view up direction, the texture is mapped onto the face
+    /// with the same orientation as if the image were displayed normally in
+    /// 2D. On the bottom face of the box (-Y), when viewed from below looking
+    /// up the Y-axis toward the origin with the +Z-axis as the view up
+    /// direction, the texture is mapped onto the face with the same
+    /// orientation as if the image were displayed normally in
+    /// 2D.
+    class HAPI_API AABox: public Collision::GeometryPrimitive {
+    public:
+      typedef enum {
+        INSIDE = 0,
+        OUTSIDE = 1,
+        ON_SURFACE = 2
+      } PointLocation;
+
+      /// Default constructor.
+      AABox() {}
+
+      /// Constructor.
+      /// \param _min The minimum corner of the box. It is assumed that
+      /// _min.x <= _max.x and _min.y <= _max.y and _min.z <= _max.z.
+      /// \param _max The maximum corner of the box.
+      AABox( const Vec3& _min,
+             const Vec3& _max ) {
+        min = _min;
+        max = _max;
+      }
+
+      /// Get constraint planes of the object. A proxy of a haptics renderer
+      /// will always stay above any constraints added.
+      /// \param point The point to constrain.
+      /// \param constraints Where to add the constraints.
+      /// \param face Determines which faces of the shape will be seen as
+      /// constraining.
+      /// \param radius Only add constraints within this radius. If set to -1
+      /// all constraints will be added.
+      virtual void getConstraints( const Vec3 &point,
+                                   Constraints &constraints,
+                                   FaceType face = Collision::FRONT_AND_BACK,
+                                   HAPIFloat radius = -1 );
+
+      /// Calculates a matrix transforming from local space to texture space.
+      /// \param point The point at which to find the tangent vectors
+      /// \param result_mtx Where the result is stored.
+      virtual void getTangentSpaceMatrix( const Vec3 &point,
+                                          Matrix4 &result_mtx );
+
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return paramater for texture coordinate at closest 
+      /// point
+      virtual void closestPoint( const Vec3 &p,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord );
+
+      /// Detect collision between a line segment and the object.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param result Contains info about the closest intersection, if 
+      /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
+      /// \returns true if intersected, false otherwise.
+      virtual bool lineIntersect( const Vec3 &from, 
+                                  const Vec3 &to,
+                                  IntersectionInfo &result,
+                                  FaceType face = Collision::FRONT_AND_BACK );
+
+      /// Detect collision between a moving sphere and the object.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to );
+
+      /// Detect collision between a moving sphere and the object and returns
+      /// information about the closest intersection. Is of course slower
+      /// than the version of movingSphereIntersect which does not return
+      /// information about the intersection.
+      /// \param radius The radius of the sphere
+      /// \param from The start position of the sphere
+      /// \param to The end position of the sphere.
+      /// \param result Contains information about the closest intersection
+      /// if an intersection is detected.
+      /// \returns true if intersected, false otherwise.
+      virtual bool movingSphereIntersect( HAPIFloat radius,
+                                          const Vec3 &from, 
+                                          const Vec3 &to,
+                                          IntersectionInfo &result);
+
+      /// Returns a point representing the primitive. In this case it is the 
+      /// center of the box.
+      inline virtual Vec3 pointRepresentation() const {
+        return ( min + max ) / 2;
+      }
+
+      /// Render the object. The caller of the function need to set up OpenGL
+      /// state in case the rendering should be done differently
+      /// (wireframe for example).
+      virtual void render();
+
+      /// Given a point and a normal on the box return the texture
+      /// coordinate.
+      /// \param point The point on the box.
+      /// \param normal The outwards normal of the box at the point. The normal
+      /// must not be zero length.
+      inline Vec3 getTextureCoordinate( const Vec3 &point,
+                                        const Vec3 &normal ) {
+        if( normal.z > Constants::epsilon ) {
+          return Vec3( ( point.x - min.x ) / ( max.x - min.x ),
+                       ( point.y - min.y ) / ( max.y - min.y ),
+                       0 );
+        } else if( normal.z < -Constants::epsilon ) {
+          return Vec3( ( point.x - max.x ) / ( min.x - max.x ),
+                       ( point.y - min.y ) / ( max.y - min.y ),
+                       0 );
+        } else if( normal.x > Constants::epsilon ) {
+          return Vec3( ( point.z - max.z ) / ( min.z - max.z ),
+                       ( point.y - min.y ) / ( max.y - min.y ),
+                       0 );
+        } else if( normal.x < -Constants::epsilon ) {
+          return Vec3( ( point.z - min.z ) / ( max.z - min.z ),
+                       ( point.y - min.y ) / ( max.y - min.y ),
+                       0 );
+        } else if( normal.y > Constants::epsilon ) {
+          return Vec3( ( point.x - min.x ) / ( max.x - min.x ),
+                       ( point.z - max.z ) / ( min.z - max.z ),
+                       0 );
+        } else if( normal.y < -Constants::epsilon ) {
+          return Vec3( ( point.x - min.x ) / ( max.x - min.x ),
+                       ( point.z - min.z ) / ( max.z - min.z ),
+                       0 );
+        }
+        // Should never come here.
+        return Vec3();
+      }
+
+      /// The min corner of the axis aligned box.
+      Vec3 min;
+      /// The max corner of the axis aligned box.
+      Vec3 max;
+    protected:
+
+      /// Get the closest point and normal on the object to the given point p.
+      /// \param p The point to find the closest point to.
+      /// \param closest_point Return parameter for closest point
+      /// \param normal Return parameter for normal at closest point.
+      /// \param tex_coord Return parameter for texture coordinate at closest 
+      /// point
+      /// \param inside Returns true if point is inside AABox.
+      virtual void closestPoint( const Vec3 &p,
+                                 const Vec3 &_min,
+                                 const Vec3 &_max,
+                                 Vec3 &closest_point,
+                                 Vec3 &normal,
+                                 Vec3 &tex_coord,
+                                 PointLocation &point_location );
+
+      /// Detect collision between a line segment and the object.
+      /// For internal use.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param result Contains info about the closest intersection, if 
+      /// line intersects object
+      /// \param face The sides of the object that can be intersected. E.g.
+      /// if FRONT, intersections will be reported only if they occur from
+      /// the front side, i.e. the side in which the normal points. 
+      /// \returns true if intersected, false otherwise.
+      bool lineIntersect( const Vec3 &from, 
+                          const Vec3 &to,
+                          const Vec3 &_min,
+                          const Vec3 &_max,
+                          IntersectionInfo &result,
+                          PointLocation &from_location,
+                          FaceType face = Collision::FRONT_AND_BACK );
+
+      /// Support function used by movingSphereintersect.
+      inline Vec3 corner( int n ) {
+        return Vec3( ((n & 1) ? max.x : min.x ),
+                     ((n & 2) ? max.y : min.y ),
+                     ((n & 4) ? max.z : min.z ) );
+      }
     };
     
     /// \ingroup CollisionStructures

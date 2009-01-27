@@ -50,6 +50,148 @@ using namespace HAPI;
 using namespace Collision;
 
 namespace CollisionInternals {
+  // Intersects segment r = p * t * d, |d| = tmax,
+  // 0 <= t <= tmax with sphere
+  // defined by point s_c and r and, if intersecting, returns t value of
+  // interseection and intersection point q.
+  // Used by intersectSegmentCapsule
+  bool intersectSegmentSphere( Vec3 p, Vec3 d, Vec3 s_c, HAPIFloat r,
+                               HAPIFloat &t ) {
+    HAPIFloat tmax = d * d;
+    if( tmax > 0.0f ) {
+      tmax = H3DUtil::H3DSqrt( tmax );
+      d = d / tmax;
+    } else {
+      Vec3 m = p - s_c;
+      HAPIFloat c = m * m - r * r;
+      if( c > 0.0f )
+        return false;
+      else {
+        t = 0;
+        //q = p;
+        return true;
+      }
+    }
+    Vec3 m = p - s_c;
+    HAPIFloat c = m * m - r * r;
+    HAPIFloat b = m * d;
+    //Exit if r's origin outside s (c > 0) and r pointing away from s (b > 0)
+    if( c > 0.0f && b > 0.0f ) return false;
+    HAPIFloat discr = b * b - c;
+    // A negative discriminant corresponds to ray missing sphere.
+    if( discr < 0.0f ) return false;
+    // Ray now found to intersect sphere, compute smallest t value of
+    // intersection.
+    t = - b - H3DUtil::H3DSqrt( discr );
+    // If t > tmax then sphere is missed.
+    if( t > tmax )
+      return false;
+    // If t is negative then segment started inside sphere, so clamp t to
+    // zero.
+    if( t < 0.0f ) t = 0.0f;
+    // Calculate intersection point.
+    //q = p + d * t;
+    // Set t to the interval 0 <= t <= tmax.
+    t = t / tmax;
+    return true;
+  }
+
+  /// Function for intersecting a segment with a capsule. Return time t
+  /// of intersection. Used by AABox::movingSphereIntersect.
+  bool intersectSegmentCapsule( Vec3 sa, Vec3 sb, Vec3 p, Vec3 q,
+                                HAPIFloat r, HAPIFloat &t ) {
+    Vec3 d = q - p, m = sa - p, n = sb - sa;
+    HAPIFloat md = m * d;
+    HAPIFloat nd = n * d;
+    HAPIFloat dd = d * d;
+    // Test if segment fully outside either endcap of capsule.
+    if( md < 0.0f && md + nd < 0.0f ) {
+      // Segment outside 'p'.
+      return intersectSegmentSphere( sa, n, p, r, t );
+    }
+    if( md > dd && md + nd > dd ) {
+      // Segment outside 'q'
+      return intersectSegmentSphere( sa, n, q, r, t );
+    }
+    HAPIFloat nn = n * n;
+    HAPIFloat mn = m * n;
+    HAPIFloat a = dd * nn - nd * nd;
+    HAPIFloat k = m * m - r * r;
+    HAPIFloat c = dd * k - md * md;
+    if( H3DUtil::H3DAbs(a) < Constants::epsilon ) {
+      // Segment runs parallel to cylinder axis.
+      if( c > 0.0f ) return 0; // 'a' and thus the segment lies outside cyl.
+      // Now known that segment intersects cylinder. Figure out how.
+      if( md < 0.0f )
+        // Intersect against 'p' endcap.
+        intersectSegmentSphere( sa, n, p, r, t );
+      else if( md > dd )
+        // Intersect against 'q' encap.
+        intersectSegmentSphere( sa, n, q, r, t );
+      else t = 0.0f; // 'a' lies inside cylinder.
+      return true;
+    }
+    HAPIFloat b = dd * mn - nd * md;
+    HAPIFloat discr = b * b - a * c;
+    if( discr < 0.0f ) return false; // No real roots; no intersection.
+
+    t = (-b - H3DUtil::H3DSqrt( discr )) / a;
+    HAPIFloat t0 = t;
+    if( md + t * nd < 0.0f ) {
+      // Intersection outside cylinder on 'p' side;
+      return intersectSegmentSphere( sa, n, p, r, t );
+    } else if( md + t * nd > dd ) {
+      // Intsection outside cylinder on 'q' side.
+      return intersectSegmentSphere( sa, n, q, r, t );
+    }
+    t = t0;
+    // Intersection if segment intersects cylinder between end-caps.
+    return t >= 0.0f && t <= 1.0f;
+  }
+
+  // Help function to AABox::movingSphereIntersect
+  bool findTMin( HAPIFloat &tmin,
+                 Vec3 &normal,
+                 const Vec3 &d,
+                 const Vec3 &_min,
+                 const Vec3 &_max,
+                 const Vec3 &from,
+                 const Vec3 &to ) {
+    HAPIFloat tmax = 1.0f;
+    // For all three slabs
+    for( int i = 0; i < 3; i++ ) {
+      if( H3DUtil::H3DAbs(d[i]) < Constants::epsilon ) {
+        // Ray is parallel to slab. No hit if origin not within slab.
+        if( from[i] < _min[i] || from[i] > _max[i] ) return false;
+      } else {
+        // Compute intersection t value of ray with near and far plane of slab.
+        HAPIFloat ood = 1.0f / d[i];
+        HAPIFloat t1 = (_min[i] - from[i]) * ood;
+        HAPIFloat t2 = (_max[i] - from[i]) * ood;
+        // Make t1 be intersection with near plane, t2 with far plane.
+        bool swapped = false;
+        if( t1 > t2 ) {
+          HAPIFloat tmp = t1;
+          t1 = t2;
+          t2 = tmp;
+          swapped = true;
+        }
+        // Compute intersection of slab intersection intervals.
+        if( t1 > tmin ) {
+          tmin = t1;
+          normal = Vec3();
+          if( swapped ) normal[i] = 1;
+          else normal[i] = -1;
+        }
+        tmin = H3DUtil::H3DMax( tmin, t1 );
+        tmax = H3DUtil::H3DMin( tmax, t2 );
+        // Exit with no collision as soon as slab intersection becomes empty.
+        if( tmin > tmax ) return false;
+      }
+    }
+    return true;
+  }
+
   // Used by Sphere::getTangentSpaceMatrix
   HAPIFloat pi_inv = 1 / H3DUtil::Constants::pi;
   HAPIFloat two_pi_inv = pi_inv / 2;
@@ -1932,7 +2074,7 @@ void LineSegment::closestPoint( const Vec3 &p,
     if( t > 1 ) t = 1;
     closest_point = start + t * ab;
   }
-  normal = closest_point - p;
+  normal = p - closest_point;
   normal.normalizeSafe();
   // TODO:
   tex_coord = Vec3();
@@ -3181,26 +3323,12 @@ bool BBPrimitiveTree::movingSphereIntersect( HAPIFloat radius,
         overlap = left->movingSphereIntersect( radius, from, to, result );
       }
       if (right.get()) 
-        overlap = overlap || right->movingSphereIntersect( radius, from, to, result );
+        overlap = overlap ||
+                  right->movingSphereIntersect( radius, from, to, result );
       
       return overlap;
     }
     else return false;
-  }
-}
-
-Vec3 Cylinder::getTextureCoordinate( const Vec3 &point,
-                                     Cylinder::CylinderPart part ) {
-  if( part == Cylinder::CYLINDER ) {
-    return Vec3( ( H3DUtil::Constants::pi +
-                   H3DUtil::H3DAtan2( point.x, point.z ) )
-                   / ( 2 * H3DUtil::Constants::pi ),
-                 point.y / height,
-                 0 );
-  } else {
-    HAPIFloat radius_2 = 2 * radius;
-    return Vec3( (point.x + radius) / radius_2,
-                 (-point.z + radius ) / radius_2, 0 );
   }
 }
 
@@ -3669,7 +3797,7 @@ bool Cylinder::lineIntersect( const Vec3 &from,
         if( switched ) result.t = 1.0 -t;
         else result.t = t;
         part = END_CAP;
-        result.tex_coord = getTextureCoordinate( result.point, END_CAP );
+        result.tex_coord = getTextureCoordinate( result.point, part );
         return true;
       } else {
         if( face == FRONT )
@@ -3692,7 +3820,7 @@ bool Cylinder::lineIntersect( const Vec3 &from,
               else result.t = t;
               // Tex coord.
               part = START_CAP;
-              result.tex_coord = getTextureCoordinate( result.point, START_CAP );
+              result.tex_coord = getTextureCoordinate( result.point, part );
               return true;
             }
           } else {
@@ -3918,5 +4046,509 @@ void Cylinder::getConstraints( const Vec3 &point,
   if( face == BACK )
     return;
   GeometryPrimitive::getConstraints( point, constraints, face, _radius );
+}
+
+void AABox::getTangentSpaceMatrix( const Vec3 &point,
+                                   Matrix4 &result_mtx ) {
+  Vec3 closest, normal, tex_coord;
+  PointLocation point_location;
+  closestPoint( point, min, max, closest, normal, tex_coord, point_location );
+  if( point_location == INSIDE )
+    normal = -normal;
+
+  // Matrices are calculated from the jacobian. The third non-zero
+  // value of all matrices are simply there to make it invertable.
+  if( normal.z > Constants::epsilon ) {
+    result_mtx[0][0] = 1 / (max.x - min.x);
+    result_mtx[0][1] = 0;
+    result_mtx[0][2] = 0;
+    result_mtx[0][3] = 0;
+    result_mtx[1][0] = 0;
+    result_mtx[1][1] = 1 / (max.y - min.y);
+    result_mtx[1][2] = 0;
+    result_mtx[1][3] = 0;
+    result_mtx[2][0] = 0;
+    result_mtx[2][1] = 0;
+    result_mtx[2][2] = result_mtx[0][0] * result_mtx[1][1];
+    result_mtx[2][3] = 0;
+    result_mtx[3][0] = 0;
+    result_mtx[3][1] = 0;
+    result_mtx[3][2] = 0;
+    result_mtx[3][3] = 1;
+  } else if( normal.z < -Constants::epsilon ) {
+    result_mtx[0][0] = 1 / (min.x - max.x);
+    result_mtx[0][1] = 0;
+    result_mtx[0][2] = 0;
+    result_mtx[0][3] = 0;
+    result_mtx[1][0] = 0;
+    result_mtx[1][1] = 1 / (max.y - min.y);
+    result_mtx[1][2] = 0;
+    result_mtx[1][3] = 0;
+    result_mtx[2][0] = 0;
+    result_mtx[2][1] = 0;
+    result_mtx[2][2] = result_mtx[0][0] * result_mtx[1][1];
+    result_mtx[2][3] = 0;
+    result_mtx[3][0] = 0;
+    result_mtx[3][1] = 0;
+    result_mtx[3][2] = 0;
+    result_mtx[3][3] = 1;
+  } else if( normal.x > Constants::epsilon ) {
+    result_mtx[0][0] = 0;
+    result_mtx[0][1] = 0;
+    result_mtx[0][2] = 1 / (min.z - max.z);
+    result_mtx[0][3] = 0;
+    result_mtx[1][0] = 0;
+    result_mtx[1][1] = 1 / (max.y - min.y);
+    result_mtx[1][2] = 0;
+    result_mtx[1][3] = 0;
+    result_mtx[2][0] = -result_mtx[0][2] * result_mtx[1][1];
+    result_mtx[2][1] = 0;
+    result_mtx[2][2] = 0;
+    result_mtx[2][3] = 0;
+    result_mtx[3][0] = 0;
+    result_mtx[3][1] = 0;
+    result_mtx[3][2] = 0;
+    result_mtx[3][3] = 1;
+  } else if( normal.x < -Constants::epsilon ) {
+    result_mtx[0][0] = 0;
+    result_mtx[0][1] = 0;
+    result_mtx[0][2] = 1 / (max.z - min.z);
+    result_mtx[0][3] = 0;
+    result_mtx[1][0] = 0;
+    result_mtx[1][1] = 1 / (max.y - min.y);
+    result_mtx[1][2] = 0;
+    result_mtx[1][3] = 0;
+    result_mtx[2][0] = -result_mtx[0][2] * result_mtx[1][1];
+    result_mtx[2][1] = 0;
+    result_mtx[2][2] = 0;
+    result_mtx[2][3] = 0;
+    result_mtx[3][0] = 0;
+    result_mtx[3][1] = 0;
+    result_mtx[3][2] = 0;
+    result_mtx[3][3] = 1;
+  } else if( normal.y > Constants::epsilon ) {
+    result_mtx[0][0] = 1 / (max.x - min.x);
+    result_mtx[0][1] = 0;
+    result_mtx[0][2] = 0;
+    result_mtx[0][3] = 0;
+    result_mtx[1][0] = 0;
+    result_mtx[1][1] = 0;
+    result_mtx[1][2] = 1 / (min.z - max.z);
+    result_mtx[1][3] = 0;
+    result_mtx[2][0] = 0;
+    result_mtx[2][1] = -result_mtx[0][0] * result_mtx[1][2];
+    result_mtx[2][2] = 0;
+    result_mtx[2][3] = 0;
+    result_mtx[3][0] = 0;
+    result_mtx[3][1] = 0;
+    result_mtx[3][2] = 0;
+    result_mtx[3][3] = 1;
+  } else if( normal.y < -Constants::epsilon ) {
+    result_mtx[0][0] = 1 / (max.x - min.x);
+    result_mtx[0][1] = 0;
+    result_mtx[0][2] = 0;
+    result_mtx[0][3] = 0;
+    result_mtx[1][0] = 0;
+    result_mtx[1][1] = 0;
+    result_mtx[1][2] = 1 / (max.z - min.z);
+    result_mtx[1][3] = 0;
+    result_mtx[2][0] = 0;
+    result_mtx[2][1] = -result_mtx[0][0] * result_mtx[1][2];
+    result_mtx[2][2] = 0;
+    result_mtx[2][3] = 0;
+    result_mtx[3][0] = 0;
+    result_mtx[3][1] = 0;
+    result_mtx[3][2] = 0;
+    result_mtx[3][3] = 1;
+  }
+  return;
+}
+
+void AABox::closestPoint( const Vec3 &p,
+                          Vec3 &closest_point,
+                          Vec3 &normal,
+                          Vec3 &tex_coord ) {
+  PointLocation tmp;
+  closestPoint( p, min, max, closest_point, normal, tex_coord, tmp );
+}
+
+void AABox::closestPoint( const Vec3 &p,
+                          const Vec3 &_min,
+                          const Vec3 &_max,
+                          Vec3 &closest_point,
+                          Vec3 &normal,
+                          Vec3 &tex_coord,
+                          PointLocation &point_location ) {
+  Vec3 _normal;
+  point_location = INSIDE;
+  for( int i = 0; i < 3; i++ ) {
+    HAPIFloat v = p[i];
+    if( v < _min[i] ) {
+      _normal[i] = v - _min[i];
+      v = _min[i];
+      point_location = OUTSIDE;
+    } else if( v > _max[i] ) {
+      _normal[i] = v - _max[i];
+      v = _max[i];
+      point_location = OUTSIDE;
+    }
+    closest_point[i] = v;
+  }
+  if( point_location == INSIDE ) {
+    int closest_i = -1;
+    HAPIFloat smallest_distance = std::numeric_limits<HAPIFloat>::max();
+    bool on_surface = false;
+    bool max_value = false;
+    for( int i = 0; i < 3; i++ ) {
+      HAPIFloat v = p[i];
+      HAPIFloat v_min = v - _min[i];
+      HAPIFloat v_max = _max[i] - v;
+      if( v_min < v_max ) {
+        if( v_min < Constants::epsilon ) {
+          smallest_distance = 0;
+          closest_i = i;
+          _normal[i] = -1;
+          if( !on_surface ) {
+            on_surface = true;
+            for( int j = 0; j < i; j++ )
+              _normal[j] = 0;
+          }
+        } else if( closest_i == -1 || v_min < smallest_distance ) {
+          smallest_distance = v_min;
+          closest_i = i;
+          _normal[i] = 1;
+          max_value = false;
+        }
+      } else {
+        if( v_max < Constants::epsilon ) {
+          smallest_distance = 0;
+          closest_i = i;
+          _normal[i] = 1;
+          if( !on_surface ) {
+            on_surface = true;
+            for( int j = 0; j < i; j++ )
+              _normal[j] = 0;
+          }
+        } else if( closest_i == -1 || v_max < smallest_distance ) {
+          smallest_distance = v_max;
+          closest_i = i;
+          _normal[i] = -1;
+          max_value = true;
+        }
+      }
+
+      if( on_surface ) {
+        point_location = ON_SURFACE;
+        normal = _normal;
+        normal.normalize();
+        closest_point = p;
+      } else if( closest_i == i ) {
+        for( int i = 0; i < 3; i++ ) {
+          if( i != closest_i )
+            _normal[i] = 0;
+        }
+        normal = _normal;
+        closest_point = p;
+        if( max_value ) {
+          closest_point[closest_i] = _max[closest_i];
+        } else
+          closest_point[closest_i] = _min[closest_i];
+      }
+    }
+  } else {
+    normal = _normal;
+    normal.normalize();
+  }
+  tex_coord = getTextureCoordinate( closest_point, normal );
+}
+
+bool AABox::lineIntersect( const Vec3 &from, 
+                           const Vec3 &to,
+                           IntersectionInfo &result,
+                           FaceType face ) {
+  PointLocation from_location;
+  return lineIntersect( from, to, min, max, result, from_location, face );
+}
+
+// Page 181 in Real time collision detection, with corrections according
+// to errata on book home page.
+// Added checks for detection of line segement with AABox surface when
+// line segment starts inside AABox.
+bool AABox::lineIntersect( const Vec3 &from, 
+                           const Vec3 &to,
+                           const Vec3 &_min,
+                           const Vec3 &_max,
+                           IntersectionInfo &result,
+                           PointLocation &from_location,
+                           FaceType face ) {
+  HAPIFloat tmin = 0.0f;
+  HAPIFloat tmax = 1.0f;
+  Vec3 d = to - from;
+  Vec3 normal;
+  FaceType return_face = face == BACK ? BACK : FRONT;
+  if( !CollisionInternals::findTMin( tmin, normal, d, _min, _max, from, to ) )
+    return false;
+
+  from_location = OUTSIDE;
+  if( H3DUtil::H3DAbs( tmin ) < H3DUtil::Constants::f_epsilon ) {
+    Vec3 closest_point, tmp_normal, tex_coord;
+    PointLocation point_location;
+    closestPoint( from, _min, _max,
+                  closest_point, tmp_normal, tex_coord, point_location );
+    from_location = point_location;
+    if( point_location == INSIDE ) {
+      if( face == FRONT )
+        return false;
+      closestPoint( to, _min, _max, 
+                    closest_point, tmp_normal, tex_coord, point_location );
+      if( point_location == INSIDE )
+        return false;
+
+      return_face = BACK;
+      if( point_location == ON_SURFACE ) {
+        tmin = 1;
+        normal = tmp_normal;
+      } else {
+        tmin = 0.0f;
+        tmax = 1.0f;
+        normal = Vec3();
+        if( !CollisionInternals::findTMin( tmin, normal, -d, 
+                                           _min, _max, to, from ) )
+          return false;
+        tmin = 1 - tmin;
+
+      }
+    } else if( point_location == ON_SURFACE ) {
+      normal = tmp_normal;
+    }
+  }
+  // Segment intersects all 3 slabs. Return point (q) and
+  // intersection t value( tmin );
+  result.face = return_face;
+  result.intersection = true;
+  result.normal = normal;
+  result.point = from + d * tmin;
+  result.primitive = this;
+  result.t = tmin;
+  result.tex_coord = getTextureCoordinate( result.point, normal );
+  return true;
+}
+
+bool AABox::movingSphereIntersect( HAPIFloat radius,
+                                   const Vec3 &from, 
+                                   const Vec3 &to ) {
+  // More a rough estimate instead of exactly correct.
+  Vec3 radius_vec( radius, radius, radius );
+  IntersectionInfo result;
+  FaceType face = FRONT_AND_BACK;
+  PointLocation from_location;
+  return lineIntersect( from, to, min - radius_vec,
+                        max + radius_vec, result, from_location, face );
+}
+
+bool AABox::movingSphereIntersect( HAPIFloat radius,
+                                   const Vec3 &from, 
+                                   const Vec3 &to,
+                                   IntersectionInfo &result) {
+  Vec3 closest_point, normal, tex_coord;
+  PointLocation point_location;
+  closestPoint( from, min, max, closest_point,
+                normal, tex_coord, point_location );
+  if( point_location != OUTSIDE ||
+    ( closest_point - from ).lengthSqr() <= radius * radius ) {
+      if( point_location == INSIDE )
+        result.face = BACK;
+      else
+        result.face = FRONT;
+      result.intersection = true;
+      result.normal = normal;
+      result.point = closest_point;
+      result.primitive = this;
+      result.t = 0;
+      result.tex_coord = tex_coord;
+      return true;
+  }
+  Vec3 radius_vec( radius, radius, radius );
+  // Intersect segment against expanded AAB. Exit with no intersection if
+  // segment misses, else use the result in later calculations.
+  FaceType face = FRONT;
+  PointLocation from_location;
+  if( !lineIntersect( from, to, min - radius_vec,
+                      max + radius_vec, result, from_location, face ) ) {
+    if( from_location == INSIDE ) {
+      result.t = 0;
+      result.point = from;
+    } else return false;
+  }
+
+  // Compute which min and max faces of the box intersection point
+  // result.point lies outside of. Note, u and v cannot have the same bits
+  // set and then must have at least one bit set among them.
+  int u = 0, v = 0;
+  if( result.point.x < min.x ) u |= 1;
+  if( result.point.x > max.x ) v |= 1;
+  if( result.point.y < min.y ) u |= 2;
+  if( result.point.y > max.y ) v |= 2;
+  if( result.point.z < min.z ) u |= 4;
+  if( result.point.z > max.z ) v |= 4;
+
+  // 'Or' all set bits together into a bit mask 
+  // ( note: here u + v == u | v )
+  int m = u + v;
+
+  // if all 3 bits set (m == 7) then result.point is in a vertex region.
+  if( m == 7 ) {
+    // Must now intersect segment against the capsules of the three
+    // edges meeting at vertex and return the best time. If one or
+    // more hit.
+    HAPIFloat tmin = std::numeric_limits<HAPIFloat>::max();
+    HAPIFloat t;
+    Vec3 the_corner = corner( v );
+    if( CollisionInternals::intersectSegmentCapsule( from, to, the_corner,
+                                 corner( v ^ 1 ), radius, t ) ) {
+      tmin = H3DUtil::H3DMin( t, tmin );
+    }
+    if( CollisionInternals::intersectSegmentCapsule( from, to, the_corner,
+                                 corner( v ^ 2 ), radius, t ) ) {
+      tmin = H3DUtil::H3DMin( t, tmin );
+    }
+    if( CollisionInternals::intersectSegmentCapsule( from, to, the_corner,
+                                 corner( v ^ 4 ), radius, t ) ) {
+      tmin = H3DUtil::H3DMin( t, tmin );
+    }
+
+    if( tmin == std::numeric_limits<HAPIFloat>::max() ) return false;
+    result.face = FRONT;
+    result.intersection = true;
+    result.point = the_corner;
+    result.normal = from + tmin * (to - from);
+    result.normal = result.normal - result.point;
+    result.normal.normalize();
+    result.tex_coord = getTextureCoordinate( result.point, result.normal );
+    result.primitive = this;
+    result.t = tmin;
+    return true;
+  }
+
+  // If only one bit set in m, then result.point is in a face region.
+  if( (m & (m-1)) == 0 ) {
+    // Do nothing. Time t from intersection with expanded box is
+    // correct intersection time. We need to change the result.point
+    // though. Should only be one of the dimensions to change
+    // since we already is in a face region.
+    for( int i = 0; i < 3; i++ ) {
+      if( result.point[i] < min[i] ) {
+        result.point[i] += radius;
+        break;
+      } else if( result.point[i] > max[i] ) {
+        result.point[i] -= radius;
+        break;
+      }
+    }
+    result.tex_coord = getTextureCoordinate( result.point, result.normal );
+    return true;
+  }
+
+  // result.point is in an edge region. Intersect against the capsule at
+  // the edge.
+  HAPIFloat t;
+  if( CollisionInternals::intersectSegmentCapsule( from, to, corner( u ^ 7 ),
+                                                   corner( v ), radius, t ) ) {
+    result.t = t;
+    result.face = FRONT;
+    result.intersection = true;
+    result.primitive = this;
+    LineSegment line_seg( corner( u ^ 7 ), corner( v ) );
+    line_seg.closestPoint( from + (to - from) * t, result.point,
+                           result.normal, result.tex_coord );
+    result.tex_coord = getTextureCoordinate( result.point, result.normal );
+    return true;
+  }
+  return false;
+}
+
+void AABox::render() {
+  glBegin( GL_QUADS );
+  //+z
+  glNormal3f( 0.f, 0.f, 1.0f );
+  glVertex3f( (GLfloat)max.x, (GLfloat)max.y, (GLfloat)max.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)max.y, (GLfloat)max.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)min.y, (GLfloat)max.z );
+  glVertex3f( (GLfloat)max.x, (GLfloat)min.y, (GLfloat)max.z );
+
+  // -z
+  glNormal3f( 0.f, 0.f, -1.0f );
+  glVertex3f( (GLfloat)max.x, (GLfloat)max.y, (GLfloat)min.z );
+  glVertex3f( (GLfloat)max.x, (GLfloat)min.y, (GLfloat)min.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)min.y, (GLfloat)min.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)max.y, (GLfloat)min.z );
+
+  // +x
+  glNormal3f( 1.0f, 0.f, 0.f );
+  glVertex3f( (GLfloat)max.x, (GLfloat)max.y, (GLfloat)max.z );
+  glVertex3f( (GLfloat)max.x, (GLfloat)min.y, (GLfloat)max.z );
+  glVertex3f( (GLfloat)max.x, (GLfloat)min.y, (GLfloat)min.z );
+  glVertex3f( (GLfloat)max.x, (GLfloat)max.y, (GLfloat)min.z );
+
+  // -x
+  glNormal3f( -1.0f, 0.f, 0.f );
+  glVertex3f( (GLfloat)min.x, (GLfloat)max.y, (GLfloat)max.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)max.y, (GLfloat)min.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)min.y, (GLfloat)min.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)min.y, (GLfloat)max.z );
+
+  // +y
+  glNormal3f( 0.f, 1.0f, 0.f );
+  glVertex3f( (GLfloat)max.x, (GLfloat)max.y, (GLfloat)max.z );
+  glVertex3f( (GLfloat)max.x, (GLfloat)max.y, (GLfloat)min.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)max.y, (GLfloat)min.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)max.y, (GLfloat)max.z );
+
+  // -y
+  glNormal3f( 0.f, -1.0f, 0.f );
+  glVertex3f( (GLfloat)max.x, (GLfloat)min.y, (GLfloat)max.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)min.y, (GLfloat)max.z );
+  glVertex3f( (GLfloat)min.x, (GLfloat)min.y, (GLfloat)min.z );
+  glVertex3f( (GLfloat)max.x, (GLfloat)min.y, (GLfloat)min.z );
+
+  glEnd();
+}
+
+void AABox::getConstraints( const Vec3 &point,
+                            Constraints &constraints,
+                            FaceType face,
+                            HAPIFloat radius ) {
+  Vec3 closest_point, normal, tex_coord;
+  PointLocation point_location;
+  closestPoint( point, min, max,
+                closest_point, normal, tex_coord, point_location );
+  if( (closest_point - point).lengthSqr() < radius * radius ) {
+    if( ( face != FRONT && point_location == INSIDE ) ||
+      ( face == BACK && point_location == ON_SURFACE ) ) {
+        for( int i = 0; i < 3; i++ ) {
+          if( point[i] - min[i] <= radius ) {
+            Vec3 closest = point;
+            closest[i] = min[i];
+            Vec3 tmp_normal;
+            tmp_normal[i] = 1;
+            Vec3 tmp_tex_coord;
+            constraints.push_back( PlaneConstraint( closest, tmp_normal, 
+                                                    tmp_tex_coord, 0, this ) );
+          }
+          if( max[i] - point[i] <= radius ) {
+            Vec3 closest = point;
+            closest[i] = max[i];
+            Vec3 tmp_normal;
+            tmp_normal[i] = -1;
+            Vec3 tmp_tex_coord;
+            constraints.push_back( PlaneConstraint( closest, tmp_normal,
+                                                    tmp_tex_coord, 0, this ) );
+          }
+        }
+    } else if( face != BACK && point_location != INSIDE ) {
+      constraints.push_back( PlaneConstraint( closest_point, normal,
+                                              tex_coord, 0, this ) );
+    }
+  }
 }
 
