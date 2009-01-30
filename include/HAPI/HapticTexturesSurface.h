@@ -31,6 +31,7 @@
 
 #include <HAPI/HAPIFrictionSurface.h>
 #include <HAPI/ImageInterfaceObject.h>
+#include <memory>
 
 namespace HAPI {
   /// \ingroup Surfaces
