@@ -79,7 +79,7 @@ HapticTexturesSurface::HapticTexturesSurface( HAPIFloat _stiffness,
 }
 
 void HapticTexturesSurface::getProxyMovement( ContactInfo &contact_info ) {
-  Vec3 &contact_tex_coord = contact_info.contactPointTexCoord();
+  Vec3 contact_tex_coord = contact_info.contactPointTexCoord();
   HAPIFloat local_static_friction = static_friction;
   static_friction_lock.lock();
   if( static_friction_image.get() ) {
