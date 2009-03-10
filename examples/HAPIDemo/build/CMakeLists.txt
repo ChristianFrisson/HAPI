@@ -12,13 +12,26 @@ project (HAPIDemo)
 # Create a library called "Hello" which include sourcefiles.
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(.. HAPIDemo_SRCS)
+SET( HAPIDemo_SRCS "${HAPIDemo_SOURCE_DIR}/../ForceFieldWidgetsPage.cpp"
+                   "${HAPIDemo_SOURCE_DIR}/../ForceFieldWidgetsPage.h"
+                   "${HAPIDemo_SOURCE_DIR}/../HAPIDemo.cpp"
+                   "${HAPIDemo_SOURCE_DIR}/../HAPIDemo.h"
+                   "${HAPIDemo_SOURCE_DIR}/../HapticShapeConstraintWidgetsPage.cpp"
+                   "${HAPIDemo_SOURCE_DIR}/../HapticShapeConstraintWidgetsPage.h"
+                   "${HAPIDemo_SOURCE_DIR}/../PositionFunctionWidgetsPage.cpp"
+                   "${HAPIDemo_SOURCE_DIR}/../PositionFunctionWidgetsPage.h"
+                   "${HAPIDemo_SOURCE_DIR}/../SpringWidgetsPage.cpp"
+                   "${HAPIDemo_SOURCE_DIR}/../SpringWidgetsPage.h"
+                   "${HAPIDemo_SOURCE_DIR}/../TimeFunctionWidgetsPage.cpp"
+                   "${HAPIDemo_SOURCE_DIR}/../TimeFunctionWidgetsPage.h"
+                   "${HAPIDemo_SOURCE_DIR}/../ViscosityWidgetsPage.cpp"
+                   "${HAPIDemo_SOURCE_DIR}/../ViscosityWidgetsPage.h" )
 
 INCLUDE_DIRECTORIES( ${HAPIDemo_SOURCE_DIR}/.. )
 
 SET(requiredLibs)
 
-SET(CMAKE_MODULE_PATH ${HAPIDemo_SOURCE_DIR}/../../../build/modules )
+SET(CMAKE_MODULE_PATH "${HAPIDemo_SOURCE_DIR}/../../../build/modules" )
 
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)

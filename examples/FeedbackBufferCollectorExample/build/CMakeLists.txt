@@ -10,7 +10,7 @@ project (FeedbackBufferCollector)
 # Create a library called "FeedbackBufferCollector" which includes the source files.
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(.. FeedbackBufferCollector_SRCS)
+SET( FeedbackBufferCollector_SRCS "${FeedbackBufferCollector_SOURCE_DIR}/../FeedbackBufferCollectorExample.cpp" )
 
 INCLUDE_DIRECTORIES( ${FeedbackBufferCollector_SOURCE_DIR}/.. )
 
