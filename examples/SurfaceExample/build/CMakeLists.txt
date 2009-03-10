@@ -9,7 +9,7 @@ project (SurfaceExample)
 # Create a library called "SurfaceExample" which includes the source file "SurfaceExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(.. SurfaceExample_SRCS)
+SET( SurfaceExample_SRCS "${SurfaceExample_SOURCE_DIR}/../SurfaceDemo.cpp" )
 
 INCLUDE_DIRECTORIES( ${SurfaceExample_SOURCE_DIR}/.. )
 

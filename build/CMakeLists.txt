@@ -219,14 +219,6 @@ ENDIF( GENERATE_CPACK_PROJECT )
 SET( HAPI_FULL_VERSION
 ${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION} ) 
 
-#add all sources
-AUX_SOURCE_DIRECTORY(../src HAPI_SRCS)
-
-# add the HAPI.rc resource file if Visual Studio
-IF(MSVC)
-  SET( HAPI_SRCS ${HAPI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
-ENDIF(MSVC)
-
 # add all optional libraries to this variable
 SET(optionalLibs)
 
@@ -242,7 +234,6 @@ ENDIF(PTHREAD_FOUND)
 FIND_PACKAGE(OpenHaptics)
 IF(OPENHAPTICS_FOUND)
   SET(HAVE_OPENHAPTICS 1)
-  AUX_SOURCE_DIRECTORY(../OpenHapticsRenderer/src OH_SRCS)
   INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} 
                        ../OpenHapticsRenderer/include )
   SET(optionalLibs ${optionalLibs} ${OPENHAPTICS_LIBRARIES} )
@@ -253,7 +244,6 @@ ENDIF(OPENHAPTICS_FOUND)
 FIND_PACKAGE(Chai3D)
 IF(CHAI3D_FOUND)
   SET(HAVE_CHAI3D 1)
-  AUX_SOURCE_DIRECTORY(../Chai3DRenderer/src CHAI_SRCS)
   INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR}
                        ../Chai3DRenderer/include )
   SET(optionalLibs ${optionalLibs} ${CHAI3D_LIBRARIES} )
@@ -302,6 +292,15 @@ ENDIF(OPENGL_FOUND)
 IF(WIN32)
   SET(HAVE_HAPTIC_MASTER_API 1)
 ENDIF(WIN32)
+
+# add all sources, they are added to variables called HAPI_SRCS,
+# OH_SRCS and CHAI_SRCS defined in the included file
+INCLUDE( ${HAPI_SOURCE_DIR}/HAPISourceFiles.txt )
+
+# add the HAPI.rc resource file if Visual Studio
+IF(MSVC)
+  SET( HAPI_SRCS ${HAPI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
+ENDIF(MSVC)
 
 # If cpack project should be generated and windows is the system on which to generate
 # a number of extra directories needs to be added. They are added to an internal cached

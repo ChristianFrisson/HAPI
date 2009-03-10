@@ -12,7 +12,7 @@ project (DirectXExample)
 # Create a library called "DirectXExample" which includes the source files.
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(${DirectXExample_SOURCE_DIR}/../src DirectXExample_SRCS)
+SET( DirectXExample_SRCS "${DirectXExample_SOURCE_DIR}/../src/main.cpp" )
 
 INCLUDE_DIRECTORIES( ${DirectXExample_SOURCE_DIR}/../src )
 

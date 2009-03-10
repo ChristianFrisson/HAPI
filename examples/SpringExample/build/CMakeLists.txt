@@ -9,7 +9,7 @@ PROJECT(SpringExample)
 # Create a library called "SpringExample" which includes the source file "SpringExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
 
-AUX_SOURCE_DIRECTORY(.. SpringExample_SRCS)
+SET( SpringExample_SRCS "${SpringExample_SOURCE_DIR}/../SpringExample.cpp" )
 
 INCLUDE_DIRECTORIES( ${SpringExample_SOURCE_DIR}/.. )
 
