@@ -584,6 +584,8 @@ namespace HAPI {
     /// shape, i.e. ignoring the transform matrix in the shape.
     virtual void glRenderShape() = 0;
 #endif
+
+    friend class OpenHapticsRenderer;
   };
 }
 
