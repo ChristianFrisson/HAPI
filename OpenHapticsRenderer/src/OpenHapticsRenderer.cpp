@@ -320,20 +320,22 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 
           const Matrix4 m4_inv = (*i)->getInverse();
 #ifdef HAVE_OPENGL
-          GLdouble vt_inv[] = { m4_inv[0][0], m4_inv[1][0], m4_inv[2][0], 0,
+          glMultMatrixd( vt );
+          if( shape_type == OpenHapticsOptions::DEPTH_BUFFER ) {
+            GLdouble vt_inv[] = { m4_inv[0][0], m4_inv[1][0], m4_inv[2][0], 0,
                             m4_inv[0][1], m4_inv[1][1], m4_inv[2][1], 0,
                             m4_inv[0][2], m4_inv[1][2], m4_inv[2][2], 0,
                             m4_inv[0][3], m4_inv[1][3], m4_inv[2][3], 1 };
-          
-          if( shape_type == OpenHapticsOptions::DEPTH_BUFFER ) {
-            glMultMatrixd( vt );
             hlBeginShape( HL_SHAPE_DEPTH_BUFFER, hl_shape_id );
             glClear( GL_DEPTH_BUFFER_BIT );
             glMultMatrixd( vt_inv );
             (*i)->glRender();
             hlEndShape();
           } else if( shape_type == OpenHapticsOptions::FEEDBACK_BUFFER ) {
-            glMultMatrixd( vt );
+            GLdouble vt_inv[] = { m4_inv[0][0], m4_inv[1][0], m4_inv[2][0], 0,
+                            m4_inv[0][1], m4_inv[1][1], m4_inv[2][1], 0,
+                            m4_inv[0][2], m4_inv[1][2], m4_inv[2][2], 0,
+                            m4_inv[0][3], m4_inv[1][3], m4_inv[2][3], 1 };
             int nr_vertices = (*i)->nrVertices();
             if( nr_vertices == -1 )
               hlHinti( HL_SHAPE_FEEDBACK_BUFFER_VERTICES, 65536 );
@@ -347,9 +349,6 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           } else {
 #endif
             // custom shape, use intersection functions
-            // TODO: This will give fallthrough of moving object
-            // maybe should try to do the same as for the others, but need
-            // to call lineIntersectShape then instead.
             hlBeginShape(HL_SHAPE_CALLBACK, hl_shape_id );
             hlCallback(HL_SHAPE_INTERSECT_LS, 
                        (HLcallbackProc) intersectCallback, (*i) );
@@ -597,14 +596,14 @@ HLboolean HLCALLBACK OpenHapticsRenderer::intersectCallback(
     static_cast<HAPIHapticShape*>( user_data );
   Collision::IntersectionInfo i;
 
-  HLboolean b = object->lineIntersect( Vec3(start_point[0], 
-                                            start_point[1], 
-                                            start_point[2] ), 
-                                       Vec3(end_point[0],
-                                            end_point[1],
-                                            end_point[2] ),
-                                       i, 
-                                       Collision::FRONT_AND_BACK );
+  HLboolean b = object->lineIntersectShape( Vec3(start_point[0],
+                                                 start_point[1],
+                                                 start_point[2] ),
+                                            Vec3(end_point[0],
+                                                 end_point[1],
+                                                 end_point[2] ),
+                                            i, 
+                                            Collision::FRONT_AND_BACK );
   intersection_point[0] = i.point.x;
   intersection_point[1] = i.point.y;
   intersection_point[2] = i.point.z;
@@ -637,7 +636,7 @@ HLboolean HLCALLBACK OpenHapticsRenderer::closestFeaturesCallback(
            (HAPIFloat)query_point[2] );
 
   Vec3 closest, normal, tex_coord;
-  object->closestPoint( qp, closest, normal, tex_coord );
+  object->closestPointOnShape( qp, closest, normal, tex_coord );
 
   HLdouble cn[] = { normal.x, 
                     normal.y,
