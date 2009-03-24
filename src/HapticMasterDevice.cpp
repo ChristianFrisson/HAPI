@@ -268,7 +268,9 @@ int HapticMasterDevice::createSphere( Vec3 pos, double radius,
   Vec3 local_pos = position_calibration_inverse * pos;
 
   Vec3 scaling = position_calibration_inverse.getScalePart();
-  double local_radius = radius * max( scaling.x, max( scaling.y, scaling.z ) );
+  double local_radius = radius * max( H3DUtil::H3DAbs( scaling.x ),
+                                      max( H3DUtil::H3DAbs( scaling.y ),
+                                           H3DUtil::H3DAbs( scaling.z ) ) );
   double p[] = { local_pos.z, local_pos.x, local_pos.y };
   if( device_handle == -1 ) return -1;
   else {
@@ -299,7 +301,9 @@ int HapticMasterDevice::deleteSphere( int sphere ) {
 int HapticMasterDevice::setSphereRadius( int sphere, double radius ) {
   if( device_handle == -1 ) return -1;
   Vec3 scaling = position_calibration_inverse.getScalePart();
-  double local_radius = radius * max( scaling.x, max( scaling.y, scaling.z ) );
+  double local_radius = radius * max( H3DUtil::H3DAbs( scaling.x ),
+                                      max( H3DUtil::H3DAbs( scaling.y ),
+                                           H3DUtil::H3DAbs( scaling.z ) ) );
   driver_lock.lock();
   int res = SetSphereRadius( sphere, radius );
   driver_lock.unlock();
