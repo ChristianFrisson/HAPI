@@ -675,7 +675,9 @@ Vec3 RuspiniRenderer::tryProxyMovement( const Vec3 &from,
       const Matrix4 &transform = (*i).haptic_shape->getTransform();
       const Matrix4 &inv = transform.inverse();
       Vec3 s = inv.getScalePart();
-      HAPIFloat scale = max( s.x, max( s.y, s.z ) ); 
+      HAPIFloat scale = max( H3DUtil::H3DAbs( s.x ), 
+                             max( H3DUtil::H3DAbs( s.y ),
+                                  H3DUtil::H3DAbs( s.z ) ) ); 
 
       Vec3 f = from_point;/* + normal * 1e-6;*/
       Vec3 t = to_point;/* + normal * 1e-6;*/

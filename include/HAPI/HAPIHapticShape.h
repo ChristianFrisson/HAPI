@@ -280,6 +280,7 @@ namespace HAPI {
     inline void setScale( HAPIFloat s ) {
       scale_factor = Vec3( s, s, s );
       updateTransform();
+      setNonUniformScalingFlag();
     }
 
     /// Set the (uniform) scaling factor of the shape.
@@ -497,10 +498,9 @@ namespace HAPI {
 
     /// Sets the non_uniform_scaling flag.
     inline void setNonUniformScalingFlag() {
-      Vec3 scaling = transform.getScalePart();
-      if( H3DUtil::H3DAbs( scaling.x - scaling.y ) <
+      if( H3DUtil::H3DAbs( scale_factor.x - scale_factor.y ) <
           H3DUtil::Constants::f_epsilon
-          && H3DUtil::H3DAbs( scaling.y - scaling.z ) <
+          && H3DUtil::H3DAbs( scale_factor.y - scale_factor.z ) <
              H3DUtil::Constants::f_epsilon ) {
         non_uniform_scaling = false;
       } else {

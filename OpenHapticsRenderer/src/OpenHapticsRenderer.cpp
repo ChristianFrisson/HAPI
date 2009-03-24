@@ -318,24 +318,14 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
             glFrontFace( GL_CW );
 #endif
 
-          const Matrix4 m4_inv = (*i)->getInverse();
 #ifdef HAVE_OPENGL
           glMultMatrixd( vt );
           if( shape_type == OpenHapticsOptions::DEPTH_BUFFER ) {
-            GLdouble vt_inv[] = { m4_inv[0][0], m4_inv[1][0], m4_inv[2][0], 0,
-                            m4_inv[0][1], m4_inv[1][1], m4_inv[2][1], 0,
-                            m4_inv[0][2], m4_inv[1][2], m4_inv[2][2], 0,
-                            m4_inv[0][3], m4_inv[1][3], m4_inv[2][3], 1 };
             hlBeginShape( HL_SHAPE_DEPTH_BUFFER, hl_shape_id );
             glClear( GL_DEPTH_BUFFER_BIT );
-            glMultMatrixd( vt_inv );
-            (*i)->glRender();
+            (*i)->glRenderShape();
             hlEndShape();
           } else if( shape_type == OpenHapticsOptions::FEEDBACK_BUFFER ) {
-            GLdouble vt_inv[] = { m4_inv[0][0], m4_inv[1][0], m4_inv[2][0], 0,
-                            m4_inv[0][1], m4_inv[1][1], m4_inv[2][1], 0,
-                            m4_inv[0][2], m4_inv[1][2], m4_inv[2][2], 0,
-                            m4_inv[0][3], m4_inv[1][3], m4_inv[2][3], 1 };
             int nr_vertices = (*i)->nrVertices();
             if( nr_vertices == -1 )
               hlHinti( HL_SHAPE_FEEDBACK_BUFFER_VERTICES, 65536 );
@@ -343,8 +333,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
               hlHinti( HL_SHAPE_FEEDBACK_BUFFER_VERTICES, nr_vertices );
 
             hlBeginShape( HL_SHAPE_FEEDBACK_BUFFER, hl_shape_id );
-            glMultMatrixd( vt_inv );
-            (*i)->glRender();
+            (*i)->glRenderShape();
             hlEndShape();         
           } else {
 #endif
