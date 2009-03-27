@@ -72,18 +72,27 @@ void HAPIHapticShape::getConstraints( const Vec3 &point,
     unsigned int nr_constraints = constraints.size();
     Vec3 local_point = toLocal( point );
     Vec3 scale = inverse.getScalePart();
-    HAPIFloat s = max( H3DUtil::H3DAbs( scale.x ),
-                       max( H3DUtil::H3DAbs( scale.y ),
-                            H3DUtil::H3DAbs( scale.z ) ) );
+    HAPIFloat s = max( scale.x, max( scale.y, scale.z ) );    
     getConstraintsOfShape( local_point, constraints, face, radius * s );
-    // Removed the non uniform normal transformation since it gives very
-    // odd behaviour for RuspiniRenderer in this case.
-    // The transformations in the other cases (lineIntersect) seems correct.
-    for( unsigned int i = nr_constraints; i < constraints.size(); ++i ) {
-      PlaneConstraint &pc = constraints[i];
-      pc.normal = transform.getRotationPart() * pc.normal;
-      pc.point = transform * pc.point;
-    }
+    if( non_uniform_scaling ) {
+      for( unsigned int i = nr_constraints; i < constraints.size(); ++i ) {
+        PlaneConstraint &pc = constraints[i];
+        pc.normal = transform.getRotationPart() * pc.normal;
+        pc.normal.x *= scale.x;
+        pc.normal.y *= scale.y;
+        pc.normal.z *= scale.z;
+        pc.normal = inverse.getRotationPart() * pc.normal;
+        pc.normal = transform.getRotationPart() * pc.normal;
+        pc.normal.normalizeSafe();
+        pc.point = transform * pc.point;
+      }
+    } else {
+      for( unsigned int i = nr_constraints; i < constraints.size(); ++i ) {
+        PlaneConstraint &pc = constraints[i];
+        pc.normal = transform.getRotationPart() * pc.normal;
+        pc.point = transform * pc.point;
+      }
+    }    
   } else {
     getConstraintsOfShape( point, constraints, face, radius );
   }
@@ -278,9 +287,7 @@ bool HAPIHapticShape::movingSphereIntersect( HAPIFloat radius,
     Vec3 scale = inverse.getScalePart();
     Vec3 local_from =  inverse * from;
     Vec3 local_to = inverse * to;
-    HAPIFloat s = max( H3DUtil::H3DAbs( scale.x ),
-                       max( H3DUtil::H3DAbs( scale.y ),
-                            H3DUtil::H3DAbs( scale.z ) ) );
+    HAPIFloat s = max( scale.x, max( scale.y, scale.z ) );
     return movingSphereIntersectShape( radius * s,
                                        local_from,
                                        local_to ); 
