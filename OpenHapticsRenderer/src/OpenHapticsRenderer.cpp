@@ -485,7 +485,9 @@ void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
     }
   }
   // should always have a contact with the shape
-  assert( 0 );
+  // Assertion removed because untouchCallback is sometimes called
+  // before motionCallback and touchCallback, very very annoying.
+  //assert( 0 );
 }
 
 void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
