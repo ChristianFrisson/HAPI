@@ -363,14 +363,9 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice(
     device_state = INITIALIZED;
     if( !thread ) {
       // create a new thread to run the haptics in
-#ifdef WIN32
-      thread = new H3DUtil::HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL,
-                                          _thread_frequency );
-      
+      thread = new H3DUtil::HapticThread( H3DUtil::HapticThread::HIGH_PRIORITY,
+        _thread_frequency );
       thread->setThreadName( "HAPI Haptics Thread" );
-#else
-      thread = new H3DUtil::HapticThread( 20, _thread_frequency );
-#endif
       delete_thread = true;
     }
     if( setup_haptic_rendering_callback ) {
