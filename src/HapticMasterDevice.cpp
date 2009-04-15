@@ -173,13 +173,9 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
     int result = InitialiseHapticMaster(device_handle);
 
     // initalize the thread used for communication.
-#ifdef WIN32
     com_thread = 
-      new H3DUtil::PeriodicThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+      new H3DUtil::PeriodicThread( H3DUtil::ThreadBase::HIGH_PRIORITY, 1000 );
     com_thread->setThreadName( "HapticMASTER com thread" );
-#else
-    com_thread = new H3DUtil::PeriodicThread( 20, 1000 );
-#endif
 
     com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
     

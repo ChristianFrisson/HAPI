@@ -27,7 +27,8 @@ H3DUtil::PeriodicThreadBase::CallbackCode printSynchronous(
 // Main function.
 int main(int argc, char* argv[]) {
   // Creating the PeriodicThread.
-  H3DUtil::PeriodicThread periodic_thread( DEFAULT_THREAD_PRIORITY, 3 );
+  H3DUtil::PeriodicThread periodic_thread(
+    H3DUtil::ThreadBase::NORMAL_PRIORITY, 3 );
   cerr << "Press ENTER to add an asynchronousCallback "
        << "that will be called each loop in the thread. "
        << "The number of loops per second is 3." << endl;

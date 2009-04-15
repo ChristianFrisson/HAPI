@@ -82,13 +82,9 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   }
   free_dhd_ids.pop_back();
 
-#ifdef WIN32
   com_thread = 
-    new H3DUtil::PeriodicThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
+    new H3DUtil::PeriodicThread( H3DUtil::ThreadBase::HIGH_PRIORITY, 1000 );
   com_thread->setThreadName( "DHD com thread" );
-#else
-  com_thread = new H3DUtil::PeriodicThread( 20, 1000 );
-#endif
 
   com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
 
