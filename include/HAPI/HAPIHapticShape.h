@@ -213,6 +213,25 @@ namespace HAPI {
     /// Get the transformation matrix from local to global space.
     Matrix4 getTransform();
 
+    /// Get the transformation matrix from local to global space that
+    /// was used in last haptics loop.
+    inline Matrix4 getLastTransform() {
+      return last_transform;
+    }
+
+    /// Get the transformation matrix from global to local space that
+    /// was used in last haptics loop.
+    inline Matrix4 getLastInverse() {
+      return last_inverse;
+    }
+
+    /// Initialize the current shape for a replace of the given shape
+    /// in the haptics rendering(if s is NULL then it is not replacing
+    /// any previous shape). This is usually used when a haptic
+    /// shape is supposed to be replaced by another one with the same
+    /// id. It means e.g. saving the previous transform matrices.
+    void initializeTransfer( HAPIHapticShape *s );
+
     /// Advance the object according to velocity, angular velocity etc
     /// to new position given a time step. This will update the position,
     /// rotation and scale parameters of the shape.
@@ -349,11 +368,33 @@ namespace HAPI {
     /// \param face The sides of the object that can be intersected. E.g.
     /// if FRONT, intersections will be reported only if they occur from
     /// the front side, i.e. the side in which the normal points. 
+    /// \param consider_movement If true, the movement of the shape in 
+    /// the last haptics loop is also considered. Be aware that this can
+    /// produce intersection points that are not between "from" and "to"
+    /// if the shape has moved since the intersection point will then
+    /// be moved with the shape.
     /// \returns true if intersected, false otherwise.
     virtual bool lineIntersect( const Vec3 &from, 
                                 const Vec3 &to,
                                 Collision::IntersectionInfo &result,
-                                Collision::FaceType face );
+                                Collision::FaceType face,
+                                bool consider_movement );
+    
+    /// Detect collision between a line segment and the object.
+    /// \param from The start of the line segment.
+    /// \param to The end of the line segment.
+    /// \param result Contains info about closest intersection, if 
+    /// line intersects object
+    /// \param face The sides of the object that can be intersected. E.g.
+    /// if FRONT, intersections will be reported only if they occur from
+    /// the front side, i.e. the side in which the normal points. 
+    /// \returns true if intersected, false otherwise.
+    inline virtual bool lineIntersect( const Vec3 &from, 
+                                       const Vec3 &to,
+                                       Collision::IntersectionInfo &result,
+                                       Collision::FaceType face ) {
+      return lineIntersect( from, to, result, face, false );
+    }
 
     /// Detect collision between a moving sphere and the object.
     /// \param radius The radius of the sphere
@@ -510,14 +551,33 @@ namespace HAPI {
 
     Matrix4 transform;
     Matrix4 inverse;
+
+    // The transform matrix from the last haptics loop this shape was used.
+    Matrix4 last_transform;
+
+    // The inverse of the transform matrix from the last haptics loop this
+    // shape was used.
+    Matrix4 last_inverse;
     
+    /// The volocity of the shape(m/s)
     Vec3 velocity;
+
+    /// The angular velocity of the shape(radians/s)
     Rotation angular_velocity;
+
+    /// The growth rate of the shape.
     Vec3 growth_rate;
-    HAPITime first_use_time;
+
+    /// The position of the shape.
     Vec3 position;
+
+    /// The orientation of the shape.
     Rotation rotation;
+
+    /// The scaling of the shape.
     Vec3 scale_factor;
+
+    HAPITime first_use_time;
     bool forced_dynamic;
     void (*clean_up_func)( void * );
 

@@ -57,6 +57,18 @@ namespace HAPI {
       bool lineIntersect( const Vec3 &from, 
                           const Vec3 &to,    
                           Collision::IntersectionInfo &result );
+      /// Returns true if the specified point is above the plane.
+      inline bool isAbove( const Vec3 &p ) const {
+        HAPIFloat t = normal * ( p - point );
+        return t > 0;
+      }
+
+      /// Project the point onto the plane.
+      inline Vec3 projectOnto( const Vec3 &p ) const {
+        HAPIFloat t = normal * ( p - point );
+        return p - t * normal;
+      }
+
       Vec3 point, normal;
       Vec3 tex_coord;
       H3DUtil::AutoRef< HAPIHapticShape > haptic_shape;

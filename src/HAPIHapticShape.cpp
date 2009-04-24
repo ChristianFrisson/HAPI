@@ -169,7 +169,21 @@ Matrix4 HAPIHapticShape::getTransform() {
   return transform;
 }
 
+void HAPIHapticShape::initializeTransfer( HAPIHapticShape *s ) {
+  if( s ) {
+    last_transform = s->last_transform; //getTransform();
+    last_inverse = s->last_inverse; //getInverse();
+  } else {
+    last_transform = getTransform();
+    last_inverse = getInverse();
+  }
+}
+
 void HAPIHapticShape::moveTimestep( HAPITime dt ) {
+  // save the previous transforms.
+  last_transform = getTransform();
+  last_inverse = getInverse();
+
   have_transform = true;
   have_inverse = false;
   
@@ -249,10 +263,12 @@ Vec3 HAPIHapticShape::toLocal( const Vec3 &p ) {
 bool HAPIHapticShape::lineIntersect( const Vec3 &from, 
                                      const Vec3 &to,
                                      Collision::IntersectionInfo &result,
-                                     Collision::FaceType face ) { 
+                                     Collision::FaceType face,
+                                     bool consider_movement ) { 
   if( have_transform ) {
     bool have_intersection;
-    Vec3 local_from =  toLocal( from );
+    Vec3 local_from =  
+      consider_movement ? last_inverse * from : toLocal( from );
     Vec3 local_to = toLocal( to );
 
     have_intersection = 
