@@ -81,9 +81,13 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   HDErrorInfo error = hdGetError();
   if ( HD_DEVICE_ERROR( error ) ) {
     stringstream s;
-    s << "Could not init Phantom device. Error code: "
-      << string( hdGetErrorString( error.errorCode ) ) 
-      << ". Internal error code: " << error.internalErrorCode;
+    if( device_name == "" )
+      s << "Could not init default Phantom device. ";
+    else
+      s << "Could not init Phantom device named \"" << device_name << "\".";
+    s << "Error code: ";
+    s << string( hdGetErrorString( error.errorCode ) ) ;
+    s << ". Internal error code: " << error.internalErrorCode;
     setErrorMsg( s.str() );
     return false;
   }   
