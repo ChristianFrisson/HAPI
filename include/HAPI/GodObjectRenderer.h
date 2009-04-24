@@ -32,6 +32,7 @@
 
 #include <HAPI/HAPIProxyBasedRenderer.h>
 #include <H3DUtil/Threads.h>
+#include <HAPI/PlaneConstraint.h>
 #include <map>
 
 namespace HAPI {
@@ -115,6 +116,14 @@ namespace HAPI {
     // of the shapes that were in contact during last haptics loop and
     // their transform matrices at the time.
     vector< pair< int, Matrix4 > > last_contact_transforms;
+
+    // the intersections that are closest to the user (several if the 
+    // intersections are in the same point)
+    vector< PlaneConstraint > closest_constraints;
+
+    // all intersections that were discovered in the last loop.
+    // only valid if any of the haptic shapes we have is dynamic.
+    vector< PlaneConstraint > all_constraints;
   };
 }
 

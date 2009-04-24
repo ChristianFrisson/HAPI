@@ -28,6 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <HAPI/HAPIHapticsDevice.h>
+#include <HAPI/GodObjectRenderer.h>
 
 using namespace HAPI;
 
@@ -37,11 +38,34 @@ HAPIHapticsDevice::local_auto_ptr<
  
 bool HAPIHapticsDevice::initialized = false; 
 
+
 H3DUtil::PeriodicThread::CallbackCode
   HAPIHapticsDevice::transferObjectsCallback( 
   void *data ) {
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
+
+  // update last transform for all shapes.
+  // TODO: do this much faster/better
+  for( unsigned int layer = 0; layer < hd->tmp_shapes.size(); layer++ ) {
+    for( HapticShapeVector::const_iterator s = hd->tmp_shapes[layer].begin(); 
+         s != hd->tmp_shapes[layer].end(); s++ ) {
+      HAPIHapticShape *shape = NULL;
+      if( hd->current_shapes.size() > 0 ){
+      for( HapticShapeVector::const_iterator current_s = hd->current_shapes[layer].begin(); 
+           current_s != hd->current_shapes[layer].end(); current_s++ ) {
+        if( (*s)->getShapeId() == (*current_s)->getShapeId() ) {
+          shape = (*current_s);
+          break;
+        }
+      }
+      }
+      // if we have a new shape we need to initialize it.
+      if( (*s) != shape ) 
+        (*s)->initializeTransfer( shape );
+    }
+  }
+
   // shapes
   hd->current_shapes = hd->tmp_shapes;
 
