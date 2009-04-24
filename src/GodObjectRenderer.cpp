@@ -392,7 +392,7 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
 
     contact.x_axis.normalizeSafe();
     contact.z_axis.normalizeSafe();
-    contact.setGlobalOrigin( contact.contact_point_global );
+    contact.setGlobalOrigin( contact.contact_point_global + min_distance * contact.y_axis );
 
     // calculate the force and proxy movement for the first plane
     assert( p0.haptic_shape.get() );
