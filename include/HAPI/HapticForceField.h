@@ -38,7 +38,7 @@ namespace HAPI {
   class HAPI_API HapticForceField: public HAPIForceEffect {
   public:
 
-    // Constructor.
+    /// Constructor.
     HapticForceField( const Vec3 &_force );
 
     
