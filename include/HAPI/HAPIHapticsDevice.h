@@ -46,13 +46,13 @@ namespace HAPI {
   /// \brief Base class for all haptics devices.
   /// 
   /// The functions that should be implemented by all subclasses are:
-  /// - bool initHapticsDevice( int _thread_frequency = 1000 )
+  /// - bool initHapticsDevice( int _thread_frequency = 1024 )
   /// - bool releaseHapticsDevice()
   /// - void updateDeviceValues( DeviceValues &dv, HAPITime dt )
   /// - void sendOutput( DeviceOutput &dv, HAPITime dt )
   ///
   /// In order to use a haptics device two things have to be done. \n
-  /// 1. Initialize the device (initDevice( _thread_frequency = 1000 )). \n
+  /// 1. Initialize the device (initDevice( _thread_frequency = 1024 )). \n
   /// 2. Enable the device (enableDevice()) \n
   ///
   /// When a device has been initialized it will be ready to start receiving
@@ -127,7 +127,7 @@ namespace HAPI {
     /// \param _thread_frequency is the desired haptic frequency. Check
     /// comment for the function initHapticsDevice() of each haptics device
     /// class to know what the values might do for that class.
-    virtual ErrorCode initDevice( int _thread_frequency = 1000 );
+    virtual ErrorCode initDevice( int _thread_frequency = 1024 );
 
     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {
@@ -155,7 +155,7 @@ namespace HAPI {
 
     /// Perform cleanup and let go of all device resources that are allocated.
     /// After a call to this function no haptic rendering can be performed on
-    /// the device until the initDevice( _thread_frequency = 1000 ) function
+    /// the device until the initDevice( _thread_frequency = 1024 ) function
     /// has been called again.
     inline virtual ErrorCode releaseDevice() {
       if( device_state == UNINITIALIZED ) {
@@ -917,10 +917,20 @@ namespace HAPI {
     /// \param _thread_frequency is the desired haptic frequency. Check
     /// comment for the function initHapticsDevice() for each haptics device
     /// class to know what values can be set. By default
-    /// 1000 is the maximum allowed frequency that can be specified. Setting
+    /// 1024 is the maximum allowed frequency that can be specified. Setting
     /// this parameter to -1 means run as fast as possible. It is recommended
     /// to use the default value for most users.
-    virtual bool initHapticsDevice( int _thread_frequency = 1000 ) = 0;
+    /// The system will try to match the frequency as close as possible but
+    /// the actual frequency is dependent on the frequency of the timer on the 
+    /// system. E.g on a Windows system the multimedia timers are used for
+    /// synchronization. When run at its highest frequence this will have a clock
+    /// cycle of 0.976 ms. This means that the highest frequency we can get is
+    /// 1024. Since we only can get an event from the timer once for each ms, the
+    /// possible frequences are 1024/x, where x is the number of milliseconds to run
+    /// each loop in the thread, i.e. 1024, 512, 342, 256, 205 and so on.
+    /// Some haptics devices uses other synchronization means than the RTC timer
+    /// though and in those cases they might have different possible frequencies.
+    virtual bool initHapticsDevice( int _thread_frequency = 1024 ) = 0;
 
     /// Release all resources allocated to the haptics device.
     virtual bool releaseHapticsDevice() = 0;
