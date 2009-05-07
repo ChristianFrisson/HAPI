@@ -625,9 +625,9 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     if ( (left.size() == 0) || (right.size() == 0) ) {
       left.clear();
       right.clear();
-      for (unsigned int i = 0 ; i<stack_triangles.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_triangles.size()/2 ; i++) 
         left.push_back(stack_triangles[i]);
-      for (unsigned int i = stack_triangles.size()/2 ;
+      for (size_t i = stack_triangles.size()/2 ;
            i<stack_triangles.size() ; i++)
         right.push_back(stack_triangles[i]);
     }
@@ -801,9 +801,9 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     if ( (left_triangles.size() == 0) || (right_triangles.size() == 0) ) {
       left_triangles.clear();
       right_triangles.clear();
-      for (unsigned int i = 0 ; i<stack_triangles.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_triangles.size()/2 ; i++) 
         left_triangles.push_back(stack_triangles[i]);
-      for (unsigned int i = stack_triangles.size()/2;
+      for (size_t i = stack_triangles.size()/2;
         i<stack_triangles.size() ; i++) 
         right_triangles.push_back(stack_triangles[i]);
     }
@@ -829,9 +829,9 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     if ( (left_linesegments.size() == 0) || (right_linesegments.size() == 0) ) {
       left_linesegments.clear();
       right_linesegments.clear();
-      for (unsigned int i = 0 ; i<stack_linesegments.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_linesegments.size()/2 ; i++) 
         left_linesegments.push_back(stack_linesegments[i]);
-      for (unsigned int i = stack_linesegments.size()/2 ;
+      for (size_t i = stack_linesegments.size()/2 ;
         i<stack_linesegments.size() ; i++) 
         right_linesegments.push_back(stack_linesegments[i]);
     }
@@ -857,9 +857,9 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     if ( (left_points.size() == 0) || (right_points.size() == 0) ) {
       left_points.clear();
       right_points.clear();
-      for (unsigned int i = 0 ; i<stack_points.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_points.size()/2 ; i++) 
         left_points.push_back(stack_points[i]);
-      for (unsigned int i = stack_points.size()/2;
+      for (size_t i = stack_points.size()/2;
         i<stack_points.size() ; i++) 
         right_points.push_back(stack_points[i]);
     }
@@ -1690,13 +1690,13 @@ bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
 Matrix3 covarianceMatrix( const vector< Vec3 >&points ) {
   // TODO: if no points?
 
-  unsigned int nr_points = points.size();
+  size_t nr_points = points.size();
 
   Vec3 c = points[0];
   for(unsigned int i=1 ; i < nr_points; i++) 
     c+= points[i];
 
-  c /= points.size();
+  c = c / points.size();
   
   HAPIFloat e00 = 0, e01 = 0, e02 = 0,
                     e11 = 0, e12 = 0,
@@ -2841,9 +2841,9 @@ BBPrimitiveTree::BBPrimitiveTree(
     if ( (left.size() == 0) || (right.size() == 0) ) {
       left.clear();
       right.clear();
-      for (unsigned int i = 0 ; i<stack_primitives.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_primitives.size()/2 ; i++) 
         left.push_back(stack_primitives[i]);
-      for (unsigned int i = stack_primitives.size()/2 ;
+      for (size_t i = stack_primitives.size()/2 ;
             i<stack_primitives.size() ; i++) 
         right.push_back(stack_primitives[i]);
     }

@@ -80,6 +80,21 @@
 /// disable some features like FeedbackBufferCollector.
 #define HAVE_OPENGL
 
+
+// note that _WIN32 is always defined when _WIN64 is defined.
+#if( defined( _WIN64 ) || defined(WIN64) )
+// set when on 64 bit Windows
+#define H3D_WIN64
+#elif( defined( _WIN32 ) || defined(WIN32) )
+// set when on 32 bit Windows
+#define H3D_WIN32
+#endif
+
+#if( defined( H3D_WIN32 ) || defined( H3D_WIN64 ) )
+// set when on 32 or 64 bit Windows
+#define H3D_WINDOWS
+#endif
+
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL
 // are compiled with the HAPI_EXPORTS symbol defined on the command
@@ -88,7 +103,7 @@
 // this file see HAPI_API functions as being imported from a DLL,
 // whereas this DLL sees symbols defined with this macro as being
 // exported.
-#ifdef WIN32
+#ifdef H3D_WINDOWS
 #include <windows.h>
 
 
@@ -108,16 +123,18 @@
 
 
 #endif // HAPI API else
-#endif // WIN32
+#endif // H3D_WINDOWS
 
 #if defined(__APPLE__) && defined(__MACH__)
 #define MACOSX
+#define H3D_OSX
 #define HAPI_API
 #define HAVE_SYS_TIME_H
 #endif
 
 #if defined(__linux)
 #define LINUX
+#define H3D_LINUX
 #define HAPI_API 
 #define HAVE_SYS_TIME_H
 #endif

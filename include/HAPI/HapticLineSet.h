@@ -77,7 +77,7 @@ namespace HAPI {
       lines( begin, end ) {}
 
     inline virtual int nrLines() {
-      return lines.size();
+      return (int)lines.size();
     }
 
   protected:

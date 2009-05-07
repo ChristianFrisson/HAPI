@@ -102,7 +102,7 @@ H3DUtil::PeriodicThread::CallbackCode
         // The current_force_effects vector has not been updated.
         hd->current_force_effects.push_back(
           hd->tmp_current_force_effects[ index ] );
-        index = hd->current_force_effects.size() - 1;
+        index = (unsigned int) hd->current_force_effects.size() - 1;
       }
       if( (*i).second > Constants::epsilon ) {
         hd->current_add_rem_effect_map[ index ] =
@@ -157,7 +157,7 @@ H3DUtil::PeriodicThread::CallbackCode
             }
           }
           // Updated last_add_rem_effect_map and last_force_effects;
-          hd->last_add_rem_effect_map[ hd->last_force_effects.size() ] =
+          hd->last_add_rem_effect_map[ (unsigned int) hd->last_force_effects.size() ] =
             temp_phase_in_out;
           hd->last_force_effects.push_back( (*i).first );
         }

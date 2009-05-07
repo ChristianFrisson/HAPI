@@ -581,7 +581,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     } 
   }
    
-  unsigned int nr_constraints = closest_constraints.size();
+  unsigned int nr_constraints = (unsigned int ) closest_constraints.size();
 
   Vec3 new_proxy_pos, new_force;
 

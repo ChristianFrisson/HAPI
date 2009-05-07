@@ -276,7 +276,7 @@ namespace HAPI {
       force_effect_lock.lock();
       tmp_current_force_effects.push_back( effect );
       added_effects_indices.push_back(
-        make_pair( tmp_current_force_effects.size() - 1, fade_in_time ) );
+        make_pair( (unsigned int) tmp_current_force_effects.size() - 1, fade_in_time ) );
       force_effect_lock.unlock();
     }
 
@@ -641,7 +641,7 @@ namespace HAPI {
     /// Return the number of layers that have had shapes or has renderers
     /// added to it.
     inline unsigned int nrLayers() {
-      return haptics_renderers.size();
+      return (unsigned int) haptics_renderers.size();
     }
 
     /// Get the currently used HAPIHapticsRenderer for a layer.

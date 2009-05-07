@@ -82,7 +82,7 @@ namespace HAPI {
         return 0;
       
       if( _tree->isLeaf() )
-        return _tree->triangles.size();
+        return (int) _tree->triangles.size();
       
       return countTriangles( _tree->left.get() ) +
              countTriangles( _tree->right.get() );
