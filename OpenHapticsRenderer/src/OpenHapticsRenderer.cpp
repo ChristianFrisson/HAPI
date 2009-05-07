@@ -556,7 +556,7 @@ HLuint OpenHapticsRenderer::getHLShapeId( HAPIHapticShape *hs,
 
     addHLEventCallbacks( hl_shape_id, cb_data );
 
-    id_cb_map[ key ] = callback_data.size() - 1;
+    id_cb_map[ key ] = (unsigned int) callback_data.size() - 1;
   } else {
     unsigned int index = id_cb_map[ key ];
     callback_data[ index ]->shape.reset( hs );

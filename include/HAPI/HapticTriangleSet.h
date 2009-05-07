@@ -151,7 +151,7 @@ namespace HAPI {
 #ifdef HAVE_OPENGL
     /// Returns the number of triangles in the set.
     inline virtual int nrTriangles() {
-      return triangles.size();
+      return (int)triangles.size();
     }
 #endif
     

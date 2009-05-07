@@ -83,7 +83,7 @@ namespace HAPI {
 
     /// Returns the number of points in the point set.
     inline virtual int nrPoints() {
-      return points.size();
+      return (int)points.size();
     }
 
   protected:
