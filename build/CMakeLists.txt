@@ -294,7 +294,8 @@ IF(WIN32)
 ENDIF(WIN32)
 
 # add all sources, they are added to variables called HAPI_SRCS,
-# OH_SRCS and CHAI_SRCS defined in the included file
+# OH_SRCS and CHAI_SRCS defined in the included file. Header files are added
+# to variables named HAPI_HEADERS, OH_HEADERS and CHAIR_HEADERS.
 INCLUDE( ${HAPI_SOURCE_DIR}/HAPISourceFiles.txt )
 
 # add the HAPI.rc resource file if Visual Studio
@@ -336,19 +337,19 @@ IF(WIN32)
 
   # OpenHapticsRenderer and Chai3DRenderer are compiled as separate dlls 
   # on Windows 
-  ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS})
+  ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS} ${HAPI_HEADERS} )
   IF(OPENHAPTICS_FOUND)
     IF(MSVC)
       SET( OH_SRCS ${OH_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
     ENDIF(MSVC)
-    ADD_LIBRARY(OpenHapticsRenderer SHARED ${OH_SRCS})
+    ADD_LIBRARY(OpenHapticsRenderer SHARED ${OH_SRCS} ${OH_HEADERS} )
   ENDIF(OPENHAPTICS_FOUND)
   
   IF(CHAI3D_FOUND)
     IF(MSVC)
       SET( CHAI_SRCS ${CHAI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
     ENDIF(MSVC)
-    ADD_LIBRARY(Chai3DRenderer SHARED ${CHAI_SRCS})
+    ADD_LIBRARY(Chai3DRenderer SHARED ${CHAI_SRCS} ${CHAI_HEADERS} )
   ENDIF(CHAI3D_FOUND)
 
   IF( MSVC )
@@ -402,7 +403,8 @@ IF(WIN32)
   # is this only for msvc or for all windows compilers?
   SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )
 ELSE(WIN32)
-  ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS} ${OH_SRCS} ${CHAI_SRCS} )
+  ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS} ${OH_SRCS} ${CHAI_SRCS}
+                          ${HAPI_HEADERS} ${OH_HEADERS} ${CHAI_HEADERS} )
 ENDIF(WIN32)
 
 # Needed to link correctly on MSVC70 and MSVC71 because the dependency is not enough
@@ -551,9 +553,8 @@ IF(WIN32)
   ENDIF(CHAI3D_FOUND)
 ELSE(WIN32)
   # Install header files on non-windows system (e.g. Unix).
-  INSTALL( DIRECTORY ../include/HAPI ../OpenHapticsRenderer/include/HAPI ../Chai3DRenderer/include/HAPI
-           DESTINATION include 
-           PATTERN .svn EXCLUDE )
+  INSTALL( FILES ${HAPI_HEADERS} ${OH_HEADERS} ${CHAI_HEADERS}
+           DESTINATION include/HAPI )
 ENDIF(WIN32)
 
 
