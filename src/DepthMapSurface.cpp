@@ -40,7 +40,10 @@ DepthMapSurface::DepthMapSurface( HAPIFloat _stiffness,
                                   bool _use_relative_values,
                                   int _max_iterations,
                                   HAPIFloat _minimization_epsilon,
-                                  bool _use_ref_count_lock ) :
+                                  bool _use_ref_count_lock,
+                                  bool _wrap_s,
+                                  bool _wrap_t,
+                                  bool _wrap_r ) :
   HAPIVariableDepthSurface( _stiffness, _damping,
                             _static_friction, _dynamic_friction,
                             scaleDepth, _max_iterations,
@@ -48,8 +51,10 @@ DepthMapSurface::DepthMapSurface( HAPIFloat _stiffness,
                             _use_ref_count_lock ),
   ImageInterfaceObject( _depth_map ),
   max_depth( _max_depth ),
-  white_max( _white_max )
-{
+  white_max( _white_max ),
+  wrap_s( _wrap_s ),
+  wrap_t( _wrap_t ),
+  wrap_r( _wrap_r ) {
   image_lock = &depth_get_lock;
 }
 
