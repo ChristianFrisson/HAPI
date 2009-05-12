@@ -60,7 +60,10 @@ namespace HAPI {
                      bool _use_relative_values = true,
                      int _max_iterations = 35,
                      HAPIFloat _minimization_epsilon = 1e-4,
-                     bool _use_ref_count_lock = true );
+                     bool _use_ref_count_lock = true,
+                     bool _wrap_s = true,
+                     bool _wrap_t = true,
+                     bool _wrap_r = true );
 
   protected:
     /// Get the value of the texture at texture coordinate tex_coord.
@@ -97,10 +100,22 @@ namespace HAPI {
           tangent_space_mtx );
       }
 
-      HAPIFloat depth_value = dms->getDepthMapValue(
-        dms->this_contact_info->contactPointTexCoord() +
+      Vec3 tmp_tex_coord = dms->this_contact_info->contactPointTexCoord() +
         tangent_space_mtx.getScaleRotationPart() *
-        global_vector );
+        global_vector;
+      if( dms->wrap_s &&
+          ( tmp_tex_coord.x > 1.0 || tmp_tex_coord.x < -Constants::epsilon ) )
+          tmp_tex_coord.x -= H3DUtil::H3DFloor( tmp_tex_coord.x );
+
+      if( dms->wrap_t &&
+          ( tmp_tex_coord.y > 1.0 || tmp_tex_coord.y < -Constants::epsilon ) )
+          tmp_tex_coord.y -= H3DUtil::H3DFloor( tmp_tex_coord.y );
+
+      if( dms->wrap_r &&
+          ( tmp_tex_coord.z > 1.0 || tmp_tex_coord.z < -Constants::epsilon ) )
+          tmp_tex_coord.z -= H3DUtil::H3DFloor( tmp_tex_coord.z );
+
+      HAPIFloat depth_value = dms->getDepthMapValue( tmp_tex_coord );
 
       if( dms->white_max )
         return dms->max_depth * ( depth_value - 1 );
@@ -115,6 +130,22 @@ namespace HAPI {
     /// If true then white ( pixel value 1 ) will be considered a high
     /// point in the texture.
     bool white_max;
+
+    /// If true then the estimated texture coordinate in the s dimension
+    /// used to get depth of image is assumed to wrap around.
+    /// This means that values will be transformed like this:
+    /// -0.1 -> 0.9 and 1.1 -> 0.1
+    /// If false then the value will be clamped to range [0,1]
+    bool wrap_s;
+
+    /// Same as for wrap_s variable but for the t dimension in texture
+    /// coordinate space.
+    bool wrap_t;
+
+    /// Same as for wrap_s variable but for the r dimension in texture
+    /// coordinate space.
+    bool wrap_r;
+
   };
 }
 
