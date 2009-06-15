@@ -49,8 +49,13 @@
 #cmakedefine HAVE_DHDAPI
 
 /// Undef if you do not have FALCON API(www.novint.com) installed.
-/// Required for the Falcon haptics device.
 #cmakedefine HAVE_FALCONAPI
+#cmakedefine HAVE_NIFALCONAPI
+
+// Select which communication library libnifalcon should use
+#cmakedefine NIFALCON_LIBUSB
+#cmakedefine NIFALCON_LIBFTD2XX
+#cmakedefine NIFALCON_LIBFTDI
 
 /// Undef if you do not have the fparser library
 /// (http://iki.fi/warp/FunctionParser/) installed.
