@@ -54,6 +54,7 @@
 
 #include <H3DUtil/DynamicLibrary.h>
 
+//#define NIFALCON_DEBUG
 
 using namespace HAPI;
 using namespace libnifalcon;
@@ -88,36 +89,54 @@ bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device.setFalconKinematic<libnifalcon::FalconKinematicStamper>();
   device.setFalconGrip<libnifalcon::FalconGripFourButton>();
  
+  // get number of connected falcons.
   unsigned int num_falcons;	
   if(!device.getDeviceCount(num_falcons)) {
-    std::cout << "Cannot get device count" << std::endl;
+#ifdef NIFALCON_DEBUG
+    H3DUtil::Console(4) << "Cannot get device count" << std::endl;
+#endif
   }
 	
-  std::cout << "Falcons found: " << num_falcons << std::endl;
+#ifdef NIFALCON_DEBUG
+  H3DUtil::Console(4) << "Falcons found: " << num_falcons << std::endl;
+  H3DUtil::Console(4) << "Opening falcon" << std::endl;
+#endif
   
-  std::cout << "Opening falcon" << std::endl;
-  
+  // open device
   if(!device.open(0)) {
-    std::cout << "Cannot open falcon - Error: " << device.getErrorCode() << std::endl;
+    stringstream s;
+    s << "Could not init Falcon device(libnifalcon). ";
+    s << "Error code: ";
+    s << device.getErrorCode();
+    setErrorMsg( s.str() );
     return false;
   }
 
-  std::cout << "Opened falcon" << std::endl;
+#ifdef NIFALCON_DEBUG
+   H3DUtil::Console(4) << "Opened falcon" << std::endl;
+#endif
 
-  bool has_firmware = false;
-  for(int i = 0; i < 10; ++i) {
-    if(!device.getFalconFirmware()->loadFirmware(true, NOVINT_FALCON_NVENT_FIRMWARE_SIZE, const_cast<uint8_t*>(NOVINT_FALCON_NVENT_FIRMWARE)))
-      {
-	std::cout << "Cannot load firmware" << std::endl;
-      }
-    else
-      {
-	has_firmware = true;
-	std::cout <<"firmware loaded" << std::endl;
-	break;
-      }
+   // try to load firmware
+   bool has_firmware = false;
+   for(int i = 0; i < 10; ++i) {
+     if(!device.getFalconFirmware()->loadFirmware(true, NOVINT_FALCON_NVENT_FIRMWARE_SIZE, const_cast<uint8_t*>(NOVINT_FALCON_NVENT_FIRMWARE))) {
+#ifdef NIFALCON_DEBUG
+       H3DUtil::Console(4) << "Cannot load firmware" << std::endl;
+#endif
+     } else {
+       has_firmware = true;
+#ifdef NIFALCON_DEBUG
+       H3DUtil::Console(4) <<"firmware loaded" << std::endl;
+#endif
+       break;
+     }
   }
-  if(!has_firmware) return false;
+
+  // no firmware could be loaded
+  if(!has_firmware) {
+    setErrorMsg( "Could not init Falcon device(libnifalcon). Could not load firmware" );
+    return false;
+  }
 
 
   // set up a communication thread for the device.
