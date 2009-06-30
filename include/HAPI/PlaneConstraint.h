@@ -177,9 +177,21 @@ namespace HAPI {
         push_back( *i );
     }
     
-	inline void push_back( const PlaneConstraint &p ) {
-	  constraints[nr_constraints] = p;
-	  nr_constraints++;
+    inline void push_back( const PlaneConstraint &p ) {
+      if( nr_constraints >= allocated_constraints ){
+        int old_allocated_constraints = allocated_constraints;
+        PlaneConstraint *old_constraints = constraints;
+        
+        allocated_constraints *= 2; //< Growth factor!
+        constraints = new PlaneConstraint[allocated_constraints];
+        
+        ::memcpy( constraints,
+                  old_constraints,
+                  old_allocated_constraints * sizeof(PlaneConstraint) );
+        delete[] old_constraints;
+      }
+      constraints[nr_constraints] = p;
+      nr_constraints++;
     }
 
     inline PlaneConstraint & front() { return constraints[0];}
