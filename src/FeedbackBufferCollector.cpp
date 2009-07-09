@@ -155,7 +155,8 @@ FeedbackBufferCollector::startCollecting( int max_feedback_values,
     glOrtho( llf.x - 0.01, urn.x + 0.01, llf.y -0.01, urn.y + 0.01, -urn.z-0.01, -llf.z+0.01 );
     //glOrtho( -0.5, 0.5, -0.5, 0.5, 0, 10 );
   }
-    
+
+  glPushAttrib ( GL_POLYGON_BIT | GL_LIGHTING_BIT );
   glDisable(GL_CULL_FACE);
   glDisable(GL_LIGHTING); 
   return SUCCESS;
@@ -172,6 +173,7 @@ FeedbackBufferCollector::endCollecting(
   if( nr_values == -1 ) {
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
+    glPopAttrib();
     collecting_triangles = false;
     delete [] buffer;
     return NOT_ENOUGH_MEMORY_ALLOCATED;
@@ -231,6 +233,7 @@ FeedbackBufferCollector::endCollecting(
   }
   glMatrixMode( GL_PROJECTION );
   glPopMatrix();
+  glPopAttrib();
   delete [] buffer;
   collecting_triangles = false;
   return SUCCESS;
@@ -247,6 +250,7 @@ FeedbackBufferCollector::endCollecting(
   if( nr_values == -1 ) {
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
+    glPopAttrib();
     collecting_triangles = false;
     delete [] buffer;
     return NOT_ENOUGH_MEMORY_ALLOCATED;
@@ -314,6 +318,7 @@ FeedbackBufferCollector::endCollecting(
   } 
   glMatrixMode( GL_PROJECTION );
   glPopMatrix();
+  glPopAttrib();
   delete [] buffer;
   collecting_triangles = false;
   return SUCCESS;
