@@ -106,10 +106,18 @@ namespace HAPI {
     };
 
     /// Constructor.
-    /// \param _device_name The name of the device.
+    /// \param _device_name The name of the device as specified in the hdal.ini file.
     /// A _device_name of "" will use the first available device.
-    FalconHapticsDevice( string _device_name = "" ):
-      device_name( _device_name ) {
+    FalconHapticsDevice( string _device_name ):
+      device_name( _device_name ),
+      device_index( -1 ) {
+    }
+
+    /// Constructor.
+    /// \param index The index of the falcon devices connected to use. The devices 
+    /// are ordered alphabetically on serial number of the device.
+    FalconHapticsDevice( int index = 0 ):
+      device_index( index ) {
     }
 
     /// Destructor.
@@ -165,6 +173,9 @@ namespace HAPI {
 
     /// The device name for this device.
     string device_name;
+    
+    /// The device index to use for this device. 
+    int device_index;
     
     /// The device handle for this device.
     HDLDeviceHandle device_handle;

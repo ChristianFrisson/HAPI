@@ -50,8 +50,12 @@ bool FalconHapticsDevice::hdl_started = false;
 int FalconHapticsDevice::nr_of_initalized = 0;
 
 bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-  device_handle = hdlInitNamedDevice( device_name == "" ? 
-    HDL_DEFAULT_DEVICE_ID : device_name.c_str() );
+  if( device_name != "" ) {
+    device_handle = hdlInitNamedDevice( device_name.c_str() );
+  } else {
+    device_handle = hdlInitIndexedDevice( device_index );
+  }
+  
   HDLError error = hdlGetError();
   if ( device_handle == -1 || error != HDL_NO_ERROR ) {
     stringstream s;
