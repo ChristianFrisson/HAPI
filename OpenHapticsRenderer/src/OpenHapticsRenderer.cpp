@@ -147,8 +147,8 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
     PhantomHapticsDevice::stopScheduler( false );
   
   id_map.clear();
-  if( !contacts.empty() ) {
-    contacts.clear();
+  if( !tmp_contacts.empty() ) {
+    tmp_contacts.clear();
   }
   id_cb_map.clear();
   previous_shape_ids.clear();
@@ -231,6 +231,11 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   hlBeginFrame();
   hlCheckEvents();
   hlMakeCurrent( haptic_context );
+  proxy_position_lock.lock();
+  HLdouble pos[3];
+  hlGetDoublev( HL_PROXY_POSITION, pos );
+  proxy_position = 1e-3 * HAPI::Vec3( pos[0], pos[1], pos[2] );
+  proxy_position_lock.unlock();
   
   // Need previous_shape_ids is used for knowing when to remove and add
   // eventcallbacks to shapes. Only those shapes that are rendered in a
@@ -366,31 +371,35 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     HLuint hl_shape_id = id_map[*i];
     removeHLEventCallbacks( hl_shape_id );
     Contacts::iterator to_remove;
-    for( to_remove = contacts.begin();
-         to_remove != contacts.end();
+    for( to_remove = tmp_contacts.begin();
+         to_remove != tmp_contacts.end();
          to_remove++ ) {
       if( (*to_remove).first->getShapeId() ==
         callback_data[ id_cb_map[*i] ]->shape->getShapeId() ) {
          break;
       }
     }
-    if( to_remove != contacts.end() )
-      contacts.erase( to_remove );
+    if( to_remove != tmp_contacts.end() )
+      tmp_contacts.erase( to_remove );
     callback_data[ id_cb_map[*i] ]->shape.reset( NULL );
   }
+
+  contacts_lock.lock();
+  contacts = tmp_contacts;
+  contacts_lock.unlock();
 #ifdef HAVE_OPENGL
   glMatrixMode( GL_MODELVIEW );
   glPopMatrix();
 #endif
 
-  hlEndFrame(); 
+  hlEndFrame();
 
   // check for any errors
   HLerror error;
   while ( HL_ERROR(error = hlGetError()) ) {
     H3DUtil::Console(4) <<
       OpenHapticsRendererInternals::getHLErrorString( error ) << endl;
-    }   
+  }
 }
 
 HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
@@ -439,11 +448,11 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
 }
 
 HAPI::Vec3 OpenHapticsRenderer::getProxyPosition() {
-  if( !context_map.empty() )
-    hlMakeCurrent( (*context_map.begin()).second );
-  HLdouble pos[3];
-  hlGetDoublev( HL_PROXY_POSITION, pos );
-  return 1e-3 * HAPI::Vec3( pos[0], pos[1], pos[2] );
+  Vec3 proxy_pos;
+  proxy_position_lock.lock();
+  proxy_pos = proxy_position;
+  proxy_position_lock.unlock();
+  return proxy_pos;
 }
 
 void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
@@ -471,8 +480,8 @@ void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
   HAPI::Vec3 cp = HAPI::Vec3( p[0], p[1], p[2] ) * 1e-3;
   HAPI::Vec3 cn = HAPI::Vec3( n[0], n[1], n[2] );
   HAPI::Vec3 f  = HAPI::Vec3( hlforce[0], hlforce[1], hlforce[2] );
-  for( Contacts::iterator i = renderer->contacts.begin();
-       i != renderer->contacts.end(); i++ ) {
+  for( Contacts::iterator i = renderer->tmp_contacts.begin();
+       i != renderer->tmp_contacts.end(); i++ ) {
     if( (*i).first->getShapeId() == shape->getShapeId() ) {
       if( (*i).first.get() != shape ) {
         (*i).first.reset( shape );
@@ -505,7 +514,7 @@ void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
           renderer->already_removed_id.end(),
           shape->getShapeId() );
   if( found_id == renderer->already_removed_id.end() ) {  
-    renderer->contacts.push_back(
+    renderer->tmp_contacts.push_back(
       make_pair( shape, HAPISurfaceObject::ContactInfo()) );
     OpenHapticsRenderer::motionCallback( event, object,
                                          thread, cache, userdata );
@@ -522,23 +531,23 @@ void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
   CallbackData *cb_data = static_cast< CallbackData * >( userdata ); 
   OpenHapticsRenderer *renderer = cb_data->renderer;
   HAPIHapticShape *shape = cb_data->shape.get();
-  Contacts::iterator to_remove = renderer->contacts.end();
+  Contacts::iterator to_remove = renderer->tmp_contacts.end();
 
   Contacts::iterator i;
-  for( i = renderer->contacts.begin();
-       i != renderer->contacts.end(); i++ ) {
+  for( i = renderer->tmp_contacts.begin();
+       i != renderer->tmp_contacts.end(); i++ ) {
     if( (*i).first->getShapeId() == shape->getShapeId() ) {
       to_remove = i;
       break;
     }
   }
 
-  //assert( to_remove != renderer->contacts.end() );
+  //assert( to_remove != renderer->tmp_contacts.end() );
   // Why is untouchCallback sometimes called before touchCallback????
-  if( to_remove == renderer->contacts.end() ) {
+  if( to_remove == renderer->tmp_contacts.end() ) {
     renderer->already_removed_id.push_back( shape->getShapeId() );
   } else {
-    renderer->contacts.erase( to_remove );
+    renderer->tmp_contacts.erase( to_remove );
   }
 }
 

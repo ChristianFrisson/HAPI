@@ -374,8 +374,7 @@ namespace HAPI {
       H3DUtil::AutoRef< HAPI::HAPIHapticShape > shape;
       HHLRC haptic_context;
     };
-    
-    
+
     HLuint getHLShapeId( HAPI::HAPIHapticShape *hs,
                          HAPI::HAPIHapticsDevice *hd );
 
@@ -446,6 +445,15 @@ namespace HAPI {
     // TODO: confirm that it is indeed a OpenHaptics Bug by setting up a simple
     // example that gives the same result.
     vector< int > already_removed_id;
+
+    /// Temporary contacts used by OpenHapticsRenderer.
+    Contacts tmp_contacts;
+
+    /// Contains the proxy position of the renderer.
+    /// It will be updated in preProcessShapes which actually is not entirely
+    /// correct. A proper fix will be implemented in the future.
+    Vec3 proxy_position;
+    H3DUtil::MutexLock proxy_position_lock;
 
     /// True if there has been no hlcontext created at all yet.
     static int nr_of_context;
