@@ -54,11 +54,12 @@
 
 #include <H3DUtil/DynamicLibrary.h>
 
-//#define NIFALCON_DEBUG
 
 using namespace HAPI;
 using namespace libnifalcon;
 
+
+//#define DEBUG_PRINTOUTS
 
 namespace NiFalconHapticsDeviceInternal {
   list< string > nifalcon_device_libs;
@@ -73,7 +74,6 @@ NiFalconHapticsDevice::device_registration
 bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
 #ifdef NIFALCON_LIBUSB
-  H3DUtil::DynamicLibrary::load("libnifalcon_comm_libusb.so");
   device.setFalconComm<libnifalcon::FalconCommLibUSB>();
 #else
 #ifdef NIFALCON_LIBFTD2XX
@@ -91,53 +91,53 @@ bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
  
   // get number of connected falcons.
   unsigned int num_falcons;	
-  if(!device.getDeviceCount(num_falcons)) {
-#ifdef NIFALCON_DEBUG
-    H3DUtil::Console(4) << "Cannot get device count" << std::endl;
-#endif
-  }
-	
-#ifdef NIFALCON_DEBUG
-  H3DUtil::Console(4) << "Falcons found: " << num_falcons << std::endl;
-  H3DUtil::Console(4) << "Opening falcon" << std::endl;
-#endif
+
   
-  // open device
-  if(!device.open(0)) {
+#ifdef DEBUG_PRINTOUTS
+  if(!device.getDeviceCount(num_falcons)) {
+    H3DUtil::Console(4) << "Cannot get device count" << std::endl;
+  }
+
+  H3DUtil::Console(4) << "Falcons found: " << num_falcons << std::endl;
+
+  std::cout << "Opening falcon " << index << std::endl;
+
+#endif
+
+  if(!device.open( index )) {
     stringstream s;
-    s << "Could not init Falcon device(libnifalcon). ";
-    s << "Error code: ";
-    s << device.getErrorCode();
+    s << "Cannot open falcon(index " << index << ") - Error: " 
+      << device.getErrorCode() 
+      << ". Make sure you have the device connected properly "
+      << "and have the permissions to communicate over the USB "
+      << "port. " << std::endl;
     setErrorMsg( s.str() );
     return false;
   }
 
-#ifdef NIFALCON_DEBUG
-   H3DUtil::Console(4) << "Opened falcon" << std::endl;
-#endif
 
-   // try to load firmware
-   bool has_firmware = false;
-   for(int i = 0; i < 10; ++i) {
-     if(!device.getFalconFirmware()->loadFirmware(true, NOVINT_FALCON_NVENT_FIRMWARE_SIZE, const_cast<uint8_t*>(NOVINT_FALCON_NVENT_FIRMWARE))) {
-#ifdef NIFALCON_DEBUG
-       H3DUtil::Console(4) << "Cannot load firmware" << std::endl;
+  bool has_firmware = false;
+  for(int i = 0; i < 10; ++i) {
+    if(!device.getFalconFirmware()->loadFirmware(true, NOVINT_FALCON_NVENT_FIRMWARE_SIZE, const_cast<uint8_t*>(NOVINT_FALCON_NVENT_FIRMWARE)))
+      {
+#ifdef DEBUG_PRINTOUTS
+	std::cout << "Cannot load firmware" << std::endl;
 #endif
-     } else {
-       has_firmware = true;
-#ifdef NIFALCON_DEBUG
-       H3DUtil::Console(4) <<"firmware loaded" << std::endl;
+      }
+    else
+      {
+	has_firmware = true;
+#ifdef DEBUG_PRINTOUTS
+	std::cout <<"firmware loaded" << std::endl;
 #endif
-       break;
-     }
+	break;
+      }
   }
 
-  // no firmware could be loaded
   if(!has_firmware) {
-    setErrorMsg( "Could not init Falcon device(libnifalcon). Could not load firmware" );
+    setErrorMsg( "Could not load Falcon firmware(libnifalcon)." );
     return false;
   }
-
 
   // set up a communication thread for the device.
   com_thread = 
@@ -229,6 +229,35 @@ NiFalconHapticsDevice::com_func( void *data ) {
  }
   
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
+}
+
+bool NiFalconHapticsDevice::setDeviceIndex( unsigned int i ) {
+  if( getDeviceState() == HAPIHapticsDevice::UNINITIALIZED ) {
+    index = i;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+unsigned int NiFalconHapticsDevice::getNrConnectedFalconDevices() {
+  libnifalcon::FalconDevice device;
+#ifdef NIFALCON_LIBUSB
+  device.setFalconComm<libnifalcon::FalconCommLibUSB>();
+#else
+#ifdef NIFALCON_LIBFTD2XX
+  device.setFalconComm<libnifalcon::FalconCommLibFTD2XX>();
+#else
+#ifdef NIFALCON_LIBFTDI
+  device.setFalconComm<libnifalcon::FalconCommLibFTDI>();
+#endif
+#endif
+#endif
+  unsigned int num_falcons;
+  if(!device.getDeviceCount(num_falcons)) {
+    return 0;
+  }
+  return num_falcons;
 }
 
 #endif

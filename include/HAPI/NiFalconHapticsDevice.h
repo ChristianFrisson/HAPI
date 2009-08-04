@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //    Copyright 2008-2009, Kyle Machulis
 //    Copyright 2009, Karljohan Lundin Palmerius
 //
@@ -45,14 +45,33 @@ namespace HAPI {
   /// \brief 
   class HAPI_API NiFalconHapticsDevice: public HAPIHapticsDevice {
   public:
-    /// Constructor.
-    NiFalconHapticsDevice():
+
+    /// Returns the current number of connected falcon devices.
+    static unsigned int getNrConnectedFalconDevices();
+    
+    /// Constructor. device_index is the index of falcon device
+    /// connected. Should not be larger than getNrConnectedFalconDevices() - 1.
+    NiFalconHapticsDevice( unsigned int device_index = 0 ):
       com_thread( NULL ),
-      com_func_cb_handle( -1 ) {
-      
+      com_func_cb_handle( -1 ),
+      index( device_index ) {
+
       max_stiffness = 800;
     }
     
+    /// Returns the index of the falcon device the instance of this class
+    /// refers to.
+    inline unsigned int getDeviceIndex() {
+      return index;
+    }
+
+    /// Set the index of the falcon device the instance of this class
+    /// refers to. This call is only valid before the device is initialized.
+    /// If it is called after initialization it will do nothing.
+    /// It returns true on success, and false otherwise.
+    bool setDeviceIndex( unsigned int index );
+
+
     /// Destructor.
     virtual ~NiFalconHapticsDevice(){}
 
@@ -95,8 +114,11 @@ namespace HAPI {
     /// com_lock.
     DeviceValues current_values;
 
-
     libnifalcon::FalconDevice device;
+
+    /// The index of the Falcon device that the instance of the class
+    /// refers to.
+    unsigned int index;
   };
 }
 
