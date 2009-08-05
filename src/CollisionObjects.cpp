@@ -3121,15 +3121,18 @@ void Triangle::getTangentSpaceMatrix( const Vec3 &point,
   Vec3 tbta = tb - ta;
   Vec3 tcta = tc - ta;
 
-  HAPIFloat eMtex_invert = 1 / (tbta.x * tcta.y - tcta.x * tbta.y );
-  Vec3 tbase1 = eMtex_invert * ( tcta.y * ab - tbta.y * ac );
-  Vec3 tbase2 = eMtex_invert * ( -tcta.x * ab + tbta.x * ac );
-  Vec3 tbase3 = tbase1 % tbase2;
+  HAPIFloat denom = tbta.x * tcta.y - tcta.x * tbta.y;
+  if( H3DUtil::H3DAbs( denom ) > Constants::epsilon ) {
+    HAPIFloat eMtex_invert = 1 / denom;
+    Vec3 tbase1 = eMtex_invert * ( tcta.y * ab - tbta.y * ac );
+    Vec3 tbase2 = eMtex_invert * ( -tcta.x * ab + tbta.x * ac );
+    Vec3 tbase3 = tbase1 % tbase2;
 
-  result_mtx = Matrix4( tbase1.x, tbase2.x, tbase3.x, 0,
-                        tbase1.y, tbase2.y, tbase3.y, 0,
-                        tbase1.z, tbase2.z, tbase3.z, 0,
-                               0,        0,        0, 1 ).inverse();
+    result_mtx = Matrix4( tbase1.x, tbase2.x, tbase3.x, 0,
+                          tbase1.y, tbase2.y, tbase3.y, 0,
+                          tbase1.z, tbase2.z, tbase3.z, 0,
+                                 0,        0,        0, 1 ).inverse();
+  }
 }
 
 void Sphere::getTangentSpaceMatrix( const Vec3 &point,
@@ -3138,66 +3141,69 @@ void Sphere::getTangentSpaceMatrix( const Vec3 &point,
   // s = arctan( -x/-z) / 2pi,
   // t = 1 - arccos( y / sqrt(x^2 + y^2 + z^2 ) ) / pi,
   // u = 0
-  // Created a third vector from a cross product of the other two only to get
-  // the calculated matrix invertable, this might be introducting errors but
-  // they should be small enough to be neglectable.
-  HAPIFloat length_sqr_inv = 1 / Vec3( point ).lengthSqr();
-  HAPIFloat x2_z2 = point.x * point.x + point.z * point.z;
-  HAPIFloat x2_z2_inv = 1 / x2_z2;
-  HAPIFloat sqrt_x2_z2_inv = H3DUtil::H3DSqrt( x2_z2_inv );
+  HAPIFloat denom = Vec3( point ).lengthSqr();
+  if( H3DUtil::H3DAbs( denom ) > Constants::epsilon ) {
+
+    HAPIFloat length_sqr_inv = 1 / denom ;
+    HAPIFloat x2_z2 = point.x * point.x + point.z * point.z;
+    HAPIFloat x2_z2_inv = 1 / x2_z2;
+    HAPIFloat sqrt_x2_z2_inv = H3DUtil::H3DSqrt( x2_z2_inv );
 
 #if 1
-  // This part is only done to get an invertable matrix.
-  Vec3 ds_tangent = Vec3( point.z * CollisionInternals::two_pi_inv * x2_z2_inv,
-                          0.0f,
-                          -point.x * CollisionInternals::two_pi_inv
-                          * x2_z2_inv );
-  Vec3 dt_tangent = Vec3( -point.x * point.y * CollisionInternals::pi_inv *
-                          sqrt_x2_z2_inv * length_sqr_inv,
-                          CollisionInternals::pi_inv * x2_z2 * sqrt_x2_z2_inv *
-                          length_sqr_inv,
-                          -point.y * point.z * CollisionInternals::pi_inv *
-                          sqrt_x2_z2_inv * length_sqr_inv );
-  Vec3 du_tangent = ds_tangent % dt_tangent;
+    // Created a third vector from a cross product of the other two only to get
+    // the calculated matrix invertable, this might be introducting errors but
+    // they should be small enough to be neglectable.
+    Vec3 ds_tangent = Vec3( point.z * CollisionInternals::two_pi_inv * x2_z2_inv,
+                            0.0f,
+                            -point.x * CollisionInternals::two_pi_inv
+                            * x2_z2_inv );
+    Vec3 dt_tangent = Vec3( -point.x * point.y * CollisionInternals::pi_inv *
+                            sqrt_x2_z2_inv * length_sqr_inv,
+                            CollisionInternals::pi_inv * x2_z2 * sqrt_x2_z2_inv *
+                            length_sqr_inv,
+                            -point.y * point.z * CollisionInternals::pi_inv *
+                            sqrt_x2_z2_inv * length_sqr_inv );
+    Vec3 du_tangent = ds_tangent % dt_tangent;
 
-  result_mtx[0][0] = ds_tangent.x;
-  result_mtx[0][1] = ds_tangent.y;
-  result_mtx[0][2] = ds_tangent.z;
-  result_mtx[0][3] = 0.0f;
-  result_mtx[1][0] = dt_tangent.x;
-  result_mtx[1][1] = dt_tangent.y;
-  result_mtx[1][2] = dt_tangent.z;
-  result_mtx[1][3] = 0.0f;
-  result_mtx[2][0] = du_tangent.x;
-  result_mtx[2][1] = du_tangent.y;
-  result_mtx[2][2] = du_tangent.z;
-  result_mtx[2][3] = 0.0f;
-  result_mtx[3][0] = 0.0f;
-  result_mtx[3][1] = 0.0f;
-  result_mtx[3][2] = 0.0f;
-  result_mtx[3][3] = 1.0f;
+    result_mtx[0][0] = ds_tangent.x;
+    result_mtx[0][1] = ds_tangent.y;
+    result_mtx[0][2] = ds_tangent.z;
+    result_mtx[0][3] = 0.0f;
+    result_mtx[1][0] = dt_tangent.x;
+    result_mtx[1][1] = dt_tangent.y;
+    result_mtx[1][2] = dt_tangent.z;
+    result_mtx[1][3] = 0.0f;
+    result_mtx[2][0] = du_tangent.x;
+    result_mtx[2][1] = du_tangent.y;
+    result_mtx[2][2] = du_tangent.z;
+    result_mtx[2][3] = 0.0f;
+    result_mtx[3][0] = 0.0f;
+    result_mtx[3][1] = 0.0f;
+    result_mtx[3][2] = 0.0f;
+    result_mtx[3][3] = 1.0f;
 #else
-  // Saved in case we want to change back to non invertable matrix
-  result_mtx[0][0] = point.z * CollisionInternals::two_pi_inv * x2_z2_inv;
-  result_mtx[0][1] = 0.0f;
-  result_mtx[0][2] = -point.x * CollisionInternals::two_pi_inv * x2_z2_inv;
-  result_mtx[0][3] = 0.0f;
-  result_mtx[1][0] = -point.x * point.y * CollisionInternals::pi_inv *
-                      sqrt_x2_z2_inv * length_sqr_inv;
-  result_mtx[1][1] = -CollisionInternals::pi_inv * x2_z2 * sqrt_x2_z2_inv *
-                      length_sqr_inv * length_sqr_inv;
-  result_mtx[1][2] = -point.y * point.z * CollisionInternals::pi_inv *
-                      sqrt_x2_z2_inv * length_sqr_inv;
-  result_mtx[1][3] = 0.0f;
-  result_mtx[2][0] = 0.0f;
-  result_mtx[2][1] = 0.0f;
-  result_mtx[2][2] = 0.0f;
-  result_mtx[2][3] = 0.0f;
-  result_mtx[3][0] = 0.0f;
-  result_mtx[3][1] = 0.0f;
-  result_mtx[3][2] = 0.0f;
-  result_mtx[3][3] = 1.0f;
+    // Saved in case we want to change back to non invertable matrix
+    result_mtx[0][0] = point.z * CollisionInternals::two_pi_inv * x2_z2_inv;
+    result_mtx[0][1] = 0.0f;
+    result_mtx[0][2] = -point.x * CollisionInternals::two_pi_inv * x2_z2_inv;
+    result_mtx[0][3] = 0.0f;
+    result_mtx[1][0] = -point.x * point.y * CollisionInternals::pi_inv *
+                        sqrt_x2_z2_inv * length_sqr_inv;
+    result_mtx[1][1] = -CollisionInternals::pi_inv * x2_z2 * sqrt_x2_z2_inv *
+                        length_sqr_inv * length_sqr_inv;
+    result_mtx[1][2] = -point.y * point.z * CollisionInternals::pi_inv *
+                        sqrt_x2_z2_inv * length_sqr_inv;
+    result_mtx[1][3] = 0.0f;
+    result_mtx[2][0] = 0.0f;
+    result_mtx[2][1] = 0.0f;
+    result_mtx[2][2] = 0.0f;
+    result_mtx[2][3] = 0.0f;
+    result_mtx[3][0] = 0.0f;
+    result_mtx[3][1] = 0.0f;
+    result_mtx[3][2] = 0.0f;
+    result_mtx[3][3] = 1.0f;
 #endif
+  }
 }
 
 bool Plane::movingSphereIntersect( HAPIFloat radius,
