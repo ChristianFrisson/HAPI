@@ -50,22 +50,38 @@ bool FalconHapticsDevice::hdl_started = false;
 int FalconHapticsDevice::nr_of_initalized = 0;
 
 bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
+
   if( device_name != "" ) {
     device_handle = hdlInitNamedDevice( device_name.c_str() );
   } else {
-    device_handle = hdlInitIndexedDevice( device_index );
+    if( device_index < hdlCountDevices() ) {
+      device_handle = hdlInitIndexedDevice( device_index );
+    } else {
+      // hdl crashes if I call the hdlGetError without calling any init function before it. So we
+      // have a special return for it here before that call.
+      stringstream s;
+      s << "Could not init Falcon device. ";
+      if( device_index == 0 ) s << "Not enough devices connected." << endl;
+      else {
+        s << hdlCountDevices() << " devices connected, but trying to initialize "
+          << "device with index " << device_index << "." <<endl;  
+      }
+      setErrorMsg( s.str() );
+      return false;      
+    }
   }
   
   HDLError error = hdlGetError();
   if ( device_handle == -1 || error != HDL_NO_ERROR ) {
     stringstream s;
     s << "Could not init Falcon device. ";
-  if( error != HDL_NO_ERROR ) 
-    s << "Error code: " << error << endl;
+    if( error != HDL_NO_ERROR ) 
+      s << "Error code: " << error << endl;
      
     setErrorMsg( s.str() );
     return false;
   }
+  
   nr_of_initalized++;
   hdlMakeCurrent( device_handle );
 
