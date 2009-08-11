@@ -89,8 +89,10 @@ bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device.setFalconKinematic<libnifalcon::FalconKinematicStamper>();
   device.setFalconGrip<libnifalcon::FalconGripFourButton>();
  
+#ifdef DEBUG_PRINTOUTS
   // get number of connected falcons.
-  unsigned int num_falcons;	
+  unsigned int num_falcons;
+#endif
 
   
 #ifdef DEBUG_PRINTOUTS
@@ -115,28 +117,27 @@ bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     return false;
   }
 
-
-  bool has_firmware = false;
-  for(int i = 0; i < 10; ++i) {
-    if(!device.getFalconFirmware()->loadFirmware(true, NOVINT_FALCON_NVENT_FIRMWARE_SIZE, const_cast<uint8_t*>(NOVINT_FALCON_NVENT_FIRMWARE)))
-      {
+  if(!device.isFirmwareLoaded()) {
+    bool has_firmware = false;  
+    for(int i = 0; i < 10; ++i) {
+      if(!device.getFalconFirmware()->loadFirmware(true, NOVINT_FALCON_NVENT_FIRMWARE_SIZE, const_cast<uint8_t*>(NOVINT_FALCON_NVENT_FIRMWARE))) {
 #ifdef DEBUG_PRINTOUTS
-	std::cout << "Cannot load firmware" << std::endl;
+      std::cout << "Cannot load firmware" << std::endl;
 #endif
       }
-    else
-      {
-	has_firmware = true;
+        else {
+         has_firmware = true;
 #ifdef DEBUG_PRINTOUTS
-	std::cout <<"firmware loaded" << std::endl;
+      std::cout <<"firmware loaded" << std::endl;
 #endif
-	break;
+      break;
       }
-  }
+    }
 
-  if(!has_firmware) {
-    setErrorMsg( "Could not load Falcon firmware(libnifalcon)." );
-    return false;
+    if(!has_firmware) {
+      setErrorMsg( "Could not load Falcon firmware(libnifalcon)." );
+      return false;
+    }
   }
 
   // set up a communication thread for the device.
@@ -203,7 +204,7 @@ NiFalconHapticsDevice::com_func( void *data ) {
     
     // get buttons
     boost::shared_ptr<FalconGrip> grip = hd->device.getFalconGrip();
-    for( int i = 0 ; i < grip->getNumDigitalInputs() ; i++ ){
+    for( unsigned int i = 0 ; i < grip->getNumDigitalInputs() ; i++ ){
       if( grip->getDigitalInput(i) ){
         button_status |= 0x01 << i; }
     }
