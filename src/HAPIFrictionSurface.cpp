@@ -70,11 +70,14 @@ void HAPIFrictionSurface::setLocalProxyMovement( ContactInfo &contact_info,
       ( t_force_length - dynamic_friction * n_force_length ) / b;
 
     if( velocity < Constants::epsilon ) {
+      // If the velocity is negative then the dynamic friction term is
+      // sufficient to resist all movement and therefore we do not move the
+      // proxy.
       in_static_contact = true;
       velocity = 0;
       contact_info.setLocalProxyMovement( Vec2( 0, 0 ) ); 
     } else {
-      // The max_movement should be in m. The velocity gotten is in m/s.
+      // The max_movement should be in m. The velocity is calculated in m/s.
       // The maximum movement in one haptic frame is therefore
       // velocity * 0.001 where 0.001 is the time in seconds for one haptic
       // frame.

@@ -2,7 +2,9 @@ IF(WIN32)
   cmake_minimum_required(VERSION 2.6.0)
 ENDIF(WIN32)
 if( COMMAND cmake_policy )
-  cmake_policy( SET CMP0003 NEW )
+  if( POLICY CMP0003 )
+    cmake_policy( SET CMP0003 NEW )
+  endif( POLICY CMP0003 )
 endif( COMMAND cmake_policy )
 # The name of our project is "DirectXExample".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${DirectXExample_SOURCE_DIR} and

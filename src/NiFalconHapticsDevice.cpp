@@ -34,6 +34,8 @@
 
 #ifdef HAVE_NIFALCONAPI
 
+#include <falcon/core/FalconDevice.h>
+
 #ifdef NIFALCON_LIBFTD2XX
 # include <falcon/comm/FalconCommFTD2XX.h>
 #endif
@@ -71,23 +73,38 @@ NiFalconHapticsDevice::device_registration
   &(newInstance< NiFalconHapticsDevice >),
   NiFalconHapticsDeviceInternal::nifalcon_device_libs );
 
+/// Constructor. device_index is the index of falcon device
+/// connected. Should not be larger than getNrConnectedFalconDevices() - 1.
+NiFalconHapticsDevice::NiFalconHapticsDevice( unsigned int device_index ):
+  com_thread( NULL ),
+  com_func_cb_handle( -1 ),
+  index( device_index ),
+  device( new libnifalcon::FalconDevice ) {
+  
+  max_stiffness = 800;
+}
+
+NiFalconHapticsDevice::~NiFalconHapticsDevice() {
+  delete device;
+}
+
 bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
 #ifdef NIFALCON_LIBUSB
-  device.setFalconComm<libnifalcon::FalconCommLibUSB>();
+  device->setFalconComm<libnifalcon::FalconCommLibUSB>();
 #else
 #ifdef NIFALCON_LIBFTD2XX
-  device.setFalconComm<libnifalcon::FalconCommLibFTD2XX>();
+  device->setFalconComm<libnifalcon::FalconCommLibFTD2XX>();
 #else
 #ifdef NIFALCON_LIBFTDI
-  device.setFalconComm<libnifalcon::FalconCommLibFTDI>();
+  device->setFalconComm<libnifalcon::FalconCommLibFTDI>();
 #endif
 #endif
 #endif
   
-  device.setFalconFirmware<libnifalcon::FalconFirmwareNovintSDK>();
-  device.setFalconKinematic<libnifalcon::FalconKinematicStamper>();
-  device.setFalconGrip<libnifalcon::FalconGripFourButton>();
+  device->setFalconFirmware<libnifalcon::FalconFirmwareNovintSDK>();
+  device->setFalconKinematic<libnifalcon::FalconKinematicStamper>();
+  device->setFalconGrip<libnifalcon::FalconGripFourButton>();
  
 #ifdef DEBUG_PRINTOUTS
   // get number of connected falcons.
@@ -96,7 +113,7 @@ bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 
   
 #ifdef DEBUG_PRINTOUTS
-  if(!device.getDeviceCount(num_falcons)) {
+  if(!device->getDeviceCount(num_falcons)) {
     H3DUtil::Console(4) << "Cannot get device count" << std::endl;
   }
 
@@ -106,10 +123,10 @@ bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 
 #endif
 
-  if(!device.open( index )) {
+  if(!device->open( index )) {
     stringstream s;
     s << "Cannot open falcon(index " << index << ") - Error: " 
-      << device.getErrorCode() 
+      << device->getErrorCode() 
       << ". Make sure you have the device connected properly "
       << "and have the permissions to communicate over the USB "
       << "port. " << std::endl;
@@ -117,21 +134,26 @@ bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     return false;
   }
 
-  if(!device.isFirmwareLoaded()) {
-    bool has_firmware = false;  
+  if(!device->isFirmwareLoaded()) {
+    bool has_firmware = false;
     for(int i = 0; i < 10; ++i) {
-      if(!device.getFalconFirmware()->loadFirmware(true, NOVINT_FALCON_NVENT_FIRMWARE_SIZE, const_cast<uint8_t*>(NOVINT_FALCON_NVENT_FIRMWARE))) {
+      if(!device->getFalconFirmware()->
+        loadFirmware(true, 
+                     NOVINT_FALCON_NVENT_FIRMWARE_SIZE,
+                     const_cast<uint8_t*>(NOVINT_FALCON_NVENT_FIRMWARE)))
+        {
 #ifdef DEBUG_PRINTOUTS
-      std::cout << "Cannot load firmware" << std::endl;
+    std::cout << "Cannot load firmware" << std::endl;
 #endif
-      }
-        else {
-         has_firmware = true;
+        }
+      else
+        {
+    has_firmware = true;
 #ifdef DEBUG_PRINTOUTS
-      std::cout <<"firmware loaded" << std::endl;
+    std::cout <<"firmware loaded" << std::endl;
 #endif
-      break;
-      }
+    break;
+        }
     }
 
     if(!has_firmware) {
@@ -192,19 +214,19 @@ NiFalconHapticsDevice::com_func( void *data ) {
   if( hd->getDeviceState() != HAPIHapticsDevice::ENABLED ) {
     return H3DUtil::PeriodicThread::CALLBACK_CONTINUE; }
   
-  hd->device.getFalconFirmware()->setHomingMode( true );
-  hd->device.runIOLoop();
-  if( hd->device.getFalconFirmware()->isHomed() ) {
+  hd->device->getFalconFirmware()->setHomingMode( true );
+  hd->device->runIOLoop();
+  if( hd->device->getFalconFirmware()->isHomed() ) {
 
     // get position
-    boost::array<double,3> pos = hd->device.getPosition();
+    boost::array<double,3> pos = hd->device->getPosition();
     Vec3 position( pos[0] , pos[1] , (pos[2] - .150f) );
     
     HAPIInt32 button_status;
     
     // get buttons
-    boost::shared_ptr<FalconGrip> grip = hd->device.getFalconGrip();
-    for( unsigned int i = 0 ; i < grip->getNumDigitalInputs() ; i++ ){
+    boost::shared_ptr<FalconGrip> grip = hd->device->getFalconGrip();
+    for( int i = 0 ; i < grip->getNumDigitalInputs() ; i++ ){
       if( grip->getDigitalInput(i) ){
         button_status |= 0x01 << i; }
     }
@@ -226,7 +248,7 @@ NiFalconHapticsDevice::com_func( void *data ) {
     hd->com_lock.unlock();
  
     // send force
-    hd->device.setForce(f);
+    hd->device->setForce(f);
  }
   
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;

@@ -207,9 +207,10 @@ FeedbackBufferCollector::endCollecting(
       i++;
       Vec3 v0, v1, v2; 
       Vec3 tc0, tc1, tc2; 
-      if( nr_vertices != 3 ) { 
+      if( nr_vertices > 4 ) { 
         cerr << "Too Many vertices: " << nr_vertices << endl;
       }
+
       i+= parseVertex( buffer, i, p, col, tc0 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v0.x, &v0.y, &v0.z );
       i+= parseVertex( buffer, i, p, col, tc1 );
@@ -217,6 +218,14 @@ FeedbackBufferCollector::endCollecting(
       i+= parseVertex( buffer, i, p, col, tc2 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
       triangles.push_back( HAPI::Collision::Triangle( v0, v1, v2, tc0, tc1, tc2 )) ;
+      // need to take care o the case of 4 vertices. Happens often on OSX.
+      if( nr_vertices == 4 ) {
+        Vec3 v3, tc3;
+        i+= parseVertex( buffer, i, p, col, tc3 );
+        gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v3.x, &v3.y, &v3.z );
+        triangles.push_back( HAPI::Collision::Triangle( v0, v2, v3, tc0, tc2, tc3 )) ;
+      }
+
       break;
     }
     case( GL_BITMAP_TOKEN ): 
@@ -292,7 +301,7 @@ FeedbackBufferCollector::endCollecting(
       i++;
       Vec3 v0, v1, v2; 
       Vec3 tc0, tc1, tc2; 
-      if( nr_vertices != 3 ) { 
+      if( nr_vertices > 4 ) { 
         cerr << "Too Many vertices: " << nr_vertices << endl;
       }
       i+= parseVertex( buffer, i, p, col, tc0 );
@@ -302,6 +311,14 @@ FeedbackBufferCollector::endCollecting(
       i+= parseVertex( buffer, i, p, col, tc2 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v2.x, &v2.y, &v2.z );
       triangles.push_back( HAPI::Collision::Triangle( v0, v1, v2, tc0, tc1, tc2 )) ;
+
+      // need to take care o the case of 4 vertices. Happens often on OSX.
+      if( nr_vertices == 4 ) {
+        Vec3 v3, tc3;
+        i+= parseVertex( buffer, i, p, col, tc3 );
+        gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v3.x, &v3.y, &v3.z );
+        triangles.push_back( HAPI::Collision::Triangle( v0, v2, v3, tc0, tc2, tc3 )) ;
+      }
       break;
     }
     case( GL_BITMAP_TOKEN ): 

@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticTexturesSurface.h
+/// \file HAPI/HapticTexturesSurface.h
 /// \brief Header file for HapticTexturesSurface
 ///
 //

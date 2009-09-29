@@ -67,6 +67,17 @@ namespace HAPI {
   public:
 
     /// Constructor.
+    /// \param _transform The transformation from local to global space.
+    /// \param _surface The surface of the HAPIHapticShape.
+    /// \param _touchable_face Tells which face (side) of the shape that
+    /// should be possible to touch.
+    /// \param _userdata Extra data supplied by the user. HAPIHapticShape
+    /// have no idea what it contains.
+    /// \param _shape_id The id of this HAPIHapticShape.
+    /// \param _clean_up_func A function that can be used for cleaning up
+    /// contents of user_data when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of user_data member
+    /// variable.
     HAPIHapticShape( const Matrix4 &_transform,
                      HAPISurfaceObject *_surface,
                      Collision::FaceType _touchable_face = 
@@ -94,6 +105,16 @@ namespace HAPI {
     }
 
     /// Constructor.
+    /// \param _surface The surface of the HAPIHapticShape.
+    /// \param _touchable_face Tells which face (side) of the shape that
+    /// should be possible to touch.
+    /// \param _userdata Extra data supplied by the user. HAPIHapticShape
+    /// have no idea what it contains.
+    /// \param _shape_id The id of this HAPIHapticShape.
+    /// \param _clean_up_func A function that can be used for cleaning up
+    /// contents of user_data when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of user_data member
+    /// variable.
     HAPIHapticShape( HAPISurfaceObject *_surface,
                      Collision::FaceType _touchable_face = 
                      Collision::FRONT_AND_BACK,
@@ -117,12 +138,22 @@ namespace HAPI {
     }
 
     /// Constructor.
-
-    /// \params velocity The velocity(m/s) the shape center of mass of the shape
+    /// \param _transform The transformation from local to global space.
+    /// \param _velocity The velocity(m/s) the shape center of mass of the shape
     /// is moving in.
-    /// \params angular_velocity The rotational velocity around the center 
+    /// \param _angular_velocity The rotational velocity around the center 
     /// of mass(in radians/s)
-    /// \params growth_rate The time derivative of the scale factor(scale units/s)
+    /// \param _growth_rate The time derivative of the scale factor(scale units/s)
+    /// \param _surface The surface of the HAPIHapticShape.
+    /// \param _touchable_face Tells which face (side) of the shape that
+    /// should be possible to touch.
+    /// \param _userdata Extra data supplied by the user. HAPIHapticShape
+    /// have no idea what it contains.
+    /// \param _shape_id The id of this HAPIHapticShape.
+    /// \param _clean_up_func A function that can be used for cleaning up
+    /// contents of user_data when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of user_data member
+    /// variable.
     HAPIHapticShape( const Matrix4 &_transform,
                      const Vec3 &_velocity,
                      const Rotation &_angular_velocity,
@@ -156,12 +187,21 @@ namespace HAPI {
     }
 
     /// Constructor.
-
-    /// \params velocity The velocity(m/s) the shape center of mass of the shape
+    /// \param _velocity The velocity(m/s) the shape center of mass of the shape
     /// is moving in.
-    /// \params angular_velocity The rotational velocity around the center 
+    /// \param _angular_velocity The rotational velocity around the center 
     /// of mass(in radians/s)
-    /// \params growth_rate The time derivative of the scale factor(scale units/s)
+    /// \param _growth_rate The time derivative of the scale factor(scale units/s)
+    /// \param _surface The surface of the HAPIHapticShape.
+    /// \param _touchable_face Tells which face (side) of the shape that
+    /// should be possible to touch.
+    /// \param _userdata Extra data supplied by the user. HAPIHapticShape
+    /// have no idea what it contains.
+    /// \param _shape_id The id of this HAPIHapticShape.
+    /// \param _clean_up_func A function that can be used for cleaning up
+    /// contents of user_data when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of user_data member
+    /// variable.
     HAPIHapticShape( const Vec3 &_velocity,
                      const Rotation &_angular_velocity,
                      const Vec3 & _growth_rate,

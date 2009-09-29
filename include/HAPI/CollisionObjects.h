@@ -42,7 +42,8 @@
 #include <H3DUtil/AutoRefVector.h>
 
 namespace HAPI {
-class Constraints;
+  class Constraints; // Forward declaration
+
   namespace Collision {
     /// Intersect segment S(t)=sa+t(sb-sa), 0<=t<=1 against cylinder 
     /// specified by p, q and r. The segment finds the first along the segment.
@@ -1051,11 +1052,14 @@ class Constraints;
 
       /// Get the closest point and normal on the object to the given point p.
       /// \param p The point to find the closest point to.
+      /// \param _min The minimum corner of the axis aligned box.
+      /// \param _max The maximum corner of the axis aligned box..
       /// \param closest_point Return parameter for closest point
       /// \param normal Return parameter for normal at closest point.
       /// \param tex_coord Return parameter for texture coordinate at closest 
       /// point
-      /// \param inside Returns true if point is inside AABox.
+      /// \param point_location Contains information about whether the closest
+      /// point is inside, outside or on the surface of the axis aligned box.
       virtual void closestPoint( const Vec3 &p,
                                  const Vec3 &_min,
                                  const Vec3 &_max,
@@ -1068,8 +1072,13 @@ class Constraints;
       /// For internal use.
       /// \param from The start of the line segment.
       /// \param to The end of the line segment.
+      /// \param _min The minimum corner of the axis aligned box.
+      /// \param _max The maximum corner of the axis aligned box..
       /// \param result Contains info about the closest intersection, if 
       /// line intersects object
+      /// \param from_location Contains information about whether the starting
+      /// point of the line is inside, outside or on the surface of the axis
+      /// aligned box.
       /// \param face The sides of the object that can be intersected. E.g.
       /// if FRONT, intersections will be reported only if they occur from
       /// the front side, i.e. the side in which the normal points. 

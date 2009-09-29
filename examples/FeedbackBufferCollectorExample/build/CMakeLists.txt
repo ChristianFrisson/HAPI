@@ -17,6 +17,11 @@ INCLUDE_DIRECTORIES( ${FeedbackBufferCollector_SOURCE_DIR}/.. )
 SET(requiredLibs)
 
 SET(CMAKE_MODULE_PATH ${FeedbackBufferCollector_SOURCE_DIR}/../../../build/modules )
+IF( COMMAND cmake_policy )
+  if( POLICY CMP0011 )
+    cmake_policy( SET CMP0011 NEW )
+  endif( POLICY CMP0011 )
+ENDIF( COMMAND cmake_policy )
 INCLUDE( StripAndAddLibraryDirectories )
 
 #H3DUtil

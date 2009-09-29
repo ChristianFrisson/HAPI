@@ -1,3 +1,29 @@
+Changes for version 1.1:
+
+- Improved OSX support for FeedbackBufferCollector.
+- OpenHapticRenderer updates to make it thread safe.
+- Added support for Falcon in linux. Patch provided by KJ. Extra fixes provided by qDot.
+- Can now use index to specify Falcon haptics device when using multiple Falcons.
+- Bug corrections to the collision handling functions.
+- Updates to CMake build system and additional options in order to build
+HAPI libraries and examples from one build file. Each file belonging to a
+project is now listed explicitly.
+- Fixes to compile on recent versions of gcc.
+- Added Cylinder and AABox collision primitives.
+- Improvements to haptic rendering in order to handle moving haptic objects.
+- Improvements to haptic threads.
+- Fixes for compiling on Windows 64 bit.
+- Corrections to DepthMapSurface for low and high texture coordinate values.
+- Documentation updates.
+
+New Classes:
+AABox (collision primitive)
+Cylinder (collision primitive)
+DeviceLog
+HapticTexturesSurface
+
+
+
 Changes for version 1.0:
 
 - Use double versions of Rotations and Quaternions.

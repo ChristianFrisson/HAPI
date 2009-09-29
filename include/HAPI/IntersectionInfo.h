@@ -30,7 +30,7 @@
 #include <HAPI/HAPITypes.h>
 
 namespace HAPI {
-
+  /// Contains simple collision classes.
   namespace Collision {
 
     class GeometryPrimitive;

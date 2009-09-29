@@ -74,6 +74,8 @@ namespace HAPI {
     /// calculated, quite often this is the point of the virtual proxy.
     /// \param stiffness The stiffness parameter.
     /// \param damping The damping parameter.
+    /// \param use_relative_values Same functionality as
+    /// HAPIFrictionSurface::use_relative_values.
     static void getForcesInternal( ContactInfo &contact_info,
                                    const Vec3 &point_on_surface,
                                    HAPIFloat stiffness,
@@ -96,10 +98,8 @@ namespace HAPI {
     /// \param proxy_movement The estimated proxy movement.
     /// \param static_friction The static friction parameter.
     /// \param dynamic_friction The dynamic friction parameter.
-    /// \param have_proxy_mov_length Should be true if the next parameter is
-    /// set.
-    /// \param proxy_mov_length The magnitude of the proxy movement, used if
-    /// have_proxy_mov_length is true.
+    /// \param proxy_mov_length The magnitude of the proxy movement. This
+    /// parameter can be omitted if the function should calculate the length.
     void setLocalProxyMovement( ContactInfo &contact_info,
                                 HAPIFloat t_force_length,
                                 HAPIFloat n_force_length,
