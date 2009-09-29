@@ -6,22 +6,21 @@ rendering should be done at (at least) 1000 Hz which is considerably higher
 than main loop threads of most applications. A typical application with haptics
 added through HAPI would have thread communication like in figure \ref{threads}.
 The purpose of the haptics thread is to calculate forces from all force effects
-and geometries that are rendered on a haptics device. There also has to be a way
-to send this information to other threads if they should ask for it (figure
+and geometries that are rendered on a haptics device (figure
 \ref{haptics thread}).
-
-\begin{figure} 
-  \centering 
-  \includegraphics{images/hapticsthread.pdf}
-  \caption{The flow of execution in the haptics thread.}
-  \label{haptics thread} 
-\end{figure}
 
 \begin{figure} 
   \centering 
   \includegraphics{images/threads.pdf}
   \caption{Thread communication}
   \label{threads} 
+\end{figure}
+
+\begin{figure} 
+  \centering 
+  \includegraphics{images/hapticsthread.pdf}
+  \caption{The flow of execution in the haptics thread.}
+  \label{haptics thread} 
 \end{figure}
 
 \section{Thread handling classes}
@@ -152,4 +151,4 @@ new device to HAPI by subclassing HAPIHapticsDevice the default thread is
 sufficient. If however the haptics device provides some way of adding callbacks
 through calls to other functions a wrapper class should be implemented
 to override the virtual functions of PeriodicThreadBase for adding and removing
-callbacks. For example implementation of this see PhantomHapticsDevice.
+callbacks. For example implementation of this see HLThread and PhantomHapticsDevice.

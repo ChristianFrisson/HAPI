@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticMasterDevice.h
+/// \file HAPI/HapticMasterDevice.h
 /// \brief Header file for HapticMasterDevice.
 ///
 //

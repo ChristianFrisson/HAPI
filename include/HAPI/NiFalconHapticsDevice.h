@@ -36,13 +36,17 @@
 
 #ifdef HAVE_NIFALCONAPI
 
-#include <falcon/core/FalconDevice.h>
+// forward declaration
+namespace libnifalcon {
+  class FalconDevice;
+}
 
 namespace HAPI {
-
+ 
   /// \ingroup HapticsDevices
   /// \class NiFalconHapticsDevice
-  /// \brief 
+  /// \brief Interface to the Falcon device through the open source library
+  /// libAnyFalcon. Works on linux.
   class HAPI_API NiFalconHapticsDevice: public HAPIHapticsDevice {
   public:
 
@@ -51,14 +55,10 @@ namespace HAPI {
     
     /// Constructor. device_index is the index of falcon device
     /// connected. Should not be larger than getNrConnectedFalconDevices() - 1.
-    NiFalconHapticsDevice( unsigned int device_index = 0 ):
-      com_thread( NULL ),
-      com_func_cb_handle( -1 ),
-      index( device_index ) {
+    NiFalconHapticsDevice( unsigned int device_index = 0 );
 
-      max_stiffness = 800;
-    }
-    
+    /// Destructor.
+    virtual ~NiFalconHapticsDevice();
     /// Returns the index of the falcon device the instance of this class
     /// refers to.
     inline unsigned int getDeviceIndex() {
@@ -71,16 +71,13 @@ namespace HAPI {
     /// It returns true on success, and false otherwise.
     bool setDeviceIndex( unsigned int index );
 
-
-    /// Destructor.
-    virtual ~NiFalconHapticsDevice(){}
-
     /// Register this renderer to the haptics renderer database.
     static HapticsDeviceRegistration device_registration;
 
   protected:
     /// Implementation of updateDeviceValues using DHD API to get the values.
-    virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt );
+    virtual void updateDeviceValues( HAPIHapticsDevice::DeviceValues &dv,
+                                     HAPITime dt );
 
     /// Implementation of sendOutput using DHD API to send forces.
     virtual void sendOutput( DeviceOutput &dv,
@@ -114,7 +111,9 @@ namespace HAPI {
     /// com_lock.
     DeviceValues current_values;
 
-    libnifalcon::FalconDevice device;
+    /// The libnifalcon device class. Cannot use auto_ptr here because
+    /// the class is forward declared.
+    libnifalcon::FalconDevice * device;
 
     /// The index of the Falcon device that the instance of the class
     /// refers to.

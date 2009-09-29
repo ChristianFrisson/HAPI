@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file DeviceLog.h
+/// \file HAPI/DeviceLog.h
 /// \brief header file for DeviceLog class.
 //
 //
@@ -54,13 +54,14 @@ namespace HAPI {
   ///
   /// A binary file will contain strings specifying what haptics device data
   /// is stored in the file. After the last string is read the next section
-  /// will be a null character ('\0'). This fact should be used to know when
+  /// will be a null character ('\\0'). This fact should be used to know when
   /// all the strings are read. After all the strings are read the data will
   /// come in the order specified by the strings. Repeated until end of file.
   ///
   /// Here follows example C++ code showing how to read from a log file in
   /// binary format stored by this class and print the output to the console:
   ///
+  /// \code
   /// // Create file stream and open file.
   /// ifstream file_stream;
   /// file_stream.open( "filename", ios::in | ios::binary );
@@ -114,7 +115,7 @@ namespace HAPI {
   ///   }
   /// }
   /// file_stream.close();
-  ///
+  /// \endcode
   class HAPI_API DeviceLog: public HAPIForceEffect {
   public:
     /// Specifies different properties of the haptics device

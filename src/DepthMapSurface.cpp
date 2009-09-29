@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file DepthMapSurface.cpp
+/// \file HAPI/src/DepthMapSurface.cpp
 /// \brief cpp file for DepthMapSurface
 ///
 //

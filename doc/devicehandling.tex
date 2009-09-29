@@ -78,7 +78,7 @@ The haptic rendering functions are used to define what to render on the haptics 
 Most common device handling functions:
 
 \begin{itemize}
-\item ErrorCode initDevice() -  Does all the initialization needed for the
+\item ErrorCode initDevice( int \_thread\_frequency = 1024 ) -  Does all the initialization needed for the
 device before starting to use it.
 \item ErrorCode releaseDevice() - Releases all resources that were allocated
 in initDevice.
@@ -99,9 +99,13 @@ from being updated, but does not release the device.
   for a given button on the haptics device.
 \end{itemize}
 
-The error code returned is HAPI::HAPIHapticsDevice::SUCCESS on success.
+The ErrorCode returned for some of the above functions is an enumerator. The
+returned code will be HAPI::HAPIHapticsDevice::SUCCESS on success.
 
 \subsection{Calibration functions}
+Following are the most commonly used functions for modifying the local
+coordinate system the values of the haptics device are reported in.
+
 \begin{itemize}
 \item void setPositionCalibration( const Matrix4 \&m ) - Set the
  position calibration matrix
@@ -167,7 +171,7 @@ Support for new devices can easily be added to HAPI by subclassing the
 HAPIHapticsDevice class and implement the four abstract functions below.
 
 \begin{itemize}
-\item bool initHapticsDevice() - initialize the haptics device. Return
+\item bool initHapticsDevice( int \_thread\_frequency = 1024 ) - initialize the haptics device. Return
   true on success, otherwise false and set an error message. 
 \item bool releaseHapticsDevice() - releases all resources held by the
   haptics device. Return true on success, otherwise false and set an
@@ -200,6 +204,6 @@ In .cpp file:
 The string given as first argument is the name of your new device. The second
 argument is the function to use for creating a new instance of the device. The
 third argument is a list of names of dll-s that need to exist on the system to
-be able to start the device. This argument is only used on system using
-Microsoft Windows.
+be able to start the device. This argument is only required for haptics devices
+that should be supported in Microsoft Windows.
 

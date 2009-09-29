@@ -38,7 +38,7 @@ IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
 ENDIF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
 
 SET( HAPI_MAJOR_VERSION 1 )
-SET( HAPI_MINOR_VERSION 0 )
+SET( HAPI_MINOR_VERSION 1 )
 SET( HAPI_BUILD_VERSION 0 )
 
 # Set here already in case a special NSIS template needs to be used by cpack.
@@ -73,11 +73,8 @@ IF( GENERATE_CPACK_PROJECT )
                                   /release
                                   /linux
                                   /build/win32/
-                                  /build/vc9
-                                  /build/vc8
-                                  /build/vc7
-                                  /osx/
-                                  /doc/H3DAPI/ )
+                                  "/(build|examples)/vc(7|(8|9))"
+                                  /osx/ )
   
   SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
   SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
@@ -87,131 +84,179 @@ IF( GENERATE_CPACK_PROJECT )
     # Cached variable used by H3DAPIs GENERATE_CPACK_PROJECT to get the correct installation directories.
     SET( HAPI_CPACK_INSTALLED_DIRECTORIES ""
         CACHE INTERNAL "Installed directories of HAPI." )
-    SET( CPACK_PACKAGE_START_MENU_NAME "HAPI 1.0" )
+    SET( CPACK_PACKAGE_START_MENU_NAME "HAPI 1.1" )
 
     SET( HAPIExamples_cmake_install "" CACHE PATH "Needs to be set if examples for HAPI is desired to be packed in the install. Set to location of cmake_install.cmake for the examples." )
     MARK_AS_ADVANCED(HAPIExamples_cmake_install)
     IF( HAPIExamples_cmake_install )
       SET(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
                                        "${HAPIExamples_cmake_install};Examples;ALL;/" )
-      SET( CPACK_ADD_HAPIEXAMPLES_LINKS "ON" )
-      
       FIND_PACKAGE(wxWidgetsWin)
-    ELSE( HAPIExamples_cmake_install )
-      SET(HAPI_CPACK_IGNORE_PATTERNS ${HAPI_CPACK_IGNORE_PATTERNS}
-                                       /External/include/wx )
-    ENDIF( HAPIExamples_cmake_install )  
+    ENDIF( HAPIExamples_cmake_install )
+
+    IF( HAPIExamples_cmake_install OR HAPI_EXAMPLE_PROJECTS )
+      SET( CPACK_ADD_HAPIEXAMPLES_LINKS "ON" )
+    ENDIF( HAPIExamples_cmake_install OR HAPI_EXAMPLE_PROJECTS )
+
+    IF( NOT PREFER_STATIC_LIBRARIES )
+      # Ignore static libraries.
+      SET( HAPI_CPACK_IGNORE_PATTERNS ${HAPI_CPACK_IGNORE_PATTERNS}
+                                      /freeglut_static\\\\.lib$
+                                      /glew32_static\\\\.lib$
+                                      "/FreeImage_static(_vc8)*(_vc9)*(_d)*\\\\.lib$" )
+    ENDIF( NOT PREFER_STATIC_LIBRARIES )
 
     # This might be cleaned up a bit after cleaning External.
-    SET(CPACK_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS}
-                           /fparser\\\\.lib$
-                           /teem\\\\.lib$
-                           /wxbase28_net\\\\.lib$
-                           /wxbase28_odbc\\\\.lib$
-                           /wxbase28_xml\\\\.lib$
-                           /wxbase28_net\\\\.lib$
-                           /wxbase28_odbc\\\\.lib$
-                           /wxbase28_xml\\\\.lib$
-                           /wxexpat\\\\.lib$
-                           /wxjpeg\\\\.lib$
-                           /wxmsw28_aui\\\\.lib$
-                           /wxmsw28_dbgrid\\\\.lib$
-                           /wxmsw28_html\\\\.lib$
-                           /wxmsw28_media\\\\.lib$
-                           /wxmsw28_qa\\\\.lib$
-                           /wxmsw28_richtext\\\\.lib$
-                           /wxmsw28_xrc\\\\.lib$
-                           /wxpng\\\\.lib$
-                           /wxregex\\\\.lib$
-                           /wxtiff\\\\.lib$
-                           /wxzlib\\\\.lib$
-                           /pthreadGC2\\\\.dll$
-                           /pthreadGCE2\\\\.dll$
-                           /pthreadVSE2\\\\.dll$
-                           /audiofile\\\\.dll$
-                           /cg\\\\.dll$
-                           /cgGL\\\\.dll$
-                           /ftgl_dynamic_MTD\\\\.dll$
-                           /libcurl\\\\.dll$
-                           /ogg\\\\.dll$
-                           /ogg_d\\\\.dll$
-                           /OpenAL32\\\\.dll$
-                           /vorbis\\\\.dll$
-                           /vorbisfile\\\\.dll$
-                           /wrap_oal\\\\.dll$
-                           /xerces-c_2_7\\\\.dll$
-                           /xerces-c_2_7D\\\\.dll$
-                           /xerces-c_2_8.dll\\\\.dll$
-                           /ALut\\\\.lib$
-                           /audiofile\\\\.lib$
-                           /cg\\\\.lib$
-                           /cgGL\\\\.lib$
-                           /freetype219MT\\\\.lib$
-                           /freetype235\\\\.lib$
-                           /ftgl_dynamic_MTD\\\\.lib$
-                           /ftgl_static_MTD\\\\.lib$
-                           /libaudiofile\\\\.lib$
-                           /libcurl\\\\.lib$
-                           /libcurl_static\\\\.lib$
-                           /ogg\\\\.lib$
-                           /ogg_static\\\\.lib$
-                           /OpenAL32\\\\.lib$
-                           /siapp\\\\.lib$
-                           /spwmath\\\\.lib$
-                           /strmbase\\\\.lib$
-                           /vorbis\\\\.lib$
-                           /vorbis_static\\\\.lib$
-                           /vorbisfile\\\\.lib$
-                           /vorbisfile_static\\\\.lib$
-                           /xerces-c_2\\\\.lib$
-                           /Xerces-c_static_2\\\\.lib$
-                           /include/3dconnexion
-                           /include/AL
-                           /include/Cg
-                           /include/curl
-                           /include/DirectShow
-                           /include/fparser
-                           /include/freetype
-                           /include/FTGL
-                           /include/libaudiofile
-                           /include/ogg
-                           /include/teem
-                           /include/vorbis
-                           /include/xercesc
-                           /HAPI/doc/
-                           /H3DUtil/doc/
-                           /HapticAPI2
-                           /ftgl_static_MTD_d\\\\.lib$
-                           /ftgl_static_MTD_vc8\\\\.lib$
-                           /ftgl_static_MTD_vc8_d\\\\.lib$
-                           /ftgl_static_MTD_vc9\\\\.lib$
-                           /ftgl_static_MTD_vc9_d\\\\.lib$
-                           /Xerces-c_static_2_d\\\\.lib$
-                           /xerces-c_static_2_vc8\\\\.lib$
-                           /xerces-c_static_2_vc8_d\\\\.lib$
-                           /xerces-c_static_2_vc9\\\\.lib$
-                           /xerces-c_static_2_vc9_d\\\\.lib$
-                           /dcmdata\\\\.lib$
-                           /dcmimage\\\\.lib$
-                           /dcmimgle\\\\.lib$
-                           /z\\\\.lib$
-                           /png\\\\.lib$
-                           /bz2\\\\.lib$
-                           /ofstd\\\\.lib$
-                           /Definitions.h$ )
+    SET( CPACK_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS}
+                            /fparser\\\\.lib$
+                            "/wxbase28_net(_vc8)*\\\\.lib$"
+                            "/wxbase28_odbc(_vc8)*\\\\.lib$"
+                            "/wxbase28_xml(_vc8)*\\\\.lib$"
+                            "/wxbase28_net(_vc8)*\\\\.lib$"
+                            "/wxexpat(_vc8)*\\\\.lib$"
+                            "/wxjpeg(_vc8)*\\\\.lib$"
+                            "/wxmsw28_aui(_vc8)*\\\\.lib$"
+                            "/wxmsw28_dbgrid(_vc8)*\\\\.lib$"
+                            "/wxmsw28_html(_vc8)*\\\\.lib$"
+                            "/wxmsw28_media(_vc8)*\\\\.lib$"
+                            "/wxmsw28_qa(_vc8)*\\\\.lib$"
+                            "/wxmsw28_richtext(_vc8)*\\\\.lib$"
+                            "/wxmsw28_xrc(_vc8)*\\\\.lib$"
+                            "/wxpng(_vc8)*\\\\.lib$"
+                            "/wxregex(_vc8)*\\\\.lib$"
+                            "/wxtiff(_vc8)*\\\\.lib$"
+                            "/wxzlib(_vc8)*\\\\.lib$"
+                            /pthreadGC2\\\\.dll$
+                            /pthreadGCE2\\\\.dll$
+                            "/pthreadVSE2\\\\.(dll|lib)$"
+                            /audiofile\\\\.dll$
+                            /cg\\\\.dll$
+                            /cgGL\\\\.dll$
+                            /ftgl_dynamic_MTD\\\\.dll$
+                            /libcurl\\\\.dll$
+                            /ogg\\\\.dll$
+                            /ogg_d\\\\.dll$
+                            /OpenAL32\\\\.dll$
+                            /vorbis\\\\.dll$
+                            /vorbisfile\\\\.dll$
+                            /wrap_oal\\\\.dll$
+                            /xerces-c_2_7\\\\.dll$
+                            /xerces-c_2_7D\\\\.dll$
+                            /xerces-c_2_8.dll\\\\.dll$
+                            /ALut\\\\.lib$
+                            /audiofile\\\\.lib$
+                            /cg\\\\.lib$
+                            /cgGL\\\\.lib$
+                            /freetype219MT\\\\.lib$
+                            /freetype235\\\\.lib$
+                            /ftgl_dynamic_MTD\\\\.lib$
+                            /ftgl_static_MTD\\\\.lib$
+                            /libaudiofile\\\\.lib$
+                            /libcurl\\\\.lib$
+                            /libcurl_static\\\\.lib$
+                            /ogg\\\\.lib$
+                            /ogg_static\\\\.lib$
+                            /OpenAL32\\\\.lib$
+                            /siapp\\\\.lib$
+                            /spwmath\\\\.lib$
+                            /strmbase\\\\.lib$
+                            /vorbis\\\\.lib$
+                            /vorbis_static\\\\.lib$
+                            /vorbisfile\\\\.lib$
+                            /vorbisfile_static\\\\.lib$
+                            /xerces-c_2\\\\.lib$
+                            /Xerces-c_static_2\\\\.lib$
+                            /include/3dconnexion/
+                            /include/AL/
+                            /include/Cg/
+                            /include/curl/
+                            /include/DirectShow/
+                            /include/fparser/
+                            /include/freetype/
+                            /include/FTGL/
+                            /include/libaudiofile/
+                            /include/ogg/
+                            /include/vorbis/
+                            /include/xercesc/
+                            /HapticAPI2
+                            /ftgl_static_MTD_d\\\\.lib$
+                            /ftgl_static_MTD_vc8\\\\.lib$
+                            /ftgl_static_MTD_vc8_d\\\\.lib$
+                            /ftgl_static_MTD_vc9\\\\.lib$
+                            /ftgl_static_MTD_vc9_d\\\\.lib$
+                            /Xerces-c_static_2_d\\\\.lib$
+                            /xerces-c_static_2_vc8\\\\.lib$
+                            /xerces-c_static_2_vc8_d\\\\.lib$
+                            /xerces-c_static_2_vc9\\\\.lib$
+                            /xerces-c_static_2_vc9_d\\\\.lib$
+                            /dcmdata\\\\.lib$
+                            /dcmimage\\\\.lib$
+                            /dcmimgle\\\\.lib$
+                            /ofstd\\\\.lib$
+                            /Definitions.h$
+                            "/DentalSimAPI\\\\.(lib)*(dll)*(h)*$"
+                            "/H3DAPI"
+                            "/H3DViewer"
+                            "/H3DLoad"
+                            "/H3D API" )
+
     SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
                                     "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
                                     "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
-                                    "${HAPI_SOURCE_DIR}/../../doc;doc"
+                                    "${HAPI_SOURCE_DIR}/../../doc2;doc"
                                     "${HAPI_SOURCE_DIR}/../../bin;bin"
                                     "${HAPI_SOURCE_DIR}/../../lib;lib" )
-    
+
     #Extra links to start menu if values are "ON"
     SET( CPACK_ADD_HAPIDOC_LINKS "ON" )
+
+    # Extra install commands will be set to install vc8(9)_redists
+    SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
     
-    # Do not modify path since this is done by the NSIS template.
-    SET( CPACK_NSIS_MODIFY_PATH "OFF" )
+    # Add cache variable vc8(9)_redist which should be set to the install file
+    # for microsoft visual studio redistributables, they can be found in the
+    # installation folder for each visual studio installation.
+    IF( NOT DEFINED vc8_redist )
+      SET( vc8_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 8" )
+      MARK_AS_ADVANCED(vc8_redist)
+    ENDIF( NOT DEFINED vc8_redist )
+    
+    IF( NOT DEFINED vc9_redist )
+      SET( vc9_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 9." )
+      MARK_AS_ADVANCED(vc9_redist)
+    ENDIF( NOT DEFINED vc9_redist )
+
+    IF( vc8_redist )
+      STRING( REPLACE "/" "\\\\" Temp_vc8_redist ${vc8_redist} )
+      GET_FILENAME_COMPONENT( VC8_FILE_NAME ${vc8_redist} NAME )
+      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc8\\\"\\n"
+                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc8_redist}\\\"\\n"
+                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n"
+                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"\\n"
+                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc8\\\"\\n\\n" )
+    ENDIF( vc8_redist )
+    
+    IF( vc9_redist )
+      STRING( REPLACE "/" "\\\\" Temp_vc9_redist ${vc9_redist} )
+      GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
+      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc9\\\"\\n"
+                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc9_redist}\\\"\\n"
+                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
+                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"\\n"
+                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
+    ENDIF( vc9_redist )
+    
+    # Modify path since in the NSIS template.
+    SET( CPACK_NSIS_MODIFY_PATH "ON" )
   ELSE(WIN32 AND NOT UNIX)
+    SET( HAPI_CPACK_IGNORE_PATTERNS ${HAPI_CPACK_IGNORE_PATTERNS}
+                                    "~$" )
     SET(CPACK_SOURCE_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS} )
     SET(CPACK_SOURCE_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
                                            "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
@@ -447,6 +492,15 @@ IF( WIN32 )
     SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc7 )
   ELSEIF(MSVC80)
     SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc8 )
+    
+    # This might be useful for visual studio 2005 users that often recompile the api.
+    IF( NOT DEFINED USE_VC8_MP_FLAG )
+      SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
+    ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
+    
+    IF( USE_VC8_MP_FLAG )
+      SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
+    ENDIF( USE_VC8_MP_FLAG )
   ELSEIF(MSVC90)
     SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc9 )
     SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )

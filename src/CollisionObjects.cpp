@@ -4475,6 +4475,7 @@ bool AABox::movingSphereIntersect( HAPIFloat radius,
 }
 
 void AABox::render() {
+#ifdef HAVE_OPENGL
   glBegin( GL_QUADS );
   //+z
   glNormal3f( 0.f, 0.f, 1.0f );
@@ -4519,6 +4520,7 @@ void AABox::render() {
   glVertex3f( (GLfloat)max.x, (GLfloat)min.y, (GLfloat)min.z );
 
   glEnd();
+#endif
 }
 
 void AABox::getConstraints( const Vec3 &point,

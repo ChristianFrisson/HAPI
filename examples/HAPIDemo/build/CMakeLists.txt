@@ -2,7 +2,9 @@ IF(WIN32)
   cmake_minimum_required(VERSION 2.6.0)
 ENDIF(WIN32)
 if( COMMAND cmake_policy )
-  cmake_policy( SET CMP0003 NEW )
+  if( POLICY CMP0003 )
+    cmake_policy( SET CMP0003 NEW )
+  endif( POLICY CMP0003 )
 endif( COMMAND cmake_policy )
 # The name of our project is "HAPIDemo".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${HAPIDemo_SOURCE_DIR} and
@@ -81,11 +83,25 @@ SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES DEBUG_POSTFIX "_d" )
 IF(MSVC70 OR MSVC71)
   SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
 ELSEIF(MSVC80)
-  # remove some warnings about deprecated functions.
+  # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type
+  SET( HAPIDemo_COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+    
+  # This might be useful for visual studio 2005 users that often recompile the api.
+  IF( NOT DEFINED USE_VC8_MP_FLAG )
+    SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
+  ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
+  
+  IF( USE_VC8_MP_FLAG )
+    SET( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} /MP" )
+  ENDIF( USE_VC8_MP_FLAG )
+  
+  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS}" )
+  # Remove link errors
   SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
 ELSEIF(MSVC90)
-  # remove some warnings about deprecated functions.
+  # remove some warnings about deprecated functions, do not treat wchar_t as inbuilt type and use threaded compiling.
   SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+  # Remove link errors
   SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
 ENDIF(MSVC70 OR MSVC71)
 

@@ -40,7 +40,8 @@ namespace HAPI {
   /// \ingroup HapticsDevices
   /// \class HaptikHapticsDevice
   /// \brief HaptikHapticsDevice uses the haptik library
-  /// (www.haptiklibrary.org) to interface towards devices.
+  /// (www.haptiklibrary.org) to interface towards devices. NOT TESTED
+  /// HIGHLY DOUBT IT WORKS PERFECTLY.
   class HAPI_API HaptikHapticsDevice: public HAPIHapticsDevice {
   public:
 

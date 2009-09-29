@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file DeviceLog.cpp
+/// \file HAPI/src/DeviceLog.cpp
 /// \brief CPP file for DeviceLog class.
 //
 //

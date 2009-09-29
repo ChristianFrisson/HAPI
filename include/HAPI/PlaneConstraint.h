@@ -31,6 +31,8 @@
 #include <HAPI/IntersectionInfo.h>
 #include <HAPI/HAPIHapticShape.h>
 
+#include <cstring>
+
 namespace HAPI {
 
   namespace Collision {

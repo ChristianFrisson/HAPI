@@ -28,6 +28,17 @@ desired. The libraries used by HAPI are:
     OpenHaptics is not open source. http://www.sensable.com
   - DHD-API, obtained through ForceDimension. http://www.forcedimension.com
   - CHAI3D. Extra haptic rendering feature. http://www.chai3d.org
+  - FreeImage. Used to read images. http://freeimage.sourceforge.net
+  - zlib. Required for parsing zipped files. http://www.zlib.net/
+  - Teem. Required for reading the Nrrd file format. http://teem.sourceforge.net/
+  - DICOM toolkit. Required for reading dicom files. http://dicom.offis.de/dcmtk
+  - HDAL SDK. Required for connecting to the haptics device Falcon by Novint.
+    http://home.novint.com/
+  - libnifalcon. Required for Falcon support on linux.
+    http://sourceforge.net/projects/libnifalcon/
+  - HapticAPI. Needed to compile with support for Haptic Master, a device from Moog.
+    Contact Moog to get HapticAPI. Note that HapticAPI is included in the Windows
+    distribution of H3D API. http://www.moog.com/Industrial/
   
   Note that the haptics libraries does not exist for all operating systems.
 
@@ -54,7 +65,10 @@ on Linux follow these steps.
    default location.
 
    If using Ubuntu 7.10 or later, several of these libraries can be obtained
-   by using the apt-get feature. In a terminal write:
+   by using the apt-get feature. Note that for later versions of Ubuntu than
+   7.10 the required and/or optional libraries might be of newer versions that
+   those given here. The newer versions shold work with H3DAPI but it might not
+   be guaranteed. In a terminal write:
     sudo apt-get update sudo apt-get install gcc g++ libglew-dev libglut \
     libglut3-dev alien
 

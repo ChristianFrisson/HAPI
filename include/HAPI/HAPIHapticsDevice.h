@@ -52,7 +52,7 @@ namespace HAPI {
   /// - void sendOutput( DeviceOutput &dv, HAPITime dt )
   ///
   /// In order to use a haptics device two things have to be done. \n
-  /// 1. Initialize the device (initDevice( _thread_frequency = 1024 )). \n
+  /// 1. Initialize the device (initDevice()). \n
   /// 2. Enable the device (enableDevice()) \n
   ///
   /// When a device has been initialized it will be ready to start receiving
@@ -681,12 +681,20 @@ namespace HAPI {
     static HAPIHapticsDevice *newInstance() { return new N; };
 
     /// Struct used to register a class to the registered haptics devices.
+    /// For example on how to use this class see source code of
+    /// FalconHapticsDevice.
     struct HAPI_API HapticsDeviceRegistration{
     public:
       /// Constructor.
+      /// \param _name The name of the device.
+      /// \param _create A function for creating an instance of the device
+      /// class.
+      /// \param _libs_to_support A list of names of dlls that must exist on
+      /// the system for this device to be supported. Only needed for devices
+      /// that should be supported in Microsoft Windows.
       HapticsDeviceRegistration( const string &_name,
                                  CreateInstanceFunc _create,
-                                 list< string > _libs_to_support  ):
+                                 list< string > _libs_to_support = list<string >() ):
       name( _name ),
       create_func( _create ),
       libs_to_support( _libs_to_support )

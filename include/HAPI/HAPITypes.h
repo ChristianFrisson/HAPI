@@ -36,7 +36,9 @@
 
 namespace HAPI {
 
+  /// Namespace containing various useful constants
   namespace Constants {
+    /// \brief epsilon for HAPI.
     const double epsilon = 1e-13;
   }
   
