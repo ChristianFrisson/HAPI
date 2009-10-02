@@ -85,14 +85,21 @@ namespace HAPI {
         button_status( 0 ),
         user_data( NULL ) {}
 
-      Vec3 force;              /// The force currently being rendered
-      Vec3 torque;             /// The torque currently being rendered
-      Vec3 position;           /// The position of the haptics device
-      Vec3 velocity;           /// The velocity of the haptics device.
-      Rotation orientation;    /// The orientation of the haptics device.
-      HAPIInt32 button_status; /// The status of the buttons.
-      void *user_data;   /// Extra data that can be used be developers when
-                         /// supporting new device types.
+      /// The force currently being rendered
+      Vec3 force;
+      /// The torque currently being rendered
+      Vec3 torque;
+      /// The position of the haptics device
+      Vec3 position;
+      /// The velocity of the haptics device.
+      Vec3 velocity;
+      /// The orientation of the haptics device.
+      Rotation orientation;
+      /// The status of the buttons.
+      HAPIInt32 button_status;
+      /// Extra data that can be used be developers when
+      /// supporting new device types.
+      void *user_data;
     };
 
     typedef H3DUtil::AutoRefVector< HAPIHapticShape > HapticShapeVector;

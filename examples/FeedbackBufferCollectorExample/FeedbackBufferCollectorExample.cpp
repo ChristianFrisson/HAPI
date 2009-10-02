@@ -30,6 +30,7 @@
 
 // HAPI includes
 #include <HAPI/FeedbackBufferCollector.h>
+#ifdef HAVE_OPENGL
 #include <HAPI/AnyHapticsDevice.h>
 #include <HAPI/GodObjectRenderer.h>
 #include <HAPI/FrictionSurface.h>
@@ -177,4 +178,5 @@ int main(int argc, char* argv[]) {
   hd->disableDevice();
   hd->releaseDevice();
 }
+#endif
 
