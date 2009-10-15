@@ -180,7 +180,7 @@ OpenHapticsRenderer::renderHapticsOneStep(
   // add the resulting force and torque to the rendered force.
   // The force and torque from the haptics device is in local coordinates.
   // We want it in global coordinates.
-  Matrix3 pos_matrix_rotation = pd->getPositionCalibration().getRotationPart();
+  Matrix3 pos_matrix_rotation = hd->getPositionCalibration().getRotationPart();
   return HAPIForceEffect::EffectOutput( 
     pos_matrix_rotation * Vec3( force[0], force[1], force[2] ),
     pos_matrix_rotation * Vec3( torque[0], torque[1], torque[2] ) );
