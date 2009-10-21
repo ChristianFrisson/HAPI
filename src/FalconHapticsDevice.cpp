@@ -168,7 +168,7 @@ void FalconHapticsDevice::sendOutput( DeviceOutput &dv,
 auto_ptr< FalconHapticsDevice::FalconThread > 
 FalconHapticsDevice::FalconThread::singleton( new FalconThread );
 
-HDLServoOpExitCode falcon_callback( void *_data ) {
+HDLServoOpExitCode falconCallbackSynchronous( void *_data ) {
   void * * data = static_cast< void * * >( _data );
   FalconHapticsDevice::FalconThread::CallbackFunc* func = 
     static_cast< FalconHapticsDevice::FalconThread::CallbackFunc* >( _data );
@@ -177,6 +177,20 @@ HDLServoOpExitCode falcon_callback( void *_data ) {
   if( c == FalconHapticsDevice::FalconThread::CALLBACK_DONE )
     return HDL_SERVOOP_EXIT;
   else if( c == FalconHapticsDevice::FalconThread::CALLBACK_CONTINUE )
+    return HDL_SERVOOP_CONTINUE;
+  else return c;
+}
+
+HDLServoOpExitCode falconCallbackAsynchronous( void *_data ) {
+  void * * data = static_cast< void * * >( _data );
+  FalconHapticsDevice::FalconThread::CallbackFunc* func = 
+    static_cast< FalconHapticsDevice::FalconThread::CallbackFunc* >( _data );
+  //FalconThread::CallbackFunc func = static_cast< FalconThread::CallbackFunc >( data[0] );
+  FalconHapticsDevice::FalconThread::CallbackCode c = (*func)( data[1] );
+  if( c == FalconHapticsDevice::FalconThread::CALLBACK_DONE ) {
+    delete [] data;
+    return HDL_SERVOOP_EXIT;
+  } else if( c == FalconHapticsDevice::FalconThread::CALLBACK_CONTINUE )
     return HDL_SERVOOP_CONTINUE;
   else return c;
 }
@@ -190,7 +204,7 @@ namespace FalconThreadInternals {
 void FalconHapticsDevice::FalconThread::synchronousCallback( 
                 CallbackFunc func, void *data ) {
   void * param[] = { (void*)func, data };
-  hdlCreateServoOp( falcon_callback,
+  hdlCreateServoOp( falconCallbackSynchronous,
                     param,
                     true );
 }
@@ -201,7 +215,7 @@ int FalconHapticsDevice::FalconThread
   param[0] = (void*)func;
   param[1] = data;
   HDLOpHandle falcon_cb_handle =
-    hdlCreateServoOp( falcon_callback,
+    hdlCreateServoOp( falconCallbackAsynchronous,
                       param,
                       false );
   FalconThreadInternals::callback_handles_lock.lock();
