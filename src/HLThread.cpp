@@ -55,7 +55,7 @@ HLThread *HLThread::getInstance() {
 }
 
 #ifdef HAVE_OPENHAPTICS
-HDCallbackCode HDCALLBACK hdCallback( void *_data ) {
+HDCallbackCode HDCALLBACK hdCallbackSynchronous( void *_data ) {
   void * * data = static_cast< void * * >( _data );
   HLThread::CallbackFunc* func = static_cast< HLThread::CallbackFunc* >( _data );
   //HLThread::CallbackFunc func = static_cast< HLThread::CallbackFunc >( data[0] );
@@ -64,12 +64,25 @@ HDCallbackCode HDCALLBACK hdCallback( void *_data ) {
   else if( c == HLThread::CALLBACK_CONTINUE ) return HD_CALLBACK_CONTINUE;
   else return c;
 }
+
+HDCallbackCode HDCALLBACK hdCallbackAsynchronous( void *_data ) {
+  void * * data = static_cast< void * * >( _data );
+  HLThread::CallbackFunc* func = static_cast< HLThread::CallbackFunc* >( _data );
+  //HLThread::CallbackFunc func = static_cast< HLThread::CallbackFunc >( data[0] );
+  HLThread::CallbackCode c = (*func)( data[1] );
+  if( c == HLThread::CALLBACK_DONE ) {
+    delete [] data;
+    return HD_CALLBACK_DONE;
+  }
+  else if( c == HLThread::CALLBACK_CONTINUE ) return HD_CALLBACK_CONTINUE;
+  else return c;
+}
 #endif
 
 void HLThread::synchronousCallback( CallbackFunc func, void *data ) {
 #ifdef HAVE_OPENHAPTICS
   void * param[] = { (void*)func, data };
-  hdScheduleSynchronous( hdCallback,
+  hdScheduleSynchronous( hdCallbackSynchronous,
                          param,
                          HD_DEFAULT_SCHEDULER_PRIORITY );
 #endif
@@ -82,7 +95,7 @@ int HLThread::asynchronousCallback( CallbackFunc func, void *data ) {
   param[0] = (void*)func;
   param[1] = data;
   HDSchedulerHandle hd_callback_handle = 
-    hdScheduleAsynchronous( hdCallback,
+    hdScheduleAsynchronous( hdCallbackAsynchronous,
                             param,
                             HD_DEFAULT_SCHEDULER_PRIORITY );
   HLThreadInternals::callback_handles_lock.lock();
