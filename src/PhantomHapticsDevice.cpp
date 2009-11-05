@@ -281,4 +281,14 @@ void PhantomHapticsDevice::stopScheduler( bool call_hd ) {
   }
 }
 
+bool PhantomHapticsDevice::hardwareForceDisabled() {
+  HDboolean inkwell_switch;
+  hdGetBooleanv( HD_CURRENT_INKWELL_SWITCH, &inkwell_switch );
+  HDboolean safety_switch;
+  hdGetBooleanv( HD_CURRENT_SAFETY_SWITCH, &safety_switch );
+  // Aparently inkwell_switch is 0 if the omni is inside the well.
+  // NOTE: the safety switch parameter is untested, use at your own risk.
+  return ( !inkwell_switch || safety_switch );
+}
+
 #endif
