@@ -159,6 +159,12 @@ namespace HAPI {
     /// the device type.
     bool calibrateDevice();
 
+    /// Check if the device is in a state where all the forces
+    /// are disabled by hardware. For example, the handle is in
+    /// the inkwell of an omni or the safety switch is on for a Phantom
+    /// desktop. NOTE: not tested with desktop.
+    bool hardwareForceDisabled();
+
     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {
       ErrorCode e = HAPIHapticsDevice::enableDevice();
