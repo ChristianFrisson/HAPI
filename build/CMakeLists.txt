@@ -1,3 +1,9 @@
+IF( COMMAND cmake_policy )
+  IF( POLICY CMP0003 )
+    cmake_policy(SET CMP0003 OLD)
+  ENDIF( POLICY CMP0003 )
+ENDIF( COMMAND cmake_policy )
+
 IF(WIN32)
   cmake_minimum_required(VERSION 2.6.0)
 ENDIF(WIN32)
