@@ -617,8 +617,8 @@ namespace HAPI {
     /// The scaling of the shape.
     Vec3 scale_factor;
 
-    HAPITime first_use_time;
     bool forced_dynamic;
+    HAPITime first_use_time;
     void (*clean_up_func)( void * );
 
     /// Get the closest point and normal on the object to the given point p.

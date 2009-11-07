@@ -830,13 +830,6 @@ namespace HAPI {
         }
       }
 
-      /// If true then the cylinder have a cap at the start_point.
-      /// True by default.
-      bool start_cap;
-
-      /// If true then the cylinder have a cap at the end_point.
-      /// True by default.
-      bool end_cap;
 
       /// The height of the cylinder.
       HAPIFloat height;
@@ -844,6 +837,13 @@ namespace HAPI {
       /// The radius of the cylinder.
       HAPIFloat radius;
 
+      /// If true then the cylinder have a cap at the start_point.
+      /// True by default.
+      bool start_cap;
+		
+      /// If true then the cylinder have a cap at the end_point.
+      /// True by default.
+      bool end_cap;
     protected:
 
       /// Detect collision between a line segment and the object.
