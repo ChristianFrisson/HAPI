@@ -420,7 +420,7 @@ IF(WIN32)
     ADD_CUSTOM_COMMAND( TARGET HAPI 
                         PRE_BUILD 
                         COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                        ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc HAPI.rc.cmake
+                        ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${HAPI_SOURCE_DIR}/HAPI.rc.cmake
                         ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                         ${HAPI_BUILD_VERSION}
                         ${HAPI_SOURCE_DIR}/../src/.svn/entries )
@@ -436,7 +436,7 @@ IF(WIN32)
       ADD_CUSTOM_COMMAND( TARGET OpenHapticsRenderer
                           PRE_BUILD 
                           COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc OpenHapticsRenderer.rc.cmake
+                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc.cmake
                           ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                           ${HAPI_BUILD_VERSION}
                           ${HAPI_SOURCE_DIR}/../src/.svn/entries )
@@ -448,7 +448,7 @@ IF(WIN32)
       ADD_CUSTOM_COMMAND( TARGET Chai3DRenderer
                           PRE_BUILD 
                           COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc Chai3DRenderer.rc.cmake
+                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc.cmake
                           ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                           ${HAPI_BUILD_VERSION}
                           ${HAPI_SOURCE_DIR}/../src/.svn/entries )
@@ -471,7 +471,7 @@ ENDIF(WIN32)
 # to generate correct project files with this version of CMake.
 IF(NOT WIN32)
   SET(requiredLibs ${requiredLibs} optimized H3DUtil debug H3DUtil_d )
-ELSEIF(MSVC70 OR MSVC71)
+ELSEIF(MSVC70 OR MSVC71 OR ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
   SET(requiredLibs ${requiredLibs} H3DUtil )
 ENDIF(NOT WIN32)
 
@@ -510,6 +510,9 @@ IF( WIN32 )
   ELSEIF(MSVC90)
     SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc9 )
     SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
+  ELSEIF(MSVC10)
+    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc10 )
+    SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
   ENDIF(MSVC70 OR MSVC71)
 
   # Set properties for OpenHapticsRenderer if the project is created.
@@ -531,6 +534,9 @@ IF( WIN32 )
       SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc8 )
     ELSEIF(MSVC90)
       SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc9 )
+      SET( OpenHapticsRenderer_COMPILE_FLAGS "${OpenHapticsRenderer_COMPILE_FLAGS} /MP -D_CRT_SECURE_NO_DEPRECATE" )
+    ELSEIF(MSVC10)
+      SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc10 )
       SET( OpenHapticsRenderer_COMPILE_FLAGS "${OpenHapticsRenderer_COMPILE_FLAGS} /MP -D_CRT_SECURE_NO_DEPRECATE" )
     ENDIF(MSVC70 OR MSVC71)
 
@@ -567,6 +573,8 @@ IF( WIN32 )
       SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc8 )
     ELSEIF(MSVC90)
       SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc9 )
+    ELSEIF(MSVC10)
+      SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc10 )
     ENDIF(MSVC70 OR MSVC71)
 
     # Set link flags
