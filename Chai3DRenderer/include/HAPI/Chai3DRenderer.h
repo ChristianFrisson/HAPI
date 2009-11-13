@@ -142,7 +142,21 @@ namespace HAPI {
     class H3DTool : public cGeneric3dofPointer {
     public:
       H3DTool(cWorld* a_world) : cGeneric3dofPointer( a_world ) {
+        // If default cGenericdofPointer constructor creates a device. Delete
+        // it.
+        if( m_device )
+          delete m_device;
         m_device = new H3DDevice;
+      }
+
+      ~H3DTool() {
+        // Clean up memory, might not be needed in future version of Chai3D
+        // if cGeneric3dofPointer will clean up its dynamically allocated
+        // functions by itself.
+        for( unsigned int i = 0; i < m_pointForceAlgos.size(); i++ ) {
+          delete m_pointForceAlgos[i];
+        }
+        m_pointForceAlgos.clear();
       }
     };
 
@@ -185,12 +199,21 @@ namespace HAPI {
     Chai3DRenderer( )  {
       world = new cWorld;
       chai3d_tool.reset( new H3DTool( world ) );
-      world->addChild(chai3d_tool.get());
       chai3d_tool->useNormalizedPositions( false );
     }
     
     /// Destructor.
-    virtual ~Chai3DRenderer() {}
+    virtual ~Chai3DRenderer() {
+      // This code is needed before cleaning up because otherwise both
+      // H3DAPI and HAPI will try to delete the meshes that are children
+      // to the world. This assumes that preProcessShapes and
+      // renderHapticsOneStep are no longer called for this renderer.
+      world->clearAllChildren();
+      meshes.clear();
+      // Cleanup
+      delete world;
+      world = NULL;
+    }
     
     /// The main function in any haptics renderer. Given a haptics device and 
     /// a group of shapes generate the force and torque to send to the device.
