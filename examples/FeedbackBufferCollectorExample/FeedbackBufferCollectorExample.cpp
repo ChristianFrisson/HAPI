@@ -53,7 +53,7 @@
 #endif
 
 // Pointer to the haptics device.
-HAPI::AnyHapticsDevice *hd = 0;
+auto_ptr< HAPI::AnyHapticsDevice > hd(0);
 
 // Render a sphere using OpenGL calls.
 void draw() {
@@ -82,7 +82,7 @@ void display() {
   draw();
 
   // Draw a primitive version of a stylus.
-  if( hd ) {
+  if( hd.get() ) {
     HAPI::HAPIHapticsRenderer *hr = hd->getHapticsRenderer();
     if( hr ) {
       HAPI::Vec3 proxy_pos =
@@ -144,7 +144,7 @@ int main(int argc, char* argv[]) {
   HAPI::FeedbackBufferCollector::endCollecting( triangles );
 
   // Get a connected device.
-  hd = new HAPI::AnyHapticsDevice();
+  hd.reset( new HAPI::AnyHapticsDevice() );
 
   // The haptics renderer to use.
   hd->setHapticsRenderer( new HAPI::GodObjectRenderer() );
