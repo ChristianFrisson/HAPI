@@ -38,8 +38,13 @@
 #include <HAPI/HAPIFrictionSurface.h>
 
 // Chai3D includes
+#ifdef CHAI3D_VERSION_2_0
+#include <math/CVector3d.h>
+#include <math/CMatrix3d.h>
+#else
 #include <CVector3d.h>
 #include <CMatrix3d.h>
+#endif
 
 //using namespace H3D;
 using namespace HAPI;
@@ -90,7 +95,11 @@ Chai3DRenderer::renderHapticsOneStep(
                      hd->getButtonStatus() );
   chai3d_tool->updatePose();
   mesh_change_lock.lock();
+#ifdef CHAI3D_VERSION_2_0
+  chai3d_tool->computeInteractionForces();
+#else
   chai3d_tool->computeForces();
+#endif
 
   cVector3d f = chai3d_tool->m_lastComputedGlobalForce;
   
@@ -100,11 +109,18 @@ Chai3DRenderer::renderHapticsOneStep(
   cProxyPointForceAlgo *p = chai3d_tool->getProxy();
   if( p ) {
     cTriangle *t0, *t1, *t2;
-
-    cVector3d cp =  p->getContactPoint();
-
+#ifdef CHAI3D_VERSION_2_0
+    unsigned int nr_contacts = p->getNumContacts();
+#else
+    cVector3d cp = p->getContactPoint();
     unsigned int nr_contacts = p->getContacts( t0, t1, t2 );
+#endif
+
     if( nr_contacts > 0 ) {
+#ifdef CHAI3D_VERSION_2_0
+      t0 = p->m_contactPoint0->m_triangle;
+      cVector3d cp = p->m_contactPoint0->m_globalPos;
+#endif
       HAPISurfaceObject::ContactInfo ci;
       
       // using normal for vertex0 as normal. should be ok since no smooth
@@ -124,6 +140,10 @@ Chai3DRenderer::renderHapticsOneStep(
       }
 
       if( nr_contacts > 1 ) {
+#ifdef CHAI3D_VERSION_2_0
+          t1 = p->m_contactPoint1->m_triangle;
+          cp = p->m_contactPoint1->m_globalPos;
+#endif
         HAPISurfaceObject::ContactInfo ci;
         cVector3d n =  t1->getVertex0()->getNormal();
         ci.y_axis = Vec3( n.y, n.z, n.x );
@@ -136,6 +156,10 @@ Chai3DRenderer::renderHapticsOneStep(
         }
 
         if( nr_contacts > 2 ) {
+#ifdef CHAI3D_VERSION_2_0
+          t2 = p->m_contactPoint2->m_triangle;
+          cp = p->m_contactPoint2->m_globalPos;
+#endif
           HAPISurfaceObject::ContactInfo ci;
           cVector3d n =  t2->getVertex0()->getNormal();
           ci.y_axis = Vec3( n.y, n.z, n.x );
@@ -218,6 +242,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
         }
         mesh->setMaterial( mat );
       }
+      mesh->computeGlobalPositions();
     }
   } 
 
@@ -361,5 +386,44 @@ int Chai3DRenderer::H3DDevice::command(int a_command, void* a_data)
 
     return result;
 }
+
+#ifdef CHAI3D_VERSION_2_0
+int Chai3DRenderer::H3DDevice::getPosition( cVector3d &a_position ) {
+  a_position.y = position.x;
+  a_position.z = position.y;
+  a_position.x = position.z;
+  return 0;
+}
+
+int Chai3DRenderer::H3DDevice::getLinearVelocity(
+  cVector3d &a_linearVelocity ) {
+  a_linearVelocity.y = velocity.x;
+  a_linearVelocity.z = velocity.y;
+  a_linearVelocity.x = velocity.z;
+  return 0;
+}
+
+int Chai3DRenderer::H3DDevice::getRotation( cMatrix3d &a_rotation ) {
+  Rotation r = orientation;
+  r.axis.y = orientation.axis.x;
+  r.axis.z = orientation.axis.y;
+  r.axis.x = orientation.axis.z;
+  Matrix3 m( r );
+  a_rotation.set( m[0][0], m[0][1], m[0][2], 
+                  m[1][0], m[1][1], m[1][2], 
+                  m[2][0], m[2][1], m[2][2] );
+  return 0;
+}
+
+int Chai3DRenderer::H3DDevice::getUserSwitch( int a_switchIndex,
+                                              bool &a_status ) {
+  if( a_switchIndex == 0 )
+    // Only care about button 0
+    a_status = (buttons & 1)?true:false;
+  else if( a_switchIndex == 1 )
+    a_status = (buttons & 2)?true:false;
+  return 0;
+}
+#endif
 
 #endif //HAVE_CHAI3D

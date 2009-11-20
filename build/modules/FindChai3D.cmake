@@ -28,15 +28,15 @@ IF( SEARCH_FOR_CHAI3D )
                                      ${module_file_path}/../../../External/include
                                      ${module_file_path}/../../../External/include/Chai3D/include)
 
-  SET( CHAI3D_LIBRARY_NAME chai3d_complete )
-  IF( MSVC80 )
-    SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc8 )
-  ELSEIF( MSVC90 )
-    SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc9 )
-  ENDIF( MSVC80 )
-
   # Look for the library.
   IF(WIN32)
+    SET( CHAI3D_LIBRARY_NAME chai3d_complete )
+    IF( MSVC80 )
+      SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc8 )
+    ELSEIF( MSVC90 )
+      SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc9 )
+    ENDIF( MSVC80 )
+
     FIND_LIBRARY(CHAI3D_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}  
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                       $ENV{H3D_ROOT}/../External/lib
@@ -51,7 +51,7 @@ IF( SEARCH_FOR_CHAI3D )
     ENDIF( MSVC80 OR MSVC90 )
     MARK_AS_ADVANCED(CHAI3D_DEBUG_LIBRARY)
   ELSE(WIN32)
-    FIND_LIBRARY(CHAI3D_LIBRARY NAMES chai3d_linux)
+    FIND_LIBRARY(CHAI3D_LIBRARY NAMES chai3d_linux chai3d)
   ENDIF(WIN32)
 ELSE( SEARCH_FOR_CHAI3D )
   SET( CHAI3D_INCLUDE_DIR "" CACHE PATH "Path to include files for Chai3d." )
@@ -72,6 +72,23 @@ ENDIF( MSVC80 OR MSVC90 )
 
 # Copy the results to the output variables.
 IF(CHAI3D_INCLUDE_DIR AND CHAI3D_LIBRARIES_FOUND)
+  
+  # The way we get the version number might be unreliable since the version
+  # number is not updated in every file for previous releases of chai3d.
+  # Note that this might also break in the future if chai3d changes their
+  # version handling, then FindChai3D.cmake needs to be updated.
+  SET( CHAI3D_VERSION "1.0" )
+  SET( CHAI3D_FILE ${CHAI3D_INCLUDE_DIR}/cWorld.h )
+  IF( NOT EXISTS ${CHAI3D_FILE} )
+    SET( CHAI3D_FILE ${CHAI3D_INCLUDE_DIR}/chai3d.h )
+  ENDIF( NOT EXISTS ${CHAI3D_FILE} )
+  IF( EXISTS ${CHAI3D_FILE} )
+    FILE( STRINGS ${CHAI3D_FILE} chai3d_versions REGEX "\\version[ ]*[0-9][.][0-9][.]*[0-9]*" )
+    FOREACH( line ${chai3d_versions} )
+      # Only get the two first numbers in order to use it for comparasion in c++.
+      STRING( REGEX MATCH "[0-9][.][0-9][.]*[0-9]*" CHAI3D_VERSION ${line} )
+    ENDFOREACH( line )
+  ENDIF( EXISTS ${CHAI3D_FILE} )
   SET(CHAI3D_FOUND 1)
   
   IF( MSVC80 OR MSVC90 )

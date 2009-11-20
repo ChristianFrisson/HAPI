@@ -43,6 +43,7 @@
 
 /// Undef if you do not have Chai3d installed
 #cmakedefine HAVE_CHAI3D
+#cmakedefine CHAI3D_VERSION_2_0
 
 /// Undef if you do not have DHD API(www.forcedimension.com) installed.
 /// Required for the Omega and Delta haptics devices.
