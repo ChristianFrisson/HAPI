@@ -300,6 +300,40 @@ IF(CHAI3D_FOUND)
   INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR}
                        ../Chai3DRenderer/include )
   SET(optionalLibs ${optionalLibs} ${CHAI3D_LIBRARIES} )
+
+  IF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
+    # No need to make a better comparasion than version 2.0.0 since the
+    # way we get the version number might be unreliable since the version
+    # number is not updated in every file for previous releases of chai3d.
+    # Note that this might also break in the future if chai3d changes their
+    # version handling, then FindChai3D.cmake needs to be updated.
+    SET( CHAI3D_VERSION_2_0 "YES" )
+    # Needed because glut is needed if chai3D is version 2.0.0 or above
+    IF(WIN32)
+      FIND_PACKAGE(GLUTWin)
+    ELSE(WIN32)
+      FIND_PACKAGE(GLUT)
+    ENDIF(WIN32)
+
+    IF(GLUT_FOUND)
+      INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
+      IF(WIN32)
+        IF( COMMAND cmake_policy )
+          IF( POLICY CMP0011 )
+            cmake_policy( SET CMP0011 NEW )
+          ENDIF( POLICY CMP0011 )
+        ENDIF( COMMAND cmake_policy )
+        INCLUDE( StripAndAddLibraryDirectories )
+        # This is used in order for the compiler to find freeglut.lib.
+        # If freeglut.lib is in any other place than glut32 on your system
+        # either this CMakeLists.txt or FindGLUTWin needs to be changed
+        # to allow for choice of extra library directory.
+        STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
+      ELSE(WIN32)
+        SET(optionalLibs ${optionalLibs} ${GLUT_LIBRARIES} )
+      ENDIF(WIN32)
+    ENDIF(GLUT_FOUND)
+  ENDIF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
 ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../Chai3DRenderer/include )
 ENDIF(CHAI3D_FOUND)

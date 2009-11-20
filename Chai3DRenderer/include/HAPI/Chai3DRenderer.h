@@ -44,9 +44,18 @@
 #ifdef HAVE_CHAI3D
 
 // Chai3D includes
+#ifdef CHAI3D_VERSION_2_0
+#ifndef _MSVC
+#define _MSVC
+#endif
+#include <devices/CGenericDevice.h>
+#include <tools/CGeneric3dofPointer.h>
+#include <scenegraph/CWorld.h>
+#else
 #include <CGenericDevice.h>
 #include <CGeneric3dofPointer.h>
 #include <CWorld.h>
+#endif
 
 namespace HAPI {
 
@@ -94,7 +103,12 @@ namespace HAPI {
     /// \ingroup Chai3DRenderer
     /// \class H3DDevice
     /// \brief Our implementation of cGenericDevice which must be subclassed.
-    class H3DDevice: public cGenericDevice {
+    class H3DDevice: public
+#ifdef CHAI3D_VERSION_2_0
+      cGenericHapticDevice {
+#else
+      cGenericDevice {
+#endif
     public:
       /// Constructor.
       H3DDevice() {
@@ -125,7 +139,17 @@ namespace HAPI {
 
       //! Send a command to the phantom device.
       virtual int command(int a_command, void* a_data);
-      
+
+#ifdef CHAI3D_VERSION_2_0
+      virtual int getPosition( cVector3d &a_position );
+
+      virtual int getLinearVelocity( cVector3d &a_linearVelocity );
+
+      virtual int getRotation( cMatrix3d &a_rotation );
+
+      virtual int getUserSwitch( int a_switchIndex, bool &a_status );
+#endif
+
       //! Ask the device to call me back periodically
       virtual bool setCallback(cCallback* m_callback) { return false; }
 
@@ -153,11 +177,29 @@ namespace HAPI {
         // Clean up memory, might not be needed in future version of Chai3D
         // if cGeneric3dofPointer will clean up its dynamically allocated
         // functions by itself.
+#ifdef CHAI3D_VERSION_2_0
+        if( m_proxyPointForceModel ) {
+          delete m_proxyPointForceModel;
+          m_proxyPointForceModel = NULL;
+        }
+
+        if( m_potentialFieldsForceModel ) {
+          delete m_potentialFieldsForceModel;
+          m_potentialFieldsForceModel = NULL;
+        }
+#else
         for( unsigned int i = 0; i < m_pointForceAlgos.size(); i++ ) {
           delete m_pointForceAlgos[i];
         }
         m_pointForceAlgos.clear();
+#endif
       }
+
+#ifdef CHAI3D_VERSION_2_0
+      inline cGenericHapticDevice * getDevice() {
+        return m_device;
+      }
+#endif
     };
 
     /// \ingroup Chai3DRenderer
@@ -199,7 +241,9 @@ namespace HAPI {
     Chai3DRenderer( )  {
       world = new cWorld;
       chai3d_tool.reset( new H3DTool( world ) );
+#ifndef CHAI3D_VERSION_2_0
       chai3d_tool->useNormalizedPositions( false );
+#endif
     }
     
     /// Destructor.
