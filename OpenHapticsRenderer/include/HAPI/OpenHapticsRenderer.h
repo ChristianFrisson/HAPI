@@ -198,7 +198,9 @@ namespace HAPI {
       default_gl_shape( _default_shape_type ),
       default_adaptive_viewport( _default_adaptive_viewport ),
       default_haptic_camera_view( _default_haptic_camera_view ),
-       dummy_context( NULL ) {
+       dummy_context( NULL ),
+       update_thread_callback_data( 0 ),
+       update_thread_callback_id( -1 ) {
         already_removed_id.reserve( 3 );
     }
                          
@@ -450,13 +452,43 @@ namespace HAPI {
     Contacts tmp_contacts;
 
     /// Contains the proxy position of the renderer.
-    /// It will be updated in preProcessShapes which actually is not entirely
-    /// correct. A proper fix will be implemented in the future.
+    /// It will be updated in a separate thread at 100 Hz. This is sufficient
+    /// since OpenHaptics updates its internal proxy position at about this
+    /// rate.
     Vec3 proxy_position;
+
+    /// Lock used when updating proxy position.
     H3DUtil::MutexLock proxy_position_lock;
+
+    /// Lock used when modifying data in callbacks. Needed because
+    /// of the extra data_update_thread.
+    static H3DUtil::MutexLock data_update_lock;
 
     /// True if there has been no hlcontext created at all yet.
     static int nr_of_context;
+
+  private:
+    // Callback function for calling hlCheckEvents which must be done
+    // periodically.
+    static H3DUtil::PeriodicThread::CallbackCode
+      callhlCheckEvents( void *data );
+
+    // Callback function for transfering contacts and proxy information which
+    // must be done periodically.
+    static H3DUtil::PeriodicThread::CallbackCode
+      transferContactsAndProxy( void *data );
+
+    // Thread used to update data for each renderer. Run at 100 Hz. No use to
+    // have a higher frequency for this thread since it depends on the rate
+    // of the collision thread of OpenHaptics which runs at about 100 Hz.
+    static auto_ptr< H3DUtil::PeriodicThread > data_update_thread;
+    // Used to know when to reset the data_update_thread auto_ptr to NULL.
+    static HAPIInt32 nr_of_data_update_callbacks;
+    // Reference to callback data for an instance of OpenHapticsRenderer.
+    auto_ptr< CallbackData > update_thread_callback_data;
+    // id for the callback in which update_thread_callback_data is used.
+    HAPIInt32 update_thread_callback_id;
+
   };
 }
 

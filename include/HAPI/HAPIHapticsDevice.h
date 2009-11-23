@@ -110,11 +110,14 @@ namespace HAPI {
       thread( NULL ),
       switching_effects( false ),
       tmp_switch_effects_duration( 0 ),
+      switch_effects_duration( 0 ),
       time_in_last_loop( 0 ),
       device_state( UNINITIALIZED ),
       delete_thread( false ),
       setup_haptic_rendering_callback( true ),
-      haptic_rendering_cb_handle( -1 ) {
+      haptic_rendering_cb_handle( -1 ),
+      haptics_rate( 0 ),
+      last_force_effect_change( 0 ) {
       setHapticsRenderer( NULL );
       haptic_rendering_callback_data = this;
       // This value is choosen ad hoc as fairly "standard".

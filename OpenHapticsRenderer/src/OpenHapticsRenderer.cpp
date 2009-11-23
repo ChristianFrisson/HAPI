@@ -66,7 +66,11 @@ namespace OpenHapticsRendererInternals {
   }
 }
 
+// Initialize static variables.
 int OpenHapticsRenderer::nr_of_context = 0;
+auto_ptr< H3DUtil::PeriodicThread > OpenHapticsRenderer::data_update_thread(0);
+H3DUtil::MutexLock OpenHapticsRenderer::data_update_lock;
+HAPIInt32 OpenHapticsRenderer::nr_of_data_update_callbacks = 0;
 
 OpenHapticsRenderer::OpenHapticsSurface::OpenHapticsSurface(  
                           HAPIFloat _stiffness,
@@ -99,12 +103,49 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
   HHLRC haptic_context = initHLLayer( hd );
   if( haptic_context ) {
     context_map[ hd ] = haptic_context;
+    if( !data_update_thread.get() ) {
+      // The data update thread does not exist. Create it and add
+      // the callhlCheckEvents callback.
+      data_update_thread.reset( new H3DUtil::PeriodicThread(
+        H3DUtil::PeriodicThreadBase::NORMAL_PRIORITY, 100 ) );
+      data_update_thread->setThreadName( "OpenHapticsRenderer update thread" );
+      data_update_thread->asynchronousCallback(
+        OpenHapticsRenderer::callhlCheckEvents, NULL );
+    }
+    // Add callbacks to data_update_thread to update contacts and
+    // proxy_position variable for this instance of OpenHapticsRenderer.
+    update_thread_callback_data.reset(
+      new CallbackData( this, 0, haptic_context ) );
+    update_thread_callback_id = data_update_thread->asynchronousCallback(
+      OpenHapticsRenderer::transferContactsAndProxy,
+      update_thread_callback_data.get() );
+    // Increase the callbacks counter for the data_update_thread.
+    OpenHapticsRenderer::nr_of_data_update_callbacks++;
   }
 }
 
 // Release all resources that has been used in the renderer for
 // the given haptics device.
 void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
+
+  if( data_update_thread.get() ) {
+    // Remove callback used to update contacts and proxy_position variables.
+    data_update_thread->removeAsynchronousCallback(
+      update_thread_callback_id );
+    update_thread_callback_id = -1;
+    // Decrease the callbacks counter for the data_update_thread.
+    update_thread_callback_data.reset( 0 );
+    OpenHapticsRenderer::nr_of_data_update_callbacks--;
+    if( OpenHapticsRenderer::nr_of_data_update_callbacks == 0 ) {
+      // No OpenHapticsrenderers are initialized which means
+      // that it might be bad to call hlCheckEvents, therefore all callbacks
+      // are removed and the data_update_thread variable is reset.
+      data_update_thread->clearAllCallbacks();
+      data_update_thread.reset(0);
+    }
+  }
+
+
   // Ugly solution to clean up stuff correctly when the device is removed.
   if( dummy_context ) {
     bool add_dummy = true;
@@ -145,7 +186,7 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   }
   if( nr_of_context == 0 )
     PhantomHapticsDevice::stopScheduler( false );
-  
+
   id_map.clear();
   if( !tmp_contacts.empty() ) {
     tmp_contacts.clear();
@@ -204,6 +245,9 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   glLoadIdentity();
   glClear(GL_DEPTH_BUFFER_BIT);
 #endif
+
+  /// Lock since we modify data used in the callbacks. and call hlMakeCurrent.
+  data_update_lock.lock();
   hlMakeCurrent( haptic_context );
   hlMatrixMode( HL_VIEWTOUCH );
   hlLoadIdentity();
@@ -227,16 +271,8 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 
   // apply calibration matrix
   hlMultMatrixd( m );
-  
+
   hlBeginFrame();
-  hlCheckEvents();
-  hlMakeCurrent( haptic_context );
-  proxy_position_lock.lock();
-  HLdouble pos[3];
-  hlGetDoublev( HL_PROXY_POSITION, pos );
-  proxy_position = 1e-3 * HAPI::Vec3( pos[0], pos[1], pos[2] );
-  proxy_position_lock.unlock();
-  
   // Need previous_shape_ids is used for knowing when to remove and add
   // eventcallbacks to shapes. Only those shapes that are rendered in a
   // specific frame are allowed to have callbacks set up. The reason for this
@@ -251,7 +287,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     HLuint hl_shape_id = getHLShapeId( *i, hd );
     
     HLShape *hl = dynamic_cast< HLShape * >( *i );
-    if( hl ) {    
+    if( hl ) {
       hl->hlRender( hd, hl_shape_id );
     } else {
       if( surfaceSupported( (*i)->getSurface() ) ) {
@@ -339,7 +375,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 
             hlBeginShape( HL_SHAPE_FEEDBACK_BUFFER, hl_shape_id );
             (*i)->glRenderShape();
-            hlEndShape();         
+            hlEndShape();
           } else {
 #endif
             // custom shape, use intersection functions
@@ -384,15 +420,13 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
     callback_data[ id_cb_map[*i] ]->shape.reset( NULL );
   }
 
-  contacts_lock.lock();
-  contacts = tmp_contacts;
-  contacts_lock.unlock();
 #ifdef HAVE_OPENGL
   glMatrixMode( GL_MODELVIEW );
   glPopMatrix();
 #endif
 
   hlEndFrame();
+  data_update_lock.unlock();
 
   // check for any errors
   HLerror error;
@@ -437,7 +471,7 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
         dummy_context = hlCreateContext( jj );
         nr_of_context++;
       }
-      hlMakeCurrent( context_map[ pd ] );  
+      hlMakeCurrent( context_map[ pd ] );
 
       hlEnable(HL_HAPTIC_CAMERA_VIEW);
       hlEnable(HL_ADAPTIVE_VIEWPORT );
@@ -734,6 +768,41 @@ void OpenHapticsRenderer::OpenHapticsWorkAroundToCleanUpHLContext::cleanUp() {
     if( nr_of_context == 0 )
       PhantomHapticsDevice::stopScheduler( false );
   }
+}
+
+H3DUtil::PeriodicThread::CallbackCode
+  OpenHapticsRenderer::callhlCheckEvents( void *data ) {
+  // Lock and call hlCheckEvents. Lock is needed since
+  // tmp_contacts might be modified.
+  OpenHapticsRenderer::data_update_lock.lock();
+  hlCheckEvents();
+  OpenHapticsRenderer::data_update_lock.unlock();
+
+  return H3DUtil::PeriodicThreadBase::CALLBACK_CONTINUE;
+}
+
+H3DUtil::PeriodicThread::CallbackCode
+  OpenHapticsRenderer::transferContactsAndProxy( void *data ) {
+  CallbackData *cb_data = static_cast< CallbackData * >( data ); 
+  // Lock and update tmp_contacts and get proxy position.
+  OpenHapticsRenderer::data_update_lock.lock();
+  cb_data->renderer->contacts_lock.lock();
+  cb_data->renderer->contacts = cb_data->renderer->tmp_contacts;
+  cb_data->renderer->contacts_lock.unlock();
+
+  hlMakeCurrent( cb_data->haptic_context );
+  HLdouble p[3];
+  hlGetDoublev( HL_PROXY_POSITION,
+                p );
+  OpenHapticsRenderer::data_update_lock.unlock();
+  // Lock and update proxy_position variable.
+  cb_data->renderer->proxy_position_lock.lock();
+  cb_data->renderer->proxy_position.x = 1e-3 * p[0];
+  cb_data->renderer->proxy_position.y = 1e-3 * p[1];
+  cb_data->renderer->proxy_position.z = 1e-3 * p[2];
+  cb_data->renderer->proxy_position_lock.unlock();
+
+  return H3DUtil::PeriodicThreadBase::CALLBACK_CONTINUE;
 }
 
 #endif

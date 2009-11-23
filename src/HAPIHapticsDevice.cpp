@@ -51,14 +51,15 @@ H3DUtil::PeriodicThread::CallbackCode
     for( HapticShapeVector::const_iterator s = hd->tmp_shapes[layer].begin(); 
          s != hd->tmp_shapes[layer].end(); s++ ) {
       HAPIHapticShape *shape = NULL;
-      if( hd->current_shapes.size() > 0 ){
-      for( HapticShapeVector::const_iterator current_s = hd->current_shapes[layer].begin(); 
-           current_s != hd->current_shapes[layer].end(); current_s++ ) {
-        if( (*s)->getShapeId() == (*current_s)->getShapeId() ) {
-          shape = (*current_s);
-          break;
+      if( hd->current_shapes.size() > layer ) {
+        for( HapticShapeVector::const_iterator current_s =
+               hd->current_shapes[layer].begin();
+             current_s != hd->current_shapes[layer].end(); current_s++ ) {
+          if( (*s)->getShapeId() == (*current_s)->getShapeId() ) {
+            shape = (*current_s);
+            break;
+          }
         }
-      }
       }
       // if we have a new shape we need to initialize it.
       if( (*s) != shape ) 
