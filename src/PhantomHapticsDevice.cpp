@@ -106,8 +106,8 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 
   HDdouble ws[6];
   hdGetDoublev( HD_USABLE_WORKSPACE_DIMENSIONS, ws );
-  usable_workspace_min = Vec3( ws[0], ws[1], ws[2] );
-  usable_workspace_max = Vec3( ws[3], ws[4], ws[5] );
+  usable_workspace_min = 1e-3 * Vec3( ws[0], ws[1], ws[2] );
+  usable_workspace_max = 1e-3 * Vec3( ws[3], ws[4], ws[5] );
   hdGetDoublev( HD_MAX_WORKSPACE_DIMENSIONS, ws );
   max_workspace_min = 1e-3 * Vec3( ws[0], ws[1], ws[2] );
   max_workspace_max = 1e-3 * Vec3( ws[3], ws[4], ws[5] );
