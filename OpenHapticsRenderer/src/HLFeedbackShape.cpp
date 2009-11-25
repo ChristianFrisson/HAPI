@@ -63,6 +63,21 @@ void HLFeedbackShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     glLoadIdentity();
     glScalef( 1e3f, 1e3f, 1e3f ); 
     glMultMatrixd( vt );
+
+    GLboolean use_hl_modelview = !hlIsEnabled( HL_USE_GL_MODELVIEW );
+    if( use_hl_modelview ) {
+      // Set HL_MODELVIEW if that one should be used instead of GL_MODELVIEW.
+      HLdouble hvt[] = { vt[0], vt[1], vt[2], vt[3],
+                         vt[4], vt[5], vt[6], vt[7],
+                         vt[8], vt[9], vt[10], vt[11],
+                         vt[12], vt[13], vt[14], vt[15] };
+      hlMatrixMode( HL_MODELVIEW );
+      hlPushMatrix();
+      hlLoadIdentity();
+      hlScaled( 1e3, 1e3, 1e3 );
+      hlMultMatrixd( hvt );
+    }
+
     OpenHapticsRenderer::hlRenderHAPISurface( surface.get(), hd );
     if( touchable_face == Collision::BACK ) hlTouchableFace( HL_BACK );
     else if( touchable_face == Collision::FRONT ) hlTouchableFace( HL_FRONT );
@@ -104,6 +119,8 @@ void HLFeedbackShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     hlPopAttrib();
 #endif
     glPopMatrix();
+    if( use_hl_modelview )
+      hlPopMatrix();
   }
 }
 

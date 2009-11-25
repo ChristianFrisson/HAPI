@@ -194,10 +194,12 @@ namespace HAPI {
                          OpenHapticsOptions::CUSTOM,
 #endif
                          bool _default_adaptive_viewport = true,
-                         bool _default_haptic_camera_view = true ) :
+                         bool _default_haptic_camera_view = true,
+                         bool _disable_gl_modelview = true ) :
       default_gl_shape( _default_shape_type ),
       default_adaptive_viewport( _default_adaptive_viewport ),
       default_haptic_camera_view( _default_haptic_camera_view ),
+      disable_gl_modelview( _disable_gl_modelview ),
        dummy_context( NULL ),
        update_thread_callback_data( 0 ),
        update_thread_callback_id( -1 ) {
@@ -320,6 +322,11 @@ namespace HAPI {
     ShapeType default_gl_shape;
     bool default_adaptive_viewport;
     bool default_haptic_camera_view;
+    // Used to disable gl_modelview. True by default. Needed in order to make
+    // OpenHapticsRenderer work properly with non-OpenGL applications.
+    // For applications using OpenGL this one should be set to false to use
+    // the gl modelview instead.
+    bool disable_gl_modelview;
 
     /// Callback function for finding the intersection between a line segment
     /// and the object. Used for custom shapes.
