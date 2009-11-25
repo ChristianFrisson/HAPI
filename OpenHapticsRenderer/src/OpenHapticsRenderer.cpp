@@ -103,6 +103,8 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
   HHLRC haptic_context = initHLLayer( hd );
   if( haptic_context ) {
     context_map[ hd ] = haptic_context;
+    if( disable_gl_modelview )
+      hlDisable( HL_USE_GL_MODELVIEW );
     if( !data_update_thread.get() ) {
       // The data update thread does not exist. Create it and add
       // the callhlCheckEvents callback.
@@ -249,10 +251,15 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   /// Lock since we modify data used in the callbacks. and call hlMakeCurrent.
   data_update_lock.lock();
   hlMakeCurrent( haptic_context );
+  if( disable_gl_modelview ) {
+    // Set HL_MODELVIEW if that one should be used instead of GL_MODELVIEW.
+    hlMatrixMode( HL_MODELVIEW );
+    hlPushMatrix();
+    hlLoadIdentity();
+  }
   hlMatrixMode( HL_VIEWTOUCH );
   hlLoadIdentity();
   hlMatrixMode( HL_TOUCHWORKSPACE );
-  hlLoadIdentity();
 
   const Matrix4 &pcal = Matrix4( 1e3, 0, 0, 0,
                                  0, 1e3, 0, 0,
@@ -307,14 +314,16 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           glMatrixMode( GL_MODELVIEW );
           glPushMatrix();
 #endif
+
 #if HL_VERSION_MAJOR_NUMBER >= 2
           hlPushAttrib( HL_MATERIAL_BIT | HL_TOUCH_BIT );
 #endif
 
 #ifdef HAVE_OPENGL
           glLoadIdentity();
-          glScalef( 1e3f, 1e3f, 1e3f );
+          glScaled( 1e3, 1e3, 1e3 );
 #endif
+
           hlRenderHAPISurface( (*i)->getSurface(), hd );
 
           HLenum touchable_face;
@@ -359,6 +368,19 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
             glFrontFace( GL_CW );
 #endif
 
+          if( disable_gl_modelview ) {
+            // Set HL_MODELVIEW if that one should be used instead of
+            // GL_MODELVIEW.
+            HLdouble hvt[] = { m4[0][0], m4[1][0], m4[2][0], 0,
+                               m4[0][1], m4[1][1], m4[2][1], 0,
+                               m4[0][2], m4[1][2], m4[2][2], 0,
+                               m4[0][3], m4[1][3], m4[2][3], 1 };
+            hlMatrixMode( HL_MODELVIEW );
+            hlPushMatrix();
+            hlLoadIdentity();
+            hlScaled( 1e3, 1e3, 1e3 );
+            hlMultMatrixd( hvt );
+          }
 #ifdef HAVE_OPENGL
           glMultMatrixd( vt );
           if( shape_type == OpenHapticsOptions::DEPTH_BUFFER ) {
@@ -395,6 +417,10 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
 #ifdef HAVE_OPENGL
           glPopMatrix();
 #endif
+          if( disable_gl_modelview ) {
+            hlMatrixMode( HL_MODELVIEW );
+            hlPopMatrix();
+          }
       } else {
         H3DUtil::Console(2) 
           <<  "Surface type not supported by OpenHapticsRenderer." << endl;
@@ -424,6 +450,10 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   glMatrixMode( GL_MODELVIEW );
   glPopMatrix();
 #endif
+  if( disable_gl_modelview ) {
+    hlMatrixMode( HL_MODELVIEW );
+    hlPopMatrix();
+  }
 
   hlEndFrame();
   data_update_lock.unlock();

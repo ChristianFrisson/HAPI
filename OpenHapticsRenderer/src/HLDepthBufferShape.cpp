@@ -54,12 +54,27 @@ void HLDepthBufferShape::hlRender( HAPI::HAPIHapticsDevice *hd,
 #endif
     const Matrix4 &m = transform;
     GLdouble vt[] = { m[0][0], m[1][0], m[2][0], 0,
-		     m[0][1], m[1][1], m[2][1], 0,
-		     m[0][2], m[1][2], m[2][2], 0,
-		     m[0][3], m[1][3], m[2][3], 1 };
+         m[0][1], m[1][1], m[2][1], 0,
+         m[0][2], m[1][2], m[2][2], 0,
+         m[0][3], m[1][3], m[2][3], 1 };
     glLoadIdentity();
-    glScalef( 1e3f, 1e3f, 1e3f ); 
+    glScaled( 1e3, 1e3, 1e3 );
     glMultMatrixd( vt );
+
+    GLboolean use_hl_modelview = !hlIsEnabled( HL_USE_GL_MODELVIEW );
+    if( use_hl_modelview ) {
+      // Set HL_MODELVIEW if that one should be used instead of GL_MODELVIEW.
+      HLdouble hvt[] = { vt[0], vt[1], vt[2], vt[3],
+                         vt[4], vt[5], vt[6], vt[7],
+                         vt[8], vt[9], vt[10], vt[11],
+                         vt[12], vt[13], vt[14], vt[15] };
+      hlMatrixMode( HL_MODELVIEW );
+      hlPushMatrix();
+      hlLoadIdentity();
+      hlScaled( 1e3, 1e3, 1e3 );
+      hlMultMatrixd( hvt );
+    }
+
     OpenHapticsRenderer::hlRenderHAPISurface( surface.get(), hd );
 
     hlTouchableFace( HL_FRONT_AND_BACK );
@@ -104,6 +119,8 @@ void HLDepthBufferShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     hlPopAttrib();
 #endif
     glPopMatrix();
+    if( use_hl_modelview )
+      hlPopMatrix();
   }
 }
 #endif //HAVE_OPENGL

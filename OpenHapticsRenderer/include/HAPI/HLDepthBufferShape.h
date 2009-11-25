@@ -74,9 +74,6 @@ namespace HAPI {
     virtual void hlRender( HAPI::HAPIHapticsDevice *hd,
                            HLuint shape_id );
 
-    /// Which sides of the faces are touchable.
-    Collision::FaceType touchable_face;
-    
     /// Enable HL_HAPTIC_CAMERA_VIEW or not
     bool use_haptic_camera;
 
