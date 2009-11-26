@@ -99,6 +99,15 @@ namespace HAPI {
       /// added. Callbacks are removed if they return CALLBACK_DONE or a call
       /// to this function is made.
       virtual bool removeAsynchronousCallback( int callback_handle );
+
+      /// Function used for callbacks to add ids to free_ids vector. It is
+      /// assumed to be called between lock/unlock pairs of
+      /// FalconThreadInternals::callback_handles_lock, which means that it is
+      /// for internal use in FalconHapticsDevice.cpp only.
+      inline void addFreeId( int _id ) {
+        free_ids.push_back( _id );
+      }
+
     protected:
       static H3DUtil::PeriodicThread::CallbackCode setThreadId( void * _data );
       static auto_ptr< FalconThread > singleton;
