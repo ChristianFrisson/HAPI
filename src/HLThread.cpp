@@ -42,7 +42,8 @@ std::auto_ptr< HLThread > HLThread::singleton( NULL );
 namespace HLThreadInternals {
   H3DUtil::MutexLock callback_handles_lock;
 #ifdef HAVE_OPENHAPTICS
-  typedef std::list< std::pair< int, HDSchedulerHandle > > CallbackHandleList;
+  typedef std::list< std::pair< int, std::pair< void *, HDSchedulerHandle > > >
+    CallbackHandleList;
   CallbackHandleList callback_handles;
 #endif
 }
@@ -71,6 +72,18 @@ HDCallbackCode HDCALLBACK hdCallbackAsynchronous( void *_data ) {
   //HLThread::CallbackFunc func = static_cast< HLThread::CallbackFunc >( data[0] );
   HLThread::CallbackCode c = (*func)( data[1] );
   if( c == HLThread::CALLBACK_DONE ) {
+    HLThreadInternals::callback_handles_lock.lock();
+    for( HLThreadInternals::CallbackHandleList::iterator i =
+         HLThreadInternals::callback_handles.begin();
+         i != HLThreadInternals::callback_handles.end(); i++ ) {
+      if( (*i).second.first == _data ) {
+        HLThread * hl_thread = static_cast< HLThread * >(data[2]);
+        hl_thread->addFreeId( (*i).first );
+        HLThreadInternals::callback_handles.erase( i );
+        break;
+      }
+    }
+    HLThreadInternals::callback_handles_lock.unlock();
     delete [] data;
     return HD_CALLBACK_DONE;
   }
@@ -91,9 +104,10 @@ void HLThread::synchronousCallback( CallbackFunc func, void *data ) {
 int HLThread::asynchronousCallback( CallbackFunc func, void *data ) {
   int cb_handle = -1;
 #ifdef HAVE_OPENHAPTICS
-  void * * param = new void * [2];
+  void * * param = new void * [3];
   param[0] = (void*)func;
   param[1] = data;
+  param[2] = (void*)this;
   HDSchedulerHandle hd_callback_handle = 
     hdScheduleAsynchronous( hdCallbackAsynchronous,
                             param,
@@ -101,7 +115,7 @@ int HLThread::asynchronousCallback( CallbackFunc func, void *data ) {
   HLThreadInternals::callback_handles_lock.lock();
   cb_handle = genCallbackId();
   HLThreadInternals::callback_handles.push_back(
-    std::make_pair( cb_handle, hd_callback_handle ) );
+    std::make_pair( cb_handle, std::make_pair( param, hd_callback_handle ) ) );
   HLThreadInternals::callback_handles_lock.unlock();
 #endif
   return cb_handle;
@@ -115,8 +129,11 @@ bool HLThread::removeAsynchronousCallback( int callback_handle )  {
        i != HLThreadInternals::callback_handles.end(); i++ ) {
     if( (*i).first == callback_handle ) {
       free_ids.push_back( callback_handle );
-      hdUnschedule( (*i).second );
+      hdUnschedule( (*i).second.second );
+      void * data = (*i).second.first;
       HLThreadInternals::callback_handles.erase( i );
+      // Delete param that was allocated in asyncronous callback.
+      delete [] data;
       HLThreadInternals::callback_handles_lock.unlock();
       return true;
     }

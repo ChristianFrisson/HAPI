@@ -168,6 +168,13 @@ void FalconHapticsDevice::sendOutput( DeviceOutput &dv,
 auto_ptr< FalconHapticsDevice::FalconThread > 
 FalconHapticsDevice::FalconThread::singleton( new FalconThread );
 
+namespace FalconThreadInternals {
+  H3DUtil::MutexLock callback_handles_lock;
+  typedef std::list< std::pair< int, std::pair< void *, HDLOpHandle > > >
+    CallbackHandleList;
+  CallbackHandleList callback_handles;
+}
+
 HDLServoOpExitCode falconCallbackSynchronous( void *_data ) {
   void * * data = static_cast< void * * >( _data );
   FalconHapticsDevice::FalconThread::CallbackFunc* func = 
@@ -188,17 +195,24 @@ HDLServoOpExitCode falconCallbackAsynchronous( void *_data ) {
   //FalconThread::CallbackFunc func = static_cast< FalconThread::CallbackFunc >( data[0] );
   FalconHapticsDevice::FalconThread::CallbackCode c = (*func)( data[1] );
   if( c == FalconHapticsDevice::FalconThread::CALLBACK_DONE ) {
+    FalconThreadInternals::callback_handles_lock.lock();
+    for( FalconThreadInternals::CallbackHandleList::iterator i =
+         FalconThreadInternals::callback_handles.begin();
+         i != FalconThreadInternals::callback_handles.end(); i++ ) {
+      if( (*i).second.first == _data ) {
+        FalconHapticsDevice::FalconThread * falc_thread =
+          static_cast< FalconHapticsDevice::FalconThread * >(data[2]);
+        falc_thread->addFreeId( (*i).first );
+        FalconThreadInternals::callback_handles.erase( i );
+        break;
+      }
+    }
+    FalconThreadInternals::callback_handles_lock.unlock();
     delete [] data;
     return HDL_SERVOOP_EXIT;
   } else if( c == FalconHapticsDevice::FalconThread::CALLBACK_CONTINUE )
     return HDL_SERVOOP_CONTINUE;
   else return c;
-}
-
-namespace FalconThreadInternals {
-  H3DUtil::MutexLock callback_handles_lock;
-  typedef std::list< std::pair< int, HDLOpHandle > > CallbackHandleList;
-  CallbackHandleList callback_handles;
 }
 
 void FalconHapticsDevice::FalconThread::synchronousCallback( 
@@ -211,9 +225,10 @@ void FalconHapticsDevice::FalconThread::synchronousCallback(
 
 int FalconHapticsDevice::FalconThread
   ::asynchronousCallback( CallbackFunc func, void *data ) {
-  void * * param = new void * [2];
+  void * * param = new void * [3];
   param[0] = (void*)func;
   param[1] = data;
+  param[2] = (void*)this;
   HDLOpHandle falcon_cb_handle =
     hdlCreateServoOp( falconCallbackAsynchronous,
                       param,
@@ -221,7 +236,7 @@ int FalconHapticsDevice::FalconThread
   FalconThreadInternals::callback_handles_lock.lock();
   int cb_handle = genCallbackId();
   FalconThreadInternals::callback_handles.push_back(
-    std::make_pair( cb_handle, falcon_cb_handle ) );
+    std::make_pair( cb_handle, std::make_pair( param, falcon_cb_handle ) ) );
   FalconThreadInternals::callback_handles_lock.unlock();
   return cb_handle;
 }
@@ -234,8 +249,11 @@ bool FalconHapticsDevice::FalconThread::
        i != FalconThreadInternals::callback_handles.end(); i++ ) {
     if( (*i).first == callback_handle ) {
       free_ids.push_back( callback_handle );
-      hdlDestroyServoOp( (*i).second );
-       FalconThreadInternals::callback_handles.erase( i );
+      hdlDestroyServoOp( (*i).second.second );
+      void * data = (*i).second.first;
+      FalconThreadInternals::callback_handles.erase( i );
+      // Delete param that was allocated in asyncronous callback.
+      delete [] data;
       FalconThreadInternals::callback_handles_lock.unlock();
       return true;
     }
