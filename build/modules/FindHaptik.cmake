@@ -7,11 +7,13 @@
 
 
 # Look for the header file.
-FIND_PATH(HAPTIK_INCLUDE_DIR NAMES RSLib/Haptik.hpp)
+FIND_PATH( HAPTIK_INCLUDE_DIR NAMES RSLib/Haptik.hpp
+                              DOC "Path in which the file RSLib/Haptik.hpp is located." )
 MARK_AS_ADVANCED(HAPTIK_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(HAPTIK_LIBRARY NAMES Haptik.Library )
+FIND_LIBRARY( HAPTIK_LIBRARY NAMES Haptik.Library
+                             DOC "Path to Haptik.Library library." )
 MARK_AS_ADVANCED(HAPTIK_LIBRARY)
 
 # Copy the results to the output variables.

@@ -18,15 +18,16 @@ ENDIF(MSVC)
 IF( SEARCH_FOR_CHAI3D )
   GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
   # Look for the header file.
-  FIND_PATH(CHAI3D_INCLUDE_DIR NAMES cWorld.h
+  FIND_PATH(CHAI3D_INCLUDE_DIR NAMES chai3d.h cWorld.h
                                PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                     $ENV{H3D_EXTERNAL_ROOT}/include/Chai3D/include
+                                     $ENV{H3D_EXTERNAL_ROOT}/include/chai3d/include
                                      $ENV{H3D_ROOT}/../External/include
-                                     $ENV{H3D_ROOT}/../External/include/Chai3D/include
+                                     $ENV{H3D_ROOT}/../External/include/chai3d/include
                                      ../../External/include
-                                     ../../External/include/Chai3D/include
+                                     ../../External/include/chai3d/include
                                      ${module_file_path}/../../../External/include
-                                     ${module_file_path}/../../../External/include/Chai3D/include)
+                                     ${module_file_path}/../../../External/include/chai3d/include
+                               DOC "Path in which the file chai3d.h ( cWorld.h for chai3d versions earlier than 2.0 ) is located." )
 
   # Look for the library.
   IF(WIN32)
@@ -37,25 +38,28 @@ IF( SEARCH_FOR_CHAI3D )
       SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc9 )
     ENDIF( MSVC80 )
 
-    FIND_LIBRARY(CHAI3D_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}  
+    FIND_LIBRARY(CHAI3D_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                       $ENV{H3D_ROOT}/../External/lib
                                       ../../External/lib
-                                      ${module_file_path}/../../../External/lib )
+                                      ${module_file_path}/../../../External/lib
+                                DOC "Path to ${CHAI3D_LIBRARY_NAME} library." )
     IF( MSVC80 OR MSVC90 )
       FIND_LIBRARY( CHAI3D_DEBUG_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}_d
                                          PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                                $ENV{H3D_ROOT}/../External/lib
                                                ../../External/lib
-                                               ${module_file_path}/../../../External/lib )
+                                               ${module_file_path}/../../../External/lib
+                                         DOC "Path to ${CHAI3D_LIBRARY_NAME}_d library." )
     ENDIF( MSVC80 OR MSVC90 )
     MARK_AS_ADVANCED(CHAI3D_DEBUG_LIBRARY)
   ELSE(WIN32)
-    FIND_LIBRARY(CHAI3D_LIBRARY NAMES chai3d_linux chai3d)
+    FIND_LIBRARY( CHAI3D_LIBRARY NAMES chai3d_linux chai3d
+                  DOC "Path to chai3d_linux (or chai3d) library." )
   ENDIF(WIN32)
 ELSE( SEARCH_FOR_CHAI3D )
-  SET( CHAI3D_INCLUDE_DIR "" CACHE PATH "Path to include files for Chai3d." )
-  SET( CHAI3D_LIBRARY "" CACHE FILEPATH "Path to Chai3d library file." )
+  SET( CHAI3D_INCLUDE_DIR "" CACHE PATH "Path to include files for chai3d. The path is to where chai3d.h ( cWorld.h for chai3d versions earlier than 2.0 ) is located." )
+  SET( CHAI3D_LIBRARY "" CACHE FILEPATH "Path to chai3d library file." )
 ENDIF( SEARCH_FOR_CHAI3D )
 
 MARK_AS_ADVANCED(CHAI3D_INCLUDE_DIR)
@@ -121,8 +125,14 @@ ENDIF(CHAI3D_INCLUDE_DIR  AND CHAI3D_LIBRARIES_FOUND)
 
 # Report the results.
 IF(NOT CHAI3D_FOUND)
-  SET(CHAI3D_DIR_MESSAGE
-    "CHAI3D was not found. Make sure to set CHAI3D_LIBRARY and CHAI3D_INCLUDE_DIR to the location of the library. If you do not have it you will not be able to use the Chai3DRenderer.")
+  SET( CHAI3D_DIR_MESSAGE
+       "CHAI3D was not found. Make sure to set CHAI3D_LIBRARY" )
+  IF( MSVC80 OR MSVC90 )
+    SET( CHAI3D_DIR_MESSAGE
+         "${CHAI3D_DIR_MESSAGE}, CHAI3D_DEBUG_LIBRARY")
+  ENDIF( MSVC80 OR MSVC90 )
+  SET( CHAI3D_DIR_MESSAGE
+       "${CHAI3D_DIR_MESSAGE} and CHAI3D_INCLUDE_DIR. If you do not have chai3d you will not be able to use the Chai3DRenderer.")
   IF(Chai3D_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "${CHAI3D_DIR_MESSAGE}")
   ELSEIF(NOT Chai3D_FIND_QUIETLY)

@@ -16,7 +16,8 @@ FIND_PATH(PTHREAD_INCLUDE_DIR NAMES pthread.h
                                     ../../External/include
                                     ../../External/include/pthread
                                     ${module_file_path}/../../../External/include
-                                    ${module_file_path}/../../../External/include/pthread)
+                                    ${module_file_path}/../../../External/include/pthread
+                              DOC "Path in which the file pthread.h is located." )
 
 MARK_AS_ADVANCED(PTHREAD_INCLUDE_DIR)
 
@@ -27,9 +28,11 @@ IF(WIN32)
                                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                      $ENV{H3D_ROOT}/../External/lib
                                      ../../External/lib
-                                     ${module_file_path}/../../../External/lib)
+                                     ${module_file_path}/../../../External/lib
+                               DOC "Path to pthreadVC2 library." )
 ELSE(WIN32)
-  FIND_LIBRARY(PTHREAD_LIBRARY NAMES pthread)
+  FIND_LIBRARY( PTHREAD_LIBRARY NAMES pthread
+                DOC "Path to pthread library." )
 ENDIF(WIN32)
 MARK_AS_ADVANCED(PTHREAD_LIBRARY)
 
@@ -47,10 +50,14 @@ ENDIF(PTHREAD_INCLUDE_DIR AND PTHREAD_LIBRARY)
 # Report the results.
 IF(NOT PTHREAD_FOUND)
   SET(PTHREAD_DIR_MESSAGE
-    "PTHREAD was not found. Make sure PTHREAD_LIBRARY and PTHREAD_INCLUDE_DIR are set. Pthread is required to compile.")
+    "PTHREAD was not found. Make sure PTHREAD_LIBRARY and PTHREAD_INCLUDE_DIR are set.")
   IF(PTHREAD_FIND_REQUIRED)
+    SET( PTHREAD_DIR_MESSAGE
+         "${PTHREAD_DIR_MESSAGE} Pthread is required to build.")
     MESSAGE(FATAL_ERROR "${PTHREAD_DIR_MESSAGE}")
   ELSEIF(NOT PTHREAD_FIND_QUIETLY)
+    SET( PTHREAD_DIR_MESSAGE
+         "${PTHREAD_DIR_MESSAGE} Threading support will be disabled without PTHREAD.")
     MESSAGE(STATUS "${PTHREAD_DIR_MESSAGE}")
   ENDIF(PTHREAD_FIND_REQUIRED)
 ENDIF(NOT PTHREAD_FOUND)

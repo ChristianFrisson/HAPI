@@ -11,7 +11,8 @@ FIND_PATH( GLUT_INCLUDE_DIR NAMES GL/glut.h
            PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                  $ENV{H3D_ROOT}/../External/include
                  ../../External/include
-                 ${module_file_path}/../../../External/include )
+                 ${module_file_path}/../../../External/include
+           DOC "Path in which the file GL/glut.h is located." )
 MARK_AS_ADVANCED(GLUT_INCLUDE_DIR)
 
 # Look for the library.
@@ -19,7 +20,8 @@ FIND_LIBRARY( GLUT_LIBRARY NAMES glut32
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
-                    ${module_file_path}/../../../External/lib )
+                    ${module_file_path}/../../../External/lib
+              DOC "Path to glut32 library." )
 MARK_AS_ADVANCED(GLUT_LIBRARY)
 
 # Copy the results to the output variables.

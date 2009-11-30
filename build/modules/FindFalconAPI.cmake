@@ -10,31 +10,33 @@
 FIND_PATH(FALCONAPI_INCLUDE_DIR NAMES hdl/hdl.h 
                                 PATHS $ENV{NOVINT_FALCON_SUPPORT}/include
                                       "/Program Files/Novint/Falcon/HDAL/include"
-                                      $ENV{NOVINT_DEVICE_SUPPORT}/include )
+                                      $ENV{NOVINT_DEVICE_SUPPORT}/include
+                                DOC "Path in which the file hdl/hdl.h is located. File is part of HDAL SDK." )
 MARK_AS_ADVANCED(FALCONAPI_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(HDL_LIBRARY NAMES hdl 
+FIND_LIBRARY(FALCONAPI_HDL_LIBRARY NAMES hdl 
                         PATHS $ENV{NOVINT_FALCON_SUPPORT}/lib
                               "/Program Files/Novint/Falcon/HDAL/lib"
-                              $ENV{NOVINT_DEVICE_SUPPORT}/lib)
-MARK_AS_ADVANCED(HDL_LIBRARY)
+                              $ENV{NOVINT_DEVICE_SUPPORT}/lib
+                        DOC "Path to hdl library. Library is part of HDAL SDK." )
+MARK_AS_ADVANCED(FALCONAPI_HDL_LIBRARY)
 
 # Copy the results to the output variables.
-IF(FALCONAPI_INCLUDE_DIR AND HDL_LIBRARY)
+IF(FALCONAPI_INCLUDE_DIR AND FALCONAPI_HDL_LIBRARY)
   SET(FALCONAPI_FOUND 1)
-  SET(FALCONAPI_LIBRARIES ${HDL_LIBRARY} )
+  SET(FALCONAPI_LIBRARIES ${FALCONAPI_HDL_LIBRARY} )
   SET(FALCONAPI_INCLUDE_DIR ${FALCONAPI_INCLUDE_DIR})
-ELSE(FALCONAPI_INCLUDE_DIR AND HDL_LIBRARY)
+ELSE(FALCONAPI_INCLUDE_DIR AND FALCONAPI_HDL_LIBRARY)
   SET(FALCONAPI_FOUND 0)
   SET(FALCONAPI_LIBRARIES)
   SET(FALCONAPI_INCLUDE_DIR)
-ENDIF(FALCONAPI_INCLUDE_DIR  AND HDL_LIBRARY)
+ENDIF(FALCONAPI_INCLUDE_DIR  AND FALCONAPI_HDL_LIBRARY)
 
 # Report the results.
 IF(NOT FALCONAPI_FOUND)
   SET(FALCONAPI_DIR_MESSAGE
-    "The Novint Falcon API(HDAL) was not found. Make sure to set FALCONAPI_LIBRARY and FALCONAPI_INCLUDE_DIR to the location of the library. If you do not have it you will not be able to use the Novint Falcon Haptics device.")
+    "The Novint Falcon API(HDAL SDK) was not found. Make sure to set FALCONAPI_HDL_LIBRARY and FALCONAPI_INCLUDE_DIR. If you do not have it you will not be able to use the Novint Falcon Haptics device.")
   IF(FalconAPI_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "${FALCONAPI_DIR_MESSAGE}")
   ELSEIF(NOT FalconAPI_FIND_QUIETLY)
