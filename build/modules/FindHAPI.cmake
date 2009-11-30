@@ -11,7 +11,8 @@ GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 FIND_PATH(HAPI_INCLUDE_DIR NAMES HAPI/HAPI.h 
                            PATHS $ENV{H3D_ROOT}/../HAPI/include
                                  ../../HAPI/include
-                                 ${module_file_path}/../../../HAPI/include)
+                                 ${module_file_path}/../../../HAPI/include
+                           DOC "Path in which the file HAPI/HAPI.h is located." )
 MARK_AS_ADVANCED(HAPI_INCLUDE_DIR)
 
 
@@ -31,12 +32,14 @@ ENDIF(MSVC70 OR MSVC71)
 FIND_LIBRARY(HAPI_LIBRARY NAMES ${HAPI_NAME}
                           PATHS $ENV{H3D_ROOT}/../lib
                                 ../../lib
-                                ${module_file_path}/../../../lib)
+                                ${module_file_path}/../../../lib
+                          DOC "Path to ${HAPI_NAME} library." )
 
 FIND_LIBRARY( HAPI_DEBUG_LIBRARY NAMES ${HAPI_NAME}_d
               PATHS $ENV{H3D_ROOT}/../lib
                     ../../lib
-                    ${module_file_path}/../../../lib )
+                    ${module_file_path}/../../../lib
+                    DOC "Path to ${HAPI_NAME}_d library." )
 MARK_AS_ADVANCED(HAPI_LIBRARY)
 MARK_AS_ADVANCED(HAPI_DEBUG_LIBRARY)
 
@@ -74,7 +77,7 @@ ENDIF(HAPI_INCLUDE_DIR AND HAVE_HAPI_LIBRARY)
 # Report the results.
 IF(NOT HAPI_FOUND)
   SET(HAPI_DIR_MESSAGE
-    "HAPI was not found. Make sure HAPI_LIBRARY ( and/or HAPI_DEBUG_LIBRARY )  and HAPI_INCLUDE_DIR are set.")
+    "HAPI was not found. Make sure HAPI_LIBRARY ( and/or HAPI_DEBUG_LIBRARY ) and HAPI_INCLUDE_DIR are set.")
   IF(HAPI_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "${HAPI_DIR_MESSAGE}")
   ELSEIF(NOT HAPI_FIND_QUIETLY)

@@ -16,7 +16,8 @@ FIND_PATH(DHD_INCLUDE_DIR NAMES dhdc.h
                                 ../../External/include
                                 ../../External/include/DHD-API 
                                 ${module_file_path}/../../../External/include
-                                ${module_file_path}/../../../External/include/DHD-API )
+                                ${module_file_path}/../../../External/include/DHD-API
+                          DOC "Path in which the file dhdc.h is located." )
 MARK_AS_ADVANCED(DHD_INCLUDE_DIR)
 
 
@@ -26,19 +27,23 @@ IF(WIN32)
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                  $ENV{H3D_ROOT}/../External/lib
                                  ../../External/lib
-                                 ${module_file_path}/../../../External/lib)
+                                 ${module_file_path}/../../../External/lib
+                           DOC "Path to dhdms library." )
 ELSE(WIN32)
   FIND_LIBRARY(DHD_LIBRARY NAMES dhd
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                  $ENV{H3D_ROOT}/../External/lib
                                  ../../External/lib
-                                 ${module_file_path}/../../../External/lib)
+                                 ${module_file_path}/../../../External/lib
+                           DOC "Path to dhd library." )
 
   IF(UNIX)
-    FIND_LIBRARY( USB_LIBRARY NAMES usb )
-    FIND_LIBRARY( PCISCAN_LIBRARY NAMES pciscan )
-    MARK_AS_ADVANCED(USB_LIBRARY)
-    MARK_AS_ADVANCED(PCISCAN_LIBRARY)
+    FIND_LIBRARY( DHD_USB_LIBRARY NAMES usb
+                  DOC "Path to usb library." )
+    FIND_LIBRARY( DHD_PCISCAN_LIBRARY NAMES pciscan
+                  DOC "Path to pciscan library." )
+    MARK_AS_ADVANCED(DHD_USB_LIBRARY)
+    MARK_AS_ADVANCED(DHD_PCISCAN_LIBRARY)
   ENDIF(UNIX)
 ENDIF(WIN32)
 MARK_AS_ADVANCED(DHD_LIBRARY)
@@ -50,13 +55,13 @@ IF(DHD_INCLUDE_DIR AND DHD_LIBRARY)
   SET(DHD_LIBRARIES ${DHD_LIBRARY})
   SET(DHD_INCLUDE_DIR ${DHD_INCLUDE_DIR})
   IF(UNIX)
-    IF(USB_LIBRARY AND PCISCAN_LIBRARY)
-      SET(DHD_LIBRARIES ${DHD_LIBRARIES} ${USB_LIBRARY} ${PCISCAN_LIBRARY})
-    ELSE(USB_LIBRARY AND PCISCAN_LIBRARY)
+    IF(DHD_USB_LIBRARY AND DHD_PCISCAN_LIBRARY)
+      SET(DHD_LIBRARIES ${DHD_LIBRARIES} ${DHD_USB_LIBRARY} ${DHD_PCISCAN_LIBRARY})
+    ELSE(DHD_USB_LIBRARY AND DHD_PCISCAN_LIBRARY)
       SET(DHD_FOUND 0)
       SET(DHD_LIBRARIES)
       SET(DHD_INCLUDE_DIR)
-    ENDIF(USB_LIBRARY AND PCISCAN_LIBRARY)
+    ENDIF(DHD_USB_LIBRARY AND DHD_PCISCAN_LIBRARY)
   ENDIF(UNIX)
 ELSE(DHD_INCLUDE_DIR AND DHD_LIBRARY)
   SET(DHD_FOUND 0)
@@ -66,8 +71,14 @@ ENDIF(DHD_INCLUDE_DIR  AND DHD_LIBRARY)
 
 # Report the results.
 IF(NOT DHD_FOUND)
-  SET(DHD_DIR_MESSAGE
-    "DHD was not found. Make sure to set DHD_LIBRARY and DHD_INCLUDE_DIR to the location of the library. If you do not have it you will not be able to use the Omega or Delta haptics devices from ForceDimension.")
+  SET( DHD_DIR_MESSAGE
+       "DHD was not found. Make sure to set DHD_LIBRARY" )
+  IF(UNIX)
+     SET( DHD_DIR_MESSAGE
+          "${DHD_DIR_MESSAGE}, DHD_USB_LIBRARY, DHD_PCISCAN_LIBRARY" )
+  ENDIF(UNIX)
+  SET( DHD_DIR_MESSAGE
+       "${DHD_DIR_MESSAGE} and DHD_INCLUDE_DIR. If you do not have DHD library you will not be able to use the Omega or Delta haptics devices from ForceDimension.")
   IF(DHD_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "${DHD_DIR_MESSAGE}")
   ELSEIF(NOT DHD_FIND_QUIETLY)
