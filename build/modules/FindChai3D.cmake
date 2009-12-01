@@ -36,6 +36,8 @@ IF( SEARCH_FOR_CHAI3D )
       SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc8 )
     ELSEIF( MSVC90 )
       SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc9 )
+ ELSEIF( MSVC10 )             
+    SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc10 )
     ENDIF( MSVC80 )
 
     FIND_LIBRARY(CHAI3D_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}
