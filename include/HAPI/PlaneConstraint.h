@@ -88,13 +88,13 @@ namespace HAPI {
   class Constraints {
   public:
     /// Constructor.
-	  Constraints( unsigned int size = 3000 ) {
+    Constraints( unsigned int size = 3000 ) {
       constraints = new PlaneConstraint[size];
-	    //constraints = (PlaneConstraint *) malloc( sizeof( PlaneConstraint ) * size );
+      //constraints = (PlaneConstraint *) malloc( sizeof( PlaneConstraint ) * size );
       min_allocated_constraints = size;
       allocated_constraints = size;
       nr_constraints = 0;
-	  }
+    }
     
     /// Destructor.
     ~Constraints() {
@@ -133,14 +133,14 @@ namespace HAPI {
       }  
 
       inline PlaneConstraint & operator*() {
-		  return owner->constraints[index];
-	  }
+      return owner->constraints[index];
+    }
       inline bool operator==( const iterator &i ) {
-	    return index == i.index; 
-	  }
+      return index == i.index; 
+    }
       inline bool operator!=( const iterator &i ) {
-	    return index != i.index;
-	  }
+      return index != i.index;
+    }
 
       unsigned int index, size;
       Constraints *owner;
@@ -149,20 +149,20 @@ namespace HAPI {
 
 
     inline PlaneConstraint & operator[]( int i ) {
-	    return constraints[i]; 
-	  }
+      return constraints[i]; 
+    }
 
     inline PlaneConstraint & operator[]( unsigned int i ) {
-	    return constraints[i]; 
-	  }
+      return constraints[i]; 
+    }
 
     inline iterator begin() { 
-		if( !empty() ) return iterator( 0, nr_constraints, this );
-		else return end();
-	}
+    if( !empty() ) return iterator( 0, nr_constraints, this );
+    else return end();
+  }
     inline iterator end() {
-		return iterator( iterator::end_value, nr_constraints, this );
-	}
+    return iterator( iterator::end_value, nr_constraints, this );
+  }
     inline void clear() { 
       for( unsigned int i = 0; i < nr_constraints; i++ )
         constraints[i].haptic_shape.reset( NULL );
@@ -190,6 +190,13 @@ namespace HAPI {
         ::memcpy( constraints,
                   old_constraints,
                   old_allocated_constraints * sizeof(PlaneConstraint) );
+        // Have to go through all shapes and call ref because memcpy does not
+        // increase reference count of the contained haptic shapes and
+        // delete [] old_constraints will call unref on the contained haptic
+        // shapes.
+        for( int i = 0; i < old_allocated_constraints; i++ )
+          if( old_constraints[i].haptic_shape.get() )
+            old_constraints[i].haptic_shape->ref();
         delete[] old_constraints;
       }
       constraints[nr_constraints] = p;
