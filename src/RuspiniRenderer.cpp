@@ -61,11 +61,24 @@ void RuspiniRenderer::onOnePlaneContact( const Vec3& proxy_pos,
   // create a local coordinate system with the PlaneConstraint normal
   // as y-axis
   contact.y_axis = c.normal;
-  Vec3 a( contact.y_axis.z, contact.y_axis.x, contact.y_axis.y );
-  contact.x_axis = contact.y_axis % a;
+  // In the following link there is a possible speedup to the code below.
+  // The problem is that it only works by assuming a certain architecture and
+  // bit size of integer.
+  // http://akpeters.metapress.com/content/x5up35714j28v881/fulltext.pdf
+  HAPIFloat abs_y_axis_x = H3DUtil::H3DAbs( contact.y_axis.x );
+  HAPIFloat abs_y_axis_y = H3DUtil::H3DAbs( contact.y_axis.y );
+  HAPIFloat abs_y_axis_z = H3DUtil::H3DAbs( contact.y_axis.z );
+  if( abs_y_axis_x < abs_y_axis_y && abs_y_axis_x < abs_y_axis_z ) {
+    contact.x_axis = Vec3( 0, contact.y_axis.z, -contact.y_axis.y );
+  } else if( abs_y_axis_y < abs_y_axis_x && abs_y_axis_y < abs_y_axis_z ) {
+    contact.x_axis = Vec3( -contact.y_axis.z, 0, contact.y_axis.x );
+  } else {
+    contact.x_axis = Vec3( contact.y_axis.y, -contact.y_axis.x, 0 );
+  }
   contact.z_axis = contact.x_axis % contact.y_axis;
   contact.x_axis.normalizeSafe();
   contact.z_axis.normalizeSafe();
+
   contact.setGlobalOrigin( contact.contact_point_global );
   assert( c.haptic_shape.get() );
 

@@ -1417,6 +1417,7 @@ bool Triangle::movingSphereIntersect( HAPIFloat radius,
     result.normal = ttt;
     result.normal.normalizeSafe();
     result.t = 0;
+    result.primitive = this;
     return true; 
   }
                      
