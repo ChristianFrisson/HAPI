@@ -51,7 +51,8 @@ namespace HAPI {
     /// "Phantom Configuration" tool. A device_name of "" will use the first
     /// available device.
     PhantomHapticsDevice( string _device_name = "" ):
-        device_name( _device_name ) {
+        device_name( _device_name ),
+        in_calibration_mode( false ) {
       hdapi_version = hdGetString( HD_VERSION );
       setup_haptic_rendering_callback = false;
     }
@@ -156,7 +157,8 @@ namespace HAPI {
     bool needsCalibration();
 
     /// Calibrate the device. The calibration procedure depends on
-    /// the device type.
+    /// the device type. Returns true if the calibration sequence is
+    /// started.
     bool calibrateDevice();
 
     /// Check if the device is in a state where all the forces
@@ -177,6 +179,9 @@ namespace HAPI {
       }
       return e;
     }
+
+    /// Returns true if the device is currently updating its calibration.
+    inline bool inCalibrationMode() { return in_calibration_mode; }
 
     // set the enable_start_scheduler variable.
     static inline void setEnableStartScheduler( bool new_value ) {
@@ -231,7 +236,10 @@ namespace HAPI {
 
     /// Releases all resources allocated in initHapticsDevice. 
     virtual bool releaseHapticsDevice();
-    
+
+    /// Internal function for calibrating the device.
+    void calibrateDeviceInternal();
+
     static HDCallbackCode HDCALLBACK endFrameCallback( void *data );
 
     /// The device name for this device.
@@ -241,6 +249,11 @@ namespace HAPI {
 
     /// Handle for all setup callbacks.
     vector< HDCallbackCode > hd_handles;
+
+    /// If true the device is in calibration_mode and will try to be
+    /// calibrated. It is up to the user to decide if haptics should be
+    /// shut off or not.
+    bool in_calibration_mode;
 
     // If true the scheduler will be started when enableDevice is called.
     // If not then the startScheduler() function has to be called in order
