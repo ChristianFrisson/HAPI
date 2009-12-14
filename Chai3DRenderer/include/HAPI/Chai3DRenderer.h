@@ -60,15 +60,18 @@
 namespace HAPI {
 
   /// \defgroup Chai3DRenderer Chai3DRenderer classes
-  /// These classes use HAPI but use Chai3D for haptic rendering and are built
-  /// in a project separate from HAPI.
+  /// These classes use HAPI but use Chai3D for geometry based haptic
+  /// rendering and are built in a project separate from HAPI.
   /// The reason for this is to separate dependency on dlls in Windows.
 
   /// \ingroup Chai3DRenderer
   /// \ingroup Renderers
   /// \class Chai3DRenderer
   /// \brief Haptics renderer using Chai3D(www.chai3d.org) for the
-  /// haptics rendering.
+  /// geometry based haptics rendering.
+  ///
+  /// This is one of several geometry based haptics renderers that can be used
+  /// in HAPI.
   class CHAI3DRENDERER_API Chai3DRenderer: public HAPIProxyBasedRenderer {
   public:
 

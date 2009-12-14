@@ -58,9 +58,14 @@ HDCallbackCode HDCALLBACK PhantomHapticsDevice::endFrameCallback( void *data ){
   // that openhaptics own rendering has already been done so the correct
   // force is used when using OpenHapticsRenderer.
   PhantomHapticsDevice *hd = static_cast< PhantomHapticsDevice * >( data );
-  HAPIHapticsDevice::hapticRenderingCallback(
-    hd->haptic_rendering_callback_data );
-  hdEndFrame( hd->getDeviceHandle() );
+  if( hd->inCalibrationMode() && hd->needsCalibration() ) {
+    hdEndFrame( hd->getDeviceHandle() );
+    hd->calibrateDeviceInternal();
+  } else {
+    HAPIHapticsDevice::hapticRenderingCallback(
+      hd->haptic_rendering_callback_data );
+    hdEndFrame( hd->getDeviceHandle() );
+  }
   return HD_CALLBACK_CONTINUE;
 }
 
@@ -79,7 +84,7 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device_handle = hdInitDevice( device_name == "" ? 
                                 HD_DEFAULT_DEVICE : device_name.c_str() );
   HDErrorInfo error = hdGetError();
-  if ( HD_DEVICE_ERROR( error ) ) {
+  if( HD_DEVICE_ERROR( error ) ) {
     stringstream s;
     if( device_name == "" )
       s << "Could not init default Phantom device. ";
@@ -243,26 +248,33 @@ void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
 }
 
 bool PhantomHapticsDevice::needsCalibration() {
-  if( device_state == INITIALIZED ) {
+  if( device_state != UNINITIALIZED ) {
     hdMakeCurrentDevice( device_handle );
-    return hdCheckCalibration() != HD_CALIBRATION_OK;
+    bool needs_calibration =
+      hdCheckCalibration() != HD_CALIBRATION_OK;
+    if( !needs_calibration && in_calibration_mode )
+      in_calibration_mode = false;
+    return needs_calibration;
   } else {
+    in_calibration_mode = false;
     return false;
   }
 }
 
 bool PhantomHapticsDevice::calibrateDevice() {
-  if( device_state == INITIALIZED ) {
-    hdMakeCurrentDevice( device_handle );
-    HDint style;
-    hdGetIntegerv(HD_CALIBRATION_STYLE,&style);
-    while(hdCheckCalibration()==HD_CALIBRATION_NEEDS_UPDATE) {
-      hdUpdateCalibration(style);
-    }
+  if( device_state != UNINITIALIZED ) {
+    in_calibration_mode = true;
     return true;
   } else {
     return false;
   }
+}
+
+void PhantomHapticsDevice::calibrateDeviceInternal() {
+  hdMakeCurrentDevice( device_handle );
+  HDint style;
+  hdGetIntegerv(HD_CALIBRATION_STYLE,&style);
+  hdUpdateCalibration(style);
 }
 
 void PhantomHapticsDevice::startScheduler() {
