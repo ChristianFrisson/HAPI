@@ -154,7 +154,12 @@ void GodObjectRenderer::onOnePlaneContact(
   } else if( abs_y_axis_y < abs_y_axis_x && abs_y_axis_y < abs_y_axis_z ) {
     contact.x_axis = Vec3( -contact.y_axis.z, 0, contact.y_axis.x );
   } else {
-    contact.x_axis = Vec3( contact.y_axis.y, -contact.y_axis.x, 0 );
+    // Need to handle the case when y_axis = 0,0,1
+    if( abs_y_axis_y > Constants::epsilon ||
+        abs_y_axis_x > Constants::epsilon )
+      contact.x_axis = Vec3( contact.y_axis.y, -contact.y_axis.x, 0 );
+    else
+      contact.x_axis = Vec3( -contact.y_axis.z, 0, 0 );
   }
   contact.z_axis = contact.x_axis % contact.y_axis;
   contact.x_axis.normalizeSafe();
