@@ -39,6 +39,7 @@
 #include <H3DUtil/Threads.h>
 
 #include <map>
+#include <memory>
 
 #ifdef HAVE_OPENHAPTICS
 #include <HL/hl.h>
