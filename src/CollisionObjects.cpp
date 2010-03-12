@@ -2086,7 +2086,20 @@ bool LineSegment::lineIntersect( const Vec3 &from,
                                  const Vec3 &to,
                                  IntersectionInfo &result,
                                  FaceType face ) {
-  // TODO: implement
+  HAPIFloat s,t;
+  Vec3 c0, c1;
+  closestPointOnLine( from, to, s, t, c0, c1 );
+  if( (c0-c1).lengthSqr() < Constants::epsilon ) {
+    result.intersection = true;
+    result.normal = ( to - from ).crossProduct( end - start );
+    result.normal.normalizeSafe();
+    result.point = c0;
+    result.primitive = this;
+    result.t = t;
+    // TODO:
+    result.tex_coord = Vec3();
+    return true;
+  }
   return false;
 }
 

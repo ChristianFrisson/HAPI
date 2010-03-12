@@ -231,12 +231,14 @@ namespace HAPI {
     /// \class Plane
     /// \brief A collision primitive for a plane.
     ///
-    /// The plane is defined by a point and a normal.
+    /// The plane is defined by a point and a normal. The given normal
+    /// is assumed to be of length 1.
     class HAPI_API Plane: public GeometryPrimitive {
     public:
       /// Constructor.
       /// \param p A point in the plane.
-      /// \param n The normal of the plane.
+      /// \param n The normal of the plane. The normal is assumed to be
+      /// normalized.
       Plane( const Vec3 &p, const Vec3 &n ):
         point( p ), normal( n ) {}
       
@@ -305,7 +307,11 @@ namespace HAPI {
       /// (wireframe for example).
       virtual void render();
 
-      Vec3 point, normal;
+      /// A point in the plane.
+      Vec3 point;
+
+      /// The normal of the plane.
+      Vec3 normal;
     };
 
 
@@ -513,8 +519,12 @@ namespace HAPI {
       /// The texture coordinates at the corners of the triangle.
       Vec3 ta, tb, tc;
 
+      // The normalized normal of the triangle plane. Help variable for
+      // collision functions.
       Vec3 normal;
 
+      // The vectors from a to c and from a to b. Help variables for collision
+      // functions.
       Vec3 ac, ab;
     };
 
@@ -546,7 +556,15 @@ namespace HAPI {
                                  Vec3 &tex_coord );
 
       /// Returns the closest point on the object to the line segment
-      /// from -> to
+      /// from -> to.
+      /// \param from The start of the line segment.
+      /// \param to The end of the line segment.
+      /// \param s The point on line segment from->to at which closest
+      /// point is can be calculated as from + s * ( to - from )
+      /// \param t The point on this LineSegment at which closest
+      /// point is can be calculated as start + s * ( end - start )
+      /// \param c0 The closest point on line from->to.
+      /// \param c1 The closest point on this LineSegment.
       HAPIFloat closestPointOnLine( const Vec3 &from, const Vec3 &to,
                                     HAPIFloat &s, HAPIFloat &t,
                                     Vec3 &c0, Vec3 &c1 );
@@ -840,7 +858,7 @@ namespace HAPI {
       /// If true then the cylinder have a cap at the start_point.
       /// True by default.
       bool start_cap;
-		
+
       /// If true then the cylinder have a cap at the end_point.
       /// True by default.
       bool end_cap;
@@ -1098,7 +1116,7 @@ namespace HAPI {
                      ((n & 4) ? max.z : min.z ) );
       }
     };
-    
+
     /// \ingroup CollisionStructures
     /// \class AABoxBound
     /// \brief Represents an axis-aligned bounding box.
@@ -1194,8 +1212,10 @@ namespace HAPI {
         return result;
       }
 
-      /// The max and min corners of the bounding box,
+      /// The min corner of the bounding box.
       Vec3 min;
+
+      /// The max corner of the bounding box.
       Vec3 max;
      
     };
@@ -1253,8 +1273,14 @@ namespace HAPI {
                                  Vec3 &normal,
                                  Vec3 &tex_coord  );
 
+      /// The center of the oriented bounding box.
       Vec3 center;
+
+      /// The orientation of the oriented bounding box.
       Rotation orientation;
+
+      /// Half size of the bounding box. Used with center and orientation
+      /// to define the oriented bounding box.
       Vec3 halfsize;
       
     };
@@ -1548,9 +1574,20 @@ namespace HAPI {
                                     vector< LineSegment > &lines,
                                     vector< Point > &points );
 
+      /// The bound for this node in the tree, will be a bound around
+      /// all its children (left and right subtree).
       H3DUtil::AutoRef< BoundPrimitive > bound;
+
+      /// The triangles for this node in the tree. Will only be non-empty
+      /// for leafs.
       vector< Triangle > triangles;
+
+      /// The line segments for this node in the tree. Will only be non-empty
+      /// for leafs.
       vector< LineSegment > linesegments;
+
+      /// The points for this node in the tree. Will only be non-empty
+      /// for leafs.
       vector< Point > points;
 
       /// The left subtree.
@@ -1828,7 +1865,12 @@ namespace HAPI {
       virtual void getAllPrimitives(
         vector< GeometryPrimitive * > &primitives );
 
+      /// The bound for this node in the tree, will be a bound around
+      /// all its children (left and right subtree).
       H3DUtil::AutoRef< BoundPrimitive > bound;
+
+      /// The primitives for this node in the tree. Will only be non-empty
+      /// for leafs.
       H3DUtil::AutoRefVector< GeometryPrimitive > primitives;
 
       /// The left subtree.
