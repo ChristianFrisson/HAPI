@@ -40,6 +40,7 @@
 
 
 #include <stack>
+#include <map>
 
 #ifdef WIN32
 #undef max
@@ -2696,6 +2697,95 @@ void BinaryBoundTree::getAllTriangles( vector< Triangle > &tris ) {
     if (right.get()) right->getAllTriangles( tris );
   }
 }
+
+bool operator< (const Vec3 & s1, const Vec3 &s2) {
+  return (s1.x < s2.x || 
+          (s2.x == s1.x && s1.y < s2.y) ||
+          ( s2.x == s1.x && s2.y == s1.y && s1.z < s2.z) );
+}
+
+struct lt {
+  bool operator()(const pair<Vec3, Vec3>& _Left,
+                  const pair<Vec3, Vec3 >& _Right ) const {
+    return (_Left.first < _Right.first ||
+            !(_Right.first < _Left.first) && _Left.second < _Right.second);
+	}
+};
+
+const vector<int> &BinaryBoundTree::getNeighbours() {
+  if( !neighbours.empty() ) return neighbours;
+
+  vector< HAPI::Collision::Triangle > triangles;
+  getAllTriangles( triangles );
+
+  neighbours.resize( triangles.size()*3, -1 );
+
+  // map from triangle edge(as pair of vertex) to pair of 
+  // (triangle index, edge index within triangle) 
+  typedef map< pair< Vec3, Vec3 >, pair<int, int>, lt >  EdgeTriangleMap;
+  EdgeTriangleMap edges;
+ 
+  for( size_t i = 0; i < triangles.size(); i++ ) {
+    const HAPI::Collision::Triangle &tri = triangles[i];
+
+    // ignore invalid triangles that are lines or points
+    if( tri.a == tri.b || tri.b == tri.c || tri.a == tri.c ) {
+      continue;
+    }
+
+    // edges of the triangles. We keep a strict ordering when defining an edge so that 
+    // the edge (a,b) will be the same as (b,a).
+    pair< Vec3, Vec3 > edge0 = tri.a < tri.b ? make_pair(tri.a, tri.b) : make_pair(tri.b, tri.a );
+    pair< Vec3, Vec3 > edge1 = tri.b < tri.c ? make_pair(tri.b, tri.c) : make_pair(tri.c, tri.b );
+    pair< Vec3, Vec3 > edge2 = tri.c < tri.a ? make_pair(tri.c, tri.a) : make_pair(tri.a, tri.c );
+
+    // Check if the edge exists in previously processed triangle.
+    EdgeTriangleMap::iterator edge0_i = edges.find( edge0 );
+    EdgeTriangleMap::iterator edge1_i = edges.find( edge1 );
+    EdgeTriangleMap::iterator edge2_i = edges.find( edge2 );
+
+    if( edge0_i != edges.end() ) {
+      // shared edge found, update the neighbour array.
+      int triangle = (*edge0_i).second.first;
+      int edge =  (*edge0_i).second.second;
+      neighbours[i*3] = triangle;
+      if( neighbours[triangle*3+edge] == -1 ) {
+         neighbours[triangle*3+edge] = i;
+      }
+    } else {
+      edges[edge0] = make_pair(i, 0);
+    }
+
+   if( edge1_i != edges.end() ) {
+      // shared edge found, update the neighbour array.
+      int triangle = (*edge1_i).second.first;
+      int edge =  (*edge1_i).second.second;
+      neighbours[i*3+1] = triangle;
+      if( neighbours[triangle*3+edge] == -1 ) {
+         neighbours[triangle*3+edge] = i;
+      }
+    } else {
+      edges[edge1] = make_pair(i, 1);
+    }
+
+   if( edge2_i != edges.end() ) {
+     // shared edge found, update the neighbour array.
+      int triangle = (*edge2_i).second.first;
+      int edge =  (*edge2_i).second.second;
+      neighbours[i*3+2] = triangle;
+      if( neighbours[triangle*3+edge] == -1 ) {
+        neighbours[triangle*3+edge] = i;
+      }
+    } else {
+      edges[edge2] = make_pair(i, 2);
+    }
+  }
+  return neighbours;
+}
+
+
+
+
 
 void BinaryBoundTree::getAllPrimitives( vector< Triangle > &tris,
                                     vector< LineSegment > &lins,
