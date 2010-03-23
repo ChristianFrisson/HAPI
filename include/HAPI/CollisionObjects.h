@@ -1409,6 +1409,12 @@ namespace HAPI {
                        const vector< Point > &point_vector,
                        unsigned int max_nr_triangles_in_leaf = 1 );
 
+
+      /// Array of 3*(nr triangles in tree) triangle indices specifying
+      /// for each triangle edge which triangle is its neighbour. The index
+      /// is into the triangles received by the getAllTriangles function.
+      const vector<int> &getNeighbours();
+
       /// Returns true if the tree is a leaf, i.e. has no sub-tress
       /// and hence just contains triangles. false otherwise.
       inline bool isLeaf() { 
@@ -1589,6 +1595,10 @@ namespace HAPI {
       /// The points for this node in the tree. Will only be non-empty
       /// for leafs.
       vector< Point > points;
+
+      /// Array of 3*nr_triangles triangle indices specifying for each triangle
+      /// edge which triangle is its neighbour. 
+      vector< int > neighbours;
 
       /// The left subtree.
       H3DUtil::AutoRef< BinaryBoundTree > left;
