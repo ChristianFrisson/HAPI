@@ -328,7 +328,14 @@ H3DUtil::PeriodicThread::CallbackCode
   hd->renderer_change_lock.lock();
 
   for( unsigned int s = 0; s < hd->haptics_renderers.size(); s++ ) {
-    if( hd->haptics_renderers[s] && s < hd->current_shapes.size() ) {
+    if( hd->haptics_renderers[s] ) {
+      // Resize current_shapes, this is done since we want renderHapticsOneStep
+      // to be called even when there are no current_shapes in the scene in
+      // order for the renderer to properly update internal data such as
+      // proxy position (if the renderer is proxy based).
+      if( s + 1 > hd->current_shapes.size() )
+        hd->current_shapes.resize( s + 1 );
+
       output = output + 
         hd->haptics_renderers[s]->
         renderHapticsOneStep( hd, hd->current_shapes[s], dt );
