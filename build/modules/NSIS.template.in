@@ -1001,10 +1001,30 @@ Function .onInit
   StrCmp $SV_ALLUSERS "AllUsers" 0 +2
     StrCpy $INSTDIR "C:\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
+  StrCpy $R4 "@CPACK_PACKAGE_VERSION_MAJOR@"
+  StrCpy $R5 "@CPACK_PACKAGE_VERSION_MINOR@"
+  StrCpy $R6 "@CPACK_PACKAGE_VERSION_PATCH@"
+  
+  trypreviousversion:
+  
   ReadRegStr $R0 SHCTX \
-  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" \
+  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" \
   ""
   IfErrors 0 alreadyinstalled
+    IntCmp $R6 0 +3 +3 0
+	  IntOp $R6 $R6 - 1
+	  Goto trypreviousversion
+    
+	IntCmp $R5 0 +4 +4 0
+	  IntOp $R5 $R5 - 1
+	  StrCpy $R6 "9"
+	  Goto trypreviousversion
+	
+	IntCmp $R4 1 +5 +5 0
+	  IntOp $R4 $R4 - 1
+	  StrCpy $R5 "9"
+	  StrCpy $R6 "9"
+	  Goto trypreviousversion
 
   IfFileExists $INSTDIR 0 alreadyinstalledchecked
     MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
@@ -1017,22 +1037,37 @@ Function .onInit
     Abort
 
   alreadyinstalled:
+  StrCpy $R7 "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6"
+  StrCmp "@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" "HAPI 1.0.0" 0 +2
+    StrCpy $R7 "Software\Microsoft\Windows\CurrentVersion\Uninstall\HAPI"
+  
+  ReadRegStr $R1 SHCTX \
+   "$R7" \
+   "UninstallString"
+  
+  StrLen $R8 $INSTDIR
+  
+  StrCpy $R9 $R7 $R8
+  
+  StrCpy $8 "in the default location"
+  StrCpy $9 " (recommended)"
+  StrCmp $R9 $INSTDIR 0 +3
+    StrCpy $8 "somewhere on the system"
+    StrCpy $9 ""
+
   MessageBox MB_YESNOCANCEL|MB_ICONQUESTION \
-  "This version of HAPI is already installed, do you wish to uninstall the \
-  previous installation (recommended). \
+  "Version $R4.$R5.$R6 of HAPI is already installed $8, do you wish to uninstall the \
+  previous installation$9. \
   $\n$\nClick `Yes` to uninstall previous installation. `NO´ to continue \
   installation without any changes or `Cancel` to cancel this installation." \
   IDYES uninstallprevious IDNO alreadyinstalledchecked
   Abort
 
   uninstallprevious:
-  ReadRegStr $R1 SHCTX \
-  "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" \
-  "UninstallString"
   StrCmp $R1 "" alreadyinstalledchecked
 
   ReadRegStr $R2 SHCTX \
-  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" \
+  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" \
   ""
 
   StrCpy $R3 $INSTDIR

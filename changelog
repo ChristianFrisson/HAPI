@@ -1,3 +1,12 @@
+Changes for version 1.1.1:
+- CMake support for OpenHaptics 3.0.
+- Memory leak fixes.
+- Various bug fixes in the renderers.
+- Updates to compile for Visual Studio 2010 and gcc 3.1.1.
+- PhantomHapticsDevice now reports usable work space in meters.
+- CMake build updates. Variables that points to include directories and
+libraries are now grouped together for each external library.
+
 Changes for version 1.1:
 
 - Improved OSX support for FeedbackBufferCollector.

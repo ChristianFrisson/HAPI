@@ -120,7 +120,7 @@ namespace HAPI {
         return *this;
       }
       
-      inline iterator operator++(int) {                    
+      inline iterator operator++(int) {
         iterator old_val(*this);  
         operator++();    
         return old_val;   
@@ -133,14 +133,14 @@ namespace HAPI {
       }  
 
       inline PlaneConstraint & operator*() {
-      return owner->constraints[index];
-    }
+        return owner->constraints[index];
+      }
       inline bool operator==( const iterator &i ) {
-      return index == i.index; 
-    }
+        return index == i.index; 
+      }
       inline bool operator!=( const iterator &i ) {
-      return index != i.index;
-    }
+        return index != i.index;
+      }
 
       unsigned int index, size;
       Constraints *owner;
@@ -157,12 +157,12 @@ namespace HAPI {
     }
 
     inline iterator begin() { 
-    if( !empty() ) return iterator( 0, nr_constraints, this );
-    else return end();
-  }
+      if( !empty() ) return iterator( 0, nr_constraints, this );
+      else return end();
+    }
     inline iterator end() {
-    return iterator( iterator::end_value, nr_constraints, this );
-  }
+      return iterator( iterator::end_value, nr_constraints, this );
+    }
     inline void clear() { 
       for( unsigned int i = 0; i < nr_constraints; i++ )
         constraints[i].haptic_shape.reset( NULL );
