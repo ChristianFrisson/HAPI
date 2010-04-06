@@ -108,6 +108,7 @@ namespace HAPI {
     /// Constructor.
     HAPIHapticsDevice() :
       thread( NULL ),
+      tmp_switching_effects( false ),
       switching_effects( false ),
       tmp_switch_effects_duration( 0 ),
       switch_effects_duration( 0 ),
