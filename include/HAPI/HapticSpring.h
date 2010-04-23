@@ -37,28 +37,40 @@ namespace HAPI {
   /// \ingroup ForceEffects
   /// \class HapticSpring
   /// \brief Generates a spring force, 
-  /// i.e. force = ( position - device_position ) * spring_constant.
+  /// i.e. force = ( position - device_position ) * spring_constant - damping * device_velocity.
   class HAPI_API HapticSpring: public HAPIForceEffect {
   public:
     /// Constructor
     HapticSpring():
       position( Vec3( 0, 0, 0 ) ),
-      spring_constant( 0 ) { }
+      spring_constant( 0 ),
+      damping( 0 ) { }
     
     /// Constructor
     HapticSpring( const Vec3 &_position,
                   HAPIFloat _spring_constant );
+
+    HapticSpring( const Vec3 &_position,
+                  HAPIFloat _spring_constant,
+                  HAPIFloat _damping );
     
     /// The force of the EffectOutput will be a force from the position of
     /// the haptics device to the position of the HapticSpring. 
     EffectOutput virtual calculateForces( const EffectInput &input ) {
-      force = ( position - input.hd->getPosition() ) * spring_constant;
+      force = 
+        ( position - input.hd->getPosition() ) * spring_constant - 
+        damping * input.hd->getPosition();
       return EffectOutput( force );
     }
 
     // set position
     inline void setPosition( const Vec3 &_position ) { 
       position = _position;
+    }
+
+    // set damping
+    inline void setDamping( HAPIFloat _damping ) { 
+      damping = _damping;
     }
     
     // set velocity
@@ -69,6 +81,11 @@ namespace HAPI {
     // get position
     inline const Vec3 &getPosition() { 
       return position;
+    }
+
+    // get damping
+    inline HAPIFloat getDamping() { 
+      return damping;
     }
 
     // get spring constant
@@ -85,6 +102,7 @@ namespace HAPI {
     Vec3 force;
     Vec3 position;
     HAPIFloat spring_constant;
+    HAPIFloat damping;
   };
 }
 
