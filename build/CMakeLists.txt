@@ -12,6 +12,9 @@ ENDIF(WIN32)
 SET(CMAKE_FIND_FRAMEWORK "LAST")
 PROJECT (HAPI)
 
+# include header directory.
+INCLUDE_DIRECTORIES(  ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
+
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
 # for packaging HAPI. Default is NO since most people will not use this.
 IF( NOT DEFINED GENERATE_CPACK_PROJECT )
@@ -509,8 +512,6 @@ ELSEIF(MSVC70 OR MSVC71 OR ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER
   SET(requiredLibs ${requiredLibs} H3DUtil )
 ENDIF(NOT WIN32)
 
-# Add the last include directories needed.
-INCLUDE_DIRECTORIES(  ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
 
 # make sure symbols are exported.
 SET( HAPI_COMPILE_FLAGS "-DHAPI_EXPORTS" )
