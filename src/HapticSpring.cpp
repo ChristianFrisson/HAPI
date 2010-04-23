@@ -34,6 +34,14 @@ using namespace HAPI;
 HapticSpring::HapticSpring( const Vec3 &_position,
                             HAPIFloat _spring_constant ):
   position( _position ),
-  spring_constant( _spring_constant ) {}
+  spring_constant( _spring_constant ),
+  damping( 0 ) {}
+
+HapticSpring::HapticSpring( const Vec3 &_position,
+                            HAPIFloat _spring_constant,
+                            HAPIFloat _damping ):
+  position( _position ),
+  spring_constant( _spring_constant ),
+  damping( _damping ) {}
 
 
