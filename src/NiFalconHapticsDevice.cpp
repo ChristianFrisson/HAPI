@@ -222,7 +222,7 @@ NiFalconHapticsDevice::com_func( void *data ) {
     boost::array<double,3> pos = hd->device->getPosition();
     Vec3 position( pos[0] , pos[1] , (pos[2] - .150f) );
     
-    HAPIInt32 button_status;
+    HAPIInt32 button_status = 0;
     
     // get buttons
     boost::shared_ptr<FalconGrip> grip = hd->device->getFalconGrip();
