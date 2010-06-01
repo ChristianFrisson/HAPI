@@ -37,7 +37,8 @@ ENDIF( PREFER_STATIC_LIBRARIES )
 # include H3DUtil in the build
 IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
   # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-  STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../../H3DUtil/build BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
+  #STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../../H3DUtil/build BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
+  STRING( REPLACE "HAPI" "H3DUtil" BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
   STRING( COMPARE EQUAL ${BINARY_DIR_FOR_H3DUTIL} ${CMAKE_CURRENT_BINARY_DIR} SPECIAL_BINARY_DIR )
   IF( SPECIAL_BINARY_DIR )
     SET( BINARY_DIR_FOR_H3DUTIL ${HAPI_SOURCE_DIR}/../../H3DUtil/build )
@@ -676,7 +677,9 @@ ENDIF( NOT DEFINED HAPI_EXAMPLE_PROJECTS )
 
 IF( HAPI_EXAMPLE_PROJECTS )
   # This is done to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-  STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../examples HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+  #STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../examples HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+  # The version of the next line avoids: 'Policy CMP0013 is not set: Duplicate binary directories are not allowed.'
+  STRING( REGEX REPLACE "HAPI(/build)?$" "HAPI/examples" HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../examples
                     ${HAPI_EXAMPLES_BINARY_DIR} )
   IF( DEFINED DirectXExample_SOURCE_DIR )
