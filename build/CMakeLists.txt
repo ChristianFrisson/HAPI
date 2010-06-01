@@ -679,8 +679,8 @@ IF( HAPI_EXAMPLE_PROJECTS )
   # This is done to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
   #STRING( REPLACE ${HAPI_SOURCE_DIR} ${HAPI_SOURCE_DIR}/../examples HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   # The version of the next line avoids: 'Policy CMP0013 is not set: Duplicate binary directories are not allowed.'
-  STRING( REGEX REPLACE "HAPI(/build)?$" "HAPI/examples" HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
-  ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../examples
+  STRING( REGEX REPLACE "HAPI(/build)?" "HAPI/examples/build" HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+  ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../examples/build
                     ${HAPI_EXAMPLES_BINARY_DIR} )
   IF( DEFINED DirectXExample_SOURCE_DIR )
     ADD_DEPENDENCIES( DirectXExample HAPI )

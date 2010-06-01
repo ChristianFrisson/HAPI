@@ -54,9 +54,9 @@
 #cmakedefine HAVE_NIFALCONAPI
 
 // Select which communication library libnifalcon should use
-#cmakedefine NIFALCON_LIBUSB
-#cmakedefine NIFALCON_LIBFTD2XX
-#cmakedefine NIFALCON_LIBFTDI
+#cmakedefine NIFALCONAPI_LIBUSB
+#cmakedefine NIFALCONAPI_LIBFTD2XX
+#cmakedefine NIFALCONAPI_LIBFTDI
 
 /// Undef if you do not have the fparser library
 /// (http://iki.fi/warp/FunctionParser/) installed.
