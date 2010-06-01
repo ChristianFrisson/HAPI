@@ -222,14 +222,17 @@ NiFalconHapticsDevice::com_func( void *data ) {
     boost::array<double,3> pos = hd->device->getPosition();
     Vec3 position( pos[0] , pos[1] , (pos[2] - .150f) );
     
-    HAPIInt32 button_status = 0;
-    
     // get buttons
     boost::shared_ptr<FalconGrip> grip = hd->device->getFalconGrip();
-    for( int i = 0 ; i < grip->getNumDigitalInputs() ; i++ ){
-      if( grip->getDigitalInput(i) ){
-        button_status |= 0x01 << i; }
-    }
+    // It is safe to not check the number of digital outputs since
+    // getDigitalInput in FalconGrip.h checks this for us.
+    // Button input are grabbed this way in order to get them in the
+    // same order as for FalconHapticsDevice (using novints api).
+    HAPIInt32 button_status = // [ + N (logo) V ] -> [ logo V N + ]
+      (grip->getDigitalInput(0)?0x08:0x00)|
+      (grip->getDigitalInput(1)?0x04:0x00)|
+      (grip->getDigitalInput(2)?0x01:0x00)|
+      (grip->getDigitalInput(3)?0x02:0x00);
     
     Rotation orientation;
     
