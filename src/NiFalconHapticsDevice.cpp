@@ -36,15 +36,15 @@
 
 #include <falcon/core/FalconDevice.h>
 
-#ifdef NIFALCON_LIBFTD2XX
+#ifdef NIFALCONAPI_LIBFTD2XX
 # include <falcon/comm/FalconCommFTD2XX.h>
 #endif
 
-#ifdef NIFALCON_LIBFTDI
+#ifdef NIFALCONAPI_LIBFTDI
 # include <falcon/comm/FalconCommLibFTDI.h>
 #endif
 
-#ifdef NIFALCON_LIBUSB
+#ifdef NIFALCONAPI_LIBUSB
 # include <falcon/comm/FalconCommLibUSB.h>
 #endif
 
@@ -90,13 +90,13 @@ NiFalconHapticsDevice::~NiFalconHapticsDevice() {
 
 bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
-#ifdef NIFALCON_LIBUSB
+#ifdef NIFALCONAPI_LIBUSB
   device->setFalconComm<libnifalcon::FalconCommLibUSB>();
 #else
-#ifdef NIFALCON_LIBFTD2XX
-  device->setFalconComm<libnifalcon::FalconCommLibFTD2XX>();
+#ifdef NIFALCONAPI_LIBFTD2XX
+  device->setFalconComm<libnifalcon::FalconCommFTD2XX>();
 #else
-#ifdef NIFALCON_LIBFTDI
+#ifdef NIFALCONAPI_LIBFTDI
   device->setFalconComm<libnifalcon::FalconCommLibFTDI>();
 #endif
 #endif
@@ -233,9 +233,9 @@ NiFalconHapticsDevice::com_func( void *data ) {
       (grip->getDigitalInput(1)?0x04:0x00)|
       (grip->getDigitalInput(2)?0x01:0x00)|
       (grip->getDigitalInput(3)?0x02:0x00);
-    
+
     Rotation orientation;
-    
+
     // transfer values to/from haptics thread.
     hd->com_lock.lock();
     
@@ -247,9 +247,9 @@ NiFalconHapticsDevice::com_func( void *data ) {
     f[0] = hd->current_values.force.x;
     f[1] = hd->current_values.force.y;
     f[2] = hd->current_values.force.z;
-     
+
     hd->com_lock.unlock();
- 
+
     // send force
     hd->device->setForce(f);
  }
@@ -268,13 +268,13 @@ bool NiFalconHapticsDevice::setDeviceIndex( unsigned int i ) {
 
 unsigned int NiFalconHapticsDevice::getNrConnectedFalconDevices() {
   libnifalcon::FalconDevice device;
-#ifdef NIFALCON_LIBUSB
+#ifdef NIFALCONAPI_LIBUSB
   device.setFalconComm<libnifalcon::FalconCommLibUSB>();
 #else
-#ifdef NIFALCON_LIBFTD2XX
-  device.setFalconComm<libnifalcon::FalconCommLibFTD2XX>();
+#ifdef NIFALCONAPI_LIBFTD2XX
+  device.setFalconComm<libnifalcon::FalconCommFTD2XX>();
 #else
-#ifdef NIFALCON_LIBFTDI
+#ifdef NIFALCONAPI_LIBFTDI
   device.setFalconComm<libnifalcon::FalconCommLibFTDI>();
 #endif
 #endif
