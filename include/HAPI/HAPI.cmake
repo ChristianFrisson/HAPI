@@ -49,6 +49,10 @@
 /// Required for the Omega and Delta haptics devices.
 #cmakedefine HAVE_DHDAPI
 
+/// Undef if you do not have Virtuose API(www.haption.com) installed.
+/// Required for the Virtuose series haptics devices from  Haption.
+#cmakedefine HAVE_VIRTUOSEAPI
+
 /// Undef if you do not have FALCON API(www.novint.com) installed.
 #cmakedefine HAVE_FALCONAPI
 #cmakedefine HAVE_NIFALCONAPI

@@ -348,6 +348,13 @@ IF(DHD_FOUND)
   SET(optionalLibs ${optionalLibs} ${DHD_LIBRARIES} )
 ENDIF(DHD_FOUND)
 
+FIND_PACKAGE(VirtuoseAPI)
+IF(VIRTUOSE_FOUND)
+  SET(HAVE_VIRTUOSEAPI 1)
+  INCLUDE_DIRECTORIES( ${VIRTUOSE_INCLUDE_DIR} )
+  SET(optionalLibs ${optionalLibs} ${VIRTUOSE_LIBRARIES} )
+ENDIF(VIRTUOSE_FOUND)
+
 FIND_PACKAGE(FalconAPI)
 IF(FALCONAPI_FOUND)
   SET(HAVE_FALCONAPI 1)
@@ -621,7 +628,12 @@ IF( WIN32 )
   # Set link flags for HAPI
   SET_TARGET_PROPERTIES( HAPI
                          PROPERTIES
-                         LINK_FLAGS "${HAPI_LINK_FLAGS} /DELAYLOAD:\"dhd.dll\" /DELAYLOAD:\"hdl.dll\" /DELAYLOAD:\"Haptik.Library.dll\" /DELAYLOAD:\"SimballMedicalHID.dll\"" )
+                         LINK_FLAGS "${HAPI_LINK_FLAGS}
+  /DELAYLOAD:\"dhd.dll\" 
+  /DELAYLOAD:\"hdl.dll\"
+  /DELAYLOAD:\"Haptik.Library.dll\"
+  /DELAYLOAD:\"SimballMedicalHID.dll\" 
+  /DELAYLOAD:\"VirtuoseDLL.dll\"" )
 ENDIF( WIN32 )
 
 # set compile flags for HAPI project
