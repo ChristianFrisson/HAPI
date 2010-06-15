@@ -66,7 +66,7 @@ bool HaptionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   virtSetTimeStep( context, 0.003f);
   virtSetBaseFrame( context, identity);
   virtSetObservationFrame( context, identity);
-  virtSetCommandType( context, COMMAND_TYPE_ADMITTANCE);
+  virtSetCommandType( context, COMMAND_TYPE_IMPEDANCE );
   virtSetPowerOn( context, 1);
 
   com_thread = 
@@ -129,19 +129,18 @@ HaptionHapticsDevice::com_func( void *data ) {
   
   if( hd->context != NULL ) {
     float v[7], s[6];
-    int b0, b1, b2;
+    int b0, b1;
     virtGetPosition( hd->context, v );
     virtGetSpeed( hd->context, s );
-    virtGetButton( hd->context, 0, &b0 );
-    virtGetButton( hd->context, 1, &b1 );
-    virtGetButton( hd->context, 2, &b2 );
+    virtGetButton( hd->context, 1, &b0 );
+    virtGetButton( hd->context, 2, &b1 );
 
-    HAPIInt32 button = (b2 << 2) | (b1 << 1) | b0;
+    HAPIInt32 button = (b1 << 1) | b0;
     Vec3 position = Vec3( v[1], v[2], v[0] );
     Vec3 velocity = Vec3( s[1], s[2], s[0] );
 
     // The handle of the device is along the y-axis, so we rotate it to match
-    Rotation orientation(Rotation(1,0,0,-H3DUtil::Constants::pi/2 ) * Quaternion( v[4], v[5], v[3], v[6] ));
+    Rotation orientation( Quaternion( v[4], v[5], v[3], v[6] )*Rotation(1,0,0,-H3DUtil::Constants::pi/2 ));
 
     hd->com_lock.lock();
 
@@ -154,8 +153,8 @@ HaptionHapticsDevice::com_func( void *data ) {
     Vec3 torque = hd->current_values.torque;
     hd->com_lock.unlock();
 
-    float f[6] = { (float)force.x, (float)force.y, (float)force.z,
-                   (float)torque.x, (float)torque.y, (float)torque.z };
+    float f[6] = { (float)force.z, (float)force.x, (float)force.y,
+                   (float)torque.z, (float)torque.x, (float)torque.y };
     virtSetForce( hd->context, f );
   }
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
