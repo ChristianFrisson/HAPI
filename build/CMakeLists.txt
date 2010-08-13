@@ -461,41 +461,59 @@ IF(WIN32)
     EXECUTE_PROCESS( COMMAND ${HAPI_SOURCE_DIR}/FindSVNVersion ${HAPI_SOURCE_DIR}/../src/.svn/entries 
                      OUTPUT_VARIABLE HAPI_SVN_VERSION )
 
-    ADD_CUSTOM_COMMAND( TARGET HAPI 
-                        PRE_BUILD 
-                        COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                        ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${HAPI_SOURCE_DIR}/HAPI.rc.cmake
-                        ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
-                        ${HAPI_BUILD_VERSION}
-                        ${HAPI_SOURCE_DIR}/../src/.svn/entries )
-
     # autogenerate resource files depending on the version
     CONFIGURE_FILE( HAPI.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
+
+    # Add option to disable UpdateResourceFile call, ON by default if this is an svn checkout.
+    # OFF if this is not an svn checkout.
+    IF( HAPI_SVN_VERSION EQUAL 0 )
+      OPTION( HAPI_CallUpdateResourceFile
+              "If ON then a pre build command is added to call UpdateResourceFile. This is ON if HAPI is a subversion checkout, OFF if it is not."
+              OFF )
+    ELSE( HAPI_SVN_VERSION EQUAL 0 )
+      OPTION( HAPI_CallUpdateResourceFile
+              "If ON then a pre build command is added to call UpdateResourceFile. This is ON if HAPI is a subversion checkout, OFF if it is not."
+              ON )
+    ENDIF( HAPI_SVN_VERSION EQUAL 0 )
+
+    IF( HAPI_CallUpdateResourceFile )
+      ADD_CUSTOM_COMMAND( TARGET HAPI 
+                          PRE_BUILD 
+                          COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${HAPI_SOURCE_DIR}/HAPI.rc.cmake
+                          ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
+                          ${HAPI_BUILD_VERSION}
+                          ${HAPI_SOURCE_DIR}/../src/.svn/entries )
+    ENDIF( HAPI_CallUpdateResourceFile )
 
     # make sure that HAPI.rc, OpenHapticsRenderer.rc and Chai3DRenderer.rc contains the correct svn-version
     # and autogenerate the resource files.
     IF(OPENHAPTICS_FOUND)
       CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
-      
-      ADD_CUSTOM_COMMAND( TARGET OpenHapticsRenderer
-                          PRE_BUILD 
-                          COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc.cmake
-                          ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
-                          ${HAPI_BUILD_VERSION}
-                          ${HAPI_SOURCE_DIR}/../src/.svn/entries )
+
+      IF( HAPI_CallUpdateResourceFile )
+        ADD_CUSTOM_COMMAND( TARGET OpenHapticsRenderer
+                            PRE_BUILD 
+                            COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                            ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc.cmake
+                            ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
+                            ${HAPI_BUILD_VERSION}
+                            ${HAPI_SOURCE_DIR}/../src/.svn/entries )
+      ENDIF( HAPI_CallUpdateResourceFile )
     ENDIF(OPENHAPTICS_FOUND)
 
     IF(CHAI3D_FOUND)
       CONFIGURE_FILE( Chai3DRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
-      
-      ADD_CUSTOM_COMMAND( TARGET Chai3DRenderer
-                          PRE_BUILD 
-                          COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc.cmake
-                          ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
-                          ${HAPI_BUILD_VERSION}
-                          ${HAPI_SOURCE_DIR}/../src/.svn/entries )
+
+      IF( HAPI_CallUpdateResourceFile )
+        ADD_CUSTOM_COMMAND( TARGET Chai3DRenderer
+                            PRE_BUILD 
+                            COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                            ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc.cmake
+                            ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
+                            ${HAPI_BUILD_VERSION}
+                            ${HAPI_SOURCE_DIR}/../src/.svn/entries )
+      ENDIF( HAPI_CallUpdateResourceFile )
     ENDIF(CHAI3D_FOUND)
   ENDIF(MSVC)
   
