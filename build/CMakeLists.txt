@@ -467,16 +467,16 @@ IF(WIN32)
     # Add option to disable UpdateResourceFile call, ON by default if this is an svn checkout.
     # OFF if this is not an svn checkout.
     IF( HAPI_SVN_VERSION EQUAL 0 )
-      OPTION( HAPI_CallUpdateResourceFile
+      OPTION( CallUpdateResourceFile
               "If ON then a pre build command is added to call UpdateResourceFile. This is ON if HAPI is a subversion checkout, OFF if it is not."
               OFF )
     ELSE( HAPI_SVN_VERSION EQUAL 0 )
-      OPTION( HAPI_CallUpdateResourceFile
+      OPTION( CallUpdateResourceFile
               "If ON then a pre build command is added to call UpdateResourceFile. This is ON if HAPI is a subversion checkout, OFF if it is not."
               ON )
     ENDIF( HAPI_SVN_VERSION EQUAL 0 )
 
-    IF( HAPI_CallUpdateResourceFile )
+    IF( CallUpdateResourceFile )
       ADD_CUSTOM_COMMAND( TARGET HAPI 
                           PRE_BUILD 
                           COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
@@ -484,14 +484,14 @@ IF(WIN32)
                           ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                           ${HAPI_BUILD_VERSION}
                           ${HAPI_SOURCE_DIR}/../src/.svn/entries )
-    ENDIF( HAPI_CallUpdateResourceFile )
+    ENDIF( CallUpdateResourceFile )
 
     # make sure that HAPI.rc, OpenHapticsRenderer.rc and Chai3DRenderer.rc contains the correct svn-version
     # and autogenerate the resource files.
     IF(OPENHAPTICS_FOUND)
       CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
 
-      IF( HAPI_CallUpdateResourceFile )
+      IF( CallUpdateResourceFile )
         ADD_CUSTOM_COMMAND( TARGET OpenHapticsRenderer
                             PRE_BUILD 
                             COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
@@ -499,13 +499,13 @@ IF(WIN32)
                             ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                             ${HAPI_BUILD_VERSION}
                             ${HAPI_SOURCE_DIR}/../src/.svn/entries )
-      ENDIF( HAPI_CallUpdateResourceFile )
+      ENDIF( CallUpdateResourceFile )
     ENDIF(OPENHAPTICS_FOUND)
 
     IF(CHAI3D_FOUND)
       CONFIGURE_FILE( Chai3DRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
 
-      IF( HAPI_CallUpdateResourceFile )
+      IF( CallUpdateResourceFile )
         ADD_CUSTOM_COMMAND( TARGET Chai3DRenderer
                             PRE_BUILD 
                             COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
@@ -513,7 +513,7 @@ IF(WIN32)
                             ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
                             ${HAPI_BUILD_VERSION}
                             ${HAPI_SOURCE_DIR}/../src/.svn/entries )
-      ENDIF( HAPI_CallUpdateResourceFile )
+      ENDIF( CallUpdateResourceFile )
     ENDIF(CHAI3D_FOUND)
   ENDIF(MSVC)
   
