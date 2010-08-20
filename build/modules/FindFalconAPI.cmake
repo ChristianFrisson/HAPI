@@ -9,8 +9,8 @@
 # Look for the header file.
 FIND_PATH(FALCONAPI_INCLUDE_DIR NAMES hdl/hdl.h 
                                 PATHS $ENV{NOVINT_FALCON_SUPPORT}/include
-                                      "/Program Files/Novint/Falcon/HDAL/include"
-                                      "/Program Files/Novint/HDAL_SDK_2.1.3/include"
+                                      "C:/Program Files/Novint/Falcon/HDAL/include"
+                                      "C:/Program Files/Novint/HDAL_SDK_2.1.3/include"
                                       $ENV{NOVINT_DEVICE_SUPPORT}/include
                                 DOC "Path in which the file hdl/hdl.h is located. File is part of HDAL SDK." )
 
@@ -19,8 +19,8 @@ MARK_AS_ADVANCED(FALCONAPI_INCLUDE_DIR)
 # Look for the library.
 FIND_LIBRARY(FALCONAPI_HDL_LIBRARY NAMES hdl 
                         PATHS $ENV{NOVINT_FALCON_SUPPORT}/lib
-                              "/Program Files/Novint/Falcon/HDAL/lib"
-                              "/Program Files/Novint/HDAL_SDK_2.1.3/lib"
+                              "C:/Program Files/Novint/Falcon/HDAL/lib"
+                              "C:/Program Files/Novint/HDAL_SDK_2.1.3/lib"
                               $ENV{NOVINT_DEVICE_SUPPORT}/lib
                         DOC "Path to hdl library. Library is part of HDAL SDK." )
 MARK_AS_ADVANCED(FALCONAPI_HDL_LIBRARY)

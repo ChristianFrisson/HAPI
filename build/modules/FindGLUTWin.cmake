@@ -6,6 +6,12 @@
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 # Look for the header file.
 FIND_PATH( GLUT_INCLUDE_DIR NAMES GL/glut.h
            PATHS $ENV{H3D_EXTERNAL_ROOT}/include
@@ -16,11 +22,11 @@ FIND_PATH( GLUT_INCLUDE_DIR NAMES GL/glut.h
 MARK_AS_ADVANCED(GLUT_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY( GLUT_LIBRARY NAMES glut32
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+FIND_LIBRARY( GLUT_LIBRARY NAMES freeglut glut32
+              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                    $ENV{H3D_ROOT}/../External/${LIB}
+                    ../../External/${LIB}
+                    ${module_file_path}/../../../External/${LIB} 
               DOC "Path to glut32 library." )
 MARK_AS_ADVANCED(GLUT_LIBRARY)
 

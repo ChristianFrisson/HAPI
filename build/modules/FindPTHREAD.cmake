@@ -23,12 +23,18 @@ MARK_AS_ADVANCED(PTHREAD_INCLUDE_DIR)
 
 # Look for the library.
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 IF(WIN32)
   FIND_LIBRARY(PTHREAD_LIBRARY NAMES pthreadVC2 
-                               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                     $ENV{H3D_ROOT}/../External/lib
-                                     ../../External/lib
-                                     ${module_file_path}/../../../External/lib
+                               PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                                     $ENV{H3D_ROOT}/../External/${LIB}
+                                     ../../External/${LIB}
+                                     ${module_file_path}/../../../External/${LIB}
                                DOC "Path to pthreadVC2 library." )
 ELSE(WIN32)
   FIND_LIBRARY( PTHREAD_LIBRARY NAMES pthread
