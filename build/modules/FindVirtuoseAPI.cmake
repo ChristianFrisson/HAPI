@@ -7,6 +7,12 @@
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 # Look for the header file.
 FIND_PATH(VIRTUOSE_INCLUDE_DIR NAMES VirtuoseAPI.h 
                           PATHS $ENV{H3D_EXTERNAL_ROOT}/include
@@ -20,17 +26,17 @@ MARK_AS_ADVANCED(VIRTUOSE_INCLUDE_DIR)
 # Look for the library.
 IF(WIN32)
   FIND_LIBRARY(VIRTUOSE_LIBRARY NAMES virtuoseDLL
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 $ENV{H3D_ROOT}/../External/lib
-                                 ../../External/lib
-                                 ${module_file_path}/../../../External/lib
+                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                                 $ENV{H3D_ROOT}/../External/${LIB}
+                                 ../../External/${LIB}
+                                 ${module_file_path}/../../../External/${LIB}
                            DOC "Path to virtuoseDLL.lib library." )
 ELSE(WIN32)
   FIND_LIBRARY(VIRTUOSE_LIBRARY NAMES virtuose
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 $ENV{H3D_ROOT}/../External/lib
-                                 ../../External/lib
-                                 ${module_file_path}/../../../External/lib
+                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                                 $ENV{H3D_ROOT}/../External/${LIB}
+                                 ../../External/${LIB}
+                                 ${module_file_path}/../../../External/${LIB}
                            DOC "Path to dhd library." )
 
 ENDIF(WIN32)

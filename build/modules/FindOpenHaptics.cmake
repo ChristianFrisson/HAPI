@@ -13,36 +13,37 @@ FIND_PATH(OPENHAPTICS_INCLUDE_DIR NAMES HL/hl.h HD/hd.h HDU/hdu.h
                                   DOC "Path in which the files HL/hl.h, HD/hd.h and HDU/hdu.h are located." )
 MARK_AS_ADVANCED(OPENHAPTICS_INCLUDE_DIR)
 
+IF( CMAKE_CL_64 )
+  SET( LIB "x64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "win32" )
+ENDIF( CMAKE_CL_64 )
+
 # TODO: Add conditional checking for x64 system
 # Look for the library.
 FIND_LIBRARY(OPENHAPTICS_HL_LIBRARY NAMES HL
                         PATHS $ENV{3DTOUCH_BASE}/lib        # OpenHaptics 2.0
-                              $ENV{3DTOUCH_BASE}/lib/win32  # OpenHaptics 3.0
-                              $ENV{3DTOUCH_BASE}/lib/win64
+                              $ENV{3DTOUCH_BASE}/lib/${LIB}  # OpenHaptics 3.0
                               "/Program Files/SensAble/3DTouch/lib"        # OpenHaptics 2.0
-                              "/Program Files/SensAble/3DTouch/lib/win32" # OpenHaptics 3.0
-                              "/Program Files/SensAble/3DTouch/lib/win64"
+                              "/Program Files/SensAble/3DTouch/lib/${LIB}" # OpenHaptics 3.0
                         DOC "Path to hl library." )
 
 MARK_AS_ADVANCED(OPENHAPTICS_HL_LIBRARY)
 
 FIND_LIBRARY(OPENHAPTICS_HD_LIBRARY NAMES HD
                         PATHS $ENV{3DTOUCH_BASE}/lib        # OpenHaptics 2.0
-                              $ENV{3DTOUCH_BASE}/lib/win32  # OpenHaptics 3.0
-                              $ENV{3DTOUCH_BASE}/lib/win64
+                              $ENV{3DTOUCH_BASE}/lib/${LIB}  # OpenHaptics 3.0
                               "/Program Files/SensAble/3DTouch/lib"
-                              "/Program Files/SensAble/3DTouch/lib/win32"
-                              "/Program Files/SensAble/3DTouch/lib/win64"
+                              "/Program Files/SensAble/3DTouch/lib/${LIB}"
                         DOC "Path to hd library." )
 MARK_AS_ADVANCED(OPENHAPTICS_HD_LIBRARY)
 
 FIND_LIBRARY(OPENHAPTICS_HDU_LIBRARY NAMES HDU
                          PATHS  $ENV{3DTOUCH_BASE}/utilities/lib        # OpenHaptics 2.0
-                                $ENV{3DTOUCH_BASE}/utilities/lib/Win32/Release  # OpenHaptics 3.0
-                                $ENV{3DTOUCH_BASE}/utilities/lib/x64/Release
+                                $ENV{3DTOUCH_BASE}/utilities/lib/${LIB}/Release  # OpenHaptics 3.0
                                 "/Program Files/SensAble/3DTouch/utilities/lib"        # OpenHaptics 2.0
-                                "/Program Files/SensAble/3DTouch/utilities/lib/win32/Release"  # OpenHaptics 3.0
-                                "/Program Files/SensAble/3DTouch/utilities/lib/x64/Release"
+                                "/Program Files/SensAble/3DTouch/utilities/lib/${LIB}/Release"  # OpenHaptics 3.0
+                                
                          DOC "Path to hdu library." )
 MARK_AS_ADVANCED(OPENHAPTICS_HDU_LIBRARY)
 
