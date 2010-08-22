@@ -95,9 +95,19 @@
 #if( defined( _WIN64 ) || defined(WIN64) )
 // set when on 64 bit Windows
 #define H3D_WIN64
+#define H3D_ARCH64
 #elif( defined( _WIN32 ) || defined(WIN32) )
 // set when on 32 bit Windows
 #define H3D_WIN32
+#define H3D_ARCH32
+#endif
+
+#if __GNUC__
+#if __x86_64__ || __ppc64__
+#define H3D_ARCH64
+#else
+#define H3D_ARCH32
+#endif
 #endif
 
 #if( defined( H3D_WIN32 ) || defined( H3D_WIN64 ) )
