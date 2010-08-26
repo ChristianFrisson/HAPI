@@ -86,6 +86,10 @@
 /// www.quanser.com
 //#define HAVE_QUANSERAPI
 
+/// Undef if you do not have the MLHI API installed.
+/// Required for the MLHIDevice class.
+#cmakedefine HAVE_MLHI
+
 /// Undef if you do not want to build HAPI with OpenGL support. This will
 /// disable some features like FeedbackBufferCollector.
 #define HAVE_OPENGL
