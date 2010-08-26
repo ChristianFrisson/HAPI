@@ -84,7 +84,7 @@ IF(MSVC70 OR MSVC71)
   SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
 ELSEIF(MSVC80)
   # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type
-  SET( HAPIDemo_COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+  SET( HAPIDemo_COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
     
   # This might be useful for visual studio 2005 users that often recompile the api.
   IF( NOT DEFINED USE_VC8_MP_FLAG )
@@ -100,7 +100,7 @@ ELSEIF(MSVC80)
   SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
 ELSEIF(MSVC90)
   # remove some warnings about deprecated functions, do not treat wchar_t as inbuilt type and use threaded compiling.
-  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
   # Remove link errors
   SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
 ENDIF(MSVC70 OR MSVC71)
