@@ -34,7 +34,7 @@
 
 using namespace HAPI;
 
-const Vec3 UNINITIALIZED_PROXY_POS = Vec3( -200, -200, -202 );
+
 
 HAPIHapticsRenderer::HapticsRendererRegistration 
 RuspiniRenderer::renderer_registration(
@@ -42,17 +42,21 @@ RuspiniRenderer::renderer_registration(
                             &(newInstance< RuspiniRenderer >)
                             );
 
-// epsilon value for deciding if a point is the same
-const HAPIFloat length_sqr_point_epsilon = 1e-15;
+namespace RuspiniRendererConstants {
+  const Vec3 UNINITIALIZED_PROXY_POS = Vec3( -200, -200, -202 );
 
-// epsilon value for deciding if a normal is the same.
-const HAPIFloat length_sqr_normal_epsilon = 1e-15;
+  // epsilon value for deciding if a point is the same
+  const HAPIFloat length_sqr_point_epsilon = 1e-15;
 
-const HAPIFloat above_plane_epsilon = 1e-13;
+  // epsilon value for deciding if a normal is the same.
+  const HAPIFloat length_sqr_normal_epsilon = 1e-15;
+
+  const HAPIFloat above_plane_epsilon = 1e-13;
+}
 
 RuspiniRenderer::RuspiniRenderer( HAPIFloat _proxy_radius ):
   proxy_radius( _proxy_radius ),
-  proxy_position( UNINITIALIZED_PROXY_POS ) {
+  proxy_position( RuspiniRendererConstants::UNINITIALIZED_PROXY_POS ) {
 }
 
 void RuspiniRenderer::onOnePlaneContact( const Vec3& proxy_pos,
@@ -381,7 +385,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                                        HAPITime dt ) {
   HAPIHapticsDevice::DeviceValues input = hd->getDeviceValues();
 
-  if( proxy_position == UNINITIALIZED_PROXY_POS ) {
+  if( proxy_position == RuspiniRendererConstants::UNINITIALIZED_PROXY_POS ) {
     proxy_position = input.position;
   }
 
@@ -457,7 +461,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
          i != constraints.end(); i++ ) {
       HAPIFloat d = (*i).normal * (proxy_pos - (*i).point );
       if( d <= 0 && d > -proxy_radius ) {
-        proxy_pos = proxy_pos + (*i).normal * (-d+above_plane_epsilon);
+        proxy_pos = proxy_pos + (*i).normal * (-d+RuspiniRendererConstants::above_plane_epsilon);
         done = false;
       }
     }
@@ -492,7 +496,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         HAPIFloat distance = v * v; 
       
         if( (closest_intersection.point - intersection.point).lengthSqr()
-            < length_sqr_point_epsilon ) {
+            < RuspiniRendererConstants::length_sqr_point_epsilon ) {
           // intersection point is the same as for previosly intersected 
           // plane
 
@@ -503,7 +507,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
                  closest_constraints.begin();
                j != closest_constraints.end(); j++ ) {
             if( ( intersection.normal - (*j).normal ).lengthSqr() < 
-                length_sqr_normal_epsilon ) {
+                RuspiniRendererConstants::length_sqr_normal_epsilon ) {
               // same normal, ignore plane
               unique_constraint = false;
             }
@@ -546,14 +550,14 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     for( Constraints::iterator j = other_constraints.begin();
          j != other_constraints.end(); j++ ) {
       HAPIFloat t = (*j).normal * ( proxy_pos  - (*j).point );
-      if( t * t < length_sqr_point_epsilon ) {
+      if( t * t < RuspiniRendererConstants::length_sqr_point_epsilon ) {
         bool add_it = true;
         for( Constraints::iterator k = closest_constraints.begin();
              k != closest_constraints.end(); k++ ) {
           if( ( (*k).normal + (*j).normal ).lengthSqr() <
-              length_sqr_normal_epsilon ||
+              RuspiniRendererConstants::length_sqr_normal_epsilon ||
               ( (*k).normal - (*j).normal ).lengthSqr() <
-              length_sqr_normal_epsilon ) {
+              RuspiniRendererConstants::length_sqr_normal_epsilon ) {
               add_it = false;
               break;
           }
@@ -760,7 +764,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( const Vec3 &from,
         // make sure the point is above the new constraint
         HAPIFloat d = (*i).normal * (from_point - (*i).point );
         if( d < 0 ) {
-          from_point = from_point + (*i).normal * (-d+above_plane_epsilon);
+          from_point = from_point + (*i).normal * (-d+RuspiniRendererConstants::above_plane_epsilon);
         } 
       }
       counter++;
