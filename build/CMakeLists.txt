@@ -15,6 +15,14 @@ PROJECT (HAPI)
 # include header directory.
 INCLUDE_DIRECTORIES(  ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
 
+# Add a cache variable GENERATE_UNITY_BUILD to have the choice of selecting
+# a unity build project. Default is NO.
+IF( NOT DEFINED GENERATE_UNITY_BUILD )
+  SET( GENERATE_UNITY_BUILD "NO" CACHE BOOL "Decides if a the generated project files should build through a unity build instead of a normal build. A unity builds packs all .cpp files into a UnityBuild.cpp file and then only include this in the project. This greatly reduces build times." )
+  MARK_AS_ADVANCED(GENERATE_UNITY_BUILD)
+ENDIF( NOT DEFINED GENERATE_UNITY_BUILD )
+
+
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
 # for packaging HAPI. Default is NO since most people will not use this.
 IF( NOT DEFINED GENERATE_CPACK_PROJECT )
@@ -409,6 +417,22 @@ ENDIF(WIN32)
 # to variables named HAPI_HEADERS, OH_HEADERS and CHAIR_HEADERS.
 INCLUDE( ${HAPI_SOURCE_DIR}/HAPISourceFiles.txt )
 
+IF( GENERATE_UNITY_BUILD )
+# Generate a unity build, by creating the UnityBuild.cpp and only including the required 
+# source files.
+
+SET( HAPI_SRCS "${HAPI_SOURCE_DIR}/../src/UnityBuild.cpp" )
+
+SET( UNITYBUILD_INCLUDES "" )
+
+foreach(filename ${HAPI_SOURCE_FILES})
+  SET( UNITYBUILD_INCLUDES "${UNITYBUILD_INCLUDES}\n #include \"${filename}\"" )
+endforeach(filename)
+
+CONFIGURE_FILE( ${HAPI_SOURCE_DIR}/UnityBuild.cmake ${HAPI_SOURCE_DIR}/../src/UnityBuild.cpp )
+
+ENDIF( GENERATE_UNITY_BUILD )
+
 # add the HAPI.rc resource file if Visual Studio
 IF(MSVC)
   SET( HAPI_SRCS ${HAPI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
@@ -563,7 +587,7 @@ IF( WIN32 )
   # since they are not compatible with each other. 
   IF(MSVC70 OR MSVC71)
     SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc7 )
-    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /Zc:wchar_t")
+    SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /Zc:wchar_t")
   ELSEIF(MSVC80)
     SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc8 )
     
