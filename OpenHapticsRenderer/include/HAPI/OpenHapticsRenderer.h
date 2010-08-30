@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -62,7 +62,11 @@ namespace HAPI {
     /// \class HLShape
     /// \brief Base class for all special shape type that allows for hl api
     /// specific rendering calls using the hlRender function.
-    class OPENHAPTICSRENDERER_API HLShape {
+    class OPENHAPTICSRENDERER_API
+#if _MSC_VER >= 1310
+      __declspec(novtable)
+#endif
+      HLShape {
     public:
       /// Destructor.
       virtual ~HLShape() {}
@@ -78,7 +82,11 @@ namespace HAPI {
     /// \class HLSurface
     /// \brief Base class for all special surface types that allows for hl api
     /// specific rendering calls using the hlRender function.
-    class OPENHAPTICSRENDERER_API HLSurface {
+    class OPENHAPTICSRENDERER_API
+#if _MSC_VER >= 1310
+      __declspec(novtable)
+#endif
+      HLSurface {
     public:
       /// Destructor.
       virtual ~HLSurface() {}
