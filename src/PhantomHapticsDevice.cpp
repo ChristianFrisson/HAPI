@@ -231,7 +231,8 @@ void PhantomHapticsDevice::updateDeviceValues( DeviceValues &dv,
   error = hdGetError();
   if (HD_DEVICE_ERROR(error))
     // TODO: do error handling
-    cerr << hdGetErrorString(error.errorCode) << endl;
+    H3DUtil::Console(4) << "PhantomHapticsDevice error: " 
+                        << hdGetErrorString(error.errorCode) << endl;
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
   hdMakeCurrentDevice( device_handle );
   HDdouble v[16];
@@ -266,7 +267,8 @@ void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
   error = hdGetError();
   if (HD_DEVICE_ERROR(error))
     // TODO: do error handling
-    cerr << hdGetErrorString(error.errorCode) << endl;
+    H3DUtil::Console(4) << "PhantomHapticsDevice error: " 
+                        << hdGetErrorString(error.errorCode) << endl;
 }
 
 bool PhantomHapticsDevice::needsCalibration() {
