@@ -118,7 +118,8 @@ namespace HAPI {
       setup_haptic_rendering_callback( true ),
       haptic_rendering_cb_handle( -1 ),
       haptics_rate( 0 ),
-      last_force_effect_change( 0 ) {
+      last_force_effect_change( 0 ),
+      error_handler( new DefaultErrorHandler ) {
       setHapticsRenderer( NULL );
       haptic_rendering_callback_data = this;
       // This value is choosen ad hoc as fairly "standard".
@@ -666,6 +667,52 @@ namespace HAPI {
       return last_error_message;
     }
 
+    /// This is the base class for error handlers for haptics devices. The ErrorHandler
+    /// class handles all haptics device related errors from the haptics loop. Examples
+    /// being errors/warnings such as maximum force exceeded, temperature errors etc.
+    /// The errors codes depends on which device is used and are from the underlying
+    /// driver. In order to create your own error handler, subclass from this class 
+    /// and specialize the handleError function and call setErrorHandler on a 
+    /// HAPIHapticsDevice with an instance of your error handler. Be aware that
+    /// the function will be called in the haptics communication thread so be sure that
+    /// your error handling functions are thread safe.
+    class HAPI_API ErrorHandler {
+    public:
+      /// Error handling function. Called upon haptics device error during haptics
+      /// rendering.
+      /// \param hd The haptics device the error occured on.
+      /// \param internal_error_code The internal error code reported from the haptics
+      /// device driver.
+      /// \param error_string Human readable text describing the error.
+      virtual void handleError( HAPIHapticsDevice *hd, 
+                                long internal_error_code,
+                                string error_string ) = 0;
+    };
+    
+    /// The default error handler that is used by haptics devices. It outputs
+    /// an error message to the Console.
+    class HAPI_API DefaultErrorHandler: public ErrorHandler {
+    public:
+      /// Outputs a Console error message.
+      virtual void handleError( HAPIHapticsDevice *hd, 
+                                long internal_error_code,
+                                string error_string ) {
+        H3DUtil::Console( 4 ) << "Haptics device error: " << error_string 
+                              << " (error code " << internal_error_code 
+                              << ")" << endl;
+      }
+    };
+    
+    /// Get the currently installed error handler.
+    ErrorHandler *getErrorHandler() {
+      return error_handler.get();
+    }
+    
+    /// Set the error handler.
+    void setErrorHandler( ErrorHandler *_error_handler ) {
+      error_handler.reset( _error_handler );
+    }
+    
     /// Get the current actual update rate in loops per second
     inline unsigned int getHapticsRate() { return haptics_rate; }
 
@@ -1099,6 +1146,10 @@ namespace HAPI {
 
     /// The time at the beginning of the last rendering loop
     TimeStamp last_loop_time;
+
+    /// The current error handler.
+    auto_ptr< ErrorHandler > error_handler; 
+
     HAPITime time_in_last_loop;
 
     DeviceState device_state;

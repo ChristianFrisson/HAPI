@@ -51,8 +51,9 @@ namespace HAPI {
     /// "Phantom Configuration" tool. A device_name of "" will use the first
     /// available device.
     PhantomHapticsDevice( string _device_name = "" ):
-        device_name( _device_name ),
-        in_calibration_mode( false ) {
+      device_name( _device_name ),
+      in_calibration_mode( false ),
+      motor_temperatures( 6, 0 ) {
       hdapi_version = hdGetString( HD_VERSION );
       setup_haptic_rendering_callback = false;
     }
@@ -98,6 +99,14 @@ namespace HAPI {
     /// Get the serial number of the device. Undefined if device not
     /// initialized.
     inline string getDeviceSerialNumber() { return device_serial_number; }
+
+    /// Get the motor temperatures from the temperature model of the device.
+    /// The returned vector contains 6 values, where the first three are the
+    /// motors for positional control and the last three are for torques(if available).
+    /// The values are normalized between 0 and 1 where 1 means that a temperature
+    /// error will be generated and the device temporarily be shut down by the driver
+    /// a few seconds to cool down.
+    inline const vector< HAPIFloat > &getMotorTemperatures(){ return motor_temperatures; }
    
     /// \brief Get the maximum workspace dimensions of the device, i.e. the
     /// mechanical limits of the device. Undefined if
@@ -215,6 +224,7 @@ namespace HAPI {
     HAPIFloat max_force, max_cont_force, tabletop_offset;
     int input_dof, output_dof;
     Vec3 joint_angles, gimbal_angles;
+    vector< HAPIFloat > motor_temperatures;
     
     /// Implementation of updateDeviceValues using HD API to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt );

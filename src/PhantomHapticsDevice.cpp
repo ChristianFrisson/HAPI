@@ -229,10 +229,14 @@ void PhantomHapticsDevice::updateDeviceValues( DeviceValues &dv,
                                                HAPITime dt ) {
   HDErrorInfo error;
   error = hdGetError();
-  if (HD_DEVICE_ERROR(error))
-    // TODO: do error handling
-    H3DUtil::Console(4) << "PhantomHapticsDevice error: " 
-                        << hdGetErrorString(error.errorCode) << endl;
+  if (HD_DEVICE_ERROR(error)) {
+    if( error_handler.get() ) {
+      error_handler->handleError( this,
+                                  error.errorCode,
+                                  hdGetErrorString(error.errorCode) );
+    }
+  }
+
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
   hdMakeCurrentDevice( device_handle );
   HDdouble v[16];
@@ -249,6 +253,14 @@ void PhantomHapticsDevice::updateDeviceValues( DeviceValues &dv,
   joint_angles = Vec3( v[0], v[1], v[2] );
   hdGetDoublev( HD_CURRENT_GIMBAL_ANGLES, v );
   gimbal_angles = Vec3( v[0], v[1], v[2] );
+  v[3] = v[4] = v[5] = 0;
+  hdGetDoublev( HD_MOTOR_TEMPERATURE, v );
+  motor_temperatures[0] = v[0];
+  motor_temperatures[1] = v[1];
+  motor_temperatures[2] = v[2];
+  motor_temperatures[3] = v[3];
+  motor_temperatures[4] = v[4];
+  motor_temperatures[5] = v[5];
 }
 
 void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
@@ -265,10 +277,13 @@ void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
   hdSetDoublev( HD_CURRENT_TORQUE, v ); 
   HDErrorInfo error;
   error = hdGetError();
-  if (HD_DEVICE_ERROR(error))
-    // TODO: do error handling
-    H3DUtil::Console(4) << "PhantomHapticsDevice error: " 
-                        << hdGetErrorString(error.errorCode) << endl;
+  if (HD_DEVICE_ERROR(error)) {
+    if( error_handler.get() ) {
+      error_handler->handleError( this,
+                                  error.errorCode,
+                                  hdGetErrorString(error.errorCode) );
+    }
+  }
 }
 
 bool PhantomHapticsDevice::needsCalibration() {
