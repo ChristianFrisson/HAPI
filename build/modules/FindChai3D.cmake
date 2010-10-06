@@ -38,26 +38,28 @@ IF( SEARCH_FOR_CHAI3D )
   # Look for the library.
   IF(WIN32)
     SET( CHAI3D_LIBRARY_NAME chai3d_complete )
-    IF( MSVC80 )
+    IF( MSVC70 OR MSVC71)
+      SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc7 )
+    ELSEIF( MSVC80 )
       SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc8 )
     ELSEIF( MSVC90 )
       SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc9 )
- ELSEIF( MSVC10 )             
+    ELSEIF( MSVC10 )             
     SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc10 )
-    ENDIF( MSVC80 )
+    ENDIF( MSVC70 OR MSVC71)
 
     FIND_LIBRARY(CHAI3D_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}
-                                PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                      $ENV{H3D_ROOT}/../External/${LIB}
-                                      ../../External/${LIB}
-                                      ${module_file_path}/../../../External/${LIB}
+                                PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                                      $ENV{H3D_ROOT}/../External/${LIB}/static
+                                      ../../External/${LIB}/static
+                                      ${module_file_path}/../../../External/${LIB}/static
                                 DOC "Path to ${CHAI3D_LIBRARY_NAME} library." )
     IF( MSVC80 OR MSVC90 )
       FIND_LIBRARY( CHAI3D_DEBUG_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}_d
-                                         PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                               $ENV{H3D_ROOT}/../External/${LIB}
-                                               ../../External/${LIB}
-                                               ${module_file_path}/../../../External/${LIB}
+                                         PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                                               $ENV{H3D_ROOT}/../External/${LIB}/static
+                                               ../../External/${LIB}/static
+                                               ${module_file_path}/../../../External/${LIB}/static
                                          DOC "Path to ${CHAI3D_LIBRARY_NAME}_d library." )
     ENDIF( MSVC80 OR MSVC90 )
     MARK_AS_ADVANCED(CHAI3D_DEBUG_LIBRARY)
