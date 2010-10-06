@@ -13,7 +13,7 @@ SET(CMAKE_FIND_FRAMEWORK "LAST")
 PROJECT (HAPI)
 
 # include header directory.
-INCLUDE_DIRECTORIES(  ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
+INCLUDE_DIRECTORIES( ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
 
 # Add a cache variable GENERATE_UNITY_BUILD to have the choice of selecting
 # a unity build project. Default is NO.
@@ -224,7 +224,7 @@ IF( GENERATE_CPACK_PROJECT )
                                     "${HAPI_SOURCE_DIR}/../../bin;bin"
                                     "${HAPI_SOURCE_DIR}/../../lib;lib" )
 
-    #Extra links to start menu if values are "ON"
+    # Extra links to start menu if values are "ON"
     SET( CPACK_ADD_HAPIDOC_LINKS "ON" )
 
     # Extra install commands will be set to install vc8(9)_redists
@@ -280,19 +280,20 @@ IF( GENERATE_CPACK_PROJECT )
   ENDIF(WIN32 AND NOT UNIX)
 ENDIF( GENERATE_CPACK_PROJECT )
 
-SET( HAPI_FULL_VERSION
-${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION} ) 
+SET( HAPI_FULL_VERSION ${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION} )
 
-# add all optional libraries to this variable
-SET(optionalLibs)
+# add all optional libraries to this variable, only needed for HAPI project.
+SET( HAPI_optionalLibs )
 
-# add all required libraries to this variable
-SET(requiredLibs)
+# add all required libraries to this variable, one for each project
+SET( HAPI_requiredLibs)
+SET( Chai3D_requiredLibs)
+SET( OpenHaptics_requiredLibs)
 
 FIND_PACKAGE(PTHREAD REQUIRED)
 IF(PTHREAD_FOUND)
   INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
+  SET(HAPI_requiredLibs ${HAPI_requiredLibs} ${PTHREAD_LIBRARIES} )
 ENDIF(PTHREAD_FOUND)
 
 FIND_PACKAGE(OpenHaptics)
@@ -300,7 +301,8 @@ IF(OPENHAPTICS_FOUND)
   SET(HAVE_OPENHAPTICS 1)
   INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} 
                        ../OpenHapticsRenderer/include )
-  SET(optionalLibs ${optionalLibs} ${OPENHAPTICS_LIBRARIES} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${OPENHAPTICS_LIBRARIES} )
+  SET(OpenHaptics_requiredLibs ${OpenHaptics_requiredLibs} ${OPENHAPTICS_LIBRARIES} )
 ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../OpenHapticsRenderer/include )
 ENDIF(OPENHAPTICS_FOUND)
@@ -310,7 +312,7 @@ IF(CHAI3D_FOUND)
   SET(HAVE_CHAI3D 1)
   INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR}
                        ../Chai3DRenderer/include )
-  SET(optionalLibs ${optionalLibs} ${CHAI3D_LIBRARIES} )
+  SET(Chai3D_requiredLibs ${Chai3D_requiredLibs} ${CHAI3D_LIBRARIES} )
 
   IF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
     # No need to make a better comparasion than version 2.0.0 since the
@@ -328,21 +330,7 @@ IF(CHAI3D_FOUND)
 
     IF(GLUT_FOUND)
       INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
-      IF(WIN32)
-        IF( COMMAND cmake_policy )
-          IF( POLICY CMP0011 )
-            cmake_policy( SET CMP0011 NEW )
-          ENDIF( POLICY CMP0011 )
-        ENDIF( COMMAND cmake_policy )
-        INCLUDE( StripAndAddLibraryDirectories )
-        # This is used in order for the compiler to find freeglut.lib.
-        # If freeglut.lib is in any other place than glut32 on your system
-        # either this CMakeLists.txt or FindGLUTWin needs to be changed
-        # to allow for choice of extra library directory.
-        STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
-      ELSE(WIN32)
-        SET(optionalLibs ${optionalLibs} ${GLUT_LIBRARIES} )
-      ENDIF(WIN32)
+      SET(Chai3D_requiredLibs ${Chai3D_requiredLibs} ${GLUT_LIBRARIES} )
     ENDIF(GLUT_FOUND)
   ENDIF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
 ELSEIF( NOT WIN32 )
@@ -353,56 +341,56 @@ FIND_PACKAGE(DHD)
 IF(DHD_FOUND)
   SET(HAVE_DHDAPI 1)
   INCLUDE_DIRECTORIES( ${DHD_INCLUDE_DIR} )
-  SET(optionalLibs ${optionalLibs} ${DHD_LIBRARIES} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${DHD_LIBRARIES} )
 ENDIF(DHD_FOUND)
 
 FIND_PACKAGE(VirtuoseAPI)
 IF(VIRTUOSE_FOUND)
   SET(HAVE_VIRTUOSEAPI 1)
   INCLUDE_DIRECTORIES( ${VIRTUOSE_INCLUDE_DIR} )
-  SET(optionalLibs ${optionalLibs} ${VIRTUOSE_LIBRARIES} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${VIRTUOSE_LIBRARIES} )
 ENDIF(VIRTUOSE_FOUND)
 
 FIND_PACKAGE(FalconAPI)
 IF(FALCONAPI_FOUND)
   SET(HAVE_FALCONAPI 1)
   INCLUDE_DIRECTORIES( ${FALCONAPI_INCLUDE_DIR} )
-  SET(optionalLibs ${optionalLibs} ${FALCONAPI_LIBRARIES} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${FALCONAPI_LIBRARIES} )
 ENDIF(FALCONAPI_FOUND)
 
 FIND_PACKAGE(NiFalconAPI)
 IF(NIFALCONAPI_FOUND)
   SET(HAVE_NIFALCONAPI 1)
   INCLUDE_DIRECTORIES( ${NIFALCONAPI_INCLUDE_DIR} )
-  SET(optionalLibs ${optionalLibs} ${NIFALCONAPI_LIBRARIES} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${NIFALCONAPI_LIBRARIES} )
 ENDIF(NIFALCONAPI_FOUND)
 
 FIND_PACKAGE(Haptik)
 IF(HAPTIK_FOUND)
   SET(HAVE_HAPTIK_LIBRARY 1)
   INCLUDE_DIRECTORIES( ${HAPTIK_INCLUDE_DIR} )
-  SET(optionalLibs ${optionalLibs} ${HAPTIK_LIBRARIES} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${HAPTIK_LIBRARIES} )
 ENDIF(HAPTIK_FOUND)
 
 FIND_PACKAGE(SimballMedical)
 IF(SIMBALLMEDICAL_FOUND)
   SET(HAVE_SIMBALLMEDICAL_API 1)
   INCLUDE_DIRECTORIES( ${SIMBALLMEDICAL_INCLUDE_DIR} )
-  SET(optionalLibs ${optionalLibs} ${SIMBALLMEDICAL_LIBRARIES} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${SIMBALLMEDICAL_LIBRARIES} )
 ENDIF(SIMBALLMEDICAL_FOUND)
 
 FIND_PACKAGE(MLHI)
 IF(MLHI_FOUND)
   SET(HAVE_MLHI 1)
   INCLUDE_DIRECTORIES( ${MLHI_INCLUDE_DIR} )
-  SET(optionalLibs ${optionalLibs} ${MLHI_LIBRARIES} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${MLHI_LIBRARIES} )
 ENDIF(MLHI_FOUND)
 
 FIND_PACKAGE(OpenGL REQUIRED)
 IF(OPENGL_FOUND)
   SET(HAVE_OPENGL 1)
   INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIR} )
-  SET(requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
+  SET(HAPI_requiredLibs ${HAPI_requiredLibs} ${OPENGL_LIBRARIES} )
 ENDIF(OPENGL_FOUND)
 
 # The current implementation only have support for Haptic Master on Windows.
@@ -554,7 +542,7 @@ IF(WIN32)
   ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
  
   # is this only for msvc or for all windows compilers?
-  SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )
+  SET(HAPI_requiredLibs ${HAPI_requiredLibs} winmm.lib DelayImp.lib )
 ELSE(WIN32)
   ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS} ${OH_SRCS} ${CHAI_SRCS}
                           ${HAPI_HEADERS} ${OH_HEADERS} ${CHAI_HEADERS} )
@@ -563,9 +551,9 @@ ENDIF(WIN32)
 # Needed to link correctly on MSVC70 and MSVC71 because the dependency is not enough
 # to generate correct project files with this version of CMake.
 IF(NOT WIN32)
-  SET(requiredLibs ${requiredLibs} optimized H3DUtil debug H3DUtil_d )
+  SET(HAPI_requiredLibs ${HAPI_requiredLibs} optimized H3DUtil debug H3DUtil_d )
 ELSEIF(MSVC70 OR MSVC71 OR ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
-  SET(requiredLibs ${requiredLibs} H3DUtil )
+  SET(HAPI_requiredLibs ${HAPI_requiredLibs} H3DUtil )
 ENDIF(NOT WIN32)
 
 
@@ -573,7 +561,7 @@ ENDIF(NOT WIN32)
 SET( HAPI_COMPILE_FLAGS "-DHAPI_EXPORTS" )
 
 # add the libraries needed for linking
-TARGET_LINK_LIBRARIES( HAPI ${requiredLibs} ${optionalLibs} )
+TARGET_LINK_LIBRARIES( HAPI ${HAPI_requiredLibs} ${HAPI_optionalLibs} )
 
 # make the name of debug libraries end in _d.
 SET_TARGET_PROPERTIES( HAPI PROPERTIES DEBUG_POSTFIX "_d" )
@@ -609,7 +597,7 @@ IF( WIN32 )
 
   # Set properties for OpenHapticsRenderer if the project is created.
   IF(OPENHAPTICS_FOUND)
-    TARGET_LINK_LIBRARIES( OpenHapticsRenderer ${requiredLibs} ${optionalLibs} HAPI )
+    TARGET_LINK_LIBRARIES( OpenHapticsRenderer ${OpenHaptics_requiredLibs} ${OpenHaptics_requiredLibs} HAPI )
     # make sure symbols are exported.
     SET( OpenHapticsRenderer_COMPILE_FLAGS "-DOPENHAPTICSRENDERER_EXPORTS" )
     
@@ -648,7 +636,7 @@ IF( WIN32 )
 
   # Set properties for Chai3DRenderer if the project is created.
   IF(CHAI3D_FOUND)
-    TARGET_LINK_LIBRARIES( Chai3DRenderer ${requiredLibs} ${optionalLibs} HAPI )
+    TARGET_LINK_LIBRARIES( Chai3DRenderer ${Chai3D_requiredLibs} ${Chai3D_requiredLibs} HAPI )
     # make sure symbols are exported.
     SET_TARGET_PROPERTIES( Chai3DRenderer 
                            PROPERTIES COMPILE_FLAGS "-DCHAI3DRENDERER_EXPORTS" )

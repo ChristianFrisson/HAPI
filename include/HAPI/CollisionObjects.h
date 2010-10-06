@@ -565,6 +565,7 @@ namespace HAPI {
       /// point is can be calculated as start + s * ( end - start )
       /// \param c0 The closest point on line from->to.
       /// \param c1 The closest point on this LineSegment.
+      /// \returns Square distance between the closest points.
       HAPIFloat closestPointOnLine( const Vec3 &from, const Vec3 &to,
                                     HAPIFloat &s, HAPIFloat &t,
                                     Vec3 &c0, Vec3 &c1 );
