@@ -54,14 +54,14 @@ IF( SEARCH_FOR_CHAI3D )
                                       ../../External/${LIB}/static
                                       ${module_file_path}/../../../External/${LIB}/static
                                 DOC "Path to ${CHAI3D_LIBRARY_NAME} library." )
-    IF( MSVC80 OR MSVC90 )
+    IF( MSVC80 OR MSVC90 OR MSVC10 )
       FIND_LIBRARY( CHAI3D_DEBUG_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}_d
                                          PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
                                                $ENV{H3D_ROOT}/../External/${LIB}/static
                                                ../../External/${LIB}/static
                                                ${module_file_path}/../../../External/${LIB}/static
                                          DOC "Path to ${CHAI3D_LIBRARY_NAME}_d library." )
-    ENDIF( MSVC80 OR MSVC90 )
+    ENDIF( MSVC80 OR MSVC90 OR MSVC10 )
     MARK_AS_ADVANCED(CHAI3D_DEBUG_LIBRARY)
   ELSE(WIN32)
     FIND_LIBRARY( CHAI3D_LIBRARY NAMES chai3d_linux chai3d
@@ -76,13 +76,13 @@ MARK_AS_ADVANCED(CHAI3D_INCLUDE_DIR)
 MARK_AS_ADVANCED(CHAI3D_LIBRARY)
 
 SET( CHAI3D_LIBRARIES_FOUND 0 )
-IF( MSVC80 OR MSVC90 )
+IF( MSVC80 OR MSVC90 OR MSVC10 )
   IF( CHAI3D_LIBRARY OR CHAI3D_DEBUG_LIBRARY )
     SET( CHAI3D_LIBRARIES_FOUND 1 )
   ENDIF( CHAI3D_LIBRARY OR CHAI3D_DEBUG_LIBRARY )
 ELSEIF( CHAI3D_LIBRARY )
   SET( CHAI3D_LIBRARIES_FOUND 1 )
-ENDIF( MSVC80 OR MSVC90 )
+ENDIF( MSVC80 OR MSVC90 OR MSVC10 )
 
 # Copy the results to the output variables.
 IF(CHAI3D_INCLUDE_DIR AND CHAI3D_LIBRARIES_FOUND)
@@ -105,7 +105,7 @@ IF(CHAI3D_INCLUDE_DIR AND CHAI3D_LIBRARIES_FOUND)
   ENDIF( EXISTS ${CHAI3D_FILE} )
   SET(CHAI3D_FOUND 1)
   
-  IF( MSVC80 OR MSVC90 )
+  IF( MSVC80 OR MSVC90 OR MSVC10 )
     IF(CHAI3D_LIBRARY)
       SET(CHAI3D_LIBRARIES optimized ${CHAI3D_LIBRARY} )
     ELSE(CHAI3D_LIBRARY)
@@ -119,9 +119,9 @@ IF(CHAI3D_INCLUDE_DIR AND CHAI3D_LIBRARIES_FOUND)
       SET(CHAI3D_LIBRARIES ${CHAI3D_LIBRARIES} debug ${CHAI3D_LIBRARY_NAME}_d )
       MESSAGE( STATUS "Chai3D debug libraries not found. Debug build might not work." )
     ENDIF(CHAI3D_DEBUG_LIBRARY)
-  ELSE( MSVC80 OR MSVC90 )
+  ELSE( MSVC80 OR MSVC90 OR MSVC10 )
     SET(CHAI3D_LIBRARIES ${CHAI3D_LIBRARY} )
-  ENDIF( MSVC80 OR MSVC90 )
+  ENDIF( MSVC80 OR MSVC90 OR MSVC10 )
   
   IF( MSVC AND SEARCH_FOR_CHAI3D )
     SET(CHAI3D_LIBRARIES ${CHAI3D_LIBRARIES} "atls.lib" )
@@ -137,10 +137,10 @@ ENDIF(CHAI3D_INCLUDE_DIR  AND CHAI3D_LIBRARIES_FOUND)
 IF(NOT CHAI3D_FOUND)
   SET( CHAI3D_DIR_MESSAGE
        "CHAI3D was not found. Make sure to set CHAI3D_LIBRARY" )
-  IF( MSVC80 OR MSVC90 )
+  IF( MSVC80 OR MSVC90 OR MSVC10 )
     SET( CHAI3D_DIR_MESSAGE
          "${CHAI3D_DIR_MESSAGE}, CHAI3D_DEBUG_LIBRARY")
-  ENDIF( MSVC80 OR MSVC90 )
+  ENDIF( MSVC80 OR MSVC90 OR MSVC10 )
   SET( CHAI3D_DIR_MESSAGE
        "${CHAI3D_DIR_MESSAGE} and CHAI3D_INCLUDE_DIR. If you do not have chai3d you will not be able to use the Chai3DRenderer.")
   IF(Chai3D_FIND_REQUIRED)
