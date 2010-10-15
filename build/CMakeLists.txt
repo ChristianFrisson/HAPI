@@ -730,36 +730,47 @@ IF( HAPI_EXAMPLE_PROJECTS )
   STRING( REGEX REPLACE "HAPI(/build)?" "HAPI/examples/build" HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../examples/build
                     ${HAPI_EXAMPLES_BINARY_DIR} )
-  IF( DEFINED DirectXExample_SOURCE_DIR )
+
+  IF( TARGET DirectXExample)
     ADD_DEPENDENCIES( DirectXExample HAPI )
-  ENDIF( DEFINED DirectXExample_SOURCE_DIR )
-  
-  IF( DEFINED FeedbackBufferCollector_SOURCE_DIR )
+  ENDIF( TARGET DirectXExample)
+
+  IF( TARGET FeedbackBufferCollector )
     ADD_DEPENDENCIES( FeedbackBufferCollector HAPI )
-  ENDIF( DEFINED FeedbackBufferCollector_SOURCE_DIR )
-  
-  IF( DEFINED HAPIDemo_SOURCE_DIR )
+  ENDIF( TARGET FeedbackBufferCollector )
+
+  IF( TARGET HAPIDemo )
     ADD_DEPENDENCIES( HAPIDemo HAPI )
-  ENDIF( DEFINED HAPIDemo_SOURCE_DIR )
-  
-  IF( DEFINED SpringExample_SOURCE_DIR )
+  ENDIF( TARGET HAPIDemo )
+
+  IF( TARGET SpringExample )
     ADD_DEPENDENCIES( SpringExample HAPI )
-  ENDIF( DEFINED SpringExample_SOURCE_DIR )
-  
-  IF( DEFINED SurfaceExample_SOURCE_DIR )
+  ENDIF( TARGET SpringExample )
+
+  IF( TARGET SurfaceExample )
     ADD_DEPENDENCIES( SurfaceExample HAPI )
-  ENDIF( DEFINED SurfaceExample_SOURCE_DIR )
-  
-  IF( DEFINED ThreadExamples_SOURCE_DIR )
-    IF( DEFINED H3DUtil_SOURCE_DIR )
+  ENDIF( TARGET SurfaceExample )
+
+  IF( TARGET H3DUtil )
+    IF( TARGET SimpleThreadPrint )
       ADD_DEPENDENCIES( SimpleThreadPrint H3DUtil )
+    ENDIF( TARGET SimpleThreadPrint )
+    IF( TARGET SimpleThreadPrintLock )
       ADD_DEPENDENCIES( SimpleThreadPrintLock H3DUtil )
+    ENDIF( TARGET SimpleThreadPrintLock )
+    IF( TARGET PeriodicThreadCallbacks )
       ADD_DEPENDENCIES( PeriodicThreadCallbacks H3DUtil )
-    ELSE( DEFINED H3DUtil_SOURCE_DIR )
+    ENDIF( TARGET PeriodicThreadCallbacks )
+  ELSE( TARGET H3DUtil )
+    IF( TARGET SimpleThreadPrint )
       ADD_DEPENDENCIES( SimpleThreadPrint HAPI )
+    ENDIF( TARGET SimpleThreadPrint )
+    IF( TARGET SimpleThreadPrintLock )
       ADD_DEPENDENCIES( SimpleThreadPrintLock HAPI )
+    ENDIF( TARGET SimpleThreadPrintLock )
+    IF( TARGET PeriodicThreadCallbacks )
       ADD_DEPENDENCIES( PeriodicThreadCallbacks HAPI )
-    ENDIF( DEFINED H3DUtil_SOURCE_DIR )
-  ENDIF( DEFINED ThreadExamples_SOURCE_DIR )
+    ENDIF( TARGET PeriodicThreadCallbacks )
+  ENDIF( TARGET H3DUtil )
 ENDIF( HAPI_EXAMPLE_PROJECTS )
 
