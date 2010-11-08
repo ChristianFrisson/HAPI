@@ -43,7 +43,22 @@ namespace HAPI {
   /// \class MLHIHapticsDevice
   /// \brief Interface to MLHI haptics devices.
   /// That is, devices from Butterfly haptics. Note that this
-  /// is preliminary support. Untested by SenseGraphics.
+  /// is preliminary support
+  /// 
+  /// There are some things that are important to know about this
+  /// implementation. The handle on the Butterfly Maglev 200 moves
+  /// around freely prior to initialization. It is pretty easy to move
+  /// it of range of the position sensors, which causes the device to fault.
+  /// The device will not "take off" when there is a fault. For this reason a
+  /// loop is introduced which is used to to delay initialization while
+  /// continually clearing faults until the user moves the handle in range, no
+  /// longer causing faults. Without this loop the user has to reinitialize
+  /// the device over and over again until it works. This is pretty
+  /// annoying keep readjusting the handle and rerunning the program until it
+  /// works, which is pretty annoying.
+  /// SenseGraphics have yet to test this device, and has therefore not tried
+  /// to figure out a different way to handle this, nor correctly set errors
+  /// for this device and cerr is used at the moment to report errors.
   class HAPI_API MLHIHapticsDevice : public HAPIHapticsDevice {
   public:
     /// Constructor
@@ -87,6 +102,9 @@ namespace HAPI {
     // returns false on failure
     bool takeoffWhenReady();
     void defyGravity();
+    // The waitForButtonPress() is needed to ensure that the user has a
+    // grip on the handle prior to releasing the gains that keep the handle
+    // levitating after takeoff. Otherwise, it drops.
     void waitForButtonPress();
     void initGains();
     void inline storeInDevices();

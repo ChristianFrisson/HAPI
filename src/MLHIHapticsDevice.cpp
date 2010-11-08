@@ -80,7 +80,7 @@ bool MLHIHapticsDevice::initHapticsDevice(int _thread_frequency)
     return false;
 
   defyGravity();
-  //waitForButtonPress();
+  waitForButtonPress();
   initGains();
   storeInDevices();
   registerCallbacks();
