@@ -32,9 +32,8 @@
 
 #include <HAPI/HAPIHapticsDevice.h>
 
-#include <EntactAPI.h>
-
 #ifdef HAVE_ENTACTAPI
+#include <EntactAPI.h>
 
 namespace HAPI {
 
