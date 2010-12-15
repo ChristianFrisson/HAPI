@@ -2439,13 +2439,11 @@ void Sphere::closestPoint( const Vec3 &p,
                                  Vec3 &normal,
                                  Vec3 &tex_coord ) {
   Vec3 dir = p - center;
-  HAPIFloat normal_y = 0;
   if( dir * dir < Constants::epsilon ) {
     closest_point = center + Vec3( radius, 0, 0 ); 
     normal = Vec3( 1, 0, 0 );
   }
   else {
-    normal_y = dir.y;
     dir.normalize();
     closest_point = center + dir * radius;
     normal = dir;
