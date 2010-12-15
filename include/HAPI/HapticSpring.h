@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -59,42 +59,42 @@ namespace HAPI {
     EffectOutput virtual calculateForces( const EffectInput &input ) {
       force = 
         ( position - input.hd->getPosition() ) * spring_constant - 
-        damping * input.hd->getPosition();
+        damping * input.hd->getVelocity();
       return EffectOutput( force );
     }
 
-    // set position
-    inline void setPosition( const Vec3 &_position ) { 
+    /// Set position
+    inline void setPosition( const Vec3 &_position ) {
       position = _position;
     }
 
-    // set damping
-    inline void setDamping( HAPIFloat _damping ) { 
+    /// Set damping
+    inline void setDamping( HAPIFloat _damping ) {
       damping = _damping;
     }
     
-    // set velocity
-    inline void setSpringConstant( const HAPIFloat &_sc ) { 
+    /// Set spring constant
+    inline void setSpringConstant( const HAPIFloat &_sc ) {
       spring_constant = _sc;
     }
 
-    // get position
-    inline const Vec3 &getPosition() { 
+    /// Get position
+    inline const Vec3 &getPosition() {
       return position;
     }
 
-    // get damping
-    inline HAPIFloat getDamping() { 
+    /// Get damping
+    inline HAPIFloat getDamping() {
       return damping;
     }
 
-    // get spring constant
-    inline HAPIFloat setSpringConstant() { 
+    /// Get spring constant
+    inline HAPIFloat getSpringConstant() {
       return spring_constant;
     }
 
-    // get last force
-    inline const Vec3 &getLatestForce() { 
+    /// Get last force
+    inline const Vec3 &getLatestForce() {
       return force;
     }
     
