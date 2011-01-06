@@ -42,6 +42,10 @@ namespace EntactHapticsDeviceInternal {
   list< string > entact_libs(libs_array, libs_array + 1 );
 }
 
+unsigned int EntactHapticsDevice::nr_device_instances = 0;
+int EntactHapticsDevice::nr_entact_devices = 0;
+bool EntactHapticsDevice::EAPI_initialized = false;
+
 HAPIHapticsDevice::HapticsDeviceRegistration 
 EntactHapticsDevice::device_registration(
                             "Entact",
@@ -49,21 +53,43 @@ EntactHapticsDevice::device_registration(
                             EntactHapticsDeviceInternal::entact_libs
                             );
 
+EntactHapticsDevice::EntactHapticsDevice( int _serial_number ):
+  serial_number( _serial_number ),
+  com_thread( NULL ),
+  com_func_cb_handle( -1 ),
+  device_id( -1 ) {
+  // This might have to be changed if they redo it so that their
+  // different devices have different maximum stiffness values.
+  max_stiffness = 1450;
+
+  nr_device_instances++;
+}
+
+/// Destructor.
+EntactHapticsDevice::~EntactHapticsDevice() {
+  nr_device_instances--;
+  if( nr_device_instances == 0 && EAPI_initialized ) {
+    freeEAPI();
+    EAPI_initialized = false;
+  }
+}
+
+
+
 bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
-  EAPI_devID devices[ 255 ];
-  int nr_devices;
-
-  int res = devicesAttachedEAPI( devices, &nr_devices );
- 
-  if( res != EAPI_OK ) {
-    stringstream s;
-    s << "Warning: Failed to open Entact device. Unable to query for devices." << endl;
-    setErrorMsg( s.str() );
-    return false;
+  if( !EAPI_initialized ) {
+    int res = openEAPI( &nr_entact_devices, 25 );
+    if( res != EAPI_OK ) {
+      stringstream s;
+      s << "Warning: Failed to open Entact device. Unable to query for devices." << endl;
+      setErrorMsg( s.str() );
+      return false;
+    }
+    EAPI_initialized = true;
   }
  
-  if( nr_devices <= 0 ) {
+  if( nr_entact_devices <= 0 ) {
     stringstream s;
     s << "Warning: Failed to open Entact device. No connected devices. ";
     setErrorMsg( s.str() );
@@ -74,11 +100,12 @@ bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 
   if( serial_number == -1 ) {
     // Use any of the available devices.
-    for( int i = 0; i < nr_devices; i++ ) {
-      // TODO: if ( !isEnabled( devices[i] ) )
-      device_id = devices[0];
-      device_found = true;
-      break;
+    for( int i = 0; i < nr_entact_devices; i++ ) {
+      if ( !isEnabledEAPI( i ) ) {
+	device_id = i;
+	device_found = true;
+	break;
+      }
     }
     if( !device_found ) {
       stringstream s;
@@ -88,15 +115,17 @@ bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     }
   } else {
     // find device with specified serial number
-    for( int i = 0; i < nr_devices; i++ ) {
-      // TODO: if ( serial_number == devices[i] sn && !isEnabled( devices[i] ) )
-      device_id = devices[0];
+    for( int i = 0; i < nr_entact_devices; i++ ) {
+      // TODO: if( serial_number == devices[i] sn && !isEnabled( devices[i] ) )
+      device_id = 0;;
       device_found = true;
       break;
       // TODO: cou;d not find device with serial number
     }
   }
 
+  if( needsCalibration() ) calibrateDevice();
+  setModeEAPI( device_id, EAPI_MODE_FC );
   enableDeviceEAPI( device_id );
   
   com_thread = 
@@ -119,10 +148,10 @@ bool EntactHapticsDevice::releaseHapticsDevice() {
     com_thread = NULL;
   }
 
-  disableDeviceEAPI( device_id );
-  // TODO: only disable if device_id exists.
-  //  device_id = -1;
-
+  if( device_id != -1 ) {
+    disableDeviceEAPI( device_id );
+    device_id = -1;
+  }
   
   return true;
 }
@@ -131,23 +160,23 @@ void EntactHapticsDevice::updateDeviceValues( DeviceValues &dv,
                                                HAPITime dt ) {
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
 
-  //if( device_id != -1 ) {
+  if( device_id != -1 ) {
     com_lock.lock();
     dv.position = current_values.position;
     dv.orientation = current_values.orientation;
     dv.button_status = current_values.button_status;
     com_lock.unlock();
-  //}
+  }
 }
 
 void EntactHapticsDevice::sendOutput( DeviceOutput &dv,
                                    HAPITime dt ) {
-  //if( device_id != -1 ) {
+  if( device_id != -1 ) {
     com_lock.lock();
     current_values.force = dv.force;
     current_values.torque = dv.torque;
     com_lock.unlock();
-  //}
+  }
 }
 
 H3DUtil::PeriodicThread::CallbackCode
@@ -155,11 +184,12 @@ EntactHapticsDevice::com_func( void *data ) {
   EntactHapticsDevice *hd = 
     static_cast< EntactHapticsDevice * >( data );
   
-  // if( hd->device_id != -1 ) {
+  if( hd->device_id != -1 ) {
     double positions[6]; 
     readTaskPositionEAPI( hd->device_id, positions );
     double velocity[6];
-    readTaskVelocityEAPI( hd->device_id, velocity );
+    // TODO:
+    //readTaskVelocityEAPI( hd->device_id, velocity );
 
     Rotation orientation = 
       Rotation( 1, 0, 0,  positions[5] ) * 
@@ -180,8 +210,8 @@ EntactHapticsDevice::com_func( void *data ) {
     double forces[6] = { -force[0], force[2], force[1], -torque[0], torque[2], torque[1] };
     
     writeForceEAPI( hd->device_id, forces );
-
-    return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
+  }
+  return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
 
 bool EntactHapticsDevice::calibrateDevice() {
@@ -198,13 +228,13 @@ bool EntactHapticsDevice::needsCalibration() {
 /// Returns the number of Entact devices that are currently
 /// connected to the computer.
 int EntactHapticsDevice::getNumberConnectedEntactDevices() {
-  EAPI_devID devices[ 256 ];
-  int nr_devices;
-  int res = devicesAttachedEAPI( devices, &nr_devices );
-  if( res == EAPI_OK ) {
-    return nr_devices;
+ if( !EAPI_initialized ) {
+   int res = openEAPI( &nr_entact_devices, 25 );
+   if( res == EAPI_OK ) {
+     EAPI_initialized = true;
+   }
   }
-  return 0;
+  return nr_entact_devices;
 }
 
 

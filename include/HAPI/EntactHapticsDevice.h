@@ -47,20 +47,14 @@ namespace HAPI {
     /// to use. Only the Entact device with the given serial number
     /// will be initialized. If -1 any available Entact device will
     /// be used.
-    EntactHapticsDevice( int _serial_number = -1 ):
-    serial_number( _serial_number ),
-      com_thread( NULL ),
-      com_func_cb_handle( -1 ) {
-        // This might have to be changed if they redo it so that their
-        // different devices have different maximum stiffness values.
-        max_stiffness = 1450;
-    }
+    EntactHapticsDevice( int _serial_number = -1 );
 
     /// Destructor.
-    virtual ~EntactHapticsDevice() {}
+    virtual ~EntactHapticsDevice();
 
-    /// Returns the Entact device id for this device.
-    inline EAPI_devID getDeviceId() { 
+    /// Returns the Entact device id for this device. -1 of not
+    /// initialized.
+    inline int getDeviceId() { 
       return device_id;
     }
 
@@ -103,7 +97,7 @@ namespace HAPI {
     virtual bool releaseHapticsDevice();
 
     /// The EntactAPI device id for this device.
-    EAPI_devID device_id;
+    int device_id;
 
     /// Callback function for communication thread
     static H3DUtil::PeriodicThread::CallbackCode com_func( void *data );
@@ -124,6 +118,19 @@ namespace HAPI {
     
     /// The serial number of the device
     int serial_number;
+
+    /// The nr of EntactHapticsDevice class instances that are currently
+    /// in use.
+    static unsigned int nr_device_instances;
+
+    /// The number of entact devices connected to the computer. Only 
+    /// valid if EAPI_initialized is true.
+    static int nr_entact_devices;
+
+    /// Flag to indicate of the EAPI used to control Entact devices
+    /// has been initialized.
+    static bool EAPI_initialized;
+
   };
 }
 
