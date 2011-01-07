@@ -45,6 +45,10 @@
 #cmakedefine HAVE_CHAI3D
 #cmakedefine CHAI3D_VERSION_2_0
 
+/// Undef if you do not have Entact API(http://www.entactrobotics.com/) 
+/// installed. Required for support for haptics devices from Entact.
+#cmakedefine HAVE_ENTACTAPI
+
 /// Undef if you do not have DHD API(www.forcedimension.com) installed.
 /// Required for the Omega and Delta haptics devices.
 #cmakedefine HAVE_DHDAPI
