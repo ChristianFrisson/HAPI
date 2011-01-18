@@ -44,6 +44,7 @@
 
 #ifdef WIN32
 #undef max
+#undef min
 #endif
 #include <limits>
 
@@ -305,6 +306,13 @@ bool Collision::intersectSegmentCylinder( Vec3 sa, Vec3 sb,
   // We don't care about end-caps intersection for use anywhere in these
   // algorithms.
   return t >= 0.0f && t <= 1.0f;
+}
+
+ /// Constructor.
+AABoxBound::AABoxBound( const Vec3 &_min,
+                        const Vec3 &_max ):
+  min( _min ), 
+  max( _max ) {
 }
 
 void AABoxBound::render() {
@@ -2707,7 +2715,7 @@ struct lt {
                   const pair<Vec3, Vec3 >& _Right ) const {
     return (_Left.first < _Right.first ||
             !(_Right.first < _Left.first) && _Left.second < _Right.second);
-	}
+        }
 };
 
 const vector<int> &BinaryBoundTree::getNeighbours() {
@@ -2723,7 +2731,7 @@ const vector<int> &BinaryBoundTree::getNeighbours() {
   typedef map< pair< Vec3, Vec3 >, pair<int, int>, lt >  EdgeTriangleMap;
   EdgeTriangleMap edges;
  
-  for( size_t i = 0; i < triangles.size(); i++ ) {
+  for( unsigned int i = 0; i < triangles.size(); i++ ) {
     const HAPI::Collision::Triangle &tri = triangles[i];
 
     // ignore invalid triangles that are lines or points
@@ -2796,6 +2804,28 @@ void BinaryBoundTree::getAllPrimitives( vector< Triangle > &tris,
     if (left.get()) left->getAllPrimitives( tris, lins, poins );
     if (right.get()) right->getAllPrimitives( tris, lins, poins );
   }
+}
+
+/// Constructor.
+OrientedBoxBound::OrientedBoxBound( const Vec3 &_min,
+                                    const Vec3 &_max,
+                                    const Rotation &_orientation ):
+  AABoxBound( _min, _max ),
+  orientation( _orientation ) {
+  center = (max + min) / 2;
+  halfsize = (max - min) / 2;
+}
+
+/// Constructor.
+OrientedBoxBound::OrientedBoxBound( const Rotation &_orientation,
+                                    const Vec3 &_center,
+                                    const Vec3 &_size ):
+  center( _center ),
+  orientation( _orientation ) {
+
+  halfsize = _size / 2;
+  min = center - halfsize;
+  max = center + halfsize;
 }
 
 Vec3 OrientedBoxBound::longestAxis() const {
