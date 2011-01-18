@@ -1123,6 +1123,10 @@ namespace HAPI {
     /// \brief Represents an axis-aligned bounding box.
     class HAPI_API AABoxBound: public BoundPrimitive {
     public:
+      /// Constructor.
+      AABoxBound( const Vec3 &_min = Vec3(),
+                  const Vec3 &_max = Vec3() );
+
       /// Render the object. The caller of the function need to set up OpenGL
       /// state in case the rendering should be done differently
       /// (wireframe for example).
@@ -1226,6 +1230,17 @@ namespace HAPI {
     /// \brief Represents an oriented bounding box.
     class HAPI_API OrientedBoxBound: public AABoxBound {
     public:
+      
+      /// Constructor.
+      OrientedBoxBound( const Vec3 &_min = Vec3(),
+                        const Vec3 &_max = Vec3(),
+                        const Rotation &_orientation = Rotation() );
+
+      /// Constructor.
+      OrientedBoxBound( const Rotation &_orientation,
+                        const Vec3 &_center,
+                        const Vec3 &_size );
+
       /// Render the object. The caller of the function need to set up OpenGL
       /// state in case the rendering should be done differently
       /// (wireframe for example).
