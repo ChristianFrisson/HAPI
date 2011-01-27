@@ -242,12 +242,12 @@ EntactHapticsDevice::com_func( void *data ) {
     hd->com_lock.lock();
 #endif
 
-    hd->current_values.position = Vec3( positions[2], -positions[1], positions[0] - 210 ) * 1e-3;
+    hd->current_values.position = Vec3( positions[2], -positions[1], positions[0] - 210 ) * 1e-3; // m -> mm + origin_offset
     //hd->current_values.velocity = Vec3( velocity[2], velocity[2], velocity[1] );
     //hd->current_values.button_status = button;
     hd->current_values.orientation = orientation;
-    Vec3 force = hd->current_values.force * 1000;
-    Vec3 torque = hd->current_values.torque;
+    Vec3 force = hd->current_values.force * 1000;    // N -> mN
+    Vec3 torque = hd->current_values.torque / 1000;  // Nmm -> Nm
 
 #ifdef USE_COM_THREAD
     hd->com_lock.unlock();
