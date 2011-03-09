@@ -32,34 +32,34 @@
 
 #include <HAPI/HAPIHapticsDevice.h>
 
-#if defined (HAVE_QUANSERAPI)
+#ifdef HAVE_QUARC
 
-#include <tchar.h>
-#include <math.h>
-#include "WinConInterface.h"    // Quanser shared memory
-
+#include <quanser_stream.h>
+#include <quanser_messages.h>
 
 namespace HAPI {
 
   /// \ingroup HapticsDevices
   /// \class QuanserHapticsDevice
-  /// \brief Interface to haptics devices from Quanser Inc. NOT TESTED
-  /// HIGHLY DOUBT IT WORKS PERFECTLY.
+  /// \brief Interface to haptics devices from Quanser Inc. 
   ///
   /// See www.quanser.com for more info on the devices.
-  class QuanserHapticsDevice: public HAPIHapticsDevice {
+  class HAPI_API QuanserHapticsDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.
-    QuanserHapticsDevice():device_id( -1 ){}
+    QuanserHapticsDevice( const string &_uri = "shmem://foobar:1"): 
+    uri( _uri ),
+      device_id( -1 ){}
 
     /// Destructor.
     virtual ~QuanserHapticsDevice() {}
 
     /// Return the Quanser device device_id for this device.
-    inline int get_device_id() 
-    { 
+    inline int getDeviceId() { 
       return device_id;
     }
+
+    inline const string &getURI() { return uri; }
 
     /// Register this device to the haptics device database.
     static HapticsDeviceRegistration device_registration;
@@ -137,9 +137,7 @@ namespace HAPI {
     /// The Quanser Haptic API device IDentification number for this device.
     int device_id;
 
-    /// shared memory handles
-    shmem_t            shmem_API_write;
-    shmem_t            shmem_API_read;
+  
     /// characteristics on Quanser Haptic API outputs
     // number of doubles to read
     const static int   shmem_API_read_num_doubles  = 9;
@@ -164,6 +162,9 @@ namespace HAPI {
 
     /// Compute the current shared memory checksum value.
     void compute_checksum();
+
+    string uri;
+    t_stream client;
 
   };
 }

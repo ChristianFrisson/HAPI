@@ -29,7 +29,7 @@
 
 #include <HAPI/QuanserHapticsDevice.h>
 
-#if defined (HAVE_QUANSERAPI)
+#ifdef HAVE_QUARC
 
 using namespace HAPI;
 
@@ -40,8 +40,35 @@ QuanserHapticsDevice::device_registration(
                             );
 
 
-bool QuanserHapticsDevice::initHapticsDevice( int _thread_frequency ) 
-{
+bool QuanserHapticsDevice::initHapticsDevice( int _thread_frequency ) {
+  const t_boolean nonblocking         = false;
+  const t_int     send_buffer_size    = 80;
+  const t_int     receive_buffer_size = 80;
+  const char *    locale              = NULL;
+  
+  t_error  result;
+ 
+  
+  //This function attempts to connect to the server using the specified URI.
+  result = stream_connect(uri.c_str(), nonblocking, 
+			  send_buffer_size, 
+			  receive_buffer_size, 
+			  &client);
+  
+  if( result != 0 ) {
+    stringstream s;
+    s << "Could not connect to Quanser haptics device using URI " << uri << ". Internal error code: " << result << endl;
+    if( -result ==  QERR_LIBRARY_NOT_FOUND ) 
+      s << "Dynamic librares not found. " << endl; 
+    setErrorMsg( s.str() );
+    return false;
+  }
+
+  // TODO: initialize force control mode, stiffness ,damping gains?
+  
+  return true;
+  
+  /*
     // initialize device, set success to true if 
 
     bool success = false;
@@ -82,13 +109,19 @@ bool QuanserHapticsDevice::initHapticsDevice( int _thread_frequency )
         success = false;
         return success;
     }
+  */
 }
 
 bool QuanserHapticsDevice::releaseHapticsDevice() 
 {
-    // release all resources allocated in initHapticsDevice.
-    // disconnecting the device.
-    
+  // release all resources allocated in initHapticsDevice.
+  // disconnecting the device.
+  if( device_state != UNINITIALIZED ) {
+    stream_close( client );
+  }
+  return true;
+
+/*    
     if (device_id != -1) 
     {
         /// clean-up the shared memory
@@ -110,42 +143,47 @@ bool QuanserHapticsDevice::releaseHapticsDevice()
 
         // do not free the shared memory
     }
-
-    return true;
+    */
 }
 
 void QuanserHapticsDevice::updateDeviceValues( DeviceValues &dv,
-                                               HAPITime dt ) 
-{
-    HAPIHapticsDevice::updateDeviceValues( dv, dt );
+                                               HAPITime dt ) {
+  HAPIHapticsDevice::updateDeviceValues( dv, dt );
+  
+  if( device_state == UNINITIALIZED ) return;
+  
+  const t_int RCV_STREAM_SIZE = 7;	
+  t_double rcv_temp[RCV_STREAM_SIZE];
+  t_int result = stream_receive_doubles(client, rcv_temp, RCV_STREAM_SIZE); 
+  
+  // error in communication, return.
+  //if( result != 0 ) return;  
 
-    if (device_id != -1) 
-    {
-        // read the shared memory of the Quanser haptic API all at once
-        if (!SHMEM_Read(shmem_API_read, 0, (DWORD)shmem_API_read_size, &API_outputs_read, (DWORD)api_integer_timeout))
-        {
-            stringstream s;
-            s << "Warning: Failed to update values from the Quanser haptic device. ";
-            setErrorMsg( s.str() );
-        }
-        /// Quanser Haptic API outputs: 
-        //  [x, y, x_dot, y_dot, checksum_api_wc, fatal_error, 
-        //    checksum_enable, timeout_w_enable, timeout_r_enable]
+  // TODO: interpret data.
+  // Cartesian position and velocity in metres
+  //dv.position = Vec3( rcv_temp[1], rcv_temp[2], rcv_temp[0] );
+  dv.position = Vec3( -rcv_temp[0], rcv_temp[2], rcv_temp[1] );
+  // current linear velocity in world coordinate frame (m/s)
+  //  dv.velocity = Vec3(API_outputs_read[2], API_outputs_read[3], 0);
+  // Device Rotation
+  Vec3 rotation_offset( 0,0,0);
+  // 0 180 -90
 
-        // current position in world coordinate frame    
-        // Cartesian position and velocity in metres
-        dv.position = Vec3(API_outputs_read[0], API_outputs_read[1], 0);
-        // current linear velocity in world coordinate frame (m/s)
-        dv.velocity = Vec3(API_outputs_read[2], API_outputs_read[3], 0);
+  /*dv.orientation = Rotation(1,0,0,0);
+  dv.orientation = Rotation( 0, 0, 1, (rcv_temp[3] + rotation_offset.z) ); //* H3DUtil::Constants::pi / 180  ); 
+  dv.orientation = Rotation( dv.orientation * Vec3( 0, 1, 0 ), (rcv_temp[5] + rotation_offset.y) ) * dv.orientation;
+  dv.orientation = Rotation( dv.orientation * Vec3( 1, 0, 0 ), (rcv_temp[4] + rotation_offset.x) ) * dv.orientation;
+  */
 
-        // Device Euler angles (yaw, pitch, roll) (radians)
-        Vec3 r( 0, 0, 0 );
-        dv.orientation = Rotation( r );
-      
-        // bitmask for buttons. bit 0 is button 0, bit 1 button 1 and so on.
-        // value of 1 indicates button pressed.
-        dv.button_status = 0;
-    }
+  dv.orientation = Rotation(1,0,0,0);
+  dv.orientation = Rotation( 0, 0, 1, (rcv_temp[4] + rotation_offset.z) ); //* H3DUtil::Constants::pi / 180  ); 
+  dv.orientation = Rotation( Vec3( 0, 1, 0 ), (rcv_temp[5] + rotation_offset.y) ) * dv.orientation;
+  dv.orientation = Rotation( Vec3( 1, 0, 0 ), (-rcv_temp[3] + rotation_offset.x) ) * dv.orientation;
+
+
+  // bitmask for buttons. bit 0 is button 0, bit 1 button 1 and so on.
+  // value of 1 indicates button pressed.
+  //dv.button_status = 0;
 }
 
 bool QuanserHapticsDevice::is_fatal_error()
@@ -181,29 +219,29 @@ bool QuanserHapticsDevice::does_read_timeout_enable()
 }
 
 void QuanserHapticsDevice::sendOutput( DeviceOutput &dv,
-                                       HAPITime dt ) 
-{
-    // send force to render: dv.force.x, dv.torque.x, etc.
+                                       HAPITime dt ) {
 
-    if (device_id != -1) 
-    {
-        // latest data from H3D loop, to send to the Quanser Haptics API:
-        // [calibrate, enable_amps, Fx, Fy, KDx, KDy, KSx, KSy, SSx, SSy, 
-        //   checksum_api_w, enable_pos_watch]
-        write_API_inputs[2] = dv.force.x;   // Fx
-        write_API_inputs[3] = dv.force.y;   // Fy
+  if( device_state == UNINITIALIZED ) return;
 
-        // update the shared memory checksum value here 
-        compute_checksum();
+  // send force to render: dv.force.x, dv.torque.x, etc.
+  const t_int SND_STREAM_SIZE = 24; 
 
-        // write to the shared memory of the Quanser Haptics API (all at once)
-        if (!SHMEM_Write(shmem_API_write, 0, (DWORD)shmem_API_write_size, &write_API_inputs, (DWORD)api_integer_timeout))
-        {
-            stringstream s;
-            s << "Warning: Failed to send outputs to the Quanser haptic device. ";
-            setErrorMsg( s.str() );
-        }
-    }
+  t_double snd_temp[SND_STREAM_SIZE];
+  
+  for (int i = 0; i < SND_STREAM_SIZE; i++)
+    snd_temp[i] = 0;
+
+  snd_temp[0] = -dv.force.x;
+  snd_temp[1] = dv.force.z;
+  snd_temp[2] = dv.force.y;
+
+  snd_temp[3] = -dv.torque.x;
+  snd_temp[4] = dv.torque.z;
+  snd_temp[5] = dv.torque.y;
+
+  // TODO: check return value
+  // dv.force, dv.torque
+  t_int result = stream_send_doubles(client, snd_temp, SND_STREAM_SIZE); 
 }
 
 void QuanserHapticsDevice::set_damping_gains( Vec3 gain )
@@ -240,6 +278,7 @@ void QuanserHapticsDevice::schedule_calibration( bool calibrate )
 
 void QuanserHapticsDevice::send_calibration()
 {
+  /*
     if (device_id != -1) 
     {
         // write only the calibration flag to the shared memory of the Quanser Haptics API 
@@ -250,6 +289,7 @@ void QuanserHapticsDevice::send_calibration()
             setErrorMsg( s.str() );
         }
     }
+    */
 }
 
 void QuanserHapticsDevice::do_calibration( int timeout )
