@@ -271,9 +271,11 @@ void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
   v[1] = dv.force.y;
   v[2] = dv.force.z;
   hdSetDoublev( HD_CURRENT_FORCE, v ); 
-  v[0] = dv.torque.x;
-  v[1] = dv.torque.y;
-  v[2] = dv.torque.z;
+
+  // torque in OpenHaptics is in Nmm
+  v[0] = dv.torque.x * 1e3;
+  v[1] = dv.torque.y * 1e3;
+  v[2] = dv.torque.z * 1e3;
   hdSetDoublev( HD_CURRENT_TORQUE, v ); 
   HDErrorInfo error;
   error = hdGetError();
