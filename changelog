@@ -1,3 +1,22 @@
+Changes for version 1.2
+
+- Added HapticRotationalSpring
+- Added damping to HapticSpring
+- Added HaptionHapticsDevice, support for devices from Haption.
+- Added MLHIHapticsDevice, support for the Butterfly haptics magnetic 
+levitation haptics device.
+- Added EntactHapticsDevice, support for haptics devices from Entact Robotics.
+- Updates to Chai3DRenderer to use new Chai3D version.
+- Fixed a bug in SensableHapticsDevice that sent on torques in Nm instead of 
+Nmm which is expected by the driver.
+- Update CMake system to work with new 64-bit windows external libraries.
+
+New classes:
+- HapticRotationalSpring
+- HaptionHapticsDevice
+- MLHIHapticsDevice
+- EntactHapticsDevice
+	
 Changes for version 1.1.1:
 - CMake support for OpenHaptics 3.0.
 - Memory leak fixes.
