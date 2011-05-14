@@ -39,16 +39,17 @@ namespace HAPI {
   public:
 
     /// Constructor.
-    HapticForceField( const Vec3 &_force );
+    HapticForceField( const Vec3 &_force,
+                      const Vec3 &torque = Vec3( 0, 0, 0 );
 
     
     /// The force of the EffectOutput will be the force of the force field. 
     EffectOutput virtual calculateForces( const EffectInput &input ) {
-      return EffectOutput( force );
+      return EffectOutput( force, torque );
     }
     
   protected:
-    Vec3 force;
+    Vec3 force, torque;
   };
 }
 

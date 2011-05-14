@@ -31,7 +31,9 @@
 
 using namespace HAPI;
 
-HapticForceField::HapticForceField( const Vec3 &_force ):
-  force( _force ) {}
+HapticForceField::HapticForceField( const Vec3 &_force,
+                                    const Vec3 &_torque ):
+  force( _force ),
+  torque( _torque ) {}
 
 
