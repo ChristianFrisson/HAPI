@@ -29,7 +29,7 @@ MARK_AS_ADVANCED(DHD_INCLUDE_DIR)
 
 # Look for the library.
 IF(WIN32)
-  FIND_LIBRARY(DHD_LIBRARY NAMES dhdms
+  FIND_LIBRARY(DHD_LIBRARY NAMES dhdms dhdms64
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
                                  $ENV{H3D_ROOT}/../External/${LIB}
                                  ../../External/${LIB}
