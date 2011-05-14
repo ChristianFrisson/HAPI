@@ -475,7 +475,6 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   }
 
   Vec3 proxy_pos = proxy_position;
-  bool done = false;
 
   Vec3 moved_proxy_pos = proxy_pos;
 
