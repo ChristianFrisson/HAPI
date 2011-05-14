@@ -40,7 +40,7 @@ namespace HAPI {
 
     /// Constructor.
     HapticForceField( const Vec3 &_force,
-                      const Vec3 &torque = Vec3( 0, 0, 0 );
+                      const Vec3 &torque = Vec3( 0, 0, 0 ) );
 
     
     /// The force of the EffectOutput will be the force of the force field. 
