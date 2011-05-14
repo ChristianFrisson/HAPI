@@ -67,6 +67,11 @@ typedef void (*LPFNDLLSetForceGetPV)         (int Device,
                                               double Force[3],
                                               double CurrentPosition[3],
                                               double CurrentVelocity[3]);
+typedef void (*LPFNDLLSetForceGetPVR)         (int Device,
+                                              double Force[3],
+                                              double CurrentPosition[3],
+                                              double CurrentVelocity[3],
+                                              double CurrentRotation[3]);
 typedef void (*LPFNDLLSetInertia)            (int Device,
                                               double Inertia);
 typedef int  (*LPFNDLLGetState)              (int Device);
@@ -91,6 +96,7 @@ LPFNDLLCloseHapticMaster      CloseHapticMaster;
 LPFNDLLInitialiseHapticMaster InitialiseHapticMaster; 
 LPFNDLLSetForceGetPosition    SetForceGetPosition;
 LPFNDLLSetForceGetPV          SetForceGetPV;
+LPFNDLLSetForceGetPVR          SetForceGetPVR;
 LPFNDLLSetInertia             SetInertia;
 LPFNDLLGetState               GetState;
 LPFNDLLSetState               SetState;
@@ -129,6 +135,9 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
       SetForceGetPV =
         (LPFNDLLSetForceGetPV) GetProcAddress(dll_handle,
                                               "SetForceGetPV"); 
+      SetForceGetPVR =
+        (LPFNDLLSetForceGetPVR) GetProcAddress(dll_handle,
+                                              "SetForceGetPVR"); 
       InitialiseHapticMaster  = 
         (LPFNDLLInitialiseHapticMaster) GetProcAddress(dll_handle,
                                                      "InitialiseHapticMaster");
@@ -327,19 +336,22 @@ HapticMasterDevice::com_func( void *data ) {
 
     double pos[3] = { 0.0, 0.0, 0.0};
     double vel[3] = { 0.0, 0.0, 0.0};
+    double orn[3] = { 0.0, 0.0, 0.0};
     
     hd->driver_lock.lock();
-    SetForceGetPV(hd->device_handle, force, pos, vel );
+    SetForceGetPVR(hd->device_handle, force, pos, vel, orn );
     GetCurrentForce( hd->device_handle, force );
     hd->driver_lock.unlock();
 
     Vec3 position = Vec3(pos[1], pos[2], pos[0]);
     Vec3 velocity = Vec3(vel[1], vel[2], vel[0]);
-
+    Rotation rot = Rotation( 0, 1, 0, orn[2] ) * Rotation( 1, 0, 0, orn[1] ) * Rotation( 0, 0, 1, orn[0] );
+   
     hd->com_lock.lock();
     hd->current_values.position = position;
     hd->current_values.velocity = velocity;
     hd->current_values.force = Vec3( force[1], force[2], force[0] );
+    hd->current_values.orientation = rot;
     hd->com_lock.unlock();
   }
                           
