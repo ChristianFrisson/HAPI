@@ -58,8 +58,19 @@ bool ParsedFunction::setFunctionString( const string &function,
 /// Evaluate the function. 
 /// input points to the input values to the function.
 HAPIFloat ParsedFunction::evaluate( HAPIFloat *input ) {
-  if( have_valid_function )
-    return fparser->Eval( input );
+  if( have_valid_function ) {
+    HAPIFloat v = fparser->Eval( input );
+    if( fparser->EvalError() == 0 ) {
+      return v;
+    } else {
+      // we had an error evaluating (usually NaN). Function
+      // classes are expected to use NaN and Inf but this is 
+      // not possible here since Eval returns 0 on these
+      // instances and we have no way identifying what the error
+      // was. Always return NaN do get it right in most cases. 
+      return numeric_limits<HAPIFloat>::quiet_NaN();
+    }
+  }
   else return 0;
 }
 
