@@ -344,6 +344,24 @@ H3DUtil::PeriodicThread::CallbackCode
 
   hd->renderer_change_lock.unlock();
 
+  // clamp to limits  
+  HAPIFloat max_force = hd->getForceLimit();
+  HAPIFloat max_torque = hd->getTorqueLimit();
+
+  if( max_force >= 0 ) {
+    HAPIFloat length_sqr = output.force.lengthSqr();
+    if( length_sqr > max_force * max_force ) {
+      output.force = output.force * (max_force / H3DUtil::H3DSqrt( length_sqr ) );
+    }
+  }
+
+  if( max_torque >= 0 ) {
+    HAPIFloat length_sqr = output.torque.lengthSqr();
+    if( length_sqr > max_torque * max_torque ) {
+      output.torque = output.torque * (max_torque / H3DUtil::H3DSqrt( length_sqr ) );
+    }
+  }
+
   // add the resulting force and torque to the rendered force.
   hd->sendForce( output.force );
   hd->sendTorque( output.torque );
