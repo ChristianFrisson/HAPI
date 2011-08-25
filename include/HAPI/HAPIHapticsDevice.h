@@ -119,7 +119,9 @@ namespace HAPI {
       haptic_rendering_cb_handle( -1 ),
       haptics_rate( 0 ),
       last_force_effect_change( 0 ),
-      error_handler( new DefaultErrorHandler ) {
+      error_handler( new DefaultErrorHandler ),
+      force_limit( -1 ),
+      torque_limit ( -1 ){
       setHapticsRenderer( NULL );
       haptic_rendering_callback_data = this;
       // This value is choosen ad hoc as fairly "standard".
@@ -732,6 +734,23 @@ namespace HAPI {
       return max_stiffness;
     }
 
+    /// Get the current maximum force limit.
+    inline HAPIFloat getForceLimit() { return force_limit; }
+
+    /// Get the current maximum torque limit.
+    inline HAPIFloat getTorqueLimit() { return torque_limit; }
+
+    /// Set the maximum force limit. The maximum force limit(in Newton) for the 
+    /// device. Any forces generated that are higher than the limit will be 
+    /// clamped to the limit before sent to the device. A negative value means
+    /// no limit.
+    inline void setForceLimit( HAPIFloat limit ) { force_limit = limit; }
+
+    /// Set the maximum torque limit. The maximum torque limit(in Nm) for the 
+    /// device. Any torques generated that are higher than the limit will be 
+    /// clamped to the limit before sent to the device. A negative value means
+    /// no limit
+    inline void setTorqueLimit( HAPIFloat limit ) { torque_limit = limit; }
     // The following is part of the database of available haptics devices.
     typedef HAPIHapticsDevice*( *CreateInstanceFunc)(); 
 
@@ -1196,6 +1215,16 @@ namespace HAPI {
     unsigned int nr_haptics_loops;
     unsigned int haptics_rate;
     TimeStamp last_hr_update;
+
+    /// The maximum force limit(in Newton) for the device. Any forces 
+    /// generated that are higher than the limit will be clamped to the
+    /// limit.
+    HAPIFloat force_limit;
+
+    /// The maximum torque limit(in Nm) for the device. Any torques 
+    /// generated that are higher than the limit will be clamped to the
+    /// limit.
+    HAPIFloat torque_limit;
 
     /// The maximum stiffness the device can handle in N/mm.
     /// Should be set by each subclass to HAPIHapticsDevice.
