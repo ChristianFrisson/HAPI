@@ -119,10 +119,10 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
   if( device_id != -1 ) {
     com_lock.lock();
     dv.position = current_values.position;
+    dv.velocity = current_values.velocity;
     dv.orientation = current_values.orientation;
     dv.button_status = current_values.button_status;
     com_lock.unlock();
-    calculateVelocity( dv, dt );
   }
 }
 
@@ -197,7 +197,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     static_cast< ForceDimensionHapticsDevice * >( data );
   
   if( hd->device_id != -1 ) {
-    double x, y, z, rx, ry, rz;
+    double x, y, z, rx, ry, rz, vx, vy, vz;
     dhdGetPosition( &z, &x, &y, hd->device_id );
     dhdGetOrientationRad( &rz, &rx, &ry, hd->device_id );
 
@@ -205,6 +205,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     bool button = (dhdGetButton( 0, hd->device_id ) == DHD_ON);
 
     Vec3 position = Vec3( x, y, z );
+    Vec3 velocity = Vec3( vx, vy, vz );
 
     Rotation orientation =
       Rotation( 1, 0, 0, (float)( H3DUtil::Constants::pi / 4 ) ) *
@@ -216,7 +217,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     hd->com_lock.lock();
 
     hd->current_values.position = position;
-    hd->current_values.velocity = Vec3( 0, 0, 0 );
+    hd->current_values.velocity = velocity;
     hd->current_values.button_status = button;
     hd->current_values.orientation = orientation;
  
