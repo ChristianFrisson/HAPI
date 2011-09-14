@@ -200,6 +200,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     double x, y, z, rx, ry, rz, vx, vy, vz;
     dhdGetPosition( &z, &x, &y, hd->device_id );
     dhdGetOrientationRad( &rz, &rx, &ry, hd->device_id );
+    dhdGetLinearVelocity( &vz, &vx, &vy, hd->device_id );
 
     // TODO: multiple buttons
     bool button = (dhdGetButton( 0, hd->device_id ) == DHD_ON);
