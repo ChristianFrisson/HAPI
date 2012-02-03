@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -141,6 +141,7 @@ namespace HAPI {
     /// \param _thread_frequency is the desired haptic frequency. Check
     /// comment for the function initHapticsDevice() of each haptics device
     /// class to know what the values might do for that class.
+		/// \returns SUCCESS if device was successfully initialized.
     virtual ErrorCode initDevice( int _thread_frequency = 1024 );
 
     /// Enable the device. Positions can be read and force can be sent.
@@ -155,6 +156,8 @@ namespace HAPI {
 
     /// Temporarily disable the device. Forces sent will be ignored and
     /// positions and orientation will stay the same as previous values.
+		/// \returns SUCCESS if device was enabled and function succeeded.
+		/// NOT_INITALIZED if device was not initalized.
     inline virtual ErrorCode disableDevice() {
       if( device_state == UNINITIALIZED ) {
         return NOT_INITIALIZED;
@@ -171,6 +174,8 @@ namespace HAPI {
     /// After a call to this function no haptic rendering can be performed on
     /// the device until the initDevice( _thread_frequency = 1024 ) function
     /// has been called again.
+		/// \returns SUCCESS if device was released. NOT_INITALIZED if device was
+		/// not initalized and FAIL if releasing device failed.
     inline virtual ErrorCode releaseDevice() {
       if( device_state == UNINITIALIZED ) {
         return NOT_INITIALIZED;
@@ -621,7 +626,7 @@ namespace HAPI {
     }
 
     /// Set the HAPIHapticsRenderer to use to render the HAPIHapticShapes
-    /// specified for a specified layer.
+    /// specified for a specific layer.
     inline void setHapticsRenderer( HAPIHapticsRenderer *r, 
                                     unsigned int layer = 0 ) {
 
@@ -751,6 +756,7 @@ namespace HAPI {
     /// clamped to the limit before sent to the device. A negative value means
     /// no limit
     inline void setTorqueLimit( HAPIFloat limit ) { torque_limit = limit; }
+
     // The following is part of the database of available haptics devices.
     typedef HAPIHapticsDevice*( *CreateInstanceFunc)(); 
 
@@ -1015,6 +1021,7 @@ namespace HAPI {
     /// each loop in the thread, i.e. 1024, 512, 342, 256, 205 and so on.
     /// Some haptics devices uses other synchronization means than the RTC timer
     /// though and in those cases they might have different possible frequencies.
+		/// \returns true if initialization succeeded.
     virtual bool initHapticsDevice( int _thread_frequency = 1024 ) = 0;
 
     /// Release all resources allocated to the haptics device.

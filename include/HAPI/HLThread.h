@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -75,7 +75,7 @@ namespace HAPI {
     /// Add a callback function to be executed in this thread. The calling
     /// thread will continue executing after adding the callback and will 
     /// not wait for the callback function to execute.
-    /// Returns a handle to the callback that can be used to remove
+    /// \returns A handle to the callback that can be used to remove
     /// the callback.
     virtual int asynchronousCallback( CallbackFunc func, void *data );
 

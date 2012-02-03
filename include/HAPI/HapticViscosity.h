@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -46,9 +46,9 @@ namespace HAPI {
   class HAPI_API HapticViscosity: public HAPIForceEffect {
   public:
     /// Constructor
-    /// _viscosity is the viscosity in Pas
-    /// _radius is the radius of the ball in meters.
-    /// _damping_factor is best left as its initial value unless
+    /// \param _viscosity is the viscosity in Pas
+    /// \param _radius is the radius of the sphere in meters.
+    /// \param _damping_factor is best left as its initial value unless
     /// there is a need to stop vibrations that comes from a to large
     /// constant e.g. when the force calculated exceeds the force inputed by
     /// the user when moving the proxy.
@@ -60,8 +60,11 @@ namespace HAPI {
     EffectOutput virtual calculateForces( const EffectInput &input );
     
   protected:
+	  // viscosity is the viscosity in Pas
     HAPIFloat viscosity;
+		// radius is the radius of the sphere in meters.
     HAPIFloat radius;
+		// _damping_factor is best left as its initial value unless
     HAPIFloat the_constant;
   };
 }

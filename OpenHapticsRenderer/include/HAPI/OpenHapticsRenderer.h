@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2010, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -271,10 +271,11 @@ namespace HAPI {
     /// rendered by the OpenHapticsRenderer
     static bool surfaceSupported( HAPISurfaceObject *s );
 
-    /// Renders a HAPISurface object with OpenHaptics. Returns true if it 
-    /// succeeded, false otherwise. Not all surface types are valid.
+    /// Renders a HAPISurface object with OpenHaptics. Not all surface types
+		/// are valid.
     /// \param s Surface object to render.
     /// \param hd The haptics device for which the surface should be rendered.
+		/// \returns true if it succeeded, false otherwise.
     static bool hlRenderHAPISurface( HAPISurfaceObject *s,
                                      HAPIHapticsDevice *hd );
 
@@ -311,11 +312,9 @@ namespace HAPI {
     static HapticsRendererRegistration renderer_registration;
 
   protected:
-
-    /// \internal
-    /// Needed because there need to be a context available in order to not
-    /// accidently stop the scheduler at the wrong time. This dummy_context is
-    /// cleaned up by destructor.
+    // Needed because there need to be a context available in order to not
+    // accidently stop the scheduler at the wrong time. This dummy_context is
+    // cleaned up by destructor.
     class OPENHAPTICSRENDERER_API OpenHapticsWorkAroundToCleanUpHLContext :
     public WorkAroundToCleanUpHLContext {
     public:
@@ -337,8 +336,8 @@ namespace HAPI {
     // the gl modelview instead.
     bool disable_gl_modelview;
 
-    /// Callback function for finding the intersection between a line segment
-    /// and the object. Used for custom shapes.
+    // Callback function for finding the intersection between a line segment
+    // and the object. Used for custom shapes.
     static HLboolean HLCALLBACK intersectCallback( 
                                       const HLdouble *start_point, 
                                       const HLdouble *end_point,
@@ -347,8 +346,8 @@ namespace HAPI {
                                       HLenum* face,
                                       void *user_data );
 
-    /// Callback function for finding the closest point on the object. Used
-    /// in hlRender. Used for custom shapes.
+    // Callback function for finding the closest point on the object. Used
+    // in hlRender. Used for custom shapes.
     static HLboolean HLCALLBACK closestFeaturesCallback( 
                                        const HLdouble *query_point, 
                                        const HLdouble *target_point, 
@@ -356,32 +355,31 @@ namespace HAPI {
                                        HLdouble *closest_point,
                                        void* user_data );
 
-    /// HL event callback function for when the geometry is touched.
+    // HL event callback function for when the geometry is touched.
     static void HLCALLBACK touchCallback( HLenum event,
                                           HLuint object,
                                           HLenum thread,
                                           HLcache *cache,
                                           void *userdata );
 
-    /// HL event callback function for when the geometry is not touched
-    /// any longer. 
+    // HL event callback function for when the geometry is not touched
+    // any longer. 
     static void HLCALLBACK untouchCallback( HLenum event,
                                             HLuint object,
                                             HLenum thread,
                                             HLcache *cache,
                                             void *userdata );
 
-    /// HL event callback function for when the proxy moves while in
-    /// contact with the geometry.
+    // HL event callback function for when the proxy moves while in
+    // contact with the geometry.
     static void HLCALLBACK motionCallback( HLenum event,
                                            HLuint object,
                                            HLenum thread,
                                            HLcache *cache,
                                            void *userdata );
 
-    /// \internal
-    /// Contains data sent to the callbacks used for haptics geometry
-    /// rendering with OpenHapticsRenderer.
+    // Contains data sent to the callbacks used for haptics geometry
+    // rendering with OpenHapticsRenderer.
     struct CallbackData {
       CallbackData( OpenHapticsRenderer *r, 
                     HAPI::HAPIHapticShape *s,
@@ -398,30 +396,30 @@ namespace HAPI {
 
     H3DUtil::AutoPtrVector< CallbackData > callback_data; 
 
-    /// Generate a new HL context for the given haptics device.
+    // Generate a new HL context for the given haptics device.
     HHLRC initHLLayer( HAPI::HAPIHapticsDevice *pd );
 
     typedef std::map< HAPI::HAPIHapticsDevice *, HHLRC > ContextMap;
 
-    /// A map from haptics device to HL API context
+    // A map from haptics device to HL API context
     ContextMap context_map;
 
-    /// A map from HAPI shape_id to HL API shape id
+    // A map from HAPI shape_id to HL API shape id
     typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, HLuint > IdMap;
     IdMap id_map;
 
-    /// A map from HAPI shape_id to index in the callback_data vector
+    // A map from HAPI shape_id to index in the callback_data vector
     typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, unsigned int >
       IdCbMap;
     IdCbMap id_cb_map;
 
-    /// List used to manage adding and removing of event callbacks.
+    // List used to manage adding and removing of event callbacks.
     typedef list< pair< int, HAPI::HAPIHapticsDevice * > > ShapeIdList;
     ShapeIdList previous_shape_ids;
     ShapeIdList previous_shape_ids_copy;
 
-    /// Add HL_EVENT_MOTION, HL_EVENT_TOUCH and HL_EVENT_UNTOUCH callbacks
-    /// to HL_CLIENT_THREAD.
+    // Add HL_EVENT_MOTION, HL_EVENT_TOUCH and HL_EVENT_UNTOUCH callbacks
+    // to HL_CLIENT_THREAD.
     inline void addHLEventCallbacks( HLuint hl_id, CallbackData * cbd ) {
       hlEventd(  HL_EVENT_MOTION_LINEAR_TOLERANCE, 0 );
       hlAddEventCallback( HL_EVENT_MOTION, 
@@ -441,8 +439,8 @@ namespace HAPI {
                           cbd );
     }
 
-    /// Remove HL_EVENT_MOTION, HL_EVENT_TOUCH and HL_EVENT_UNTOUCH callbacks
-    /// from HL_CLIENT_THREAD.
+    // Remove HL_EVENT_MOTION, HL_EVENT_TOUCH and HL_EVENT_UNTOUCH callbacks
+    // from HL_CLIENT_THREAD.
     inline void removeHLEventCallbacks( HLuint hl_id ) {
       hlRemoveEventCallback( HL_EVENT_MOTION, 
                              hl_id,
@@ -458,29 +456,29 @@ namespace HAPI {
                              &untouchCallback );
     }
 
-    /// Used because of a supposed OpenHaptics Bug when untouchCallback is
-    /// called before touchCallback for a specific hlshape id.
+    // Used because of a supposed OpenHaptics Bug when untouchCallback is
+    // called before touchCallback for a specific hlshape id.
     // TODO: confirm that it is indeed a OpenHaptics Bug by setting up a simple
     // example that gives the same result.
     vector< int > already_removed_id;
 
-    /// Temporary contacts used by OpenHapticsRenderer.
+    // Temporary contacts used by OpenHapticsRenderer.
     Contacts tmp_contacts;
 
-    /// Contains the proxy position of the renderer.
-    /// It will be updated in a separate thread at 100 Hz. This is sufficient
-    /// since OpenHaptics updates its internal proxy position at about this
-    /// rate.
+    // Contains the proxy position of the renderer.
+    // It will be updated in a separate thread at 100 Hz. This is sufficient
+    // since OpenHaptics updates its internal proxy position at about this
+    // rate.
     Vec3 proxy_position;
 
-    /// Lock used when updating proxy position.
+    // Lock used when updating proxy position.
     H3DUtil::MutexLock proxy_position_lock;
 
-    /// Lock used when modifying data in callbacks. Needed because
-    /// of the extra data_update_thread.
+    // Lock used when modifying data in callbacks. Needed because
+    // of the extra data_update_thread.
     static H3DUtil::MutexLock data_update_lock;
 
-    /// True if there has been no hlcontext created at all yet.
+    // True if there has been no hlcontext created at all yet.
     static int nr_of_context;
 
   private:

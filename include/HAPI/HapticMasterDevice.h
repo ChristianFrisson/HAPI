@@ -101,6 +101,7 @@ namespace HAPI {
     /// 1000 is the maximum allowed frequency that can be specified. Setting
     /// this parameter to -1 means run as fast as possible. It is recommended
     /// to use the default value for most users.
+		/// \returns true if initialization succeeded.
     virtual bool initHapticsDevice( int _thread_frequency = 1000 );
 
     /// Releases all resources allocated in initHapticsDevice. 

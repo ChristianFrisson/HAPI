@@ -72,9 +72,8 @@ namespace HAPI {
     /// \param target_point The haptic device position.
     /// \param geom Return parameter to return a hlLocalFeature
     /// \param closest_point Return parameter that should be set to the closest
-    /// point to the surface to query_point.
-    /// the surface at the closest point.
-    /// 
+    /// point to query_point.
+    /// \returns true if closest point was found.
     virtual bool closestFeature( const Vec3 &query_point, 
                                  const Vec3 &target_point,
                                  HLgeom *geom,
@@ -90,9 +89,9 @@ namespace HAPI {
                            HLuint shape_id );
 
   protected:
-    /// Callback function for finding the intersection between a line segment
-    /// and the object. Used in hlRender. 
-    ///
+    // Callback function for finding the intersection between a line segment
+    // and the object. Used in hlRender. 
+    //
     static HLboolean HLCALLBACK intersectCallback( 
                                       const HLdouble *start_point, 
                                       const HLdouble *end_point,
@@ -122,9 +121,9 @@ namespace HAPI {
       return b;
     }
 
-    /// Callback function for finding the closest point on the object. Used
-    /// in hlRender.
-    ///
+    // Callback function for finding the closest point on the object. Used
+    // in hlRender.
+    //
     static HLboolean HLCALLBACK closestFeaturesCallback( 
                                        const HLdouble *query_point, 
                                        const HLdouble *target_point, 
