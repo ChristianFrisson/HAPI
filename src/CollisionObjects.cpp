@@ -2260,6 +2260,7 @@ bool Plane::lineIntersect( const Vec3 &from,
                            const Vec3 &to,
                            IntersectionInfo &result,
                            FaceType face ) {
+  result.intersection = false;
   Vec3 from_to = to - from;
 
   HAPIFloat denom = normal * from_to;
@@ -2286,6 +2287,7 @@ bool Plane::lineIntersect( const Vec3 &from,
     result.normal = normal;
     result.primitive = this;
     result.t = u;
+    result.intersection = true;
     return true;
   }
   return false;
