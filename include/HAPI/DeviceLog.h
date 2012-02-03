@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2009, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -153,6 +153,7 @@ namespace HAPI {
 
     /// The force of the EffectOutput will zero. Only logging to file
     /// will be done.
+		/// \param input Contains useful information, see EffectInput struct.
     virtual EffectOutput calculateForces( const EffectInput &input );
 
   protected:

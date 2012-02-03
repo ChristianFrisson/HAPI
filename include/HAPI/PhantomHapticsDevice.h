@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -174,6 +174,7 @@ namespace HAPI {
     /// are disabled by hardware. For example, the handle is in
     /// the inkwell of an omni or the safety switch is on for a Phantom
     /// desktop. NOTE: not tested with desktop.
+		/// \returns true if hardware forces are disabled.
     bool hardwareForceDisabled();
 
     /// Enable the device. Positions can be read and force can be sent.
@@ -242,6 +243,7 @@ namespace HAPI {
     /// The first successful initialization of PhantomHapticsDevice will decide
     /// the haptics thread rate since only one scheduler is used by
     /// OpenHaptics even for dual device configurations.
+		/// \returns true if device was initialized properly.
     virtual bool initHapticsDevice( int _thread_frequency = 1000 );
 
     /// Releases all resources allocated in initHapticsDevice. 

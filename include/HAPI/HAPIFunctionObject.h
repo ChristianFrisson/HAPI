@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -44,7 +44,7 @@ namespace HAPI {
     virtual ~HAPIFunctionObject() {}
 
     /// Evaluate the function.
-    /// Input points to the input values to the function.
+    /// \param input A pointer to the input values to the function to evaluate.
     virtual HAPIFloat evaluate( HAPIFloat *input ) = 0; 
   };
 }

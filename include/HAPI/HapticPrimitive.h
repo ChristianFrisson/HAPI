@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -41,6 +41,20 @@ namespace HAPI {
   class HAPI_API HapticPrimitive: public HAPIHapticShape {
   public:
     /// Constructor.
+		/// \param _transform The transformation from local to global space.
+		/// \param _primitive A GeometryPrimitive that contains collision functions
+		/// used by this shape. Setting a GeometryPrimitive sphere means that this
+		/// shape behaves like a sphere.
+    /// \param _surface The surface of the HAPIHapticShape.
+    /// \param _touchable_face Tells which face (side) of the shape that
+    /// should be possible to touch.
+    /// \param _userdata Extra data supplied by the user. HAPIHapticShape
+    /// have no idea what it contains.
+    /// \param _shape_id The id of this HAPIHapticShape.
+    /// \param _clean_up_func A function that can be used for cleaning up
+    /// contents of user_data when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of user_data member
+    /// variable.
     HapticPrimitive( const Matrix4 &_transform,
                      Collision::GeometryPrimitive *_primitive,
                      HAPISurfaceObject *_surface,
@@ -55,6 +69,19 @@ namespace HAPI {
       primitive( _primitive ) {}
 
     /// Constructor.
+		/// \param _primitive A GeometryPrimitive that contains collision functions
+		/// used by this shape. Setting a GeometryPrimitive sphere means that this
+		/// shape behaves like a sphere.
+		/// \param _surface The surface of the HAPIHapticShape.
+    /// \param _touchable_face Tells which face (side) of the shape that
+    /// should be possible to touch.
+    /// \param _userdata Extra data supplied by the user. HAPIHapticShape
+    /// have no idea what it contains.
+    /// \param _shape_id The id of this HAPIHapticShape.
+    /// \param _clean_up_func A function that can be used for cleaning up
+    /// contents of user_data when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of user_data member
+    /// variable.
     HapticPrimitive( Collision::GeometryPrimitive *_primitive,
                      HAPISurfaceObject *_surface,
                      Collision::FaceType _touchable_face = 

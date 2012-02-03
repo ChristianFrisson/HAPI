@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -57,7 +57,7 @@ namespace HAPI {
 
     /// The main function in any haptics renderer. Given a haptics device and 
     /// a group of shapes, it generates the force and torque to send to the
-    /// device.
+    /// device. dt is the timestep for the last haptics loop.
     virtual HAPIForceEffect::EffectOutput
       renderHapticsOneStep(  HAPIHapticsDevice *hd,
                              const HapticShapeVector &shapes,
@@ -72,44 +72,44 @@ namespace HAPI {
     static HapticsRendererRegistration renderer_registration;
 
   protected:
-    /// If the proxy is in contact with only one single plane this function
-    /// will take care of force calculations and proxy movement.
+    // If the proxy is in contact with only one single plane this function
+    // will take care of force calculations and proxy movement.
     void onOnePlaneContact( const Vec3& proxy_pos,
                             const PlaneConstraint &c, 
                             HAPISurfaceObject::ContactInfo &contact,
                             const HapticShapeVector &shapes );
 
-    /// If the proxy is in contact with two planes this function
-    /// will take care of force calculations and proxy movement.
-    /// Might call onOnePlaneContact after further reducing the problem of
-    /// how many planes the proxy is in contact with.
+    // If the proxy is in contact with two planes this function
+    // will take care of force calculations and proxy movement.
+    // Might call onOnePlaneContact after further reducing the problem of
+    // how many planes the proxy is in contact with.
     void onTwoPlaneContact( const Vec3& proxy_pos,
                             const PlaneConstraint &p0,
                             const PlaneConstraint &p1,
                             HAPISurfaceObject::ContactInfo &contact,
                             const HapticShapeVector &shapes );
 
-    /// If the proxy is in contact with three or more planes this function
-    /// will take care of force calculations and proxy movement.
-    /// Might call onTwoPlaneContact after further reducing the problem of
-    /// how many planes the proxy is in contact with.
+    // If the proxy is in contact with three or more planes this function
+    // will take care of force calculations and proxy movement.
+    // Might call onTwoPlaneContact after further reducing the problem of
+    // how many planes the proxy is in contact with.
     void onThreeOrMorePlaneContact(  const Vec3& proxy_pos,
                                      vector< PlaneConstraint > &constraints,
                                      HAPISurfaceObject::ContactInfo &contact,
                                      const HapticShapeVector &shapes );
 
-    /// Try to move the proxy to a new location. Will stop at the first
-    /// intersection with a plane in case of any.
+    // Try to move the proxy to a new location. Will stop at the first
+    // intersection with a plane in case of any.
     bool tryProxyMovement( Vec3 from, Vec3 to, 
                            int nr_constraints,
                            const PlaneConstraint &pc,
                            const HapticShapeVector &shapes,
                            Vec3 &point );
 
-    /// The position of the proxy.
+    // The position of the proxy.
     Vec3 proxy_position;
 
-    /// Tmp container to store contacts in while rendering a new loop.
+    // Tmp container to store contacts in while rendering a new loop.
     Contacts tmp_contacts;
     
     // vector with pairs shape_id, transform matrix. It contains the id

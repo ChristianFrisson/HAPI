@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -154,7 +154,8 @@ namespace HAPI {
     inline const string& getParams() { return params_string; }
 
     /// Evaluate the function. 
-    /// input points to the input values to the function.
+    /// \param input is a pointer to the input values of the function to
+		/// evaluate.
     virtual HAPIFloat evaluate( HAPIFloat *input );
 
   protected:

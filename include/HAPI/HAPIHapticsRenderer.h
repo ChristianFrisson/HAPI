@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -105,7 +105,7 @@ namespace HAPI {
 
     /// \brief The main function in any haptics renderer. Given a haptics
     /// device and a group of shapes generate the force and torque to send
-    /// to the device.
+    /// to the device. dt is the timestep from the last haptic loop to current.
     virtual HAPIForceEffect::EffectOutput 
       renderHapticsOneStep( HAPIHapticsDevice *hd,
                             const HapticShapeVector &shapes,
