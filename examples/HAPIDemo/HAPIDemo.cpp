@@ -237,7 +237,7 @@ WidgetsFrame::WidgetsFrame( const wxString& title )
   // we have 2 panes: book with pages demonstrating the controls in the
   // upper one and the start effect, stop effect and exit button in the lower
 
-  int style = wxNO_FULL_REPAINT_ON_RESIZE|wxCLIP_CHILDREN|wxBC_DEFAULT;
+  int style = wxNO_FULL_REPAINT_ON_RESIZE|wxCLIP_CHILDREN|wxNB_TOP;
 
   m_book = new wxBookCtrl( m_panel, wxID_ANY, wxDefaultPosition,
 #ifdef __WXMOTIF__

@@ -37,7 +37,6 @@ using namespace HAPI;
 int main(int argc, char* argv[]) {
   // Get a connected device.
   AnyHapticsDevice hd;
-
   // Init the device.
   if( hd.initDevice() != HAPIHapticsDevice::SUCCESS ) {
     cerr << hd.getLastErrorMsg() << endl;
@@ -68,15 +67,10 @@ int main(int argc, char* argv[]) {
     getline( cin, thePosition );
     HAPIFloat spring_constant = strtod( thePosition.c_str(), NULL );
 
-    stringstream stm_x, stm_y, stm_z, stm_constant;
-    stm_x << x;
-    stm_y << y;
-    stm_z << z;
-    stm_constant << spring_constant;
     cout << "The haptic device will be pulled towards position ";
-    cout << stm_x.str() << " ";
-    cout << stm_y.str() << " " << stm_z.str() << endl;
-    cout << "The spring constant used is: " << stm_constant.str() << endl;
+    cout << x << " ";
+    cout << y << " " << z << endl;
+    cout << "The spring constant used is: " << spring_constant << endl;
     cout << "Any faulty input number will be replaced by 0" << endl << endl;
 
     // The spring effect with a position and spring_constant input by the user.
