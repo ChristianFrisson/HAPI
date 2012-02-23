@@ -40,6 +40,7 @@ FOREACH(WXLIB ${wxlibs} )
         NAMES
         wxmsw29u_${WXLIB}
         wxmsw28${_UCD}_${WXLIB}
+				wxbase29u_${WXLIB}
         PATHS 
   	$ENV{H3D_EXTERNAL_ROOT}/${LIB}
         $ENV{H3D_ROOT}/../External/${LIB}
@@ -55,6 +56,7 @@ FOREACH(WXLIB ${wxlibs} )
 			NAMES
 			wxmsw29u${_DBG}_${WXLIB}
 			wxmsw28${_UCD}_${WXLIB}
+			wxbase29u${_DBG}_${WXLIB}
 			PATHS 
 		$ENV{H3D_EXTERNAL_ROOT}/${LIB}
 			$ENV{H3D_ROOT}/../External/${LIB}
