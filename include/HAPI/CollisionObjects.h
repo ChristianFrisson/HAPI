@@ -949,6 +949,26 @@ namespace HAPI {
         max = _max;
       }
 
+      /// Get the center of the box.
+      inline Vec3 getCenter() {
+        return (max + min) / 2;
+      }
+
+      /// Get the size of the box.
+      inline Vec3 getSize() {
+        return max - min;
+      }
+      
+      /// Get the corner with the largest coordinate for each axis.
+      inline Vec3 getMaxCorner() {
+        return max;
+      }
+
+      /// Get the corner with the smallest coordinate for each axis.
+      inline Vec3 getMinCorner() {
+        return min;
+      }
+
       /// Get constraint planes of the object. A proxy of a haptics renderer
       /// will always stay above any constraints added.
       /// \param point The point to constrain.
@@ -1242,6 +1262,7 @@ namespace HAPI {
                         const Vec3 &_center,
                         const Vec3 &_size );
 
+      
       /// Render the object. The caller of the function need to set up OpenGL
       /// state in case the rendering should be done differently
       /// (wireframe for example).
