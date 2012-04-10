@@ -394,6 +394,11 @@ namespace HAPI {
       forced_dynamic = s;
     }
 
+    /// Get the current force dynamic state.
+    inline bool getForceDynamic() {
+      return forced_dynamic;
+    }
+
     /// Get the closest point and normal on the object to the given point p.
     /// \param p The point to find the closest point to.
     /// \param cp Return parameter for closest point
