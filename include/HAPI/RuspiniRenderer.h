@@ -50,7 +50,8 @@ namespace HAPI {
 	  typedef Collision::CollisionObject::Constraints Constraints;
 
     /// Constructor.
-    RuspiniRenderer( HAPIFloat _proxy_radius = 0.0025 );
+    RuspiniRenderer( HAPIFloat _proxy_radius = 0.0025,
+                     bool _alwaysFollowSurface = false );
 
     /// Destructor.
     virtual ~RuspiniRenderer() {}
@@ -77,6 +78,23 @@ namespace HAPI {
       proxy_radius = r;
     }
     
+	/// Always move the proxy when the object that it is in contact with moves.
+  ///
+  /// Usually the proxy is only moved with the object if the object is 
+  /// moving towards the proxy.
+  ///
+  /// Enabling this option stops the proxy from slipping on the surface when 
+  /// the surface is moving tangentially. This helps when you want to drag
+  /// an object using the surface friction between the surface and the 
+  /// proxy.
+  ///
+  /// However, enabling this option has the side-effect that the proxy
+  /// may fall through a surface where objects intersect.
+  ///
+  inline void setAlwaysFollowSurface( bool a ) {
+		alwaysFollowSurface = a;
+	}
+
     /// Register this renderer to the haptics renderer database.
     static HapticsRendererRegistration renderer_registration;
 
@@ -111,6 +129,7 @@ namespace HAPI {
                            const Vec3 &normal );
     
     HAPIFloat proxy_radius;
+    bool alwaysFollowSurface;
     Vec3 proxy_position;
     Contacts tmp_contacts;
 

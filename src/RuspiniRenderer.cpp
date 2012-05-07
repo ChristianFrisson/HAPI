@@ -54,8 +54,10 @@ namespace RuspiniRendererConstants {
   const HAPIFloat above_plane_epsilon = 1e-13;
 }
 
-RuspiniRenderer::RuspiniRenderer( HAPIFloat _proxy_radius ):
+RuspiniRenderer::RuspiniRenderer( HAPIFloat _proxy_radius,
+                                  bool _alwaysFollowSurface ):
   proxy_radius( _proxy_radius ),
+  alwaysFollowSurface( _alwaysFollowSurface ),
   proxy_position( RuspiniRendererConstants::UNINITIALIZED_PROXY_POS ) {
 }
 
@@ -411,7 +413,11 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         // position. if it is moving towards the device position we might
         // move it too far and have a fallthrough. This will not happen if we
         // just let it be.
-        if( (proxy_pos - moved_proxy_pos).dotProduct( proxy_pos - input.position ) <= 0 ) {
+        //
+        // Pontus added: "|| alwaysFollowSurface" to override this check. If not set, the proxy will not move along
+        // with a moving rigid body when "dragging" it using lateral friction force.
+        // Todo: Investigate if problems occur, do this check in a cleaner way.
+        if( (proxy_pos - moved_proxy_pos).dotProduct( proxy_pos - input.position ) <= 0 || alwaysFollowSurface ) {
           proxy_pos = moved_proxy_pos;
           done = true;
           break;
@@ -654,7 +660,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     if( tmp_contacts[i].first->isDynamic() ) {
       last_contact_transforms.push_back( make_pair( tmp_contacts[i].first->getShapeId(),
                                                     tmp_contacts[i].first->getInverse() ) );
-    } 
+    }
   }
       
   proxy_position = new_proxy_pos;
