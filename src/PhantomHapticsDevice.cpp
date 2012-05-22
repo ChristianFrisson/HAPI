@@ -176,11 +176,14 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     // this should always be an invalid value but this is not always
     // true. Sometimes it is a HD_TIMER_ERROR. There is no way to check
     // if the scheduler rate is a valid value before hand unless
-    // we implement something for each SensAble model.
+    // we implement something for each SensAble model. HD_INVALID_OPERATION
+    // gets returned by OpenHaptics 3.0 and will be circumvented as well.
     HDErrorInfo error2 = hdGetError();
+
     if( HD_DEVICE_ERROR( error2 ) && (
         error2.errorCode != HD_INVALID_VALUE &&
-        error2.errorCode != HD_TIMER_ERROR ) ) {
+        error2.errorCode != HD_TIMER_ERROR &&
+        error2.errorCode != HD_INVALID_OPERATION) ) {
       stringstream s;
       if( device_name == "" )
         s << "Could not init default Phantom device. ";
