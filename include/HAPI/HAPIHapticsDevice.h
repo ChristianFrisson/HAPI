@@ -118,6 +118,7 @@ namespace HAPI {
       setup_haptic_rendering_callback( true ),
       haptic_rendering_cb_handle( -1 ),
       haptics_rate( 0 ),
+			nr_haptics_loops( 0 ),
       last_force_effect_change( 0 ),
       error_handler( new DefaultErrorHandler ),
       force_limit( -1 ),
@@ -1043,8 +1044,8 @@ namespace HAPI {
     HapticEffectVector last_force_effects;
 
     // Flag used to know if interpolation should be done between
-    // current_force_effects and last_force_effects. Set by setForceEffects
-    // and swapForceEffects.
+    // current_force_effects and last_force_effects. Set by setEffects
+    // and swapEffects.
     bool switching_effects;
 
     // Copy of switching_effects not used in haptics loop.
