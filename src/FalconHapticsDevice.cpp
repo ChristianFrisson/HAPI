@@ -164,10 +164,6 @@ void FalconHapticsDevice::sendOutput( DeviceOutput &dv,
     cerr << "Device error: " << error << endl;
 }
 
-
-auto_ptr< FalconHapticsDevice::FalconThread > 
-FalconHapticsDevice::FalconThread::singleton( new FalconThread );
-
 namespace FalconThreadInternals {
   H3DUtil::MutexLock callback_handles_lock;
   typedef std::list< std::pair< int, std::pair< void *, HDLOpHandle > > >
