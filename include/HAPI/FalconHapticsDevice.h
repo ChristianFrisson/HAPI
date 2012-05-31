@@ -69,6 +69,7 @@ namespace HAPI {
 
       /// Get the singleton instance of FalconThread.
       static FalconThread *getInstance() {
+        static auto_ptr< FalconThread > singleton ( new FalconThread() );
         return singleton.get();
       }
 
@@ -110,7 +111,6 @@ namespace HAPI {
 
     protected:
       static H3DUtil::PeriodicThread::CallbackCode setThreadId( void * _data );
-      static auto_ptr< FalconThread > singleton;
       bool is_active;
     };
 
