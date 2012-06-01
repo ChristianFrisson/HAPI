@@ -112,7 +112,7 @@ namespace HAPI {
       switching_effects( false ),
       tmp_switch_effects_duration( 0 ),
       switch_effects_duration( 0 ),
-      time_in_last_loop( 0 ),
+      time_in_last_loop( -1 ),
       device_state( UNINITIALIZED ),
       delete_thread( false ),
       setup_haptic_rendering_callback( true ),
@@ -725,6 +725,8 @@ namespace HAPI {
     inline unsigned int getHapticsRate() { return haptics_rate; }
 
     /// Get the time spent in the last haptics loop(in seconds)
+		/// If the time returned is -1 then no haptics loop has yet
+		/// been completed.
     inline HAPITime getTimeSpentInLastLoop() {
       return time_in_last_loop;
     }
@@ -1177,6 +1179,7 @@ namespace HAPI {
     /// The current error handler.
     auto_ptr< ErrorHandler > error_handler; 
 
+		// Time in last loop, if -1 then no loop has been completed.
     HAPITime time_in_last_loop;
 
     DeviceState device_state;

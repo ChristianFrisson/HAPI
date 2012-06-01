@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -170,10 +170,25 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   thread = hl_thread;
   nr_of_scheduled++;
   if( !scheduler_started ) {
+		// Just making sure that no other calls between the last check and this one
+		// generated any errors.
+		error = hdGetError();
+		if( HD_DEVICE_ERROR( error ) ) {
+			stringstream s;
+      if( device_name == "" )
+        s << "Could not init default Phantom device. ";
+      else
+        s << "Could not init Phantom device named \"" << device_name << "\".";
+      s << "Error code: ";
+      s << string( hdGetErrorString( error.errorCode ) ) ;
+      s << ". Internal error code: " << error.internalErrorCode;
+      setErrorMsg( s.str() );
+      return false;
+		}
     hdSetSchedulerRate( (HDulong)_thread_frequency );
     // Need to catch the error that might occur from trying to set the
     // scheduler rate to an invalid value. According to OpenHaptics reference
-    // this should always be an invalid value but this is not always
+    // this should always be HD_INVALID_VALUE but this is not always
     // true. Sometimes it is a HD_TIMER_ERROR. There is no way to check
     // if the scheduler rate is a valid value before hand unless
     // we implement something for each SensAble model. HD_INVALID_OPERATION
