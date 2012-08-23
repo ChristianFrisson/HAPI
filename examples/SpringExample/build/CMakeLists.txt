@@ -17,8 +17,8 @@ SET(requiredLibs)
 
 SET(CMAKE_MODULE_PATH ${SpringExample_SOURCE_DIR}/../../../build/modules )
 
-IF( H3D_USE_DEPENDECIES_ONLY )
-  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDECIES_ONLY to true.
+IF( H3D_USE_DEPENDENCIES_ONLY )
+  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
   IF(PTHREAD_FOUND)
     INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
   ENDIF(PTHREAD_FOUND)
@@ -27,7 +27,7 @@ IF( H3D_USE_DEPENDECIES_ONLY )
   INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
   
   SET( requiredLibs ${requiredLibs} H3DUtil HAPI )
-ELSE( H3D_USE_DEPENDECIES_ONLY )
+ELSE( H3D_USE_DEPENDENCIES_ONLY )
   #H3DUtil
   FIND_PACKAGE(H3DUtil REQUIRED)
 
@@ -43,7 +43,7 @@ ELSE( H3D_USE_DEPENDECIES_ONLY )
     INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
     SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
   ENDIF(HAPI_FOUND)
-ENDIF( H3D_USE_DEPENDECIES_ONLY )
+ENDIF( H3D_USE_DEPENDENCIES_ONLY )
 
 ADD_EXECUTABLE(SpringExample ${SpringExample_SRCS})
 
