@@ -13,8 +13,8 @@ SET(requiredLibs)
 
 SET(CMAKE_MODULE_PATH ${ThreadExamples_SOURCE_DIR}/../../../build/modules )
 
-IF( H3D_USE_DEPENDECIES_ONLY )
-  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDECIES_ONLY to true.
+IF( H3D_USE_DEPENDENCIES_ONLY )
+  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
   IF(PTHREAD_FOUND)
     INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
   ENDIF(PTHREAD_FOUND)
@@ -22,7 +22,7 @@ IF( H3D_USE_DEPENDECIES_ONLY )
   INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
   
   SET( requiredLibs ${requiredLibs} H3DUtil )
-ELSE( H3D_USE_DEPENDECIES_ONLY )
+ELSE( H3D_USE_DEPENDENCIES_ONLY )
   #H3DUtil
   FIND_PACKAGE(H3DUtil REQUIRED)
 
@@ -36,7 +36,7 @@ ELSE( H3D_USE_DEPENDECIES_ONLY )
     INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
     SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
   ENDIF(PTHREAD_FOUND)
-ENDIF( H3D_USE_DEPENDECIES_ONLY )
+ENDIF( H3D_USE_DEPENDENCIES_ONLY )
 
 ADD_EXECUTABLE(SimpleThreadPrint ${SimpleThreadPrint_SRCS})
 ADD_EXECUTABLE(SimpleThreadPrintLock ${SimpleThreadPrintLock_SRCS})
