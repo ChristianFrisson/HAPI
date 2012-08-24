@@ -1222,6 +1222,9 @@ namespace HAPI {
       transferObjectsCallback( void *data );
 
     friend class AnyHapticsDevice;
+		///\todo Remove this friend statement (CluthedHapticsDevice) when we figure out
+		/// a better way to do it.
+		friend class ClutchedHapticsDevice;
 
     unsigned int nr_haptics_loops;
     unsigned int haptics_rate;
