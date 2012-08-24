@@ -19,7 +19,6 @@ INCLUDE_DIRECTORIES( ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DU
 # a unity build project. Default is NO.
 IF( NOT DEFINED GENERATE_UNITY_BUILD )
   SET( GENERATE_UNITY_BUILD "NO" CACHE BOOL "Decides if a the generated project files should build through a unity build instead of a normal build. A unity builds packs all .cpp files into a UnityBuild.cpp file and then only include this in the project. This greatly reduces build times." )
-  MARK_AS_ADVANCED(GENERATE_UNITY_BUILD)
 ENDIF( NOT DEFINED GENERATE_UNITY_BUILD )
 
 
