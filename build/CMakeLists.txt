@@ -496,6 +496,15 @@ IF(WIN32)
 
     # autogenerate HAPI.rc depending on the version
     CONFIGURE_FILE( HAPI.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
+    
+    ADD_CUSTOM_COMMAND( TARGET HAPI
+                        PRE_BUILD
+                        COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                        ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${HAPI_SOURCE_DIR}/HAPI.rc.cmake
+                        ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
+                        ${HAPI_BUILD_VERSION} "${HAPI_SVN_VERSION}"
+                        "HAPI_Output_Name"
+                        "$(TargetFileName)" )
 
     IF( SubWCRev )
       # Update SVN revision in file.
@@ -510,6 +519,15 @@ IF(WIN32)
     IF(OPENHAPTICS_FOUND)
       # autogenerate HAPI.rc depending on the version
       CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
+      
+      ADD_CUSTOM_COMMAND( TARGET OpenHapticsRenderer
+                          PRE_BUILD
+                          COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc.cmake
+                          ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
+                          ${HAPI_BUILD_VERSION} "${HAPI_SVN_VERSION}"
+                          "OpenHapticsRenderer_Output_Name"
+                          "$(TargetFileName)" )
 
       IF( SubWCRev )
         # Update SVN revision in file.
@@ -525,6 +543,15 @@ IF(WIN32)
     IF(CHAI3D_FOUND)
       # autogenerate Chai3DRenderer.rc depending on the version
       CONFIGURE_FILE( Chai3DRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
+      
+      ADD_CUSTOM_COMMAND( TARGET Chai3DRenderer
+                          PRE_BUILD
+                          COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
+                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc.cmake
+                          ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
+                          ${HAPI_BUILD_VERSION} "${HAPI_SVN_VERSION}"
+                          "Chai3DRenderer_Output_Name"
+                          "$(TargetFileName)" )
 
       IF( SubWCRev )
         # Update SVN revision in file.

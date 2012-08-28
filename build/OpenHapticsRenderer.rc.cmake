@@ -105,7 +105,7 @@ BEGIN
             VALUE "InternalName", "OpenHapticsRenderer"
             VALUE "LegalCopyright", "Copyright (C) 2008"
             VALUE "LegalTrademarks", "www.h3d.org; www.sensegraphics.com"
-            VALUE "OriginalFilename", "OpenHapticsRenderer.dll"
+            VALUE "OriginalFilename", "${OpenHapticsRenderer_Output_Name}"
             VALUE "ProductName", "OpenHapticsRenderer Dynamic Link Library"
             VALUE "ProductVersion", "${HAPI_MAJOR_VERSION}, ${HAPI_MINOR_VERSION}, ${HAPI_BUILD_VERSION}, ${HAPI_SVN_VERSION}"
         END
