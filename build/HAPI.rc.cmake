@@ -88,7 +88,7 @@ BEGIN
             VALUE "InternalName", "HAPI"
             VALUE "LegalCopyright", "Copyright (C) 2008"
             VALUE "LegalTrademarks", "www.h3d.org; www.sensegraphics.com"
-            VALUE "OriginalFilename", "HAPI.dll"
+            VALUE "OriginalFilename", "${HAPI_Output_Name}"
             VALUE "ProductName", " HAPI Dynamic Link Library"
             VALUE "ProductVersion", "${HAPI_MAJOR_VERSION}, ${HAPI_MINOR_VERSION}, ${HAPI_BUILD_VERSION}, ${HAPI_SVN_VERSION}"
         END

@@ -105,7 +105,7 @@ BEGIN
             VALUE "InternalName", "Chai3DRenderer"
             VALUE "LegalCopyright", "Copyright (C) 2008"
             VALUE "LegalTrademarks", "www.h3d.org; www.sensegraphics.com"
-            VALUE "OriginalFilename", "Chai3DRenderer.dll"
+            VALUE "OriginalFilename", "${Chai3DRenderer_Output_Name}"
             VALUE "ProductName", "Chai3DRenderer Dynamic Link Library"
             VALUE "ProductVersion", "${HAPI_MAJOR_VERSION}, ${HAPI_MINOR_VERSION}, ${HAPI_BUILD_VERSION}, ${HAPI_SVN_VERSION}"
         END
