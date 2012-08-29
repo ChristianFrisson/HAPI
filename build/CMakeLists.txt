@@ -10,10 +10,11 @@ ENDIF(WIN32)
 # Make include files in paths like /usr/local/include have preference before
 # files in OSX frameworks. 
 SET(CMAKE_FIND_FRAMEWORK "LAST")
+
 PROJECT (HAPI)
 
-# include header directory.
-INCLUDE_DIRECTORIES( ${HAPI_SOURCE_DIR}/../include ${HAPI_SOURCE_DIR}/../../H3DUtil/include )
+# Set this variable so subdirectories ( added by ADD_SUBDIRECTORY ) can figure out where include files are.
+SET( HAPI_INCLUDE_DIR "${HAPI_SOURCE_DIR}/../include" )
 
 # Add a cache variable GENERATE_UNITY_BUILD to have the choice of selecting
 # a unity build project. Default is NO.
@@ -51,7 +52,12 @@ IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
   ENDIF( SPECIAL_BINARY_DIR )
   ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
                     ${BINARY_DIR_FOR_H3DUTIL} )
+  
+  GET_DIRECTORY_PROPERTY( H3DUTIL_INCLUDE_DIR DIRECTORY ${HAPI_SOURCE_DIR}/../../H3DUtil/build INCLUDE_DIRECTORIES )
 ENDIF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
+
+# include header directory.
+INCLUDE_DIRECTORIES( ${HAPI_SOURCE_DIR}/../include )
 
 SET( HAPI_MAJOR_VERSION 1 )
 SET( HAPI_MINOR_VERSION 1 )
@@ -288,6 +294,20 @@ SET( HAPI_optionalLibs )
 SET( HAPI_requiredLibs)
 SET( Chai3D_requiredLibs)
 SET( OpenHaptics_requiredLibs)
+
+IF( TARGET H3DUtil )
+  # Target was created by ADD_SUBDIRECTORY command.
+  INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
+  SET( requiredLibs ${HAPI_requiredLibs} H3DUtil )
+ELSE( TARGET H3DUtil )
+  #H3DUtil
+  FIND_PACKAGE(H3DUtil REQUIRED)
+
+  IF(H3DUTIL_FOUND)
+    INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
+  ENDIF(H3DUTIL_FOUND)
+ENDIF( TARGET H3DUtil )
 
 FIND_PACKAGE(PTHREAD REQUIRED)
 IF(PTHREAD_FOUND)
@@ -717,9 +737,6 @@ INSTALL( TARGETS HAPI
          RUNTIME DESTINATION bin
          ARCHIVE DESTINATION lib )
 
-# HAPI is dependent on H3DUtil
-ADD_DEPENDENCIES( HAPI H3DUtil )
-
 IF(WIN32)
   IF(OPENHAPTICS_FOUND)
     # Where to install OpenHapticsRenderer
@@ -727,10 +744,6 @@ IF(WIN32)
              LIBRARY DESTINATION lib
              RUNTIME DESTINATION bin
              ARCHIVE DESTINATION lib )
-
-    # OpenHapticsRenderer is dependent on HAPI and H3DUtil
-    ADD_DEPENDENCIES( OpenHapticsRenderer HAPI )
-    ADD_DEPENDENCIES( OpenHapticsRenderer H3DUtil )
   ENDIF(OPENHAPTICS_FOUND)
 
   IF(CHAI3D_FOUND)
@@ -739,10 +752,6 @@ IF(WIN32)
              LIBRARY DESTINATION lib
              RUNTIME DESTINATION bin
              ARCHIVE DESTINATION lib )
-
-    # Chai3DRenderer is dependent on HAPI and H3DUtil
-    ADD_DEPENDENCIES( Chai3DRenderer HAPI )
-    ADD_DEPENDENCIES( Chai3DRenderer H3DUtil )
   ENDIF(CHAI3D_FOUND)
 ELSE(WIN32)
   # Install header files on non-windows system (e.g. Unix).
@@ -761,47 +770,5 @@ IF( HAPI_EXAMPLE_PROJECTS )
   STRING( REGEX REPLACE "HAPI(/build)?" "HAPI/examples/build" HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../examples/build
                     ${HAPI_EXAMPLES_BINARY_DIR} )
-
-  IF( TARGET DirectXExample)
-    ADD_DEPENDENCIES( DirectXExample HAPI )
-  ENDIF( TARGET DirectXExample)
-
-  IF( TARGET FeedbackBufferCollector )
-    ADD_DEPENDENCIES( FeedbackBufferCollector HAPI )
-  ENDIF( TARGET FeedbackBufferCollector )
-
-  IF( TARGET HAPIDemo )
-    ADD_DEPENDENCIES( HAPIDemo HAPI )
-  ENDIF( TARGET HAPIDemo )
-
-  IF( TARGET SpringExample )
-    ADD_DEPENDENCIES( SpringExample HAPI )
-  ENDIF( TARGET SpringExample )
-
-  IF( TARGET SurfaceExample )
-    ADD_DEPENDENCIES( SurfaceExample HAPI )
-  ENDIF( TARGET SurfaceExample )
-
-  IF( TARGET H3DUtil )
-    IF( TARGET SimpleThreadPrint )
-      ADD_DEPENDENCIES( SimpleThreadPrint H3DUtil )
-    ENDIF( TARGET SimpleThreadPrint )
-    IF( TARGET SimpleThreadPrintLock )
-      ADD_DEPENDENCIES( SimpleThreadPrintLock H3DUtil )
-    ENDIF( TARGET SimpleThreadPrintLock )
-    IF( TARGET PeriodicThreadCallbacks )
-      ADD_DEPENDENCIES( PeriodicThreadCallbacks H3DUtil )
-    ENDIF( TARGET PeriodicThreadCallbacks )
-  ELSE( TARGET H3DUtil )
-    IF( TARGET SimpleThreadPrint )
-      ADD_DEPENDENCIES( SimpleThreadPrint HAPI )
-    ENDIF( TARGET SimpleThreadPrint )
-    IF( TARGET SimpleThreadPrintLock )
-      ADD_DEPENDENCIES( SimpleThreadPrintLock HAPI )
-    ENDIF( TARGET SimpleThreadPrintLock )
-    IF( TARGET PeriodicThreadCallbacks )
-      ADD_DEPENDENCIES( PeriodicThreadCallbacks HAPI )
-    ENDIF( TARGET PeriodicThreadCallbacks )
-  ENDIF( TARGET H3DUtil )
 ENDIF( HAPI_EXAMPLE_PROJECTS )
 
