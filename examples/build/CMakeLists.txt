@@ -5,22 +5,27 @@ PROJECT (HAPIExamples)
 
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 STRING( REPLACE /HAPI/examples/ /HAPI/examples/HAPIDemo/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
+MESSAGE( STATUS "Including HAPIDemo" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../HAPIDemo/build
                   ${BINARY_DIR_FOR_Example} )
 
 STRING( REPLACE /HAPI/examples/ /HAPI/examples/SpringExample/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
+MESSAGE( STATUS "Including HAPI SpringExample" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../SpringExample/build
                   ${BINARY_DIR_FOR_Example} )
 
 STRING( REPLACE /HAPI/examples/ /HAPI/examples/SurfaceExample/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
+MESSAGE( STATUS "Including HAPI SurfaceExample" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../SurfaceExample/build
                   ${BINARY_DIR_FOR_Example} )
 
 STRING( REPLACE /HAPI/examples/ /HAPI/examples/FeedbackBufferCollectorExample/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
+MESSAGE( STATUS "Including HAPI FeedbackBufferCollectionExample" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../FeedbackBufferCollectorExample/build
                   ${BINARY_DIR_FOR_Example} )
 
 STRING( REPLACE /HAPI/examples/ /HAPI/examples/ThreadExamples/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
+MESSAGE( STATUS "Including HAPI ThreadExamples" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../ThreadExamples/build
                   ${BINARY_DIR_FOR_Example} )
 
@@ -29,6 +34,7 @@ IF( WIN32 )
   FIND_PACKAGE( DirectX )
   IF( DirectX_FOUND )
     STRING( REPLACE /HAPI/examples/ /HAPI/examples/DirectXExample/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
+    MESSAGE( STATUS "Including HAPI DirectXExample" )
     ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../DirectXExample/build
                       ${BINARY_DIR_FOR_Example} )
   ELSE( DirectX_FOUND )
