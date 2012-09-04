@@ -736,7 +736,7 @@ namespace HAPI {
       return thread;
     }
 
-    // Should return the maximum stiffness (N/mm) the haptics device can
+    // Should return the maximum stiffness (N/m) the haptics device can
     // handle. returns -1 if for some reason there is no such value.
     HAPIFloat getMaxStiffness() {
       return max_stiffness;
