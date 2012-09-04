@@ -89,6 +89,7 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     setErrorMsg( s.str() );
     return false;
   } else {
+		hd->setErrorHandler( error_handler.get() );
     return true;
   }
 }

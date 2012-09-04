@@ -180,6 +180,10 @@ namespace HAPI {
     /// Releases all resources allocated in initHapticsDevice. 
     virtual bool releaseHapticsDevice();
 
+		// Internal function that handles HDAL errors by translating
+		// error code to string and calling the ErrorHandler.
+		void checkIfHDALError();
+
     /// The device name for this device.
     string device_name;
     
