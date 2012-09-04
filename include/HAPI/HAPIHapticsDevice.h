@@ -717,7 +717,7 @@ namespace HAPI {
     }
     
     /// Set the error handler.
-    void setErrorHandler( ErrorHandler *_error_handler ) {
+    virtual void setErrorHandler( ErrorHandler *_error_handler ) {
       error_handler.reset( _error_handler );
     }
     

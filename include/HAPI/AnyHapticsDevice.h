@@ -70,6 +70,11 @@ namespace HAPI {
       return e;
     }
 
+		virtual void setErrorHandler( ErrorHandler *_error_handler ) {
+      error_handler.reset( _error_handler );
+			if( hd.get() ) hd->setErrorHandler( _error_handler );
+    }
+
     /// Register this renderer to the haptics renderer database.
     static HapticsDeviceRegistration device_registration;
   protected:
