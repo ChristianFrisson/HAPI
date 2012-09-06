@@ -11,6 +11,12 @@ endif( COMMAND cmake_policy )
 # to the root binary directory of the project as ${HAPIDemo_BINARY_DIR}.
 project (HAPIDemo)
 
+# set the install directory on Windows
+IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+  SET( CMAKE_INSTALL_PREFIX ${HAPIDemo_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Create a library called "Hello" which include sourcefiles.
 # The extension is already found.  Any number of sources could be listed here.
 
@@ -131,13 +137,6 @@ ELSEIF( MSVC10 )
 ENDIF(MSVC70 OR MSVC71)
 
 TARGET_LINK_LIBRARIES( HAPIDemo ${requiredLibs} ${optionalLibs} )
-
-# set the install directory to the H3D directory on Windows
-IF(WIN32) 
-  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-    SET( CMAKE_INSTALL_PREFIX ${HAPIDemo_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-ENDIF(WIN32)
 
 INSTALL( TARGETS HAPIDemo
          LIBRARY DESTINATION lib

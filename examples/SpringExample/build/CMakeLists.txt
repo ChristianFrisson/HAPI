@@ -6,6 +6,12 @@ ENDIF(WIN32)
 # to the root binary directory of the project as ${SpringExample_BINARY_DIR}.
 PROJECT(SpringExample)
 
+# set the install directory on Windows
+IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+  SET( CMAKE_INSTALL_PREFIX ${SpringExample_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Create a library called "SpringExample" which includes the source file "SpringExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
 
@@ -57,13 +63,6 @@ ADD_EXECUTABLE(SpringExample ${SpringExample_SRCS})
 SET_TARGET_PROPERTIES( SpringExample PROPERTIES DEBUG_POSTFIX "_d" )
 
 TARGET_LINK_LIBRARIES( SpringExample ${requiredLibs} ${optionalLibs} )
-
-# set the install directory to the H3D directory on Windows
-IF(WIN32) 
-  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-    SET( CMAKE_INSTALL_PREFIX ${SpringExample_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-ENDIF(WIN32)
 
 INSTALL( TARGETS SpringExample
 	 LIBRARY DESTINATION lib

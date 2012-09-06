@@ -3,6 +3,12 @@ IF(WIN32)
 ENDIF(WIN32)
 PROJECT (HAPIExamples)
 
+# set the install directory on Windows
+IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+ SET( CMAKE_INSTALL_PREFIX ${HAPIExamples_SOURCE_DIR} )
+ SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 STRING( REPLACE /HAPI/examples/ /HAPI/examples/HAPIDemo/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
 MESSAGE( STATUS "Including HAPIDemo" )
@@ -41,8 +47,3 @@ IF( WIN32 )
     MESSAGE( STATUS "DirectX headers and libraries were not found. DirectXExample will not be generated." )
   ENDIF( DirectX_FOUND )
 ENDIF( WIN32 )
-
-# set the install directory to the H3D directory on Windows
-IF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
- SET( CMAKE_INSTALL_PREFIX ${HAPIExamples_SOURCE_DIR} )
-ENDIF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
