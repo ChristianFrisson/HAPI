@@ -7,6 +7,12 @@ ENDIF(WIN32)
 # to the root binary directory of the project as ${FeedbackBufferCollector_BINARY_DIR}.
 project (FeedbackBufferCollector)
 
+# set the install directory on Windows
+IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+  SET( CMAKE_INSTALL_PREFIX ${FeedbackBufferCollector_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Create a library called "FeedbackBufferCollector" which includes the source files.
 # The extension is already found.  Any number of sources could be listed here.
 
@@ -98,13 +104,6 @@ ADD_EXECUTABLE(FeedbackBufferCollector ${FeedbackBufferCollector_SRCS})
 SET_TARGET_PROPERTIES( FeedbackBufferCollector PROPERTIES DEBUG_POSTFIX "_d" )
 
 TARGET_LINK_LIBRARIES( FeedbackBufferCollector ${requiredLibs} )
-
-# set the install directory to the H3D directory on Windows
-IF(WIN32) 
-  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-    SET( CMAKE_INSTALL_PREFIX ${FeedbackBufferCollector_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-ENDIF(WIN32)
 
 INSTALL( TARGETS FeedbackBufferCollector
 	 LIBRARY DESTINATION lib

@@ -11,6 +11,12 @@ endif( COMMAND cmake_policy )
 # to the root binary directory of the project as ${DirectXExample_BINARY_DIR}.
 project (DirectXExample)
 
+# set the install directory on Windows
+IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+  SET( CMAKE_INSTALL_PREFIX ${DirectXExample_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Create a library called "DirectXExample" which includes the source files.
 # The extension is already found.  Any number of sources could be listed here.
 
@@ -68,13 +74,6 @@ ADD_EXECUTABLE(DirectXExample WIN32 ${DirectXExample_SRCS})
 SET_TARGET_PROPERTIES( DirectXExample PROPERTIES DEBUG_POSTFIX "_d" )
 
 TARGET_LINK_LIBRARIES( DirectXExample ${requiredLibs} )
-
-# set the install directory to the H3D directory on Windows
-IF(WIN32) 
-  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-    SET( CMAKE_INSTALL_PREFIX ${DirectXExample_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-ENDIF(WIN32)
 
 INSTALL( TARGETS DirectXExample
 	 LIBRARY DESTINATION lib

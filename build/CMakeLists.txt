@@ -13,6 +13,12 @@ SET(CMAKE_FIND_FRAMEWORK "LAST")
 
 PROJECT (HAPI)
 
+# set the install directory on Windows
+IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+  SET( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Set this variable so subdirectories ( added by ADD_SUBDIRECTORY ) can figure out where include files are.
 SET( HAPI_INCLUDE_DIR "${HAPI_SOURCE_DIR}/../include" )
 
@@ -585,11 +591,6 @@ IF(WIN32)
       ENDIF( SubWCRev )
     ENDIF(CHAI3D_FOUND)
   ENDIF(MSVC)
-  
-  # set the install directory to the H3D directory on Windows
-  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-    SET( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
  
   # is this only for msvc or for all windows compilers?
   SET(HAPI_requiredLibs ${HAPI_requiredLibs} winmm.lib DelayImp.lib )

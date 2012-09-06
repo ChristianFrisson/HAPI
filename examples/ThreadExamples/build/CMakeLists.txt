@@ -5,6 +5,12 @@ ENDIF(WIN32)
 # from the manual.
 project (ThreadExamples)
 
+# set the install directory on Windows
+IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+  SET( CMAKE_INSTALL_PREFIX ${ThreadExamples_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 SET( SimpleThreadPrint_SRCS "${ThreadExamples_SOURCE_DIR}/../SimpleThreadPrint/SimpleThreadPrint.cpp" )
 SET( SimpleThreadPrintLock_SRCS "${ThreadExamples_SOURCE_DIR}/../SimpleThreadPrintLock/SimpleThreadPrintLock.cpp" )
 SET( PeriodicThreadCallbacks_SRCS "${ThreadExamples_SOURCE_DIR}/../PeriodicThreadCallbacks/PeriodicThreadCallbacks.cpp" )
@@ -52,13 +58,6 @@ SET_TARGET_PROPERTIES( PeriodicThreadCallbacks PROPERTIES DEBUG_POSTFIX "_d" )
 TARGET_LINK_LIBRARIES( SimpleThreadPrint ${requiredLibs})
 TARGET_LINK_LIBRARIES( SimpleThreadPrintLock ${requiredLibs})
 TARGET_LINK_LIBRARIES( PeriodicThreadCallbacks ${requiredLibs})
-
-# set the install directory to the H3D directory on Windows
-IF(WIN32) 
-  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-    SET( CMAKE_INSTALL_PREFIX ${ThreadExamples_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-ENDIF(WIN32)
 
 INSTALL( TARGETS SimpleThreadPrint
 	 LIBRARY DESTINATION lib
