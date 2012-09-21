@@ -684,7 +684,7 @@ namespace HAPI {
     /// HAPIHapticsDevice with an instance of your error handler. Be aware that
     /// the function will be called in the haptics communication thread so be sure that
     /// your error handling functions are thread safe.
-    class HAPI_API ErrorHandler {
+    class HAPI_API ErrorHandler: public H3DUtil::RefCountedClass {
     public:
       /// Error handling function. Called upon haptics device error during haptics
       /// rendering.
@@ -1177,7 +1177,7 @@ namespace HAPI {
     TimeStamp last_loop_time;
 
     /// The current error handler.
-    auto_ptr< ErrorHandler > error_handler; 
+    H3DUtil::AutoRef< ErrorHandler > error_handler; 
 
 		// Time in last loop, if -1 then no loop has been completed.
     HAPITime time_in_last_loop;
