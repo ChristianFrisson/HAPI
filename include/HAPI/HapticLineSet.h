@@ -68,12 +68,12 @@ namespace HAPI {
                    Iterator end,
                    void *_userdata,
                    HAPISurfaceObject *_surface,
-                   void (*_clean_up_func) = 0,
+                   void (*_clean_up_func)(void *) = 0,
                    int _shape_id = -1,
                    Collision::FaceType _touchable_face = 
                    Collision::FRONT_AND_BACK ):
-      HAPIHapticShape( _userdata, _surface, _clean_up_func,
-                       _shape_id, _touchable_face ),
+      HAPIHapticShape( _surface, _touchable_face, _userdata,
+                       _shape_id, _clean_up_func ),
       lines( begin, end ) {}
 
     inline virtual int nrLines() {
