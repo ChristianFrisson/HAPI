@@ -587,8 +587,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     stack_tree->bound.reset( new_func() );
     stack_tree->bound->fitAroundPoints( fitting_points );
     
-    if (max_nr_triangles_in_leaf < 0 ||
-        stack_triangles.size() <= max_nr_triangles_in_leaf ) {
+    if ( stack_triangles.size() <= max_nr_triangles_in_leaf ) {
       //  build a leaf
       stack_tree->triangles.reserve( stack_triangles.size() );
       for( unsigned int i = 0; i < stack_triangles.size(); i++ ) {
@@ -743,8 +742,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     stack_tree->bound.reset( new_func() );
     stack_tree->bound->fitAroundPoints( fitting_points );
     
-   if (max_nr_triangles_in_leaf < 0 ||
-        ( stack_triangles.size() <= max_nr_triangles_in_leaf &&
+   if ( ( stack_triangles.size() <= max_nr_triangles_in_leaf &&
           stack_linesegments.size() <= max_nr_triangles_in_leaf &&
           stack_points.size() <= max_nr_triangles_in_leaf ) ) {
       // build a leaf
@@ -2716,7 +2714,7 @@ struct lt {
   bool operator()(const pair<Vec3, Vec3>& _Left,
                   const pair<Vec3, Vec3 >& _Right ) const {
     return (_Left.first < _Right.first ||
-            !(_Right.first < _Left.first) && _Left.second < _Right.second);
+            (!(_Right.first < _Left.first) && _Left.second < _Right.second));
         }
 };
 
@@ -2872,8 +2870,7 @@ BBPrimitiveTree::BBPrimitiveTree(
     const std::vector< int > &stack_primitives = stack.top().primitives;
     BBPrimitiveTree* stack_tree = stack.top().tree;
 
-    if (max_nr_primitives_in_leaf < 0 ||
-        stack_primitives.size() <= max_nr_primitives_in_leaf ) {
+    if ( stack_primitives.size() <= max_nr_primitives_in_leaf ) {
       //  build a leaf
       stack_tree->primitives.reserve( stack_primitives.size() );
       for( unsigned int i = 0; i < stack_primitives.size(); i++ ) {
