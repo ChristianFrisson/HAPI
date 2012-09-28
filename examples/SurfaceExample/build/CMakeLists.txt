@@ -65,6 +65,5 @@ SET_TARGET_PROPERTIES( SurfaceExample PROPERTIES DEBUG_POSTFIX "_d" )
 TARGET_LINK_LIBRARIES( SurfaceExample ${requiredLibs} ${optionalLibs} )
 
 INSTALL( TARGETS SurfaceExample
-	 LIBRARY DESTINATION lib
-	 RUNTIME DESTINATION bin )
-
+	 LIBRARY DESTINATION lib COMPONENT HAPI_cpack_examples_runtime
+	 RUNTIME DESTINATION bin COMPONENT HAPI_cpack_examples_runtime )

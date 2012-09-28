@@ -65,6 +65,5 @@ SET_TARGET_PROPERTIES( SpringExample PROPERTIES DEBUG_POSTFIX "_d" )
 TARGET_LINK_LIBRARIES( SpringExample ${requiredLibs} ${optionalLibs} )
 
 INSTALL( TARGETS SpringExample
-	 LIBRARY DESTINATION lib
-	 RUNTIME DESTINATION bin )
-
+	 LIBRARY DESTINATION lib COMPONENT HAPI_cpack_examples_runtime
+	 RUNTIME DESTINATION bin COMPONENT HAPI_cpack_examples_runtime )

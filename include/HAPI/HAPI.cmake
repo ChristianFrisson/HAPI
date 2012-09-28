@@ -96,7 +96,7 @@
 
 /// Undef if you do not want to build HAPI with OpenGL support. This will
 /// disable some features like FeedbackBufferCollector.
-#define HAVE_OPENGL
+#cmakedefine HAVE_OPENGL
 
 
 // note that _WIN32 is always defined when _WIN64 is defined.

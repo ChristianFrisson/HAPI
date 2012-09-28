@@ -10,36 +10,35 @@ IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INST
 ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
 
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-STRING( REPLACE /HAPI/examples/ /HAPI/examples/HAPIDemo/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
 MESSAGE( STATUS "Including HAPIDemo" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../HAPIDemo/build
-                  ${BINARY_DIR_FOR_Example} )
+                  ${CMAKE_CURRENT_BINARY_DIR}/HAPIDemo )
 
-STRING( REPLACE /HAPI/examples/ /HAPI/examples/SpringExample/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
 MESSAGE( STATUS "Including HAPI SpringExample" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../SpringExample/build
-                  ${BINARY_DIR_FOR_Example} )
+                  ${CMAKE_CURRENT_BINARY_DIR}/SpringExample )
 
-STRING( REPLACE /HAPI/examples/ /HAPI/examples/SurfaceExample/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
 MESSAGE( STATUS "Including HAPI SurfaceExample" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../SurfaceExample/build
-                  ${BINARY_DIR_FOR_Example} )
+                  ${CMAKE_CURRENT_BINARY_DIR}/SurfaceExample )
 
-STRING( REPLACE /HAPI/examples/ /HAPI/examples/FeedbackBufferCollectorExample/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
-MESSAGE( STATUS "Including HAPI FeedbackBufferCollectionExample" )
-ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../FeedbackBufferCollectorExample/build
-                  ${BINARY_DIR_FOR_Example} )
+FIND_PACKAGE( OpenGL )
+IF( OPENGL_FOUND )
+  MESSAGE( STATUS "Including HAPI FeedbackBufferCollectionExample" )
+  ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../FeedbackBufferCollectorExample/build
+                    ${CMAKE_CURRENT_BINARY_DIR}/FeedbackBufferCollectorExample )
+ELSE( OPENGL_FOUND )
+  MESSAGE( STATUS "OpenGL was not found. FeedbackBufferCollectorExample will not be generated." )
+ENDIF( OPENGL_FOUND )
 
-STRING( REPLACE /HAPI/examples/ /HAPI/examples/ThreadExamples/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
 MESSAGE( STATUS "Including HAPI ThreadExamples" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../ThreadExamples/build
-                  ${BINARY_DIR_FOR_Example} )
+                  ${CMAKE_CURRENT_BINARY_DIR}/ThreadExamples )
 
 IF( WIN32 )
   SET(CMAKE_MODULE_PATH ${HAPIExamples_SOURCE_DIR}/../../build/modules )
   FIND_PACKAGE( DirectX )
   IF( DirectX_FOUND )
-    STRING( REPLACE /HAPI/examples/ /HAPI/examples/DirectXExample/ BINARY_DIR_FOR_Example ${CMAKE_CURRENT_BINARY_DIR} )
     MESSAGE( STATUS "Including HAPI DirectXExample" )
     ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../DirectXExample/build
                       ${BINARY_DIR_FOR_Example} )

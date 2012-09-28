@@ -60,14 +60,13 @@ TARGET_LINK_LIBRARIES( SimpleThreadPrintLock ${requiredLibs})
 TARGET_LINK_LIBRARIES( PeriodicThreadCallbacks ${requiredLibs})
 
 INSTALL( TARGETS SimpleThreadPrint
-	 LIBRARY DESTINATION lib
-	 RUNTIME DESTINATION bin )
+	 LIBRARY DESTINATION lib COMPONENT HAPI_cpack_examples_runtime
+	 RUNTIME DESTINATION bin COMPONENT HAPI_cpack_examples_runtime )
 
 INSTALL( TARGETS SimpleThreadPrintLock
-	 LIBRARY DESTINATION lib
-	 RUNTIME DESTINATION bin )
+	 LIBRARY DESTINATION lib COMPONENT HAPI_cpack_examples_runtime
+	 RUNTIME DESTINATION bin COMPONENT HAPI_cpack_examples_runtime )
 
 INSTALL( TARGETS PeriodicThreadCallbacks
-	 LIBRARY DESTINATION lib
-	 RUNTIME DESTINATION bin )
-
+	 LIBRARY DESTINATION lib COMPONENT HAPI_cpack_examples_runtime
+	 RUNTIME DESTINATION bin COMPONENT HAPI_cpack_examples_runtime )
