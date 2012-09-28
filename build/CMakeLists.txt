@@ -28,7 +28,6 @@ IF( NOT DEFINED GENERATE_UNITY_BUILD )
   SET( GENERATE_UNITY_BUILD "NO" CACHE BOOL "Decides if a the generated project files should build through a unity build instead of a normal build. A unity builds packs all .cpp files into a UnityBuild.cpp file and then only include this in the project. This greatly reduces build times." )
 ENDIF( NOT DEFINED GENERATE_UNITY_BUILD )
 
-
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
 # for packaging HAPI. Default is NO since most people will not use this.
 IF( NOT DEFINED GENERATE_CPACK_PROJECT )
@@ -44,24 +43,18 @@ IF( NOT DEFINED PREFER_STATIC_LIBRARIES )
 ENDIF( NOT DEFINED PREFER_STATIC_LIBRARIES )
 
 IF( PREFER_STATIC_LIBRARIES )
-  SET( CMAKE_FIND_LIBRARY_SUFFIXES .a;${CMAKE_FIND_LIBRARY_SUFFIXES} )	
+  SET( CMAKE_FIND_LIBRARY_SUFFIXES .a;${CMAKE_FIND_LIBRARY_SUFFIXES} )  
 ENDIF( PREFER_STATIC_LIBRARIES )
 
 
 # include H3DUtil in the build
-IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
-  # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-  STRING( REPLACE "HAPI" "H3DUtil" BINARY_DIR_FOR_H3DUTIL ${CMAKE_CURRENT_BINARY_DIR} )
-  STRING( COMPARE EQUAL ${BINARY_DIR_FOR_H3DUTIL} ${CMAKE_CURRENT_BINARY_DIR} SPECIAL_BINARY_DIR )
-  IF( SPECIAL_BINARY_DIR )
-    SET( BINARY_DIR_FOR_H3DUTIL ${HAPI_SOURCE_DIR}/../../H3DUtil/build )
-  ENDIF( SPECIAL_BINARY_DIR )
-	MESSAGE( STATUS "Including H3DUtil" )
+IF( WIN32 )
+  MESSAGE( STATUS "Including H3DUtil" )
   ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
-                    ${BINARY_DIR_FOR_H3DUTIL} )
+                    ${CMAKE_CURRENT_BINARY_DIR}/H3DUtil )
   
   GET_DIRECTORY_PROPERTY( H3DUTIL_INCLUDE_DIR DIRECTORY ${HAPI_SOURCE_DIR}/../../H3DUtil/build INCLUDE_DIRECTORIES )
-ENDIF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
+ENDIF( WIN32 )
 
 # include header directory.
 INCLUDE_DIRECTORIES( ${HAPI_SOURCE_DIR}/../include )
@@ -72,225 +65,6 @@ SET( HAPI_BUILD_VERSION 1 )
 
 # Set here already in case a special NSIS template needs to be used by cpack.
 SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
-
-# If cpack should be configured.
-IF( GENERATE_CPACK_PROJECT )
-  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform, device independent haptics library.")
-  SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
-  SET(CPACK_PACKAGE_CONTACT "support@sensegraphics.com" )
-  SET(CPACK_PACKAGE_DESCRIPTION_FILE "${HAPI_SOURCE_DIR}/../ReadMe")
-  SET(CPACK_RESOURCE_FILE_LICENSE "${HAPI_SOURCE_DIR}/../LICENSE")
-  SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};HAPI;ALL;/" )
-  SET(CPACK_PACKAGE_INSTALL_DIRECTORY "HAPI" )
-
-  # Our project depends on these debian packages for Linux.
-  SET(DEBIAN_PACKAGE_DEPENDS "libgl-dev, h3dutil(>=1.0.0)" )
-
-  # File patterns to ignore, common for all operating systems.
-  SET( HAPI_CPACK_IGNORE_PATTERNS /\\\\.svn/
-                                  \\\\.obj$
-                                  \\\\.ncb$
-                                  \\\\.log$
-                                  \\\\.suo$
-                                  \\\\.zip$
-                                  \\\\.dir/
-                                  \\\\.user$
-                                  \\\\.cv$
-                                  "/Debug(.)*/"
-                                  "/debug(.)*/"
-                                  /Release
-                                  /release
-                                  /linux
-                                  /build/win32/
-                                  "/(build|examples)/vc(7|(8|9))"
-                                  /osx/ )
-  
-  SET(CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION})
-  SET(CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION})
-  SET(CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION})
-
-  IF(WIN32 AND NOT UNIX)
-    # Cached variable used by H3DAPIs GENERATE_CPACK_PROJECT to get the correct installation directories.
-    SET( HAPI_CPACK_INSTALLED_DIRECTORIES ""
-        CACHE INTERNAL "Installed directories of HAPI." )
-    SET( CPACK_PACKAGE_START_MENU_NAME "HAPI 1.1" )
-
-    SET( HAPIExamples_cmake_install "" CACHE PATH "Needs to be set if examples for HAPI is desired to be packed in the install. Set to location of cmake_install.cmake for the examples." )
-    MARK_AS_ADVANCED(HAPIExamples_cmake_install)
-    IF( HAPIExamples_cmake_install )
-      SET(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
-                                       "${HAPIExamples_cmake_install};Examples;ALL;/" )
-      FIND_PACKAGE(wxWidgetsWin)
-    ENDIF( HAPIExamples_cmake_install )
-
-    IF( HAPIExamples_cmake_install OR HAPI_EXAMPLE_PROJECTS )
-      SET( CPACK_ADD_HAPIEXAMPLES_LINKS "ON" )
-    ENDIF( HAPIExamples_cmake_install OR HAPI_EXAMPLE_PROJECTS )
-
-    IF( NOT PREFER_STATIC_LIBRARIES )
-      # Ignore static libraries.
-      SET( HAPI_CPACK_IGNORE_PATTERNS ${HAPI_CPACK_IGNORE_PATTERNS}
-                                      /freeglut_static\\\\.lib$
-                                      /glew32_static\\\\.lib$
-                                      "/FreeImage_static(_vc8)*(_vc9)*(_d)*\\\\.lib$" )
-    ENDIF( NOT PREFER_STATIC_LIBRARIES )
-
-    # This might be cleaned up a bit after cleaning External.
-    SET( CPACK_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS}
-                            /fparser\\\\.lib$
-                            "/wxbase28_net(_vc8)*\\\\.lib$"
-                            "/wxbase28_odbc(_vc8)*\\\\.lib$"
-                            "/wxbase28_xml(_vc8)*\\\\.lib$"
-                            "/wxbase28_net(_vc8)*\\\\.lib$"
-                            "/wxexpat(_vc8)*\\\\.lib$"
-                            "/wxjpeg(_vc8)*\\\\.lib$"
-                            "/wxmsw28_aui(_vc8)*\\\\.lib$"
-                            "/wxmsw28_dbgrid(_vc8)*\\\\.lib$"
-                            "/wxmsw28_html(_vc8)*\\\\.lib$"
-                            "/wxmsw28_media(_vc8)*\\\\.lib$"
-                            "/wxmsw28_qa(_vc8)*\\\\.lib$"
-                            "/wxmsw28_richtext(_vc8)*\\\\.lib$"
-                            "/wxmsw28_xrc(_vc8)*\\\\.lib$"
-                            "/wxpng(_vc8)*\\\\.lib$"
-                            "/wxregex(_vc8)*\\\\.lib$"
-                            "/wxtiff(_vc8)*\\\\.lib$"
-                            "/wxzlib(_vc8)*\\\\.lib$"
-                            /pthreadGC2\\\\.dll$
-                            /pthreadGCE2\\\\.dll$
-                            "/pthreadVSE2\\\\.(dll|lib)$"
-                            /audiofile\\\\.dll$
-                            /cg\\\\.dll$
-                            /cgGL\\\\.dll$
-                            /ftgl_dynamic_MTD\\\\.dll$
-                            /libcurl\\\\.dll$
-                            /ogg\\\\.dll$
-                            /ogg_d\\\\.dll$
-                            /OpenAL32\\\\.dll$
-                            /vorbis\\\\.dll$
-                            /vorbisfile\\\\.dll$
-                            /wrap_oal\\\\.dll$
-                            /xerces-c_2_7\\\\.dll$
-                            /xerces-c_2_7D\\\\.dll$
-                            /xerces-c_2_8.dll\\\\.dll$
-                            /ALut\\\\.lib$
-                            /audiofile\\\\.lib$
-                            /cg\\\\.lib$
-                            /cgGL\\\\.lib$
-                            /freetype219MT\\\\.lib$
-                            /freetype235\\\\.lib$
-                            /ftgl_dynamic_MTD\\\\.lib$
-                            /ftgl_static_MTD\\\\.lib$
-                            /libaudiofile\\\\.lib$
-                            /libcurl\\\\.lib$
-                            /libcurl_static\\\\.lib$
-                            /ogg\\\\.lib$
-                            /ogg_static\\\\.lib$
-                            /OpenAL32\\\\.lib$
-                            /siapp\\\\.lib$
-                            /spwmath\\\\.lib$
-                            /strmbase\\\\.lib$
-                            /vorbis\\\\.lib$
-                            /vorbis_static\\\\.lib$
-                            /vorbisfile\\\\.lib$
-                            /vorbisfile_static\\\\.lib$
-                            /xerces-c_2\\\\.lib$
-                            /Xerces-c_static_2\\\\.lib$
-                            /include/3dconnexion/
-                            /include/AL/
-                            /include/Cg/
-                            /include/curl/
-                            /include/DirectShow/
-                            /include/fparser/
-                            /include/freetype/
-                            /include/FTGL/
-                            /include/libaudiofile/
-                            /include/ogg/
-                            /include/vorbis/
-                            /include/xercesc/
-                            /HapticAPI2
-                            /ftgl_static_MTD_d\\\\.lib$
-                            /ftgl_static_MTD_vc8\\\\.lib$
-                            /ftgl_static_MTD_vc8_d\\\\.lib$
-                            /ftgl_static_MTD_vc9\\\\.lib$
-                            /ftgl_static_MTD_vc9_d\\\\.lib$
-                            /Xerces-c_static_2_d\\\\.lib$
-                            /xerces-c_static_2_vc8\\\\.lib$
-                            /xerces-c_static_2_vc8_d\\\\.lib$
-                            /xerces-c_static_2_vc9\\\\.lib$
-                            /xerces-c_static_2_vc9_d\\\\.lib$
-                            /dcmdata\\\\.lib$
-                            /dcmimage\\\\.lib$
-                            /dcmimgle\\\\.lib$
-                            /ofstd\\\\.lib$
-                            /Definitions.h$
-                            "/DentalSimAPI\\\\.(lib)*(dll)*(h)*$"
-                            "/H3DAPI"
-                            "/H3DViewer"
-                            "/H3DLoad"
-                            "/H3D API" )
-
-    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                    "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
-                                    "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
-                                    "${HAPI_SOURCE_DIR}/../../doc2;doc"
-                                    "${HAPI_SOURCE_DIR}/../../bin;bin"
-                                    "${HAPI_SOURCE_DIR}/../../lib;lib" )
-
-    # Extra links to start menu if values are "ON"
-    SET( CPACK_ADD_HAPIDOC_LINKS "ON" )
-
-    # Extra install commands will be set to install vc8(9)_redists
-    SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
-    
-    # Add cache variable vc8(9)_redist which should be set to the install file
-    # for microsoft visual studio redistributables, they can be found in the
-    # installation folder for each visual studio installation.
-    IF( NOT DEFINED vc8_redist )
-      SET( vc8_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 8" )
-      MARK_AS_ADVANCED(vc8_redist)
-    ENDIF( NOT DEFINED vc8_redist )
-    
-    IF( NOT DEFINED vc9_redist )
-      SET( vc9_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 9." )
-      MARK_AS_ADVANCED(vc9_redist)
-    ENDIF( NOT DEFINED vc9_redist )
-
-    IF( vc8_redist )
-      STRING( REPLACE "/" "\\\\" Temp_vc8_redist ${vc8_redist} )
-      GET_FILENAME_COMPONENT( VC8_FILE_NAME ${vc8_redist} NAME )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc8\\\"\\n"
-                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc8_redist}\\\"\\n"
-                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"\\n"
-                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc8\\\"\\n\\n" )
-    ENDIF( vc8_redist )
-    
-    IF( vc9_redist )
-      STRING( REPLACE "/" "\\\\" Temp_vc9_redist ${vc9_redist} )
-      GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc9\\\"\\n"
-                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc9_redist}\\\"\\n"
-                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"\\n"
-                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
-    ENDIF( vc9_redist )
-    
-    # Modify path since in the NSIS template.
-    SET( CPACK_NSIS_MODIFY_PATH "ON" )
-  ELSE(WIN32 AND NOT UNIX)
-    SET( HAPI_CPACK_IGNORE_PATTERNS ${HAPI_CPACK_IGNORE_PATTERNS}
-                                    "~$" )
-    SET(CPACK_SOURCE_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS} )
-    SET(CPACK_SOURCE_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/../../HAPI;HAPI"
-                                           "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
-  ENDIF(WIN32 AND NOT UNIX)
-ENDIF( GENERATE_CPACK_PROJECT )
 
 SET( HAPI_FULL_VERSION ${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION} )
 
@@ -419,7 +193,7 @@ IF(MLHI_FOUND)
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${MLHI_LIBRARIES} )
 ENDIF(MLHI_FOUND)
 
-FIND_PACKAGE(OpenGL REQUIRED)
+FIND_PACKAGE(OpenGL)
 IF(OPENGL_FOUND)
   SET(HAVE_OPENGL 1)
   INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIR} )
@@ -459,36 +233,6 @@ IF(MSVC)
   SET( HAPI_SRCS ${HAPI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
 ENDIF(MSVC)
 
-# If cpack project should be generated and windows is the system on which to generate
-# a number of extra directories needs to be added. They are added to an internal cached
-# variable which can be used by other cmakelists that use HAPI as subdirectory (e.g. H3DAPI).
-IF( GENERATE_CPACK_PROJECT )
-  
-  IF( WIN32 )
-    IF( PTHREAD_FOUND )
-      SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                            "${PTHREAD_INCLUDE_DIR}/../../include;External/include"
-           CACHE INTERNAL "Installed directories of HAPI." )
-    ENDIF( PTHREAD_FOUND )
-    
-    SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                          "${HAPI_SOURCE_DIR}/../../External/bin;External/bin"
-         CACHE INTERNAL "Installed directories of HAPI." )  
-    SET( HAPI_CPACK_INSTALLED_DIRECTORIES ${HAPI_CPACK_INSTALLED_DIRECTORIES}
-                                          "${HAPI_SOURCE_DIR}/../../External/lib;External/lib"
-         CACHE INTERNAL "Installed directories of HAPI." )
-    SET( CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                     ${HAPI_CPACK_INSTALLED_DIRECTORIES} )
-  ENDIF( WIN32 )
-  
-  INCLUDE(CPack)
-  INCLUDE(UseDebian)
-  IF(DEBIAN_FOUND)
-    ADD_DEBIAN_TARGETS(HAPI)
-  ENDIF(DEBIAN_FOUND)
-  
-ENDIF( GENERATE_CPACK_PROJECT )
-
 IF(WIN32)
 
   # OpenHapticsRenderer and Chai3DRenderer are compiled as separate dlls 
@@ -499,6 +243,9 @@ IF(WIN32)
       SET( OH_SRCS ${OH_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
     ENDIF(MSVC)
     ADD_LIBRARY(OpenHapticsRenderer SHARED ${OH_SRCS} ${OH_HEADERS} )
+    IF( GENERATE_CPACK_PROJECT )
+      SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} OpenHapticsRenderer )
+    ENDIF( GENERATE_CPACK_PROJECT )
   ENDIF(OPENHAPTICS_FOUND)
   
   IF(CHAI3D_FOUND)
@@ -506,6 +253,9 @@ IF(WIN32)
       SET( CHAI_SRCS ${CHAI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
     ENDIF(MSVC)
     ADD_LIBRARY(Chai3DRenderer SHARED ${CHAI_SRCS} ${CHAI_HEADERS} )
+    IF( GENERATE_CPACK_PROJECT )
+      SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} Chai3DRenderer )
+    ENDIF( GENERATE_CPACK_PROJECT )
   ENDIF(CHAI3D_FOUND)
 
   IF( MSVC )
@@ -724,7 +474,7 @@ IF( WIN32 )
   /DELAYLOAD:\"Haptik.Library.dll\"
   /DELAYLOAD:\"SimballMedicalHID.dll\" 
   /DELAYLOAD:\"VirtuoseDLL.dll\"
-	/DELAYLOAD:\"FTD2XX.dll\"" )
+  /DELAYLOAD:\"FTD2XX.dll\"" )
 ENDIF( WIN32 )
 
 # set compile flags for HAPI project
@@ -735,42 +485,65 @@ CONFIGURE_FILE( ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.cmake ${HAPI_SOURCE_DIR}
 
 # Where to install HAPI
 INSTALL( TARGETS HAPI 
-         LIBRARY DESTINATION lib
-         RUNTIME DESTINATION bin
-         ARCHIVE DESTINATION lib )
+         LIBRARY DESTINATION lib COMPONENT HAPI_cpack_runtime
+         RUNTIME DESTINATION bin COMPONENT HAPI_cpack_runtime
+         ARCHIVE DESTINATION lib COMPONENT HAPI_cpack_libraries )
 
 IF(WIN32)
   IF(OPENHAPTICS_FOUND)
     # Where to install OpenHapticsRenderer
     INSTALL( TARGETS OpenHapticsRenderer
-             LIBRARY DESTINATION lib
-             RUNTIME DESTINATION bin
-             ARCHIVE DESTINATION lib )
+             LIBRARY DESTINATION lib COMPONENT HAPI_cpack_runtime
+             RUNTIME DESTINATION bin COMPONENT HAPI_cpack_runtime
+             ARCHIVE DESTINATION lib COMPONENT HAPI_cpack_libraries )
   ENDIF(OPENHAPTICS_FOUND)
 
   IF(CHAI3D_FOUND)
     # Where to install Chai3DRenderer
     INSTALL( TARGETS Chai3DRenderer 
-             LIBRARY DESTINATION lib
-             RUNTIME DESTINATION bin
-             ARCHIVE DESTINATION lib )
+             LIBRARY DESTINATION lib COMPONENT HAPI_cpack_runtime
+             RUNTIME DESTINATION bin COMPONENT HAPI_cpack_runtime
+             ARCHIVE DESTINATION lib COMPONENT HAPI_cpack_libraries )
   ENDIF(CHAI3D_FOUND)
-ELSE(WIN32)
+ELSEIF( NOT GENERATE_CPACK_PROJECT )
   # Install header files on non-windows system (e.g. Unix).
   INSTALL( FILES ${HAPI_HEADERS} ${OH_HEADERS} ${CHAI_HEADERS}
            DESTINATION include/HAPI )
 ENDIF(WIN32)
-
 
 IF( NOT DEFINED HAPI_EXAMPLE_PROJECTS )
   SET( HAPI_EXAMPLE_PROJECTS "NO" CACHE BOOL "If set to YES the example projects distributed with HAPI will be included in the build." )
 ENDIF( NOT DEFINED HAPI_EXAMPLE_PROJECTS )
 
 IF( HAPI_EXAMPLE_PROJECTS )
-  # This is done to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-  # The version of the next line avoids: 'Policy CMP0013 is not set: Duplicate binary directories are not allowed.'
-  STRING( REGEX REPLACE "HAPI(/build)?" "HAPI/examples/build" HAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../examples/build
-                    ${HAPI_EXAMPLES_BINARY_DIR} )
+                    ${CMAKE_CURRENT_BINARY_DIR}/examples )
+  IF( TARGET HAPIDemo )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} HAPIDemo )
+  ENDIF( TARGET HAPIDemo )
+  IF( TARGET SpringExample )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} SpringExample )
+  ENDIF( TARGET SpringExample )
+  IF( TARGET SurfaceExample )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} SurfaceExample )
+  ENDIF( TARGET SurfaceExample )
+  IF( TARGET FeedbackBufferCollector )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} FeedbackBufferCollector )
+  ENDIF( TARGET FeedbackBufferCollector )
+  IF( TARGET SimpleThreadPrint )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} SimpleThreadPrint )
+  ENDIF( TARGET SimpleThreadPrint )
+  IF( TARGET SimpleThreadPrintLock )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} SimpleThreadPrintLock )
+  ENDIF( TARGET SimpleThreadPrintLock )
+  IF( TARGET PeriodicThreadCallbacks )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} PeriodicThreadCallbacks )
+  ENDIF( TARGET PeriodicThreadCallbacks )
+  IF( TARGET DirectXExample )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} DirectXExample )
+  ENDIF( TARGET DirectXExample )
 ENDIF( HAPI_EXAMPLE_PROJECTS )
 
+IF( NOT H3DAPI_SOURCE_DIR )
+  include( ${HAPI_SOURCE_DIR}/HAPICPack.cmake )
+ENDIF( NOT H3DAPI_SOURCE_DIR )

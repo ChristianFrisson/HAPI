@@ -139,5 +139,5 @@ ENDIF(MSVC70 OR MSVC71)
 TARGET_LINK_LIBRARIES( HAPIDemo ${requiredLibs} ${optionalLibs} )
 
 INSTALL( TARGETS HAPIDemo
-         LIBRARY DESTINATION lib
-         RUNTIME DESTINATION bin )
+         LIBRARY DESTINATION lib COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION bin COMPONENT HAPI_cpack_examples_runtime )

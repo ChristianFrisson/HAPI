@@ -18,29 +18,29 @@
   Var ADD_TO_PATH_ALL_USERS
   Var ADD_TO_PATH_CURRENT_USER
   ;Var INSTALL_DESKTOP
-
+  Var IS_DEFAULT_INSTALLDIR
 ;--------------------------------
 ;Include Modern UI
 
   !include "MUI.nsh"
 
   ;Default installation folder
-  InstallDir "C:\@CPACK_PACKAGE_INSTALL_DIRECTORY@"  
+  InstallDir "@CPACK_NSIS_INSTALL_ROOT@\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
 ;--------------------------------
 ;General
 
   ;Name and file
-  Name "@CPACK_PACKAGE_START_MENU_NAME@"
+  Name "@CPACK_NSIS_PACKAGE_NAME@"
   OutFile "@CPACK_TOPLEVEL_DIRECTORY@/@CPACK_OUTPUT_FILE_NAME@"
 
   ;Set compression
   SetCompressor @CPACK_NSIS_COMPRESSOR@
-   
+
 @CPACK_NSIS_DEFINES@   
-   
+
   !include Sections.nsh
-  
+
 ;--- Component support macros: ---
 ; The code for the add/remove functionality is from:
 ;   http://nsis.sourceforge.net/Add/Remove_Functionality
@@ -58,6 +58,7 @@ Var AR_RegFlags
 ; HAPI added parameters.
 ; CPACK_ADD_HAPIEXAMPLES_LINKS - If set to "ON" extra start menu links to demos will be added.
 ; CPACK_ADD_HAPIDOC_LINKS - If set to "ON" extra start menu links to documentation will be added.
+; CPACK_EXTERNAL_BIN - Set to the external binary directory to add to path, i.e. "bin32" or "bin64"
  IntOp $${VarName} $${VarName} & ${SF_SELECTED}  ;Turn off all other bits
 !macroend
 
@@ -216,6 +217,16 @@ Function AddToPath
   # don't add if the path doesn't exist
   IfFileExists "$0\*.*" "" AddToPath_done
  
+  ReadEnvStr $1 PATH
+  ; if the path is too long for a NSIS variable NSIS will return a 0 
+  ; length string.  If we find that, then warn and skip any path
+  ; modification as it will trash the existing path.
+  StrLen $2 $1
+  IntCmp $2 0 CheckPathLength_ShowPathWarning CheckPathLength_Done CheckPathLength_Done
+    CheckPathLength_ShowPathWarning:
+    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning! PATH too long installer unable to modify PATH!"
+    Goto AddToPath_done
+  CheckPathLength_Done:
   ; Check if nt and read from registry if it is nt, otherwise use path.
   ; The reason for this is that when uninstalling a previous installation
   ; the path environment variable might be modified.
@@ -268,20 +279,24 @@ Function AddToPath
     Goto AddToPath_done
  
   AddToPath_NT:
-    StrCmp $ADD_TO_PATH_ALL_USERS "1" 0 +3
-      ReadRegStr $1 ${NT_all_env} "PATH"
-      Goto +2
+    StrCmp $ADD_TO_PATH_ALL_USERS "1" ReadAllKey
       ReadRegStr $1 ${NT_current_env} "PATH"
+      Goto DoTrim
+    ReadAllKey:
+      ReadRegStr $1 ${NT_all_env} "PATH"
+    DoTrim:
     StrCmp $1 "" AddToPath_NTdoIt
       Push $1
       Call Trim
       Pop $1
       StrCpy $0 "$1;$0"
     AddToPath_NTdoIt:
-      StrCmp $ADD_TO_PATH_ALL_USERS "1" 0 +3
-        WriteRegExpandStr ${NT_all_env} "PATH" $0
-        Goto +2
+      StrCmp $ADD_TO_PATH_ALL_USERS "1" WriteAllKey
         WriteRegExpandStr ${NT_current_env} "PATH" $0
+        Goto DoSend
+      WriteAllKey:
+        WriteRegExpandStr ${NT_all_env} "PATH" $0
+      DoSend:
       SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
  
   AddToPath_done:
@@ -343,10 +358,12 @@ Function un.RemoveFromPath
       Goto unRemoveFromPath_done
  
   unRemoveFromPath_NT:
-    StrCmp $ADD_TO_PATH_ALL_USERS "1" 0 +3
-      ReadRegStr $1 ${NT_all_env} "PATH"
-      Goto +2
+    StrCmp $ADD_TO_PATH_ALL_USERS "1" unReadAllKey
       ReadRegStr $1 ${NT_current_env} "PATH"
+      Goto unDoTrim
+    unReadAllKey:
+      ReadRegStr $1 ${NT_all_env} "PATH"
+    unDoTrim:
     StrCpy $5 $1 1 -1 # copy last char
     StrCmp $5 ";" +2 # if last char != ;
       StrCpy $1 "$1;" # append ;
@@ -368,10 +385,12 @@ Function un.RemoveFromPath
       StrCmp $5 ";" 0 +2 # if last char == ;
         StrCpy $3 $3 -1 # remove last char
  
-      StrCmp $ADD_TO_PATH_ALL_USERS "1" 0 +3
-        WriteRegExpandStr ${NT_all_env} "PATH" $3
-        Goto +2
+      StrCmp $ADD_TO_PATH_ALL_USERS "1" unWriteAllKey
         WriteRegExpandStr ${NT_current_env} "PATH" $3
+        Goto unDoSend
+      unWriteAllKey:
+        WriteRegExpandStr ${NT_all_env} "PATH" $3
+      unDoSend:
       SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
  
   unRemoveFromPath_done:
@@ -472,21 +491,21 @@ FunctionEnd
 !insertmacro StrStr "un."
 
 Function Trim ; Added by Pelaca
-	Exch $R1
-	Push $R2
+  Exch $R1
+  Push $R2
 Loop:
-	StrCpy $R2 "$R1" 1 -1
-	StrCmp "$R2" " " RTrim
-	StrCmp "$R2" "$\n" RTrim
-	StrCmp "$R2" "$\r" RTrim
-	StrCmp "$R2" ";" RTrim
-	GoTo Done
-RTrim:	
-	StrCpy $R1 "$R1" -1
-	Goto Loop
+  StrCpy $R2 "$R1" 1 -1
+  StrCmp "$R2" " " RTrim
+  StrCmp "$R2" "$\n" RTrim
+  StrCmp "$R2" "$\r" RTrim
+  StrCmp "$R2" ";" RTrim
+  GoTo Done
+RTrim:  
+  StrCpy $R1 "$R1" -1
+  Goto Loop
 Done:
-	Pop $R2
-	Exch $R1
+  Pop $R2
+  Exch $R1
 FunctionEnd
 
 Function ConditionalAddToRegisty
@@ -540,6 +559,7 @@ FunctionEnd
 @CPACK_NSIS_INSTALLER_MUI_ICON_CODE@
 @CPACK_NSIS_INSTALLER_ICON_CODE@
 @CPACK_NSIS_INSTALLER_MUI_COMPONENTS_DESC@
+@CPACK_NSIS_INSTALLER_MUI_FINISHPAGE_RUN_CODE@
 
 ;--------------------------------
 ;Pages
@@ -632,17 +652,11 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "-Add to path"
-  ;Read a value from an InstallOptions INI file
-  !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 2" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 3" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 4" "State"
-SectionEnd
-
 Section "-Core installation"
   ;Use the entire tree produced by the INSTALL target.  Keep the
   ;list of directories here in sync with the RMDir commands below.
   SetOutPath "$INSTDIR"
+  @CPACK_NSIS_EXTRA_PREINSTALL_COMMANDS@
   @CPACK_NSIS_FULL_INSTALL@
   
   ;Store installation folder
@@ -699,6 +713,11 @@ Section "-Core installation"
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
+  ;Read a value from an InstallOptions INI file
+  !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 2" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 3" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 4" "State"
+
   StrCmp "@CPACK_ADD_HAPIEXAMPLES_LINKS@" "ON" 0 +11
     ;Create Examples folder.
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Examples"
@@ -742,24 +761,26 @@ Section "-Core installation"
   ;Push "$INSTALL_DESKTOP"
   ;Call ConditionalAddToRegisty
 
-@CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
-  
   !insertmacro MUI_STARTMENU_WRITE_END
 
+@CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
+
+SectionEnd
+
+Section "-Add to path"
+  Push $INSTDIR\bin
   StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 doNotAddToPath
   StrCmp $DO_NOT_ADD_TO_PATH "1" doNotAddToPath 0
-    Push $INSTDIR\bin
     Call AddToPath
-    Push $INSTDIR\External\bin
+    Push $INSTDIR\External\@CPACK_EXTERNAL_BIN@
     Call AddToPath
   doNotAddToPath:
-  
 SectionEnd
 
 ;--------------------------------
 ; Create custom pages
 Function InstallOptionsPage
-  !insertmacro MUI_HEADER_TEXT "Install Options" "Chose options for installing @CPACK_PACKAGE_INSTALL_DIRECTORY@"
+  !insertmacro MUI_HEADER_TEXT "Install Options" "Choose options for installing @CPACK_NSIS_PACKAGE_NAME@"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "NSIS.InstallOptions.ini"
 
 FunctionEnd
@@ -873,6 +894,7 @@ Section "Uninstall"
     
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
 @CPACK_NSIS_DELETE_ICONS@
+@CPACK_NSIS_DELETE_ICONS_EXTRA@
   StrCmp "@CPACK_ADD_HAPIEXAMPLES_LINKS@" "ON" 0 +11
     ;Delete Examples menu links
     Delete "$SMPROGRAMS\$MUI_TEMP\Examples\Manual\OpenGL FeedbackbufferCollector.lnk"
@@ -950,10 +972,10 @@ Section "Uninstall"
 
   DeleteRegKey /ifempty SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 
+  Push $INSTDIR\bin
   StrCmp $DO_NOT_ADD_TO_PATH "1" doNotRemoveFromPath 0
-    Push $INSTDIR\bin
     Call un.RemoveFromPath
-    Push $INSTDIR\External\bin
+    Push $INSTDIR\External\@CPACK_EXTERNAL_BIN@
     Call un.RemoveFromPath
   doNotRemoveFromPath:
   
@@ -970,11 +992,44 @@ SectionEnd
 ; "Program Files" for AllUsers, "My Documents" for JustMe...
 
 Function .onInit
+  StrCmp "@CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL@" "ON" 0 inst
+
+  ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@" "UninstallString"
+  StrCmp $0 "" inst
+
+  MessageBox MB_YESNOCANCEL|MB_ICONEXCLAMATION \
+  "@CPACK_NSIS_PACKAGE_NAME@ is already installed. $\n$\nDo you want to uninstall the old version before installing the new one?" \
+  IDYES uninst IDNO inst
+  Abort
+
+;Run the uninstaller
+uninst:
+  ClearErrors
+  ExecWait '$0 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+
+  IfErrors uninst_failed inst
+uninst_failed:
+  MessageBox MB_OK|MB_ICONSTOP "Uninstall failed."
+  Abort
+
+
+inst:
   ; Reads components status for registry
   !insertmacro SectionList "InitSection"
 
+  ; check to see if /D has been used to change 
+  ; the install directory by comparing it to the 
+  ; install directory that is expected to be the
+  ; default
+  StrCpy $IS_DEFAULT_INSTALLDIR 0
+  StrCmp "$INSTDIR" "@CPACK_NSIS_INSTALL_ROOT@\@CPACK_PACKAGE_INSTALL_DIRECTORY@" 0 +2
+    StrCpy $IS_DEFAULT_INSTALLDIR 1
+  
   StrCpy $SV_ALLUSERS "JustMe"
-  StrCpy $INSTDIR "C:\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+  ; if default install dir then change the default
+  ; if it is installed for JustMe
+  StrCmp "$IS_DEFAULT_INSTALLDIR" "1" 0 +2
+    StrCpy $INSTDIR "$DOCUMENTS\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
   ClearErrors
   UserInfo::GetName
@@ -982,12 +1037,12 @@ Function .onInit
   Pop $0
   UserInfo::GetAccountType
   Pop $1
-  StrCmp $1 "Admin" 0 +3
+  StrCmp $1 "Admin" 0 +4
     SetShellVarContext all
     ;MessageBox MB_OK 'User "$0" is in the Admin group'
     StrCpy $SV_ALLUSERS "AllUsers"
     Goto done
-  StrCmp $1 "Power" 0 +3,
+  StrCmp $1 "Power" 0 +4
     SetShellVarContext all
     ;MessageBox MB_OK 'User "$0" is in the Power Users group'
     StrCpy $SV_ALLUSERS "AllUsers"
@@ -998,8 +1053,9 @@ Function .onInit
     ;Get installation folder from registry if available
 
   done:
-  StrCmp $SV_ALLUSERS "AllUsers" 0 +2
-    StrCpy $INSTDIR "C:\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+  StrCmp $SV_ALLUSERS "AllUsers" 0 +3
+    StrCmp "$IS_DEFAULT_INSTALLDIR" "1" 0 +2
+      StrCpy $INSTDIR "@CPACK_NSIS_INSTALL_ROOT@\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
   StrCpy $R4 "@CPACK_PACKAGE_VERSION_MAJOR@"
   StrCpy $R5 "@CPACK_PACKAGE_VERSION_MINOR@"
@@ -1012,26 +1068,26 @@ Function .onInit
   ""
   IfErrors 0 alreadyinstalled
     IntCmp $R6 0 +3 +3 0
-	  IntOp $R6 $R6 - 1
-	  Goto trypreviousversion
+    IntOp $R6 $R6 - 1
+    Goto trypreviousversion
     
-	IntCmp $R5 0 +4 +4 0
-	  IntOp $R5 $R5 - 1
-	  StrCpy $R6 "9"
-	  Goto trypreviousversion
-	
-	IntCmp $R4 1 +5 +5 0
-	  IntOp $R4 $R4 - 1
-	  StrCpy $R5 "9"
-	  StrCpy $R6 "9"
-	  Goto trypreviousversion
+  IntCmp $R5 0 +4 +4 0
+    IntOp $R5 $R5 - 1
+    StrCpy $R6 "9"
+    Goto trypreviousversion
+  
+  IntCmp $R4 1 +5 +5 0
+    IntOp $R4 $R4 - 1
+    StrCpy $R5 "9"
+    StrCpy $R6 "9"
+    Goto trypreviousversion
 
   IfFileExists $INSTDIR 0 alreadyinstalledchecked
     MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
     "It seems like another version of HAPI is already installed in the default \
     location. If you install this version of HAPI make sure that you do not \
     install into the same folder as any previous versions of HAPI. \
-    Note that you might also get conlicting paths in the PATH environment variable \
+    Note that you might also get conflicting paths in the PATH environment variable \
     $\n$\nClick `OK` to continue installing or `Cancel` to cancel this installation." \
     IDOK alreadyinstalledchecked
     Abort
