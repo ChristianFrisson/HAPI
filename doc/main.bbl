@@ -1,0 +1,44 @@
+\begin{thebibliography}{1}
+
+\bibitem{chai3d}
+Chai3D.
+\newblock http://www.chai3d.org.
+
+\bibitem{linde02hapticmaster}
+R.~Van der Linde, P.~Lammertse, E.~Frederiksen, and B.~Ruiter.
+\newblock The hapticmaster, a new highperformance haptic interface, 2002.
+
+\bibitem{forcedimension}
+ForceDimension.
+\newblock http://www.forcedimension.com.
+
+\bibitem{novint}
+Novint~Technologies Inc.
+\newblock http://www.novint.com.
+
+\bibitem{sensable}
+SensAble~Technologies Inc.
+\newblock http://www.sensable.com.
+
+\bibitem{moogfcs}
+Moog/FCS.
+\newblock http://www.fcs-cs.com/robotics.
+
+\bibitem{openhaptics}
+OpenHaptics.
+\newblock http://www.sensable.com.
+
+\bibitem{ruspini}
+Diego~C. Ruspini, Krasimir Kolarov, and Oussama Khatib.
+\newblock The haptic display of complex graphical environments.
+\newblock In {\em Computer Graphics ({SIGGRAPH} 97 Conference Proceedings)},
+  pages 345--352. {ACM} {SIGGRAPH}, 1997.
+
+\bibitem{zilles95constraintbased}
+C.~Zilles and J.~Salisbury.
+\newblock A constraint based god-object method for haptic display.
+\newblock In {\em Proceedings of the IEE/RSJ International Conference on
+  Intelligent Robots and Systems, Human Robot Interaction, and Cooperative
+  Robots}, volume~3, pages 146--151, 1995.
+
+\end{thebibliography}

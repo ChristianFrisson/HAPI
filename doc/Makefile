@@ -61,7 +61,7 @@ clean:
 # \input{examples/example.tex}
 #
 
-HIGHLIGHT_OPTIONS = -Trblf -s emacs
+HIGHLIGHT_OPTIONS = -Trbf -s edit-jedit --out-format=latex -c highlight_theme.tex
 
 %.tex:	%.x3d
 	cp $< $(<:%.x3d=%.xml)
