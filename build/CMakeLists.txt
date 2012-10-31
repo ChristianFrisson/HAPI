@@ -474,7 +474,8 @@ IF( WIN32 )
   /DELAYLOAD:\"Haptik.Library.dll\"
   /DELAYLOAD:\"SimballMedicalHID.dll\" 
   /DELAYLOAD:\"VirtuoseDLL.dll\"
-  /DELAYLOAD:\"FTD2XX.dll\"" )
+  /DELAYLOAD:\"FTD2XX.dll\"
+	/DELAYLOAD:\"EntactAPI.dll\"" )
 ENDIF( WIN32 )
 
 # set compile flags for HAPI project
