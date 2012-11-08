@@ -65,6 +65,12 @@ SET( HAPI_BUILD_VERSION 1 )
 
 # Set here already in case a special NSIS template needs to be used by cpack.
 SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
+IF( COMMAND cmake_policy )
+  if( POLICY CMP0011 )
+    cmake_policy( SET CMP0011 NEW )
+  endif( POLICY CMP0011 )
+ENDIF( COMMAND cmake_policy )
+INCLUDE( StripAndAddLibraryDirectories )
 
 SET( HAPI_FULL_VERSION ${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION} )
 
@@ -130,7 +136,11 @@ IF(CHAI3D_FOUND)
 
     IF(GLUT_FOUND)
       INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
-      SET(Chai3D_requiredLibs ${Chai3D_requiredLibs} ${GLUT_LIBRARIES} )
+			IF( WIN32 )
+				STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
+			ELSE( WIN32 )
+				SET(Chai3D_requiredLibs ${Chai3D_requiredLibs} ${GLUT_LIBRARIES} )
+			ENDIF( WIN32 )
     ENDIF(GLUT_FOUND)
   ENDIF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
 ELSEIF( NOT WIN32 )
