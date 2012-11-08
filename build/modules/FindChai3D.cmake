@@ -45,17 +45,17 @@ IF( SEARCH_FOR_CHAI3D )
     ELSEIF( MSVC90 )
       SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc9 )
     ELSEIF( MSVC10 )             
-    SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc10 )
+      SET( CHAI3D_LIBRARY_NAME chai3d_complete_vc10 )
     ENDIF( MSVC70 OR MSVC71)
 
-    FIND_LIBRARY(CHAI3D_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}
+    FIND_LIBRARY(CHAI3D_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME} chai3d-release
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
                                       $ENV{H3D_ROOT}/../External/${LIB}/static
                                       ../../External/${LIB}/static
                                       ${module_file_path}/../../../External/${LIB}/static
                                 DOC "Path to ${CHAI3D_LIBRARY_NAME} library." )
     IF( MSVC80 OR MSVC90 OR MSVC10 )
-      FIND_LIBRARY( CHAI3D_DEBUG_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}_d
+      FIND_LIBRARY( CHAI3D_DEBUG_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}_d chai3d-debug
                                          PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
                                                $ENV{H3D_ROOT}/../External/${LIB}/static
                                                ../../External/${LIB}/static
