@@ -312,7 +312,7 @@ IF( GENERATE_CPACK_PROJECT )
       # a user wants to build H3D or against it.
       STRING( REGEX REPLACE "(/${EXTERNAL_BIN_PATH}/)" "/${EXTERNAL_BIN_REPLACE_PATH}/" other_binary ${binary} )
       IF( EXISTS ${other_binary} )
-        INSTALL( FILES ${binary}
+        INSTALL( FILES ${other_binary}
                  DESTINATION External/${EXTERNAL_BIN_REPLACE_PATH}
                  COMPONENT HAPI_cpack_external_source )
       ENDIF( EXISTS ${other_binary} )
@@ -336,9 +336,14 @@ IF( GENERATE_CPACK_PROJECT )
   SET(DEBIAN_PACKAGE_DEPENDS "libgl-dev, h3dutil(>=1.0.0)" )
   
   # Install header files
-  INSTALL( FILES ${HAPI_HEADERS}
+  INSTALL( FILES ${HAPI_HEADERS} 
            DESTINATION HAPI/include/HAPI
            COMPONENT HAPI_cpack_headers )
+
+  # HAPI.cmake that goes to headers is not needed unless sources is required.
+  INSTALL( FILES ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.cmake
+			DESTINATION HAPI/include/HAPI
+			COMPONENT HAPI_cpack_sources )
 
   INSTALL( FILES ${OH_HEADERS}
            DESTINATION HAPI/OpenHapticsRenderer/include/HAPI
