@@ -531,12 +531,30 @@ IF( GENERATE_CPACK_PROJECT )
   set(CPACK_COMPONENT_GROUP_H3DUTIL_CPACK_GROUP_PARENT_GROUP "HAPI_cpack_group")  
   
   # Add a cache variable H3D_cmake_runtime_path to point to cmake binary.
+  SET (H3D_cmake_runtime_path_default "")
   IF( NOT DEFINED H3D_cmake_runtime_path )
     IF( WIN32 AND NOT UNIX )
-      SET( H3D_cmake_runtime_path "C:/Program Files (x86)/CMake 2.8/bin/cmake.exe" CACHE FILEPATH "The path to the cmake runtime." )
+      SET (VERSION_CMAKES "4.0" "3.9" "3.8" "3.7" "3.6" "3.5" "3.4" "3.3" "3.2" "3.1" "3.0" "2.9" "2.8" "2.7" "2.6")
+      foreach (version_cmake ${VERSION_CMAKES} )
+        IF (EXISTS "C:/Program Files/CMake ${version_cmake}/bin/cmake.exe")
+          SET( H3D_cmake_runtime_path_default "C:/Program Files/CMake ${version_cmake}/bin/cmake.exe" )
+          break()
+        ENDIF (EXISTS "C:/Program Files/CMake ${version_cmake}/bin/cmake.exe")
+        
+        IF (EXISTS "C:/Program Files (x86)/CMake ${version_cmake}/bin/cmake.exe")
+          SET( H3D_cmake_runtime_path_default "C:/Program Files (x86)/CMake ${version_cmake}/bin/cmake.exe" )
+          break()
+        ENDIF (EXISTS "C:/Program Files (x86)/CMake ${version_cmake}/bin/cmake.exe")
+        
+        IF ( EXISTS "C:/Program/CMake ${version_cmake}/bin/cmake.exe")
+          SET( H3D_cmake_runtime_path_default "C:/Program/CMake ${version_cmake}/bin/cmake.exe" )
+          break()
+        ENDIF ( EXISTS "C:/Program/CMake ${version_cmake}/bin/cmake.exe")
+      endforeach (version_cmake )
     ELSE( WIN32 AND NOT UNIX )
-      SET( H3D_cmake_runtime_path "cmake" CACHE FILEPATH "The path to the cmake runtime." )
+      SET( H3D_cmake_runtime_path_default "cmake" )
     ENDIF( WIN32 AND NOT UNIX )
+    SET( H3D_cmake_runtime_path ${H3D_cmake_runtime_path_default} CACHE FILEPATH "The path to the cmake runtime." )
     MARK_AS_ADVANCED(H3D_cmake_runtime_path)
   ENDIF( NOT DEFINED H3D_cmake_runtime_path )
 
@@ -548,32 +566,38 @@ IF( GENERATE_CPACK_PROJECT )
                                            "${HAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
   ENDIF( UNIX AND NOT WIN32)
   
-  SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD}
-                                                     COMMAND ${H3D_cmake_runtime_path} 
-                                                     ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_runtime -P cmake_install.cmake 
-                                                     COMMAND ${H3D_cmake_runtime_path} 
-                                                     ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_libraries -P cmake_install.cmake
-                                                     COMMAND ${H3D_cmake_runtime_path} 
-                                                     ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_examples_runtime -P cmake_install.cmake )
-  
-  IF( NOT TARGET H3DAPI )
+  IF( H3D_cmake_runtime_path )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD}
+                                                       COMMAND ${H3D_cmake_runtime_path} 
+                                                       ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_runtime -P cmake_install.cmake 
+                                                       COMMAND ${H3D_cmake_runtime_path} 
+                                                       ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_libraries -P cmake_install.cmake
+                                                       COMMAND ${H3D_cmake_runtime_path} 
+                                                       ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_examples_runtime -P cmake_install.cmake )
     
-    ADD_CUSTOM_COMMAND( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/DummyFile
-                        COMMAND echo )
-    ADD_CUSTOM_TARGET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY
-                       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/DummyFile )
-    
-    ADD_CUSTOM_COMMAND( TARGET INSTALL_RUNTIME_AND_LIBRARIES_ONLY
-                        POST_BUILD
-                        ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD} )
-    ADD_DEPENDENCIES( INSTALL_RUNTIME_AND_LIBRARIES_ONLY HAPI ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} )
-  ENDIF( NOT TARGET H3DAPI )
+    IF( NOT TARGET H3DAPI )
+      
+      ADD_CUSTOM_COMMAND( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/DummyFile
+                          COMMAND echo )
+      ADD_CUSTOM_TARGET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY
+                         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/DummyFile )
+      
+      ADD_CUSTOM_COMMAND( TARGET INSTALL_RUNTIME_AND_LIBRARIES_ONLY
+                          POST_BUILD
+                          ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD} )
+      ADD_DEPENDENCIES( INSTALL_RUNTIME_AND_LIBRARIES_ONLY HAPI ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} )
+    ENDIF( NOT TARGET H3DAPI )
+  ELSE( H3D_cmake_runtime_path )
+    MESSAGE (STATUS "H3D_cmake_runtime_path is not set, please set it to continue")
+  ENDIF( H3D_cmake_runtime_path )
   
   IF( NOT H3D_USE_DEPENDENCIES_ONLY )
-    INCLUDE(CPack)
-    INCLUDE(UseDebian)
-    IF(DEBIAN_FOUND)
-      ADD_DEBIAN_TARGETS(HAPI)
-    ENDIF(DEBIAN_FOUND)
+    IF (NOT TARGET H3DAPI)
+      INCLUDE(CPack)
+      INCLUDE(UseDebian)
+      IF(DEBIAN_FOUND)
+        ADD_DEBIAN_TARGETS(HAPI)
+      ENDIF(DEBIAN_FOUND)
+    ENDIF (NOT TARGET H3DAPI)
   ENDIF( NOT H3D_USE_DEPENDENCIES_ONLY )
 ENDIF( GENERATE_CPACK_PROJECT )
