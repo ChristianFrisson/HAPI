@@ -26,6 +26,7 @@ FIND_LIBRARY(OPENHAPTICS_HL_LIBRARY NAMES HL
                               $ENV{3DTOUCH_BASE}/lib/${LIB}  # OpenHaptics 3.0
                               "$ENV{PROGRAMFILES}/SensAble/3DTouch/lib"        # OpenHaptics 2.0
                               "$ENV{PROGRAMFILES}/SensAble/3DTouch/lib/${LIB}" # OpenHaptics 3.0
+															"/usr/lib64"
                         DOC "Path to hl library." )
 
 MARK_AS_ADVANCED(OPENHAPTICS_HL_LIBRARY)
@@ -35,6 +36,7 @@ FIND_LIBRARY(OPENHAPTICS_HD_LIBRARY NAMES HD
                               $ENV{3DTOUCH_BASE}/lib/${LIB}  # OpenHaptics 3.0
                               "$ENV{PROGRAMFILES}/SensAble/3DTouch/lib"
                               "$ENV{PROGRAMFILES}/SensAble/3DTouch/lib/${LIB}"
+															"/usr/lib64"
                         DOC "Path to hd library." )
 MARK_AS_ADVANCED(OPENHAPTICS_HD_LIBRARY)
 
@@ -43,7 +45,7 @@ FIND_LIBRARY(OPENHAPTICS_HDU_LIBRARY NAMES HDU
                                 $ENV{3DTOUCH_BASE}/utilities/lib/${LIB}/Release  # OpenHaptics 3.0
                                 "$ENV{PROGRAMFILES}/SensAble/3DTouch/utilities/lib"        # OpenHaptics 2.0
                                 "$ENV{PROGRAMFILES}/SensAble/3DTouch/utilities/lib/${LIB}/Release"  # OpenHaptics 3.0
-                                
+															  "/usr/lib64"                                
                          DOC "Path to hdu library." )
 MARK_AS_ADVANCED(OPENHAPTICS_HDU_LIBRARY)
 
