@@ -43,11 +43,14 @@ namespace HAPI {
   class HAPI_API EntactHapticsDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.
-    /// The serial number is the serial number of the Entact device
-    /// to use. Only the Entact device with the given serial number
-    /// will be initialized. If -1 any available Entact device will
-    /// be used.
-    EntactHapticsDevice( int _serial_number = -1 );
+    /// \param _serial_number The serial number is the serial number of
+		/// the Entact device to use. Only the Entact device with the given
+		/// serial number will be initialized. If -1 any available Entact device
+		/// will be used.
+		/// \param _ip_address The ip address of the device to initialize. Only used if not empty
+		/// and serial number is -1.
+    EntactHapticsDevice( int _serial_number = -1,
+												 string _ip_address = "" );
 
     /// Destructor.
     virtual ~EntactHapticsDevice();
@@ -118,6 +121,9 @@ namespace HAPI {
     
     /// The serial number of the device
     int serial_number;
+
+		/// The ip adress of the device. Only used if serial number is -1.
+		string ip_address;
 
     /// The nr of EntactHapticsDevice class instances that are currently
     /// in use.
