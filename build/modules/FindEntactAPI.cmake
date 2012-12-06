@@ -8,8 +8,7 @@
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 IF( CMAKE_CL_64 )
-  #SET( LIB "lib64" )
-  SET( LIB "" )
+  SET( LIB "lib64" )
 ELSE( CMAKE_CL_64 )
   SET( LIB "lib32" )
 ENDIF( CMAKE_CL_64 )

@@ -56,8 +56,10 @@ EntactHapticsDevice::device_registration(
                             EntactHapticsDeviceInternal::entact_libs
                             );
 
-EntactHapticsDevice::EntactHapticsDevice( int _serial_number ):
+EntactHapticsDevice::EntactHapticsDevice( int _serial_number,
+																					string _ip_address ):
   serial_number( _serial_number ),
+	ip_address( _ip_address ),
   com_thread( NULL ),
   com_func_cb_handle( -1 ),
   device_id( -1 ) {
@@ -84,13 +86,28 @@ eapi_device_handle handles[MAX_NR_DEVICES]; // detecting up to 10 attached devic
 bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
   if( !EAPI_initialized ) {
-    nr_entact_devices = openEAPI( handles, MAX_NR_DEVICES );
-    if( nr_entact_devices < 0 ) {
-      stringstream s;
-      s << "Warning: Failed to open Entact device. Unable to query for devices." << endl;
-      setErrorMsg( s.str() );
-      return false;
-    }
+		if( serial_number == -1 && ip_address != "" ) {
+			char *_ip_address = new char[ip_address.size()];
+			for( unsigned int i = 0; i < ip_address.size(); i++ )
+				_ip_address[i] = ip_address[i];
+			if (connectDeviceEAPI( handles, 0, _ip_address )==EAPI_ERR) {
+				stringstream s;
+				s << "Warning: Failed to open Entact device with ip address " << ip_address << ".";
+				setErrorMsg( s.str() );
+				delete [] _ip_address;
+				return false;
+			}
+			delete [] _ip_address;
+			nr_entact_devices = 1;
+		} else {
+			nr_entact_devices = openEAPI( handles, MAX_NR_DEVICES );
+			if( nr_entact_devices < 0 ) {
+				stringstream s;
+				s << "Warning: Failed to open Entact device. Unable to query for devices." << endl;
+				setErrorMsg( s.str() );
+				return false;
+			}
+		}
     EAPI_initialized = true;
   }
  
@@ -138,7 +155,7 @@ bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     }
   }
 
-  if( setModeEAPI( handles[device_id], EAPI_FORCECONTROL_MODE ) < 0 ) {
+  if( setModeEAPI( handles[device_id], EAPI_FORCECONTROL_MODE ) == EAPI_ERR ) {
     stringstream s;
     s << "Warning:  Failed to open Entact device.  Failed to change to force control mode.";
     setErrorMsg( s.str() );
@@ -212,7 +229,8 @@ EntactHapticsDevice::com_func( void *data ) {
     static_cast< EntactHapticsDevice * >( data );
   
   if( hd->device_id != -1 ) {
-    double positions[12]; 
+    double positions[12];
+		// What to do if these functions fail? check against EAPI_ERR
     readTaskPositionEAPI( handles[hd->device_id], positions, 12 );
 
     double velocity[6];
@@ -258,7 +276,7 @@ bool EntactHapticsDevice::calibrateDevice() {
 
   // home device calls fails sometimes even though it should not
   // so try a number of times before deciding that it could not home
-  while( res != 1 && i < 20 ) {
+  while( res == EAPI_ERR && i < 20 ) {
     res = homeDeviceEAPI( handles[device_id] );
     i++;
   }
