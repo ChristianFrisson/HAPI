@@ -47,7 +47,7 @@ namespace EntactHapticsDeviceInternal {
 
 unsigned int EntactHapticsDevice::nr_device_instances = 0;
 int EntactHapticsDevice::nr_entact_devices = 0;
-bool EntactHapticsDevice::EAPI_initialized = false;
+EntactHapticsDevice::EAPIInitializedStyle EntactHapticsDevice::EAPI_initialized = EntactHapticsDevice::ENTACT_UNINITIALIZED;
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
 EntactHapticsDevice::device_registration(
@@ -70,12 +70,14 @@ EntactHapticsDevice::EntactHapticsDevice( int _serial_number,
   nr_device_instances++;
 }
 
-/// Destructor.
+// Destructor.
 EntactHapticsDevice::~EntactHapticsDevice() {
   nr_device_instances--;
-  if( nr_device_instances == 0 && EAPI_initialized ) {
+  if( nr_device_instances == 0 && EAPI_initialized != ENTACT_UNINITIALIZED ) {
+		// Here I am assuming that closeEAPI can be called even if connectDeviceEAPI
+		// has been used instead of openEAPI.
     closeEAPI();
-    EAPI_initialized = false;
+    EAPI_initialized = ENTACT_UNINITIALIZED;
   }
 }
 
@@ -85,21 +87,8 @@ eapi_device_handle handles[MAX_NR_DEVICES]; // detecting up to 10 attached devic
 
 bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
-  if( !EAPI_initialized ) {
-		if( serial_number == -1 && ip_address != "" ) {
-			char *_ip_address = new char[ip_address.size()];
-			for( unsigned int i = 0; i < ip_address.size(); i++ )
-				_ip_address[i] = ip_address[i];
-			if (connectDeviceEAPI( handles, 0, _ip_address )==EAPI_ERR) {
-				stringstream s;
-				s << "Warning: Failed to open Entact device with ip address " << ip_address << ".";
-				setErrorMsg( s.str() );
-				delete [] _ip_address;
-				return false;
-			}
-			delete [] _ip_address;
-			nr_entact_devices = 1;
-		} else {
+  if( serial_number != -1 || ip_address == "" ) {
+		if( EAPI_initialized == ENTACT_UNINITIALIZED ) {
 			nr_entact_devices = openEAPI( handles, MAX_NR_DEVICES );
 			if( nr_entact_devices < 0 ) {
 				stringstream s;
@@ -107,44 +96,80 @@ bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 				setErrorMsg( s.str() );
 				return false;
 			}
+			EAPI_initialized = ENTACT_SERIAL_NUMBER;
 		}
-    EAPI_initialized = true;
-  }
+  } else if( EAPI_initialized == ENTACT_SERIAL_NUMBER ) {
+		stringstream s;
+		s << "Warning: Failed to open Entact device. " << endl
+		  << "Tried to initialize with static ip address when previous devices"
+			<< " were initialized with serial number." << endl;
+		setErrorMsg( s.str() );
+		return false;
+	} else {
+			char *_ip_address = new char[ip_address.size()];
+			for( unsigned int i = 0; i < ip_address.size(); i++ )
+				_ip_address[i] = ip_address[i];
+			if (connectDeviceEAPI( handles, nr_entact_devices, _ip_address )==EAPI_ERR) {
+				stringstream s;
+				s << "Warning: Failed to open Entact device with ip address " << ip_address << ".";
+				setErrorMsg( s.str() );
+				delete [] _ip_address;
+				return false;
+			}
+			delete [] _ip_address;
+			nr_entact_devices++;
+			EAPI_initialized = ENTACT_IP_ADDRESS;
+		}
  
   if( nr_entact_devices <= 0 ) {
     stringstream s;
     s << "Warning: Failed to open Entact device. No connected devices. ";
     setErrorMsg( s.str() );
     return false;
-  }  
-
-  bool device_found = false;
-
-  if( serial_number == -1 ) {
-    // Use any of the available devices.
-    for( int i = 0; i < nr_entact_devices; i++ ) {
-      if ( !getModeEAPI( handles[i] ) ) {
-        device_id = i;
-        device_found = true;
-        break;
-      }
-    }
-    if( !device_found ) {
-      stringstream s;
-      s << "Warning: Failed to open Entact device. All devices already in use." << endl;
-      setErrorMsg( s.str() );
-      return false;
-    }
-  } else {
-    // find device with specified serial number
-    for( int i = 0; i < nr_entact_devices; i++ ) {
-      // TODO: if( serial_number == devices[i] sn && !isEnabled( devices[i] ) )
-      device_id = 0;;
-      device_found = true;
-      break;
-      // TODO: cou;d not find device with serial number
-    }
   }
+
+	if( EAPI_initialized == ENTACT_SERIAL_NUMBER ) {
+		if( serial_number == -1 ) {
+			bool device_found = false;
+			// Use any of the available devices.
+			for( int i = 0; i < nr_entact_devices; i++ ) {
+				// This relies on the fact that getModeEAPI returns EAPI_DISABLED_MODE
+				// if device is not used, and that define is 0. All other return values are
+				// non-zero.
+				if( !getModeEAPI( handles[i] ) ) {
+					device_id = i;
+					device_found = true;
+					break;
+				}
+			}
+			if( !device_found ) {
+				stringstream s;
+				s << "Warning: Failed to open Entact device. All devices already in use." << endl;
+				setErrorMsg( s.str() );
+				return false;
+			}
+		} else {
+			// find device with specified serial number
+			if( serial_number < nr_entact_devices ) {
+				if( !getModeEAPI( handles[serial_number] ) ) {
+					device_id = serial_number;
+				} else {
+					stringstream s;
+					s << "Warning: Failed to open Entact device with serial number " << serial_number
+						<< "Device is already in use or an error occured when polling its mode." << endl;
+					setErrorMsg( s.str() );
+					return false;
+				}
+			} else {
+				stringstream s;
+				s << "Warning: Failed to open Entact device with serial number " << serial_number
+					<< "The serial number is greater than or equal "
+					<< "to the number of connected devices (" << nr_entact_devices << ")." << endl;
+				setErrorMsg( s.str() );
+				return false;
+			}
+		}
+	}
 
   if( needsCalibration() ) {
     if( !calibrateDevice() ) {
@@ -293,10 +318,10 @@ bool EntactHapticsDevice::needsCalibration() {
 /// Returns the number of Entact devices that are currently
 /// connected to the computer.
 int EntactHapticsDevice::getNumberConnectedEntactDevices() {
-  if( !EAPI_initialized ) {
+  if( EAPI_initialized == ENTACT_UNINITIALIZED ) {
     nr_entact_devices = openEAPI( handles, MAX_NR_DEVICES );
     if( nr_entact_devices >= 0 ) {
-      EAPI_initialized = true;
+      EAPI_initialized = ENTACT_SERIAL_NUMBER;
     }
   }
   return nr_entact_devices;
