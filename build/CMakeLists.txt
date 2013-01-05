@@ -380,6 +380,13 @@ SET_TARGET_PROPERTIES( HAPI PROPERTIES DEBUG_POSTFIX "_d" )
 # set the version of the library
 SET_TARGET_PROPERTIES( HAPI PROPERTIES VERSION ${HAPI_FULL_VERSION} )
 
+IF(APPLE)
+  SET_TARGET_PROPERTIES (HAPI
+                         PROPERTIES
+#                        BUILD_WITH_INSTALL_RPATH 1
+                         INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+ENDIF(APPLE)
+
 IF( WIN32 )
   
   # change the name depending on compiler to be able to tell them apart
