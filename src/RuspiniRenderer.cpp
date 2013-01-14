@@ -222,9 +222,9 @@ void RuspiniRenderer::onTwoPlaneContact( const Vec3& proxy_pos,
     contact.force_global = p0_force * weight + p1_force * ( 1 - weight );
 
     // add contacts
-    tmp_contacts.push_back( make_pair( p0.haptic_shape.get(), contact ) );
+    tmp_contacts.push_back( make_pair( p0.haptic_shape, contact ) );
     if( p0.haptic_shape.get() != p1.haptic_shape.get() )
-      tmp_contacts.push_back( make_pair( p1.haptic_shape.get(), contact ) );
+      tmp_contacts.push_back( make_pair( p1.haptic_shape, contact ) );
   }
 }
 
@@ -369,14 +369,14 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
 
 
     // add contacts
-    tmp_contacts.push_back( make_pair( p0.haptic_shape.get(), contact ) );
+    tmp_contacts.push_back( make_pair( p0.haptic_shape, contact ) );
     if( p0.haptic_shape.get() != p1.haptic_shape.get() ) {
-      tmp_contacts.push_back( make_pair( p1.haptic_shape.get(), contact ) );
+      tmp_contacts.push_back( make_pair( p1.haptic_shape, contact ) );
     }
     
     if( p0.haptic_shape.get() != p2.haptic_shape.get() &&
         p1.haptic_shape.get() != p2.haptic_shape.get() ) {
-      tmp_contacts.push_back( make_pair( p2.haptic_shape.get(), contact ) );
+      tmp_contacts.push_back( make_pair( p2.haptic_shape, contact ) );
     }
   }
 }

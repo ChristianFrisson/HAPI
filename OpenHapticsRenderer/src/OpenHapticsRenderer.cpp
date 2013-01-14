@@ -579,7 +579,7 @@ void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
           shape->getShapeId() );
   if( found_id == renderer->already_removed_id.end() ) {  
     renderer->tmp_contacts.push_back(
-      make_pair( shape, HAPISurfaceObject::ContactInfo()) );
+      make_pair( H3DUtil::AutoRef< HAPIHapticShape >(shape), HAPISurfaceObject::ContactInfo()) );
     OpenHapticsRenderer::motionCallback( event, object,
                                          thread, cache, userdata );
   } else {

@@ -10,9 +10,33 @@ IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INST
 ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
 
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-MESSAGE( STATUS "Including HAPIDemo" )
-ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../HAPIDemo/build
-                  ${CMAKE_CURRENT_BINARY_DIR}/HAPIDemo )
+IF( H3D_USE_DEPENDENCIES_ONLY )
+  IF(WIN32)
+    FIND_PACKAGE(wxWidgetsWin)
+    IF(wxWidgets_FOUND)
+      INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIR} ) 
+      SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+    ENDIF(wxWidgets_FOUND)
+  ENDIF(WIN32)
+
+  IF(wxWidgets_FOUND)
+  ELSE(wxWidgets_FOUND)
+    SET(wxWidgets_USE_LIBS base core)
+    FIND_PACKAGE(wxWidgets)
+    IF(wxWidgets_FOUND)
+      INCLUDE(${wxWidgets_USE_FILE})
+      SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+    ENDIF(wxWidgets_FOUND)
+  ENDIF(wxWidgets_FOUND)
+ENDIF( H3D_USE_DEPENDENCIES_ONLY )
+
+IF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+  MESSAGE( STATUS "Including HAPIDemo" )
+  ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../HAPIDemo/build
+                    ${CMAKE_CURRENT_BINARY_DIR}/HAPIDemo )
+ELSE( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+  MESSAGE( WARNING "wxWidgets was not found. HAPIDemo will not be generated." )
+ENDIF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
 
 MESSAGE( STATUS "Including HAPI SpringExample" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../SpringExample/build
