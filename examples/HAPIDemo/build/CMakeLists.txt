@@ -121,37 +121,33 @@ ADD_EXECUTABLE(HAPIDemo WIN32 MACOSX_BUNDLE ${HAPIDemo_SRCS})
 # make the name of debug libraries end in _d.
 SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES DEBUG_POSTFIX "_d" )
 
-IF(MSVC70 OR MSVC71)
-  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-  # Treat wchar_t as built in type.
-  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES COMPILE_FLAGS "-DWXUSINGDLL /Zc:wchar_t /Od" )
-ELSEIF(MSVC80)
-  # Remove some warnings about deprecated functions.
-  SET( HAPIDemo_COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /Od" )
-    
-  # This might be useful for visual studio 2005 users that often recompile the api.
-  IF( NOT DEFINED USE_VC8_MP_FLAG )
-    SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
-  ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
+IF( MSVC )
   
-  IF( USE_VC8_MP_FLAG )
+  SET( HAPIDemo_COMPILE_FLAGS "-DWXUSINGDLL" )
+  
+  # Treat wchar_t as built in type for all visual studio versions.
+  # This is default for every version above 7 ( so far ) but we still set it for all.
+  SET( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} /Zc:wchar_t")
+  
+  IF( ${MSVC_VERSION} GREATER 1399 )
+    # Remove compiler warnings about deprecation for visual studio versions 8 and above.
+    SET( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
+  ENDIF( ${MSVC_VERSION} GREATER 1399 )
+  
+  IF( ${MSVC_VERSION} GREATER 1499 )
+    # Build using several threads for visual studio versions 9 and above.
     SET( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} /MP" )
-  ENDIF( USE_VC8_MP_FLAG )
+  ENDIF( ${MSVC_VERSION} GREATER 1499 )
   
+  IF( ${MSVC_VERSION} LESS 1600 )
+    # Turn off optimization for visual studio versions 8 and below.
+    # Old setting which I (Markus) have no idea why it was added.
+    SET( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} /Od" )
+  ENDIF( ${MSVC_VERSION} LESS 1600 )
+
   SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS}" )
-  # Remove link errors
   SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-ELSEIF(MSVC90)
-  # remove some warnings about deprecated functions and use threaded compiling.
-  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /MP /Od" )
-  # Remove link errors
-  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-ELSEIF( MSVC10 )
-  # remove some warnings about deprecated functions and use threaded compiling.
-  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /MP" )
-  # Remove link errors
-  SET_TARGET_PROPERTIES( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-ENDIF(MSVC70 OR MSVC71)
+ENDIF( MSVC )
 
 TARGET_LINK_LIBRARIES( HAPIDemo ${requiredLibs} ${optionalLibs} )
 

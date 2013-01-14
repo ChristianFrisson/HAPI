@@ -388,55 +388,61 @@ IF(APPLE)
 ENDIF(APPLE)
 
 IF( WIN32 )
-  
-  # change the name depending on compiler to be able to tell them apart
-  # since they are not compatible with each other. 
-  IF(MSVC70 OR MSVC71)
-    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc7 )
+
+  SET( H3D_MSVC_VERSION "" )
+  IF( MSVC )
+    SET( H3D_MSVC_VERSION 6 )
+    SET( TEMP_MSVC_VERSION 1299 )
+    WHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
+      MATH( EXPR H3D_MSVC_VERSION "${H3D_MSVC_VERSION} + 1" )
+      MATH( EXPR TEMP_MSVC_VERSION "${TEMP_MSVC_VERSION} + 100" )
+    ENDWHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
+    SET( H3D_MSVC_VERSION "_vc${H3D_MSVC_VERSION}" )
+    
+    # change the name depending on compiler to be able to tell them apart
+    # since they are not compatible with each other. 
+    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${H3D_MSVC_VERSION} )
+    
+    # Treat wchar_t as built in type for all visual studio versions.
+    # This is default for every version above 7 ( so far ) but we still set it for all.
     SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /Zc:wchar_t")
-  ELSEIF(MSVC80)
-    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc8 )
     
-    # This might be useful for visual studio 2005 users that often recompile the api.
-    IF( NOT DEFINED USE_VC8_MP_FLAG )
-      SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
-    ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
+    IF( MSVC80 )
+      # This might be useful for visual studio 2005 users that often recompile the api.
+      IF( NOT DEFINED USE_VC8_MP_FLAG )
+        SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
+      ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
+
+      IF( USE_VC8_MP_FLAG )
+        SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
+      ENDIF( USE_VC8_MP_FLAG )
+    ENDIF( MSVC80 )
     
-    IF( USE_VC8_MP_FLAG )
+    IF( ${MSVC_VERSION} GREATER 1499 )
+      # Build using several threads for visual studio versions 9 and above.
       SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
-    ENDIF( USE_VC8_MP_FLAG )
-  ELSEIF(MSVC90)
-    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc9 )
-    SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
-  ELSEIF(MSVC10)
-    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME HAPI_vc10 )
-    SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
-  ENDIF(MSVC70 OR MSVC71)
+    ENDIF( ${MSVC_VERSION} GREATER 1499 )
+  ENDIF( MSVC )
 
   # Set properties for OpenHapticsRenderer if the project is created.
   IF(OPENHAPTICS_FOUND)
     TARGET_LINK_LIBRARIES( OpenHapticsRenderer ${OpenHaptics_requiredLibs} ${OpenHaptics_requiredLibs} HAPI )
+    # change the name depending on compiler to be able to tell them apart
+    # since they are not compatible with each other. 
+    SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer${H3D_MSVC_VERSION} )
+      
     # make sure symbols are exported.
     SET( OpenHapticsRenderer_COMPILE_FLAGS "-DOPENHAPTICSRENDERER_EXPORTS" )
+    
+    IF( ${MSVC_VERSION} GREATER 1499 )
+      # Remove compiler warnings about deprecation for visual studio versions 9 and above.
+      SET( OpenHapticsRenderer_COMPILE_FLAGS "${OpenHapticsRenderer_COMPILE_FLAGS} /MP -D_CRT_SECURE_NO_DEPRECATE" )
+    ENDIF( ${MSVC_VERSION} GREATER 1499 )
     
     # make the name of debug libraries end in _d.
     SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES DEBUG_POSTFIX "_d" )
     # set the version of the library
     SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES VERSION ${HAPI_FULL_VERSION} )
-    
-    # change the name depending on compiler to be able to tell them apart
-    # since they are not compatible with each other. 
-    IF(MSVC70 OR MSVC71)
-      SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc7 )
-    ELSEIF(MSVC80)
-      SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc8 )
-    ELSEIF(MSVC90)
-      SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc9 )
-      SET( OpenHapticsRenderer_COMPILE_FLAGS "${OpenHapticsRenderer_COMPILE_FLAGS} /MP -D_CRT_SECURE_NO_DEPRECATE" )
-    ELSEIF(MSVC10)
-      SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer_vc10 )
-      SET( OpenHapticsRenderer_COMPILE_FLAGS "${OpenHapticsRenderer_COMPILE_FLAGS} /MP -D_CRT_SECURE_NO_DEPRECATE" )
-    ENDIF(MSVC70 OR MSVC71)
 
     # Set compile flags
     SET_TARGET_PROPERTIES( OpenHapticsRenderer 
@@ -455,6 +461,11 @@ IF( WIN32 )
   # Set properties for Chai3DRenderer if the project is created.
   IF(CHAI3D_FOUND)
     TARGET_LINK_LIBRARIES( Chai3DRenderer ${Chai3D_requiredLibs} ${Chai3D_requiredLibs} HAPI )
+    
+    # change the name depending on compiler to be able to tell them apart
+    # since they are not compatible with each other. 
+    SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer${H3D_MSVC_VERSION} )
+    
     # make sure symbols are exported.
     SET_TARGET_PROPERTIES( Chai3DRenderer 
                            PROPERTIES COMPILE_FLAGS "-DCHAI3DRENDERER_EXPORTS" )
@@ -462,18 +473,6 @@ IF( WIN32 )
     SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES DEBUG_POSTFIX "_d" )
     # set the version of the library
     SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES VERSION ${HAPI_FULL_VERSION} )
-
-    # change the name depending on compiler to be able to tell them apart
-    # since they are not compatible with each other. 
-    IF(MSVC70 OR MSVC71)
-      SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc7 )
-    ELSEIF(MSVC80)
-      SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc8 )
-    ELSEIF(MSVC90)
-      SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc9 )
-    ELSEIF(MSVC10)
-      SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer_vc10 )
-    ENDIF(MSVC70 OR MSVC71)
 
     # Set link flags
     SET_TARGET_PROPERTIES( Chai3DRenderer

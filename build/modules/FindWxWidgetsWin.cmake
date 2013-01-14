@@ -14,12 +14,22 @@ ELSE( CMAKE_CL_64 )
 ENDIF( CMAKE_CL_64 )
 
 
-# Look for the header file.
-FIND_PATH(wxWidgets_INCLUDE_DIR NAMES wx/wx.h 
-                                PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+SET( wxWidgets_LIBRARY_SEARCH_PATHS "" )
+SET( wxWidgets_INCLUDE_SEARCH_PATHS "" )
+IF( MSVC10 )
+  SET( wxWidgets_INCLUDE_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                                       $ENV{H3D_ROOT}/../External/include
                                       ../../External/include
-                                      ${module_file_path}/../../../External/include
+                                      ${module_file_path}/../../../External/include )
+  SET( wxWidgets_LIBRARY_SEARCH_PATHS ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                                      $ENV{H3D_ROOT}/../External/${LIB}
+                                      ../../External/${LIB}
+                                      ${module_file_path}/../../../External/${LIB} )
+ENDIF( MSVC10 )
+
+# Look for the header file.
+FIND_PATH(wxWidgets_INCLUDE_DIR NAMES wx/wx.h 
+                                PATHS ${wxWidgets_INCLUDE_SEARCH_PATHS}
                                 DOC "Path in which the file wx/wx.h is located." )
 MARK_AS_ADVANCED(wxWidgets_INCLUDE_DIR)
 
@@ -41,13 +51,9 @@ FOREACH(WXLIB ${wxlibs} )
         wxmsw29u_${WXLIB}
         wxmsw28${_UCD}_${WXLIB}
 				wxbase29u_${WXLIB}
-        PATHS 
-  	$ENV{H3D_EXTERNAL_ROOT}/${LIB}
-        $ENV{H3D_ROOT}/../External/${LIB}
-        ../../External/${LIB}
-        ${module_file_path}/../../../External/${LIB}
-        DOC 
-	"Path to wx ${WXLIB} library."
+        wx${WXLIB}
+        PATHS ${wxWidgets_LIBRARY_SEARCH_PATHS}
+        DOC "Path to wx ${WXLIB} library."
         )
         MARK_AS_ADVANCED(wxWidgets_${WXLIB}_LIBRARY)
 	IF( wxWidgets_Win_DEBUG_LIBS )
@@ -57,13 +63,9 @@ FOREACH(WXLIB ${wxlibs} )
 			wxmsw29u${_DBG}_${WXLIB}
 			wxmsw28${_UCD}_${WXLIB}
 			wxbase29u${_DBG}_${WXLIB}
-			PATHS 
-		$ENV{H3D_EXTERNAL_ROOT}/${LIB}
-			$ENV{H3D_ROOT}/../External/${LIB}
-			../../External/${LIB}
-			${module_file_path}/../../../External/${LIB}
-			DOC 
-		"Path to wx ${WXLIB}d library."
+      wx${WXLIB}${_DBG}
+			PATHS ${wxWidgets_LIBRARY_SEARCH_PATHS}
+			DOC "Path to wx ${WXLIB}d library."
 			)
 			MARK_AS_ADVANCED(wxWidgets_${WXLIB}${_DBG}_LIBRARY)
 	ENDIF( wxWidgets_Win_DEBUG_LIBS )
@@ -71,19 +73,13 @@ ENDFOREACH( WXLIB )
 
 
 FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase29u wxbase28 
-                                      PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                            $ENV{H3D_ROOT}/../External/${LIB}
-                                            ../../External/${LIB}
-                                            ${module_file_path}/../../../External/${LIB}
+                                      PATHS ${wxWidgets_LIBRARY_SEARCH_PATHS}
                                       DOC "Path to wx base library." )
 
 IF( wxWidgets_Win_DEBUG_LIBS )
 	# The _DBG variable is not used for 2.8 since the libraries in External works for both debug and release.
 	FIND_LIBRARY(wxWidgets_base${_DBG}_LIBRARY NAMES wxbase29u${_DBG} wxbase28
-										  PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-												$ENV{H3D_ROOT}/../External/${LIB}
-												../../External/${LIB}
-												${module_file_path}/../../../External/${LIB}
+										  PATHS ${wxWidgets_LIBRARY_SEARCH_PATHS}
 										  DOC "Path to wx base library." )
 ENDIF( wxWidgets_Win_DEBUG_LIBS )
 
