@@ -85,14 +85,14 @@ SET( OpenHaptics_requiredLibs)
 IF( TARGET H3DUtil )
   # Target was created by ADD_SUBDIRECTORY command.
   INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
-  SET( requiredLibs ${HAPI_requiredLibs} H3DUtil )
+  SET( HAPI_requiredLibs ${HAPI_requiredLibs} H3DUtil )
 ELSE( TARGET H3DUtil )
   #H3DUtil
   FIND_PACKAGE(H3DUtil REQUIRED)
 
   IF(H3DUTIL_FOUND)
     INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
-    SET(requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
+    SET(HAPI_requiredLibs ${HAPI_requiredLibs} ${H3DUTIL_LIBRARIES} )
   ENDIF(H3DUTIL_FOUND)
 ENDIF( TARGET H3DUtil )
 
@@ -361,9 +361,7 @@ ENDIF(WIN32)
 
 # Needed to link correctly on MSVC70 and MSVC71 because the dependency is not enough
 # to generate correct project files with this version of CMake.
-IF(NOT WIN32)
-  SET(HAPI_requiredLibs ${HAPI_requiredLibs} optimized H3DUtil debug H3DUtil_d )
-ELSEIF(MSVC70 OR MSVC71 OR ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
+IF(MSVC70 OR MSVC71 OR ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
   SET(HAPI_requiredLibs ${HAPI_requiredLibs} H3DUtil )
 ENDIF(NOT WIN32)
 
