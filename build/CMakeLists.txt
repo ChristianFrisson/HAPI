@@ -89,7 +89,6 @@ IF( TARGET H3DUtil )
 ELSE( TARGET H3DUtil )
   #H3DUtil
   FIND_PACKAGE(H3DUtil REQUIRED)
-
   IF(H3DUTIL_FOUND)
     INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
     SET(HAPI_requiredLibs ${HAPI_requiredLibs} ${H3DUTIL_LIBRARIES} )
@@ -361,7 +360,7 @@ ENDIF(WIN32)
 
 # Needed to link correctly on MSVC70 and MSVC71 because the dependency is not enough
 # to generate correct project files with this version of CMake.
-IF(MSVC70 OR MSVC71 OR ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
+IF( (MSVC70 OR MSVC71) AND ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
   SET(HAPI_requiredLibs ${HAPI_requiredLibs} H3DUtil )
 ENDIF(NOT WIN32)
 
