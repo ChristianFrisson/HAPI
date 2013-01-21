@@ -34,7 +34,7 @@
 
 #ifdef HAVE_VIRTUOSEAPI
 
-#include <VirtuoseAPI.h>
+#include <virtuoseAPI.h>
 
 namespace HAPI {
 

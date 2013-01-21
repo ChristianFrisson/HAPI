@@ -52,11 +52,15 @@ bool HaptionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
   context = virtOpen( ip_address.c_str() );
   if (context == NULL) {
+		int error_code = virtGetErrorCode(NULL);
     stringstream s;
-      s << "Warning: Failed to open Virtuose device."
-        << " Error: " << virtGetErrorMessage(virtGetErrorCode(NULL)) << endl;
-      setErrorMsg( s.str() );
-      return false;
+    s << "Warning: Failed to open Virtuose device.";
+		if( error_code != VIRT_E_VIRTUOSE_DLL_NOT_FOUND )
+			s << " Error: " << virtGetErrorMessage(error_code) << endl;
+		else
+			s << " Could not load library.";
+    setErrorMsg( s.str() );
+    return false;
   }
 
   float identity[7] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,1.0f};
