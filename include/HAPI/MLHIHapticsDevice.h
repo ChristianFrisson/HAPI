@@ -1,4 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
+//    Copyright 2010-2013, SenseGraphics AB
+//
 //    This file is part of HAPI.
 //
 //    HAPI is free software; you can redistribute it and/or modify
