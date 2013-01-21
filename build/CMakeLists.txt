@@ -362,7 +362,7 @@ ENDIF(WIN32)
 # to generate correct project files with this version of CMake.
 IF( (MSVC70 OR MSVC71) AND ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
   SET(HAPI_requiredLibs ${HAPI_requiredLibs} H3DUtil )
-ENDIF(NOT WIN32)
+ENDIF( (MSVC70 OR MSVC71) AND ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
 
 
 # make sure symbols are exported.
