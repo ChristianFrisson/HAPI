@@ -782,7 +782,7 @@ void OpenHapticsRenderer::hlRenderAbsolute( HAPIFloat stiffness,
                                             HAPIFloat snap_distance ) {
   HAPIFloat local_stiffness = stiffness / max_stiffness;
   hlRenderRelative( local_stiffness > 1 ? 1 : local_stiffness,
-                    damping,
+                    damping > 1 ? 1 : damping,
                     static_friction,
                     dynamic_friction,
                     magnetic,
