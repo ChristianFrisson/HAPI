@@ -454,12 +454,14 @@ IF( WIN32 )
                            "${OpenHapticsRenderer_COMPILE_FLAGS}" )
 
     # Set link flags
-    SET_TARGET_PROPERTIES( OpenHapticsRenderer HAPI
-                           PROPERTIES
-                           LINK_FLAGS "/DELAYLOAD:\"HD.dll\"" )
-    
+    IF( MSVC )
+      SET_TARGET_PROPERTIES( OpenHapticsRenderer HAPI
+                             PROPERTIES
+                             LINK_FLAGS "/DELAYLOAD:\"HD.dll\"" )
+
     # When using OpenHaptics HAPI also need to delayload HD.dll.
-    SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /DELAYLOAD:\"HD.dll\"" )
+      SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /DELAYLOAD:\"HD.dll\"" )
+    ENDIF( MSVC )
   ENDIF(OPENHAPTICS_FOUND)
 
   # Set properties for Chai3DRenderer if the project is created.
@@ -478,27 +480,31 @@ IF( WIN32 )
     # set the version of the library
     SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES VERSION ${HAPI_FULL_VERSION} )
 
-    # Set link flags
-    # Chai3DRenderer can not use incremental linking in debug. We shut it off for
-    # all visual studio versions because it does not really matter.
-    SET_TARGET_PROPERTIES( Chai3DRenderer
-                           PROPERTIES
-                           LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt"
-                           LINK_FLAGS  "/INCREMENTAL:NO" )
+    IF( MSVC )
+      # Set link flags
+      # Chai3DRenderer can not use incremental linking in debug. We shut it off for
+      # all visual studio versions because it does not really matter.
+      SET_TARGET_PROPERTIES( Chai3DRenderer
+                             PROPERTIES
+                             LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt"
+                             LINK_FLAGS  "/INCREMENTAL:NO" )
+    ENDIF( MSVC )
   ENDIF(CHAI3D_FOUND)
 
-  # Set link flags for HAPI
-  SET_TARGET_PROPERTIES( HAPI
-                         PROPERTIES
-                         LINK_FLAGS "${HAPI_LINK_FLAGS}
-  /DELAYLOAD:\"dhd.dll\" 
-  /DELAYLOAD:\"dhd64.dll\" 
-  /DELAYLOAD:\"hdl.dll\"
-  /DELAYLOAD:\"Haptik.Library.dll\"
-  /DELAYLOAD:\"SimballMedicalHID.dll\" 
-  /DELAYLOAD:\"VirtuoseDLL.dll\"
-  /DELAYLOAD:\"FTD2XX.dll\"
-	/DELAYLOAD:\"EntactAPI.dll\"" )
+  IF( MSVC )
+    # Set link flags for HAPI
+    SET_TARGET_PROPERTIES( HAPI
+                           PROPERTIES
+                           LINK_FLAGS "${HAPI_LINK_FLAGS}
+    /DELAYLOAD:\"dhd.dll\" 
+    /DELAYLOAD:\"dhd64.dll\" 
+    /DELAYLOAD:\"hdl.dll\"
+    /DELAYLOAD:\"Haptik.Library.dll\"
+    /DELAYLOAD:\"SimballMedicalHID.dll\" 
+    /DELAYLOAD:\"VirtuoseDLL.dll\"
+    /DELAYLOAD:\"FTD2XX.dll\"
+	  /DELAYLOAD:\"EntactAPI.dll\"" )
+  ENDIF( MSVC )
 ENDIF( WIN32 )
 
 # set compile flags for HAPI project
