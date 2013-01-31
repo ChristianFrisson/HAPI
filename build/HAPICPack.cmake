@@ -76,69 +76,44 @@ IF( GENERATE_CPACK_PROJECT )
 
       # External binary directory to add to path.
       SET( CPACK_EXTERNAL_BIN "bin32" )
+      SET( CPACK_H3D_64_BIT "FALSE" )
       IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
         SET( CPACK_EXTERNAL_BIN "bin64" )
+        SET( CPACK_H3D_64_BIT "TRUE" )
       ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 
       # Extra install commands will be set to install vc8(9)_redists
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
       
-      # Add cache variable vc8(9)_redist which should be set to the install file
-      # for microsoft visual studio redistributables, they can be found in the
-      # installation folder for each visual studio installation.
-      IF( NOT DEFINED vc8_redist )
-        SET( vc8_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 8" )
-        MARK_AS_ADVANCED(vc8_redist)
-      ENDIF( NOT DEFINED vc8_redist )
-      
-      IF( NOT DEFINED vc9_redist )
-        SET( vc9_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 9." )
-        MARK_AS_ADVANCED(vc9_redist)
-      ENDIF( NOT DEFINED vc9_redist )
-      
-      IF( NOT DEFINED vc10_redist )
-        SET( vc10_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 10." )
-        MARK_AS_ADVANCED(vc10_redist)
-      ENDIF( NOT DEFINED vc10_redist )
-
-      IF( vc8_redist )
-        STRING( REPLACE "/" "\\\\" Temp_vc8_redist ${vc8_redist} )
-        GET_FILENAME_COMPONENT( VC8_FILE_NAME ${vc8_redist} NAME )
-        SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                               " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc8\\\"\\n"
-                                               " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc8_redist}\\\"\\n"
-                                               " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n"
-                                               " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                               " Delete file\\n  Delete \\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"\\n"
-                                               " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                               " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc8\\\"\\n\\n" )
-      ENDIF( vc8_redist )
-      
-      IF( vc9_redist )
-        STRING( REPLACE "/" "\\\\" Temp_vc9_redist ${vc9_redist} )
-        GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
-        SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                               " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc9\\\"\\n"
-                                               " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc9_redist}\\\"\\n"
-                                               " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
-                                               " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                               " Delete file\\n  Delete \\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"\\n"
-                                               " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                               " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
-      ENDIF( vc9_redist )
-      
-      IF( vc10_redist )
-        STRING( REPLACE "/" "\\\\" Temp_vc10_redist ${vc10_redist} )
-        GET_FILENAME_COMPONENT( VC10_FILE_NAME ${vc10_redist} NAME )
-        SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                               " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc10\\\"\\n"
-                                               " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc10_redist}\\\"\\n"
-                                               " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc10\\\\${VC10_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
-                                               " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                               " Delete file\\n  Delete \\\"$INSTDIR\\\\vc10\\\\${VC10_FILE_NAME}\\\"\\n"
-                                               " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                               " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc10\\\"\\n\\n" )
-      ENDIF( vc10_redist )
+      SET( redist_versions 8 9 10 )
+      foreach( redist_version ${redist_versions} )
+        # Add cache variable vc${redist_version}_redist which should be set to the install file
+        # for microsoft visual studio redistributables, they can be found in the
+        # installation folder for each visual studio installation.
+        IF( NOT DEFINED vc${redist_version}_redist )
+          SET( vc${redist_version}_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio ${redist_version}" )
+          MARK_AS_ADVANCED(vc${redist_version})
+        ENDIF( NOT DEFINED vc${redist_version}_redist )
+        IF( vc${redist_version}_redist )
+          STRING( REPLACE "/" "\\\\" Temp_vc${redist_version}_redist ${vc${redist_version}_redist} )
+          GET_FILENAME_COMPONENT( VC${redist_version}_FILE_NAME ${vc${redist_version}_redist} NAME )
+          SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                                 " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n"
+                                                 " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc${redist_version}_redist}\\\"\\n" )
+          IF( ${redist_version} LESS 9 )
+            SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n" )
+          ELSE( )
+            SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"' $0\\n" )
+          ENDIF( ${redist_version} LESS 9 )
+          SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                                 " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                                 " Delete file\\n  Delete \\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"\\n"
+                                                 " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                                 " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n\\n" )
+        ENDIF( vc${redist_version}_redist )
+      endforeach( redist_version ${redist_versions} )
       
       # Modify path since in the NSIS template.
       SET( CPACK_NSIS_MODIFY_PATH "ON" )
@@ -201,9 +176,10 @@ IF( GENERATE_CPACK_PROJECT )
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw29ud_${library_name}.lib )
         SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
                                ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293u_${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293u_${library_name}_vc_custom.pdb
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293u_${library_name}_vc_custom.pdb
                                ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293ud_${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293ud_${library_name}_vc_custom.pdb )
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293ud_${library_name}_vc_custom.pdb
+                               )
       ENDFOREACH( library_name )
       SET( wxlibs "" _net _xml )
       # IN LISTS means that the empty argument is parsed
@@ -216,9 +192,10 @@ IF( GENERATE_CPACK_PROJECT )
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxbase29ud${library_name}.lib )
         SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
                                ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293u${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293u${library_name}_vc_custom.pdb
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293u${library_name}_vc_custom.pdb
                                ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293ud${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293ud${library_name}_vc_custom.pdb )
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293ud${library_name}_vc_custom.pdb
+                               )
       ENDFOREACH( library_name )
       
       SET( wxlibs expat jpeg png regexu scintilla tiff zlib )
@@ -230,8 +207,9 @@ IF( GENERATE_CPACK_PROJECT )
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wx${library_name}.lib
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wx${library_name}d.lib )
         SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wx${library_name}.pdb
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wx${library_name}d.pdb )
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wx${library_name}.pdb
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wx${library_name}d.pdb
+                               )
       ENDFOREACH( library_name )
 
       SET( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}

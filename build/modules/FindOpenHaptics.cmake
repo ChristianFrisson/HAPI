@@ -5,6 +5,7 @@
 #  OPENHAPTICS_LIBRARIES    - List of libraries when using OpenHaptics.
 #  OPENHAPTICS_FOUND        - True if OpenHaptics found.
 
+SET( program_files_path "" )
 IF( CMAKE_CL_64 )
   SET( LIB "x64" )
   SET( program_files_path "$ENV{ProgramW6432}" )

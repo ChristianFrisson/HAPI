@@ -5,10 +5,12 @@
 #  FALCONAPI_LIBRARIES    - List of libraries when using FalconAPI.
 #  FALCONAPI_FOUND        - True if FalconAPI found.
 
-SET( program_files_path "$ENV{ProgramW6432}" )
-IF( NOT program_files_path )
+SET( program_files_path "" )
+IF( CMAKE_CL_64 )
+  SET( program_files_path "$ENV{ProgramW6432}" )
+ELSE( CMAKE_CL_64 )
   SET( program_files_path "$ENV{ProgramFiles}" )
-ENDIF( NOT program_files_path )
+ENDIF( CMAKE_CL_64 )
 
 SET( FALCON_INCLUDE_SEARCH_PATH "" )
 SET( FALCON_LIB_SEARCH_PATH "" )

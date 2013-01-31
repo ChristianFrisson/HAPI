@@ -417,6 +417,9 @@ IF( WIN32 )
       IF( USE_VC8_MP_FLAG )
         SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
       ENDIF( USE_VC8_MP_FLAG )
+      
+      # HAPI can not link incrementally on vc8 for some reason.
+      SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     ENDIF( MSVC80 )
     
     IF( ${MSVC_VERSION} GREATER 1499 )
@@ -476,9 +479,12 @@ IF( WIN32 )
     SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES VERSION ${HAPI_FULL_VERSION} )
 
     # Set link flags
+    # Chai3DRenderer can not use incremental linking in debug. We shut it off for
+    # all visual studio versions because it does not really matter.
     SET_TARGET_PROPERTIES( Chai3DRenderer
                            PROPERTIES
-                           LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
+                           LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt"
+                           LINK_FLAGS  "/INCREMENTAL:NO" )
   ENDIF(CHAI3D_FOUND)
 
   # Set link flags for HAPI
