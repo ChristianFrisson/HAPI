@@ -438,10 +438,13 @@ IF( WIN32 )
     # make sure symbols are exported.
     SET( OpenHapticsRenderer_COMPILE_FLAGS "-DOPENHAPTICSRENDERER_EXPORTS" )
     
-    IF( ${MSVC_VERSION} GREATER 1499 )
-      # Remove compiler warnings about deprecation for visual studio versions 9 and above.
-      SET( OpenHapticsRenderer_COMPILE_FLAGS "${OpenHapticsRenderer_COMPILE_FLAGS} /MP -D_CRT_SECURE_NO_DEPRECATE" )
-    ENDIF( ${MSVC_VERSION} GREATER 1499 )
+    # Apparently this MSVC check is needed when built with Ming system.
+    IF( MSVC )
+      IF( ${MSVC_VERSION} GREATER 1499 )
+        # Remove compiler warnings about deprecation for visual studio versions 9 and above.
+        SET( OpenHapticsRenderer_COMPILE_FLAGS "${OpenHapticsRenderer_COMPILE_FLAGS} /MP -D_CRT_SECURE_NO_DEPRECATE" )
+      ENDIF( ${MSVC_VERSION} GREATER 1499 )
+    ENDIF( MSVC )
     
     # make the name of debug libraries end in _d.
     SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES DEBUG_POSTFIX "_d" )
