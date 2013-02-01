@@ -1,5 +1,14 @@
 Changes for version 1.2
 
+- Updates to configure build for MinGW build toolchain.
+- Updates to make a proper debian package.
+- Updates to ErrorHandler system for haptics devices.
+- Many CMake updates for building using a top CMakeLists.txt.
+- Fixed thread bugs with FalconHapticsDevice.
+- Added alwayFollowSurface option to RuspiniRenderer.
+- Added force and torque limits to haptics devices.
+- Support for 64 bit dhd (forcedimension).
+- Added torque to HapticForceField.
 - Added HapticRotationalSpring
 - Added damping to HapticSpring
 - Added HaptionHapticsDevice, support for devices from Haption.
