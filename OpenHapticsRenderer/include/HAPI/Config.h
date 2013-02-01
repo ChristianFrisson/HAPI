@@ -46,7 +46,7 @@
 // this file see OPENHAPTICSRENDERER_API functions as being imported from a DLL,
 // whereas this DLL sees symbols defined with this macro as being
 // exported.
-#ifdef WIN32
+#if defined(WIN32) || defined(__WIN32__)
 #include <windows.h>
 #ifdef OPENHAPTICSRENDERER_EXPORTS
 #define OPENHAPTICSRENDERER_API __declspec(dllexport)
