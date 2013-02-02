@@ -29,16 +29,24 @@ ELSE(MSVC)
   SET( HAPI_NAME hapi )
 ENDIF( MSVC )
 
+SET( DEFAULT_LIB_INSTALL "lib" )
+IF( WIN32 )
+  SET( DEFAULT_LIB_INSTALL "lib32" )
+  IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    SET( DEFAULT_LIB_INSTALL "lib64" )
+  ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+ENDIF( WIN32 )
+
 FIND_LIBRARY(HAPI_LIBRARY NAMES ${HAPI_NAME}
-                          PATHS $ENV{H3D_ROOT}/../lib
-                                ../../lib
-                                ${module_file_path}/../../../lib
+                          PATHS $ENV{H3D_ROOT}/../${DEFAULT_LIB_INSTALL}
+                                ../../${DEFAULT_LIB_INSTALL}
+                                ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
                           DOC "Path to ${HAPI_NAME} library." )
 
 FIND_LIBRARY( HAPI_DEBUG_LIBRARY NAMES ${HAPI_NAME}_d
-              PATHS $ENV{H3D_ROOT}/../lib
-                    ../../lib
-                    ${module_file_path}/../../../lib
+              PATHS $ENV{H3D_ROOT}/../${DEFAULT_LIB_INSTALL}
+                    ../../${DEFAULT_LIB_INSTALL}
+                    ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
                     DOC "Path to ${HAPI_NAME}_d library." )
 MARK_AS_ADVANCED(HAPI_LIBRARY)
 MARK_AS_ADVANCED(HAPI_DEBUG_LIBRARY)

@@ -107,14 +107,14 @@ IF( GENERATE_CPACK_PROJECT )
                                                    ${MS_REDIST_INSTALL_COMMAND_1} )
           IF( ${redist_version} LESS 9 )
             SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n" )
+                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"'\\n" )
             SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
-                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /x vcredist.msi /qn\\\"' $0\\n" )
+                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /x vcredist.msi /qn\\\"'\\n" )
           ELSE( )
             SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"' $0\\n" )
+                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"'" )
             SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
-                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /uninstall \\\"' $0\\n" )
+                                                   " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /uninstall \\\"'" )
           ENDIF( ${redist_version} LESS 9 )
           SET( MS_REDIST_INSTALL_COMMAND_2 " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
                                            " Delete file\\n  Delete \\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"\\n"
@@ -479,18 +479,25 @@ IF( GENERATE_CPACK_PROJECT )
            COMPONENT HAPI_cpack_sources )
 
   # Add a cache variable HAPI_DOCS_DIRECTORY used to indicate where the HAPI docs are.
-  IF( ( NOT TARGET H3DAPI ) AND NOT DEFINED HAPI_DOCS_DIRECTORY )
-    SET( HAPI_DOCS_DIRECTORY "" CACHE PATH "Set this to the directory containing the documentation of HAPI. Only needed for a HAPI only package." )
+  IF( NOT DEFINED HAPI_DOCS_DIRECTORY )
+    SET( HAPI_DOCS_DIRECTORY_DEFAULT "" )
+    IF( H3D_USE_DEPENDENCIES_ONLY )
+      SET( HAPI_DOCS_DIRECTORY_DEFAULT "${HAPI_SOURCE_DIR}/../../doc" )
+    ELSEIF( TARGET H3DAPI )
+      SET( HAPI_DOCS_DIRECTORY_DEFAULT "${H3DAPI_DOCS_DIRECTORY}" )
+    ENDIF( H3D_USE_DEPENDENCIES_ONLY )
+    SET( HAPI_DOCS_DIRECTORY "${HAPI_DOCS_DIRECTORY_DEFAULT}" CACHE PATH "Set this to the directory containing the documentation of HAPI." )
     MARK_AS_ADVANCED(HAPI_DOCS_DIRECTORY)
-  ENDIF( ( NOT TARGET H3DAPI ) AND NOT DEFINED HAPI_DOCS_DIRECTORY )
+  ENDIF( NOT DEFINED HAPI_DOCS_DIRECTORY )
   
   IF( EXISTS ${HAPI_DOCS_DIRECTORY} )
-    # The trailing / is there in order to copy the contents of the doc without the actual document name, since the content
-    # should be put in a doc directory.
-    INSTALL( DIRECTORY ${HAPI_DOCS_DIRECTORY}/
+    INSTALL( DIRECTORY ${HAPI_DOCS_DIRECTORY}/HAPI
              DESTINATION doc
              COMPONENT HAPI_cpack_headers
              REGEX "(/.svn)|(/CVS)" EXCLUDE )
+    INSTALL( FILES "${HAPI_DOCS_DIRECTORY}/HAPI Manual.pdf"
+             DESTINATION doc
+             COMPONENT HAPI_cpack_headers )
   ENDIF( EXISTS ${HAPI_DOCS_DIRECTORY} )
 
   # setting names and dependencies between components and also grouping them.
