@@ -1,5 +1,5 @@
 Changes for version 1.2
-
+- Able to build HAPIDemo with wxWidget 2.8 and 2.9
 - Updates to configure build for MinGW build toolchain.
 - Updates to make a proper debian package.
 - Updates to ErrorHandler system for haptics devices.
@@ -19,6 +19,7 @@ levitation haptics device.
 - Fixed a bug in SensableHapticsDevice that sent on torques in Nm instead of 
 Nmm which is expected by the driver.
 - Update CMake system to work with new 64-bit windows external libraries.
+-Added rotation to HapticMasterDevice
 
 New classes:
 - HapticRotationalSpring
