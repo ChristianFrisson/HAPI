@@ -10,7 +10,7 @@ Changes for version 1.2
 - Support for 64 bit dhd (forcedimension).
 - Added torque to HapticForceField.
 - Added HapticRotationalSpring
-- Added damping to HapticSpring
+- Added damping and position_interpolation to HapticSpring
 - Added HaptionHapticsDevice, support for devices from Haption.
 - Added MLHIHapticsDevice, support for the Butterfly haptics magnetic 
 levitation haptics device.
