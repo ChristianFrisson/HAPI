@@ -61,7 +61,7 @@ INCLUDE_DIRECTORIES( ${HAPI_SOURCE_DIR}/../include )
 
 SET( HAPI_MAJOR_VERSION 1 )
 SET( HAPI_MINOR_VERSION 2 )
-SET( HAPI_BUILD_VERSION 0 )
+SET( HAPI_BUILD_VERSION 1 )
 
 # Set here already in case a special NSIS template needs to be used by cpack.
 SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
