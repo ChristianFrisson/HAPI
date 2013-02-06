@@ -35,13 +35,49 @@ HapticSpring::HapticSpring( const Vec3 &_position,
                             HAPIFloat _spring_constant ):
   position( _position ),
   spring_constant( _spring_constant ),
-  damping( 0 ) {}
+  damping( 0 ),
+	first_time( true ),
+	step_length( 0 ),
+	position_interpolation( 1 ) {}
 
 HapticSpring::HapticSpring( const Vec3 &_position,
                             HAPIFloat _spring_constant,
-                            HAPIFloat _damping ):
+                            HAPIFloat _damping,
+														HAPIFloat _position_interpolation ):
   position( _position ),
   spring_constant( _spring_constant ),
-  damping( _damping ) {}
+  damping( _damping ),
+	first_time( true ),
+	step_length( 0 ),
+	position_interpolation( _position_interpolation ) {
+	
+	if( position_interpolation < 0 )
+		position_interpolation = 0;
+	else if( position_interpolation > 1 )
+		position_interpolation = 1;
+}
 
 
+HapticSpring::EffectOutput HapticSpring::calculateForces( const EffectInput &input ) {
+	Vec3 relative_velocity = input.hd->getVelocity();
+  if( first_time ) {
+		interpolated_position = position;
+		first_time = false;
+	} else {
+	  Vec3 to_point = position - interpolated_position;
+		HAPIFloat to_point_length = to_point.length();
+		if( to_point_length > Constants::epsilon ) {
+			to_point /= to_point_length;
+			HAPIFloat travel = H3DUtil::H3DMin( to_point_length, step_length );
+			to_point *= travel;
+			interpolated_position += to_point;
+			Vec3 instant_spring_velocity = to_point / input.deltaT;
+			relative_velocity -= instant_spring_velocity;
+		}
+	}
+
+	force = 
+		( interpolated_position - input.hd->getPosition() ) * spring_constant - 
+		damping * relative_velocity;
+	return EffectOutput( force );
+}

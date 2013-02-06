@@ -44,7 +44,10 @@ namespace HAPI {
     HapticSpring():
       position( Vec3( 0, 0, 0 ) ),
       spring_constant( 0 ),
-      damping( 0 ) { }
+      damping( 0 ),
+			first_time( true ),
+			step_length( 0 ),
+			position_interpolation( 1 ) { }
     
     /// Constructor
     HapticSpring( const Vec3 &_position,
@@ -52,19 +55,16 @@ namespace HAPI {
 
     HapticSpring( const Vec3 &_position,
                   HAPIFloat _spring_constant,
-                  HAPIFloat _damping );
+                  HAPIFloat _damping,
+									HAPIFloat _position_interpolation = 1 );
     
     /// The force of the EffectOutput will be a force from the position of
     /// the haptics device to the position of the HapticSpring. 
-    EffectOutput virtual calculateForces( const EffectInput &input ) {
-      force = 
-        ( position - input.hd->getPosition() ) * spring_constant - 
-        damping * input.hd->getVelocity();
-      return EffectOutput( force );
-    }
+    EffectOutput virtual calculateForces( const EffectInput &input );
 
     /// Set position
     inline void setPosition( const Vec3 &_position ) {
+			step_length = ( _position - position ).length() * position_interpolation;
       position = _position;
     }
 
@@ -76,6 +76,15 @@ namespace HAPI {
     /// Set spring constant
     inline void setSpringConstant( const HAPIFloat &_sc ) {
       spring_constant = _sc;
+    }
+
+		/// Set position_interpolation constant
+    inline void setPositionInterpolation( const HAPIFloat &_pi ) {
+      position_interpolation = _pi;
+			if( position_interpolation < 0 )
+				position_interpolation = 0;
+			else if( position_interpolation > 1 )
+				position_interpolation = 1;
     }
 
     /// Get position
@@ -97,12 +106,16 @@ namespace HAPI {
     inline const Vec3 &getLatestForce() {
       return force;
     }
+
+		/// Get position_interpolation.
+    inline const HAPIFloat &getPositionInterpolation() {
+      return position_interpolation;
+    }
     
   protected:
-    Vec3 force;
-    Vec3 position;
-    HAPIFloat spring_constant;
-    HAPIFloat damping;
+    Vec3 force, position, interpolated_position, last_set_position;
+    HAPIFloat spring_constant, damping, step_length, position_interpolation;
+		bool first_time;
   };
 }
 
