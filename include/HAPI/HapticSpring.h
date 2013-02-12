@@ -64,7 +64,8 @@ namespace HAPI {
 
     /// Set position
     inline void setPosition( const Vec3 &_position ) {
-			step_length = ( _position - position ).length() * position_interpolation;
+      Vec3 difference= first_time ? (_position - position) : (_position - interpolated_position);
+      step_length = difference.length() * position_interpolation;
       position = _position;
     }
 
@@ -74,12 +75,12 @@ namespace HAPI {
     }
     
     /// Set spring constant
-    inline void setSpringConstant( const HAPIFloat &_sc ) {
+    inline void setSpringConstant( HAPIFloat _sc ) {
       spring_constant = _sc;
     }
 
 		/// Set position_interpolation constant
-    inline void setPositionInterpolation( const HAPIFloat &_pi ) {
+    inline void setPositionInterpolation( HAPIFloat _pi ) {
       position_interpolation = _pi;
 			if( position_interpolation < 0 )
 				position_interpolation = 0;
@@ -90,6 +91,11 @@ namespace HAPI {
     /// Get position
     inline const Vec3 &getPosition() {
       return position;
+    }
+
+    /// Get the interpolated spring position
+    inline const Vec3 &getInterpolatedPosition() {
+      return interpolated_position;
     }
 
     /// Get damping
@@ -108,7 +114,7 @@ namespace HAPI {
     }
 
 		/// Get position_interpolation.
-    inline const HAPIFloat &getPositionInterpolation() {
+    inline HAPIFloat getPositionInterpolation() {
       return position_interpolation;
     }
     
