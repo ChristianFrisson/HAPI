@@ -1,4 +1,4 @@
-Changes for version 1.2
+Changes for version 1.2.0:
 - Able to build HAPIDemo with wxWidget 2.8 and 2.9
 - Updates to configure build for MinGW build toolchain.
 - Updates to make a proper debian package.
