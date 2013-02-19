@@ -426,10 +426,11 @@ IF( WIN32 )
       IF( USE_VC8_MP_FLAG )
         SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
       ENDIF( USE_VC8_MP_FLAG )
-      
-      # HAPI can not link incrementally on vc8 for some reason.
-      SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     ENDIF( MSVC80 )
+
+		# HAPI can not link incrementally on vc8 for some reason. Seems to be an issue for
+		# vc9 also in some cases.
+    SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     
     IF( ${MSVC_VERSION} GREATER 1499 )
       # Build using several threads for visual studio versions 9 and above.
@@ -469,7 +470,7 @@ IF( WIN32 )
     IF( MSVC )
       SET_TARGET_PROPERTIES( OpenHapticsRenderer HAPI
                              PROPERTIES
-                             LINK_FLAGS "/DELAYLOAD:\"HD.dll\"" )
+                             LINK_FLAGS "/DELAYLOAD:\"HD.dll\" /INCREMENTAL:NO" )
 
     # When using OpenHaptics HAPI also need to delayload HD.dll.
       SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /DELAYLOAD:\"HD.dll\"" )
