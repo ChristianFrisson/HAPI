@@ -17,6 +17,7 @@ ENDIF( CMAKE_CL_64 )
 # Look for the header file.
 FIND_PATH(OPENHAPTICS_INCLUDE_DIR NAMES HL/hl.h HD/hd.h HDU/hdu.h
                                   PATHS $ENV{3DTOUCH_BASE}/include
+                                        $ENV{OH_SDK_BASE}/include
                                         "${program_files_path}/SensAble/3DTouch/include"
                                   DOC "Path in which the files HL/hl.h, HD/hd.h and HDU/hdu.h are located." )
 MARK_AS_ADVANCED(OPENHAPTICS_INCLUDE_DIR)
@@ -26,6 +27,8 @@ MARK_AS_ADVANCED(OPENHAPTICS_INCLUDE_DIR)
 FIND_LIBRARY(OPENHAPTICS_HL_LIBRARY NAMES HL
                         PATHS $ENV{3DTOUCH_BASE}/lib        # OpenHaptics 2.0
                               $ENV{3DTOUCH_BASE}/lib/${LIB}  # OpenHaptics 3.0
+                              $ENV{OH_SDK_BASE}/lib        # OpenHaptics 2.0
+                              $ENV{OH_SDK_BASE}/lib/${LIB}  # OpenHaptics 3.0
                               "${program_files_path}/SensAble/3DTouch/lib"        # OpenHaptics 2.0
                               "${program_files_path}/SensAble/3DTouch/lib/${LIB}" # OpenHaptics 3.0
 															"/usr/lib64"
@@ -36,6 +39,8 @@ MARK_AS_ADVANCED(OPENHAPTICS_HL_LIBRARY)
 FIND_LIBRARY(OPENHAPTICS_HD_LIBRARY NAMES HD
                         PATHS $ENV{3DTOUCH_BASE}/lib        # OpenHaptics 2.0
                               $ENV{3DTOUCH_BASE}/lib/${LIB}  # OpenHaptics 3.0
+                              $ENV{OH_SDK_BASE}/lib        # OpenHaptics 2.0
+                              $ENV{OH_SDK_BASE}/lib/${LIB}  # OpenHaptics 3.0
                               "${program_files_path}/SensAble/3DTouch/lib"
                               "${program_files_path}/SensAble/3DTouch/lib/${LIB}"
 															"/usr/lib64"
@@ -45,6 +50,8 @@ MARK_AS_ADVANCED(OPENHAPTICS_HD_LIBRARY)
 FIND_LIBRARY(OPENHAPTICS_HDU_LIBRARY NAMES HDU
                          PATHS  $ENV{3DTOUCH_BASE}/utilities/lib        # OpenHaptics 2.0
                                 $ENV{3DTOUCH_BASE}/utilities/lib/${LIB}/Release  # OpenHaptics 3.0
+                                $ENV{OH_SDK_BASE}/utilities/lib        # OpenHaptics 2.0
+                                $ENV{OH_SDK_BASE}/utilities/lib/${LIB}/Release  # OpenHaptics 3.0
                                 "${program_files_path}/SensAble/3DTouch/utilities/lib"        # OpenHaptics 2.0
                                 "${program_files_path}/SensAble/3DTouch/utilities/lib/${LIB}/Release"  # OpenHaptics 3.0
 															  "/usr/lib64"                                
