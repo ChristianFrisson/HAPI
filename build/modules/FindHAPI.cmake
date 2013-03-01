@@ -23,6 +23,7 @@ FIND_PATH(HAPI_INCLUDE_DIR NAMES HAPI/HAPI.h
                            PATHS $ENV{H3D_ROOT}/../HAPI/include
                                  ../../HAPI/include
                                  ${module_file_path}/../../../HAPI/include
+                                 ${module_file_path}/../../include
                            DOC "Path in which the file HAPI/HAPI.h is located." )
 MARK_AS_ADVANCED(HAPI_INCLUDE_DIR)
 

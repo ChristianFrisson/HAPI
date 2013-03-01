@@ -40,7 +40,9 @@ int main(int argc, char* argv[]) {
   // Init the device.
   if( hd.initDevice() != HAPIHapticsDevice::SUCCESS ) {
     cerr << hd.getLastErrorMsg() << endl;
+#ifdef H3D_WINDOWS
     system("PAUSE");
+#endif
     return 0;
   }
   // Enable the device
