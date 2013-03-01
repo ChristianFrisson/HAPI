@@ -5,8 +5,6 @@
 #  MLHI_LIBRARIES    - List of libraries when using MLHI
 #  MLHI_FOUND        - True if MLHI found
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
 # Look for the header file.
 FIND_PATH(MLHI_INCLUDE_DIR NAMES MLHI/ml_api.h
                                 PATHS /usr/local/include/
