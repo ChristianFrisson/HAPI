@@ -22,28 +22,26 @@ FIND_PATH(OPENHAPTICS_INCLUDE_DIR NAMES HL/hl.h HD/hd.h HDU/hdu.h
                                   DOC "Path in which the files HL/hl.h, HD/hd.h and HDU/hdu.h are located." )
 MARK_AS_ADVANCED(OPENHAPTICS_INCLUDE_DIR)
 
-# TODO: Add conditional checking for x64 system
-# Look for the library.
-FIND_LIBRARY(OPENHAPTICS_HL_LIBRARY NAMES HL
-                        PATHS $ENV{3DTOUCH_BASE}/lib        # OpenHaptics 2.0
+SET( OPENHAPTICS_LIBRARY_DIRECTORIES $ENV{3DTOUCH_BASE}/lib        # OpenHaptics 2.0
                               $ENV{3DTOUCH_BASE}/lib/${LIB}  # OpenHaptics 3.0
                               $ENV{OH_SDK_BASE}/lib        # OpenHaptics 2.0
                               $ENV{OH_SDK_BASE}/lib/${LIB}  # OpenHaptics 3.0
+                              $ENV{OH_SDK_BASE}/lib/${LIB}/Release
+                              $ENV{OH_SDK_BASE}/lib/${LIB}/ReleaseAcademicEdition
                               "${program_files_path}/SensAble/3DTouch/lib"        # OpenHaptics 2.0
                               "${program_files_path}/SensAble/3DTouch/lib/${LIB}" # OpenHaptics 3.0
-															"/usr/lib64"
+															"/usr/lib64" )
+
+# TODO: Add conditional checking for x64 system
+# Look for the library.
+FIND_LIBRARY(OPENHAPTICS_HL_LIBRARY NAMES HL
+                        PATHS ${OPENHAPTICS_LIBRARY_DIRECTORIES}
                         DOC "Path to hl library." )
 
 MARK_AS_ADVANCED(OPENHAPTICS_HL_LIBRARY)
 
 FIND_LIBRARY(OPENHAPTICS_HD_LIBRARY NAMES HD
-                        PATHS $ENV{3DTOUCH_BASE}/lib        # OpenHaptics 2.0
-                              $ENV{3DTOUCH_BASE}/lib/${LIB}  # OpenHaptics 3.0
-                              $ENV{OH_SDK_BASE}/lib        # OpenHaptics 2.0
-                              $ENV{OH_SDK_BASE}/lib/${LIB}  # OpenHaptics 3.0
-                              "${program_files_path}/SensAble/3DTouch/lib"
-                              "${program_files_path}/SensAble/3DTouch/lib/${LIB}"
-															"/usr/lib64"
+                        PATHS ${OPENHAPTICS_LIBRARY_DIRECTORIES}
                         DOC "Path to hd library." )
 MARK_AS_ADVANCED(OPENHAPTICS_HD_LIBRARY)
 
