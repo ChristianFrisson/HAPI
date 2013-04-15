@@ -21,7 +21,7 @@ IF( MSVC10 )
                                       $ENV{H3D_ROOT}/../External/include
                                       ../../External/include
                                       ${module_file_path}/../../../External/include )
-  SET( wxWidgets_LIBRARY_SEARCH_PATHS ENV{H3D_EXTERNAL_ROOT}/${LIB}
+  SET( wxWidgets_LIBRARY_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
                                       $ENV{H3D_ROOT}/../External/${LIB}
                                       ../../External/${LIB}
                                       ${module_file_path}/../../../External/${LIB} )
@@ -40,6 +40,7 @@ ELSE(wxWidgets_USE_LIBS)
 ENDIF(wxWidgets_USE_LIBS)
 
 SET( wxWidgets_Win_DEBUG_LIBS "YES" CACHE BOOL "If set to YES debug libraries will be included." )
+MARK_AS_ADVANCED( wxWidgets_Win_DEBUG_LIBS )
 IF( wxWidgets_Win_DEBUG_LIBS )
   SET( _DBG "d" )
 ELSE( wxWidgets_Win_DEBUG_LIBS )

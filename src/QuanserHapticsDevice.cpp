@@ -29,7 +29,7 @@
 
 #include <HAPI/QuanserHapticsDevice.h>
 
-#ifdef HAVE_QUARC
+#ifdef HAVE_QUANSERAPI
 
 using namespace HAPI;
 

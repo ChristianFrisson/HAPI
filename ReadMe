@@ -38,22 +38,57 @@ desired. The libraries used by HAPI are:
     http://sourceforge.net/projects/libnifalcon/
   - HapticAPI. Needed to compile with support for Haptic Master, a device from Moog.
     Contact Moog to get HapticAPI. Note that HapticAPI is included in the Windows
-    distribution of H3D API. http://www.moog.com/Industrial/
+    distribution of HAPI. http://www.moog.com/Industrial/
+  - EntactAPI. Needed to compile with support for devices from Entact. Included with
+    the windows distrubition of HAPI. See http://www.entactrobotics.com/ for more info.
+  - Virtuose API. Needed to compile with support for devices from Haption. Included with
+    the windows distrubition of HAPI. See www.haption.com for more info.
+  - SimballMedical API. Needed for the SimballHapticsDevice class. Included with
+    the windows distrubition of HAPI. See http://www.g-coder.com for more info.
+    Note that this is not really a haptics device at the moment.
+  - Quanser API. Needed to compile with support for Quanser devices.
+    See www.quanser.com for more info.
+  - MLHI API. Needed to compile with support for MLHI haptics device. That is
+    devices from Butterfly Haptics.
   
-  Note that the haptics libraries does not exist for all operating systems.
+  Note that all haptics libraries does not exist for all operating systems.
 
 -------------------------------------------------------------------------------
 
 Installation on Linux:
-Currently you need to build HAPI on Linux yourself. Since you have this file
-you have already obtained and unpacked the source for HAPI. To build HAPI
-on Linux follow these steps.
+Using debian packages:
+1. Modify sources.list ( or whatever file is used to specify urls to debian
+   packages ) by adding ftp://www.h3dapi.org/pub/releases/linux/debian/
+   to it.
+   On Ubuntu 12.04 simply use:
+     sudo gedit /etc/apt/sources.list
+     Then add 
+       deb ftp://www.h3dapi.org/pub/releases/linux/debian precise sensegraphics
+       deb-src ftp://www.h3dapi.org/pub/releases/linux/debian precise sensegraphics
+     
+     If you use a different linux version simply switch "precise" for the name
+     of your distribution.
+     
+2. sudo apt-get update
+3. sudo apt-get install libhapi1
+4. If examples are required use:
+     apt-get source libhapi
+     then navigate to libhapi-directory/examples/build
+     mkdir linux
+     cd linux
+     cmake ../
+     make
 
-1. Install version 2.4.7 or later of CMake. To do this on Ubuntu open a
+Building from source:
+Since you have this file you have already obtained and unpacked the source for
+HAPI. To build HAPI on Linux follow these steps.
+1. Install version 2.8.0 or later of CMake. To do this on Ubuntu open a
    terminal and write:
     sudo apt-get install cmake
 
-2. HAPI depends on other libraries. The build system used by HAPI will 
+2. Download and install H3DUtil.
+
+3. HAPI depends on other libraries. The build system used by HAPI will 
    detect which libraries are installed on the system and only enable the
    features that the system can support. If more features are desired the
    corresponding library has to be installed. Note that some libraries are
@@ -67,20 +102,12 @@ on Linux follow these steps.
    If using Ubuntu 7.10 or later, several of these libraries can be obtained
    by using the apt-get feature. Note that for later versions of Ubuntu than
    7.10 the required and/or optional libraries might be of newer versions that
-   those given here. The newer versions shold work with H3DAPI but it might not
+   those given here. The newer versions shold work with HAPI but it might not
    be guaranteed. In a terminal write:
     sudo apt-get update sudo apt-get install gcc g++ libglew-dev libglut \
     libglut3-dev alien
 
    The first two are the C++ compilers needed to compile HAPI.
-
-   Freeglut can be obtained using the following commands:
-    wget http://ovh.dl.sourceforge.net/sourceforge/freeglut/freeglut-2.4.0.tar.gz
-    tar -xzvf freeglut-2.4.0.tar.gz
-    cd freeglut-2.4.0
-    ./configure CFLAGS="-fexceptions" CXXFLAGS="-fexceptions"
-    make
-    sudo make install
 
    HAPI support more devices but only the two mentioned are tested. See the wiki
    and/or manual for more information.
@@ -92,7 +119,7 @@ on Linux follow these steps.
    In version 8.04 of Ubuntu another library might need to be installed:
      sudo apt-get install libxi-dev libxmu-dev   
 
-3. In the terminal change folder to the HAPI/build folder. Write:
+4. In the terminal change folder to the HAPI/build folder. Write:
     cmake .
    This will generate a make file. To use the makefile write:
     make
@@ -103,7 +130,7 @@ on Linux follow these steps.
    HAPI libraries are now installed on your system. But there is no
    application installed that use HAPI libraries.
 
-4. There are example applications in this distribution that use HAPI. To build
+5. There are example applications in this distribution that use HAPI. To build
    these simply do the following:
     Change folder to HAPI/examples.
     cmake .
@@ -116,12 +143,22 @@ on Linux follow these steps.
 
 Installation on Windows:
 To install HAPI on Windows follow these steps:
-1. Download Windows installation file from www.h3d.org.
-2. Install HAPI using this file.
-3. Run examples through start menu.
+1. Go to www.h3d.org.
+2. Download latest release of H3DAPI.
+3. In the installer, on the page where you choose what to install,
+   expand the H3DAPI line and deselect and then select HAPI runtime.
+   Then proceed with installation.
 
-For information on how to build HAPI on Windows see the pdf-manual
-and/or the wiki.
+Build from source:
+1. Go to www.h3d.org.
+2. Download latest release of H3DAPI.
+3. In the installer, on the page where you choose what to install,
+   expand the H3DAPI line and deselect and then select HAPI (all features of HAPI).
+   Then proceed with installation.
+4. Use CMake to generate project files for your compiler. Tested with visual
+   studio 2003, 2005, 2008, 2010 and 2012.
+5. Open the solution file and build the INSTALL target.
+6. Build examples in HAPI/examples/build directory.
 
 -------------------------------------------------------------------------------
 
@@ -129,7 +166,7 @@ Installation on MacOS X:
 Currently you need to build HAPI on MacOS X yourself. Since you have this
 file you have already obtained and unpacked the source for HAPI. To build
 HAPI on MacOS X follow these steps.
-1. Install version 2.4.7 or later of CMake.
+1. Install version 2.8.0 or later of CMake.
 2. Install XCode. If gcc is an unrecognized command in the terminal after
    installing XCode there is a high probability that CMake will not be able to
    generate build files for gcc and/or XCode. Another version of XCode could be
