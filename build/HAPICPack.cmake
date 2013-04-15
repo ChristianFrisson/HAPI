@@ -309,13 +309,12 @@ IF( GENERATE_CPACK_PROJECT )
                  DESTINATION External/${EXTERNAL_BIN_PATH}
                  COMPONENT HAPI_cpack_external_runtime )
       ENDIF( EXISTS ${binary} )
-      # Add the other binary path as external_source since it only needs to be included when
-      # a user wants to build H3D or against it.
+
       STRING( REGEX REPLACE "(/${EXTERNAL_BIN_PATH}/)" "/${EXTERNAL_BIN_REPLACE_PATH}/" other_binary ${binary} )
       IF( EXISTS ${other_binary} )
         INSTALL( FILES ${other_binary}
                  DESTINATION External/${EXTERNAL_BIN_REPLACE_PATH}
-                 COMPONENT HAPI_cpack_external_source )
+                 COMPONENT HAPI_cpack_external_runtime )
       ENDIF( EXISTS ${other_binary} )
     endforeach( binary )    
     
@@ -536,6 +535,7 @@ IF( GENERATE_CPACK_PROJECT )
   set(CPACK_COMPONENT_HAPI_CPACK_EXAMPLES_RUNTIME_INSTALL_TYPES Developer Full)
   
   set(CPACK_COMPONENT_GROUP_HAPI_CPACK_GROUP_DISPLAY_NAME "HAPI")
+  set(CPACK_COMPONENT_GROUP_HAPI_CPACK_GROUP_DESCRIPTION "An open source cross platform haptics rendering engine with support for several haptics devices. C++ interface only.")
   set(CPACK_COMPONENT_GROUP_H3DUTIL_CPACK_GROUP_PARENT_GROUP "HAPI_cpack_group")  
   
   # Add a cache variable H3D_cmake_runtime_path to point to cmake binary.

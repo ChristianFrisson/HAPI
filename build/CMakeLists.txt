@@ -106,6 +106,21 @@ ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../OpenHapticsRenderer/include )
 ENDIF(OPENHAPTICS_FOUND)
 
+# Option to include all available external libraries, haptics devices etc.
+# Otherwise only those required for release are included. This option should be
+# disabled for release to avoid license issues.
+IF( NOT DEFINED H3D_INCLUDE_GPL_EXTERNALS )
+  SET( H3D_INCLUDE_GPL_EXTERNALS "ON" CACHE BOOL "Option to include all externals no matter their licenses. If a commercial license is used then this should be OFF." )
+ENDIF( NOT DEFINED H3D_INCLUDE_GPL_EXTERNALS )
+
+IF( H3D_INCLUDE_GPL_EXTERNALS )
+  IF( NOT CHAI3D_INCLUDE_DIR )
+    SET( CHAI3D_INCLUDE_DIR "NOTFOUND" CACHE PATH "" FORCE )
+  ENDIF( NOT CHAI3D_INCLUDE_DIR )
+ELSE( H3D_INCLUDE_GPL_EXTERNALS )
+  SET( CHAI3D_INCLUDE_DIR "" CACHE PATH "" FORCE )
+ENDIF( H3D_INCLUDE_GPL_EXTERNALS )
+
 FIND_PACKAGE(Chai3D)
 IF(CHAI3D_FOUND)
   SET(HAVE_CHAI3D 1)
@@ -134,6 +149,8 @@ IF(CHAI3D_FOUND)
 			ELSE( WIN32 )
 				SET(Chai3D_requiredLibs ${Chai3D_requiredLibs} ${GLUT_LIBRARIES} )
 			ENDIF( WIN32 )
+	  ELSE(GLUT_FOUND)
+		  SET(HAVE_CHAI3D 0)
     ENDIF(GLUT_FOUND)
   ENDIF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
 ELSEIF( NOT WIN32 )
@@ -251,7 +268,7 @@ IF(WIN32)
     ENDIF( GENERATE_CPACK_PROJECT )
   ENDIF(OPENHAPTICS_FOUND)
   
-  IF(CHAI3D_FOUND)
+  IF(HAVE_CHAI3D)
     IF(MSVC)
       SET( CHAI_SRCS ${CHAI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
     ENDIF(MSVC)
@@ -259,7 +276,7 @@ IF(WIN32)
     IF( GENERATE_CPACK_PROJECT )
       SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} Chai3DRenderer )
     ENDIF( GENERATE_CPACK_PROJECT )
-  ENDIF(CHAI3D_FOUND)
+  ENDIF(HAVE_CHAI3D)
 
   IF( MSVC )
     # make sure that HAPI.rc, OpenHapticsRenderer.rc and Chai3DRenderer.rc contains the correct svn-version
@@ -269,6 +286,7 @@ IF(WIN32)
     FIND_FILE( SubWCRev
                NAMES "SubWCRev.exe"
                DOC   "Set to SubWCRev.exe that comes with TortoiseSVN. Used to find svn revision number." )
+    MARK_AS_ADVANCED( SubWCRev )
 
     IF( SubWCRev )
       SET( HAPI_SVN_VERSION "$WCREV$" )
@@ -320,7 +338,7 @@ IF(WIN32)
       ENDIF( SubWCRev )
     ENDIF(OPENHAPTICS_FOUND)
 
-    IF(CHAI3D_FOUND)
+    IF(HAVE_CHAI3D)
       # autogenerate Chai3DRenderer.rc depending on the version
       CONFIGURE_FILE( Chai3DRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
       
@@ -342,7 +360,7 @@ IF(WIN32)
                             COMMAND ${SubWCRev} 
                             ARGS ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
       ENDIF( SubWCRev )
-    ENDIF(CHAI3D_FOUND)
+    ENDIF(HAVE_CHAI3D)
   ENDIF(MSVC)
  
   # is this only for msvc or for all windows compilers?
@@ -472,7 +490,7 @@ IF( WIN32 )
   ENDIF(OPENHAPTICS_FOUND)
 
   # Set properties for Chai3DRenderer if the project is created.
-  IF(CHAI3D_FOUND)
+  IF(HAVE_CHAI3D)
     TARGET_LINK_LIBRARIES( Chai3DRenderer ${Chai3D_requiredLibs} ${Chai3D_requiredLibs} HAPI )
     
     # change the name depending on compiler to be able to tell them apart
@@ -496,7 +514,7 @@ IF( WIN32 )
                              LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt"
                              LINK_FLAGS  "/INCREMENTAL:NO" )
     ENDIF( MSVC )
-  ENDIF(CHAI3D_FOUND)
+  ENDIF(HAVE_CHAI3D)
 
   IF( MSVC )
     # Set link flags for HAPI
@@ -535,13 +553,13 @@ IF(WIN32)
              ARCHIVE DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_libraries )
   ENDIF(OPENHAPTICS_FOUND)
 
-  IF(CHAI3D_FOUND)
+  IF(HAVE_CHAI3D)
     # Where to install Chai3DRenderer
     INSTALL( TARGETS Chai3DRenderer 
              LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_runtime
              RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_runtime
              ARCHIVE DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_libraries )
-  ENDIF(CHAI3D_FOUND)
+  ENDIF(HAVE_CHAI3D)
 ELSEIF( NOT GENERATE_CPACK_PROJECT )
   # Install header files on non-windows system (e.g. Unix).
   INSTALL( FILES ${HAPI_HEADERS} ${OH_HEADERS} ${CHAI_HEADERS}

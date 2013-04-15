@@ -32,7 +32,7 @@
 
 #include <HAPI/HAPIHapticsDevice.h>
 
-#ifdef HAVE_QUARC
+#ifdef HAVE_QUANSERAPI
 
 #include <quanser_stream.h>
 #include <quanser_messages.h>

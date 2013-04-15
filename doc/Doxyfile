@@ -743,7 +743,7 @@ RECURSIVE              = NO
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                =
+EXCLUDE                = ../include/HAPI/HAPI_64.h
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -1632,8 +1632,29 @@ INCLUDE_FILE_PATTERNS  =
 # undefined via #undef or recursively expanded use the := operator
 # instead of the = operator.
 
-PREDEFINED             = HAVE_NIFALCONAPI:=1 \
-                         NIFALCON_LIBUSB:=1
+PREDEFINED             = H3D_WINDOWS:=1 \
+                         H3D_LINUX:=1 \
+                         H3D_OSX:=1 \
+                         HAVE_ZLIB:=1 \
+                         HAVE_FREEIMAGE:=1 \
+                         HAVE_TEEM:=1 \
+                         HAVE_DCMTK:=1 \
+                         HAVE_OPENHAPTICS:=1 \
+                         HAVE_CHAI3D:=1 \
+                         CHAI3D_VERSION_2_0:=1 \
+                         HAVE_ENTACTAPI:=1 \
+                         HAVE_DHDAPI:=1 \
+                         HAVE_VIRTUOSEAPI:=1 \
+                         HAVE_FALCONAPI:=1 \
+                         HAVE_NIFALCONAPI:=1 \
+                         NIFALCONAPI_LIBUSB:=1 \
+                         HAVE_FPARSER:=1 \
+                         HAVE_SIMBALLMEDICAL_API:=1 \
+                         HAVE_HAPTIC_MASTER_API:=1 \
+                         HAVE_QUANSERAPI:=1 \
+                         HAVE_MLHI:=1 \
+                         HAVE_OPENGL:=1 \
+                         USE_DOUBLE_PRECISION:=1
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.
