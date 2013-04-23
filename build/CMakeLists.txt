@@ -289,7 +289,11 @@ IF(WIN32)
     MARK_AS_ADVANCED( SubWCRev )
 
     IF( SubWCRev )
-      SET( HAPI_SVN_VERSION "$WCREV$" )
+      EXECUTE_PROCESS( COMMAND ${SubWCRev} ${HAPI_SOURCE_DIR}/../
+                       RESULT_VARIABLE HAPI_is_working_copy )
+      IF( ${HAPI_is_working_copy} EQUAL 0 )
+        SET( HAPI_SVN_VERSION "$WCREV$" )
+      ENDIF( ${HAPI_is_working_copy} EQUAL 0 )
     ENDIF( SubWCRev )
 
     # autogenerate HAPI.rc depending on the version
@@ -304,7 +308,7 @@ IF(WIN32)
                         "HAPI_Output_Name"
                         "$(TargetFileName)" )
 
-    IF( SubWCRev )
+    IF( SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
       # Update SVN revision in file.
       EXECUTE_PROCESS( COMMAND ${SubWCRev} ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
       
@@ -312,7 +316,7 @@ IF(WIN32)
                           PRE_BUILD 
                           COMMAND ${SubWCRev} 
                           ARGS ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
-    ENDIF( SubWCRev )
+    ENDIF( SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
 
     IF(OPENHAPTICS_FOUND)
       # autogenerate HAPI.rc depending on the version
@@ -327,7 +331,7 @@ IF(WIN32)
                           "OpenHapticsRenderer_Output_Name"
                           "$(TargetFileName)" )
 
-      IF( SubWCRev )
+      IF( SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
         # Update SVN revision in file.
         EXECUTE_PROCESS( COMMAND ${SubWCRev} ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
         
@@ -335,7 +339,7 @@ IF(WIN32)
                             PRE_BUILD 
                             COMMAND ${SubWCRev} 
                             ARGS ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
-      ENDIF( SubWCRev )
+      ENDIF( SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
     ENDIF(OPENHAPTICS_FOUND)
 
     IF(HAVE_CHAI3D)
@@ -351,7 +355,7 @@ IF(WIN32)
                           "Chai3DRenderer_Output_Name"
                           "$(TargetFileName)" )
 
-      IF( SubWCRev )
+      IF( SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
         # Update SVN revision in file.
         EXECUTE_PROCESS( COMMAND ${SubWCRev} ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
         
@@ -359,7 +363,7 @@ IF(WIN32)
                             PRE_BUILD 
                             COMMAND ${SubWCRev} 
                             ARGS ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
-      ENDIF( SubWCRev )
+      ENDIF( SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
     ENDIF(HAVE_CHAI3D)
   ENDIF(MSVC)
  
