@@ -53,8 +53,15 @@ IF( ( WIN32 OR NOT H3D_USE_DEPENDENCIES_ONLY ) AND EXISTS "${HAPI_SOURCE_DIR}/..
   ADD_SUBDIRECTORY( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
                     ${CMAKE_CURRENT_BINARY_DIR}/H3DUtil )
   
-  GET_DIRECTORY_PROPERTY( H3DUTIL_INCLUDE_DIR DIRECTORY ${HAPI_SOURCE_DIR}/../../H3DUtil/build INCLUDE_DIRECTORIES )
+  GET_DIRECTORY_PROPERTY( H3DUTIL_INCLUDE_DIR_TMP DIRECTORY ${HAPI_SOURCE_DIR}/../../H3DUtil/build INCLUDE_DIRECTORIES )
+  SET( H3DUTIL_INCLUDE_DIR ${H3DUTIL_INCLUDE_DIR_TMP} CACHE INTERNAL "Set to internal so H3DUtil and/or HAPI can change it." )
 ENDIF( ( WIN32 OR NOT H3D_USE_DEPENDENCIES_ONLY ) AND EXISTS "${HAPI_SOURCE_DIR}/../../H3DUtil/build" )
+
+# Add the directory to INCLUDE_DIRECTORIES before any other statement to make sure that this header file is found first.
+# This assumes that we always use "#include <path/include_header.h>" in our code even if the file is actually found in
+# the same directory as the file that contains the include statement.
+INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR}/include )
+SET( HAPI_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include ${HAPI_SOURCE_DIR}/../include CACHE INTERNAL "Set to internal to propagate change" )
 
 # include header directory.
 INCLUDE_DIRECTORIES( ${HAPI_SOURCE_DIR}/../include )
@@ -540,7 +547,16 @@ ENDIF( WIN32 )
 SET_TARGET_PROPERTIES( HAPI PROPERTIES COMPILE_FLAGS "${HAPI_COMPILE_FLAGS}" )
 
 # autogenerate HAPI.h depending on the libraries available.
-CONFIGURE_FILE( ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.cmake ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.h )
+IF( EXISTS ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.h )
+  FILE( REMOVE ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.h )
+ENDIF( EXISTS ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.h )
+CONFIGURE_FILE( ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.cmake ${CMAKE_CURRENT_BINARY_DIR}/include/HAPI/HAPI.h )
+
+IF( NOT GENERATE_CPACK_PROJECT )
+  # Install header files on non-windows system (e.g. Unix).
+  INSTALL( FILES ${CMAKE_CURRENT_BINARY_DIR}/include/HAPI/HAPI.h
+           DESTINATION ${HAPI_SOURCE_DIR}/../include/HAPI )
+ENDIF( NOT GENERATE_CPACK_PROJECT )
 
 # Where to install HAPI
 INSTALL( TARGETS HAPI 
