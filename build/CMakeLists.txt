@@ -231,7 +231,7 @@ ENDIF(OPENGL_FOUND)
 # No use in looking for the libs/dlls on the system since the dlls for
 # haptic master are run-time loaded.
 IF(WIN32)
-  SET(HAVE_HAPTIC_MASTER_API 1)
+  SET( HAVE_HAPTIC_MASTER_API "YES" CACHE BOOL "Disable if you do not want haptic master support." )
 ENDIF(WIN32)
 
 # add all sources, they are added to variables called HAPI_SRCS,
