@@ -42,6 +42,10 @@ bool HAPIHapticsDevice::initialized = false;
 H3DUtil::PeriodicThread::CallbackCode
   HAPIHapticsDevice::transferObjectsCallback( 
   void *data ) {
+#ifdef HAVE_PROFILER
+    H3DUtil::H3DTimer::begin("haptic_profile_transferObject");
+    H3DUtil::H3DTimer::stepBegin("transferObject_begin");
+#endif
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
 
@@ -169,16 +173,40 @@ H3DUtil::PeriodicThread::CallbackCode
     }
     hd->force_effects_to_remove.clear();
   }
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepEnd("transferObject_begin");
+  std::stringstream temp_profiledResult;
+  //sofa::helper::AdvancedTimer::end("haptic_profile");
+  H3DUtil::H3DTimer::end("haptic_profile_transferObject",temp_profiledResult);
 
+  hd->profiled_result_lock.lock();
+  hd->profiled_result_haptic[0] = temp_profiledResult.str();
+  hd->profiled_result_lock.unlock();
+  //std::cout<<"hatpic profile result:"<<temp<<std::endl;
+#endif
   return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
+#ifdef HAVE_PROFILER
+// Callback function to enable timer
+H3DUtil::PeriodicThread::CallbackCode
+  HAPIHapticsDevice::enableTimerCallback(void *data){
+    H3DUtil::H3DTimer::setEnabled("haptic_profile",true);
+    H3DUtil::H3DTimer::setInterval("haptic_profile",1);
+    H3DUtil::H3DTimer::setEnabled("haptic_profile_transferObject",true);
+    H3DUtil::H3DTimer::setInterval("haptic_profile_transferObject",1);
+    
 
+    return H3DUtil::PeriodicThread::CALLBACK_DONE;
+}
+#endif
 // Callback function for rendering forces on the 
 // HAPIHapticsDevice.  
 H3DUtil::PeriodicThread::CallbackCode
   HAPIHapticsDevice::hapticRenderingCallback( void *data ) {
-
-
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::begin("haptic_profile");
+  H3DUtil::H3DTimer::stepBegin("haptic_render");
+#endif
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
   if( hd->nr_haptics_loops > 100 ) {
@@ -378,7 +406,18 @@ H3DUtil::PeriodicThread::CallbackCode
   }
 
   hd->time_in_last_loop = TimeStamp() - start_time;
-
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepEnd("haptic_render");
+  //string temp = H3DUtil::H3DTimer::end("haptic_profile");
+  //sofa::helper::AdvancedTimer::end("haptic_profile");
+  //std::string temp ;
+  std::stringstream temp;
+  
+  H3DUtil::H3DTimer::end("haptic_profile",temp);
+  hd->profiled_result_lock.lock();
+  hd->profiled_result_haptic[1] = temp.str();
+  hd->profiled_result_lock.unlock();
+#endif
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
 
@@ -418,6 +457,13 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice(
       thread->setThreadName( "HAPI Haptics Thread" );
       delete_thread = true;
     }
+#ifdef HAVE_PROFILER
+    if(thread)
+    {
+      // synchronous callback to enable timer
+      thread->synchronousCallback(enableTimerCallback,this);
+    }
+#endif
     if( setup_haptic_rendering_callback ) {
       haptic_rendering_cb_handle =
         thread->asynchronousCallback( hapticRenderingCallback,
