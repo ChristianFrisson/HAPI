@@ -37,8 +37,13 @@
 #include <H3DUtil/Threads.h>
 #include <H3DUtil/AutoRefVector.h>
 
+#ifdef HAVE_PROFILER
+#include <H3DUtil/H3DTimer.h>
+#include <H3DUtil/Console.h>
+#include <string>
+#include <sstream>
+#endif
 #include <memory>
-
 namespace HAPI {
 
   /// \ingroup AbstractClasses
@@ -76,6 +81,8 @@ namespace HAPI {
       FAIL             /// the operation has failed for another reason
                        /// use getLastErrorMsg() to get info about the error.
     } ErrorCode;
+
+    std::string profiled_result_haptic[2];
 
     /// \struct DeviceValues
     /// \brief Struct for holding a snapshot of current values of different
@@ -451,7 +458,22 @@ namespace HAPI {
     inline DeviceState getDeviceState() {
       return device_state;
     }
-
+#ifdef HAVE_PROFILER
+    /// Get the current profiled result
+    inline std::string getProfiledResult() {
+      string temp1 = "";
+      string temp2 = "";
+      profiled_result_lock.lock();
+      temp1 = profiled_result_haptic[0];
+      temp2 = profiled_result_haptic[1];
+      profiled_result_lock.unlock();
+      if(!temp1.empty()&&!temp2.empty())
+      {
+        return temp1+temp2;
+      }
+      return "";
+    }
+#endif
     /// Get the current device values in device coordinates.
     inline DeviceValues getRawDeviceValues() {
       device_values_lock.lock();
@@ -1162,6 +1184,10 @@ namespace HAPI {
 
     // lock for when updating device values/sending output
     H3DUtil::MutexLock device_values_lock;
+#ifdef HAVE_PROFILER
+    // lock for when updating device values/sending output
+    H3DUtil::MutexLock profiled_result_lock;
+#endif
 
     // lock for when changing haptics renderer
     H3DUtil::MutexLock renderer_change_lock;
@@ -1200,7 +1226,10 @@ namespace HAPI {
     /// Callback function to render forces.
     static H3DUtil::PeriodicThread::CallbackCode
       hapticRenderingCallback( void *data );
-
+#ifdef HAVE_PROFILER
+    static H3DUtil::PeriodicThread::CallbackCode
+      enableTimerCallback(void *data);
+#endif
     /// If true then set up hapticRenderingCallback as its own callback.
     /// If false the hapticRenderingCallback functions has to be called
     /// explicity from somewhere.
