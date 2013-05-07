@@ -19,9 +19,6 @@ IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INST
   SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
 ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
 
-# Set this variable so subdirectories ( added by ADD_SUBDIRECTORY ) can figure out where include files are.
-SET( HAPI_INCLUDE_DIR "${HAPI_SOURCE_DIR}/../include" )
-
 # Add a cache variable GENERATE_UNITY_BUILD to have the choice of selecting
 # a unity build project. Default is NO.
 IF( NOT DEFINED GENERATE_UNITY_BUILD )
@@ -107,10 +104,12 @@ IF(OPENHAPTICS_FOUND)
   SET(HAVE_OPENHAPTICS 1)
   INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} 
                        ../OpenHapticsRenderer/include )
+	SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${OPENHAPTICS_LIBRARIES} )
   SET(OpenHaptics_requiredLibs ${OpenHaptics_requiredLibs} ${OPENHAPTICS_LIBRARIES} )
 ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../OpenHapticsRenderer/include )
+	SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
 ENDIF(OPENHAPTICS_FOUND)
 
 # Option to include all available external libraries, haptics devices etc.
@@ -133,6 +132,7 @@ IF(CHAI3D_FOUND)
   SET(HAVE_CHAI3D 1)
   INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR}
                        ../Chai3DRenderer/include )
+	SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
   SET(Chai3D_requiredLibs ${Chai3D_requiredLibs} ${CHAI3D_LIBRARIES} )
 
   IF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
@@ -162,6 +162,7 @@ IF(CHAI3D_FOUND)
   ENDIF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
 ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../Chai3DRenderer/include )
+	SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
 ENDIF(CHAI3D_FOUND)
 
 FIND_PACKAGE(DHD)
