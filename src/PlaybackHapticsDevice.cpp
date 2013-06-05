@@ -87,7 +87,10 @@ bool PlaybackHapticsDevice::loadRecording ( const std::string& _filename, bool _
   playback_lock.lock();
   
   binary= _binary;
-  playback_file= ifstream ( _filename.c_str(), std::ios::binary );
+  if ( playback_file.is_open() ) {
+    playback_file.close();
+  }
+  playback_file.open ( _filename.c_str(), std::ios::binary );
   if ( !playback_file.good() ) {
     return false;
   }
@@ -110,7 +113,9 @@ void PlaybackHapticsDevice::closeRecording () {
   playback_lock.lock();
 
   playing= false;
-  playback_file.close();
+  if ( playback_file.is_open() ) {
+    playback_file.close();
+  }
 
   playback_lock.unlock();
 }
