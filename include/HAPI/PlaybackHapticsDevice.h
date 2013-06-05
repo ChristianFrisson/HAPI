@@ -35,6 +35,26 @@
 
 namespace HAPI {
 
+  /// \ingroup HapticsDevices
+  /// \class PlaybackHapticsDevice
+  /// \brief A fake haptics device that plays back values recorded
+  ///        previously using a DeviceLog.
+  /// 
+  /// This haptics device plays back device values from a file. 
+  /// The format of the file is the same as that produced
+  /// by the DeviceLog force effect. Both binary and text formats are 
+  /// supported.
+  ///
+  /// Any combination of columns are supported, however a TIME
+  /// column is required in order to play back the values at the original
+  /// speed.
+  ///
+  /// The following columns are used to define the device's raw values:
+  /// RAW_POSITION, RAW_ORIENTATION, RAW_VELOCITY, BUTTONS. Any other 
+  /// columns are ignored. The calibrated device values are calculated
+  /// based on the raw values in the usual way and the recorded calibrated
+  /// values (if present) are ignored.
+  ///
   class HAPI_API PlaybackHapticsDevice: public HAPIHapticsDevice {
   public:
 
@@ -49,13 +69,18 @@ namespace HAPI {
       binary ( false ) {
     }
 
+    /// Populates the DeviceValues structure with values from the
+    /// recording currently being played back.
+    ///
+    /// \param dv Contains values that should be updated.
+    /// \param dt Time since last call to this function.
     virtual void updateDeviceValues( DeviceValues &dv, HAPI::HAPITime dt );
 
     /// Output is ignored on a fake haptics device.
     virtual void sendOutput( DeviceOutput &dv,
             HAPI::HAPITime dt ) {}
 
-    /// Implementation of initHapticsDevice.
+    /// Dummy implementation of initHapticsDevice.
     virtual bool initHapticsDevice( int _thread_frequency = 1000 ) {
       return true;
     }
@@ -78,6 +103,12 @@ namespace HAPI {
     /// \return True if the file was opened successfully for reading
     bool loadRecording ( const std::string& _filename, bool _binary= false );
 
+    /// Close and release the file previously opened using loadRecording()
+    ///
+    /// The file is closed automatically when the device is destroyed or a
+    /// new recording is opened.
+    ///
+    /// Calling this function will stop playback, if active.
     void closeRecording ();
 
     /// Start playing back the loaded recording from the current playback position
@@ -130,32 +161,54 @@ namespace HAPI {
     ///
     bool getPlaybackValuesAtTime ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime _time );
 
+    /// Implementation of getPlaybackValuesNext() for binary file types
     bool getPlaybackValuesNextBinary ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime& _time );
 
+    /// Implementation of getPlaybackValuesNext() for text file types
     bool getPlaybackValuesNextText ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime& _time );
 
+    /// Read and returns a list of column headings from the recording file, when file is 
+    /// in binary format.
     StringList readColumnNamesBinary ();
 
+    /// Read and returns a list of column headings from the recording file, when file is 
+    /// in text format.
     StringList readColumnNamesText ();
 
+    /// The input file stream to playback data from
     std::ifstream playback_file;
 
+    /// The stream position of the first recording data, after the file header
     std::streampos data_start_pos;
 
+    /// List of column headers for columns present in the recording file
     StringList field_names;
 
+    /// The recording time of the last event played back
     HAPITime playback_time;
 
+    /// The last valid device values to have been played back
     HAPIHapticsDevice::DeviceValues playback_device_values;
 
+    /// True when playback is active
     bool playing;
 
+    /// The global system time at which playback started
+    ///
+    /// Note: This may be adjusted in order to account for pausing of the playback
+    ///
     HAPITime playback_start_time;
 
+    /// Recording time to move the playback to
+    ///
+    /// Will be reset to -1 after recording has been moved to this time which
+    /// will occur next time playback is started.
     HAPITime seek_to_time;
 
+    /// A factor by which to scale the playback speed
     HAPITime playback_speed;
 
+    /// If true, then the recording is assumed to be in binary format, otherwise text
     bool binary;
 
     /// A mutex lock used to access playback data
