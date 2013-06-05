@@ -29,6 +29,7 @@
 
 
 #include <HAPI/PlaybackHapticsDevice.h>
+#include <H3DUtil/ReadWriteH3DTypes.h>
 
 using namespace HAPI;
 

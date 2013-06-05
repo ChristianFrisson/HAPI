@@ -31,6 +31,7 @@
 #define __HAPI_PLAYBACKHAPTICSDEVICE_H__
 
 #include <HAPI/HAPIHapticsDevice.h>
+#include <fstream>
 
 namespace HAPI {
 
