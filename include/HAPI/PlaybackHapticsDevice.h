@@ -143,10 +143,24 @@ namespace HAPI {
     bool isPlaying ();
 
     /// Set default values to use when a value is not defined in the recording
+    /// or is not in the list of fields that should be played back.
+    ///
+    /// Also see: addDataField() and clearDataFields()
+    ///
     void setDefaultDeviceValues ( const HAPIHapticsDevice::DeviceValues& _dv );
 
+    /// Add a column field name to the list of columns that should be played back
+    ///
+    /// If the list is empty then all available columns are played back. If a column
+    /// is not played back, then the default value specified using setDefaultDeviceValues()
+    /// is used instead.
+    ///
     void addDataField ( const std::string& _name );
 
+    /// Clear the list of columns that should be played back.
+    ///
+    /// If the list is empty then all available columns are played back. 
+    ///
     void clearDataFields ();
 
   protected:
@@ -221,6 +235,9 @@ namespace HAPI {
     /// A mutex lock used to access playback data
     H3DUtil::MutexLock playback_lock;
 
+    /// The list of columns that should be played back.
+    ///
+    /// If the list is empty then all available columns are played back. 
     StringList use_field_names;
   };
 }
