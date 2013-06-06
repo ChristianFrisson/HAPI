@@ -101,6 +101,7 @@ bool PlaybackHapticsDevice::loadRecording ( const std::string& _filename, bool _
   } else {
     field_names= readColumnNamesText();
   }
+
   data_start_pos= playback_file.tellg();
   playback_time= 0;
 
@@ -168,6 +169,20 @@ HAPITime PlaybackHapticsDevice::getPlaybackTime () {
 
 bool PlaybackHapticsDevice::isPlaying () {
   return playing;
+}
+
+void PlaybackHapticsDevice::setDefaultDeviceValues ( const HAPIHapticsDevice::DeviceValues& _dv ) {
+  playback_lock.lock();
+  playback_device_values= _dv;
+  playback_lock.unlock();
+}
+
+void PlaybackHapticsDevice::addDataField ( const std::string& _name ) {
+  use_field_names.push_back ( _name );
+}
+
+void PlaybackHapticsDevice::clearDataFields () {
+  use_field_names.clear();
 }
 
 bool PlaybackHapticsDevice::getPlaybackValuesNext ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time ) {
@@ -309,10 +324,33 @@ bool PlaybackHapticsDevice::getPlaybackValuesNextBinary ( HAPIHapticsDevice::Dev
 
 bool PlaybackHapticsDevice::getPlaybackValuesAtTime ( HAPI::HAPIHapticsDevice::DeviceValues &dv, HAPI::HAPITime _time ) {
   if ( _time > playback_time ) {
-    bool success= getPlaybackValuesNext ( playback_device_values, playback_time );
+    DeviceValues dv_tmp= playback_device_values;
+
+    bool success= getPlaybackValuesNext ( dv_tmp, playback_time );
   
     while ( success && playback_time < _time && playback_time > 0 ) {
-      success= getPlaybackValuesNext ( playback_device_values, playback_time );
+      success= getPlaybackValuesNext ( dv_tmp, playback_time );
+    }
+
+    if ( use_field_names.empty() ) {
+      playback_device_values= dv_tmp;
+    } else {
+      for ( StringList::iterator i= use_field_names.begin(); i != use_field_names.end(); ++i ) {
+        std::string field_name= *i;
+        
+        if ( field_name == "BUTTONS" ) {
+          playback_device_values.button_status= dv_tmp.button_status;
+        }
+        else if ( field_name == "RAW_POSITION" ) {
+          playback_device_values.position= dv_tmp.position;
+        }
+        else if ( field_name == "RAW_ORIENTATION" ) {
+          playback_device_values.orientation= dv_tmp.orientation;
+        }
+        else if ( field_name == "RAW_VELOCITY" ) {
+          playback_device_values.velocity= dv_tmp.velocity;
+        }
+      }
     }
 
     dv= playback_device_values;
