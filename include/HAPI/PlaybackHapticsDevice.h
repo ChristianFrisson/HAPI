@@ -142,6 +142,13 @@ namespace HAPI {
     /// the playback has completed.
     bool isPlaying ();
 
+    /// Set default values to use when a value is not defined in the recording
+    void setDefaultDeviceValues ( const HAPIHapticsDevice::DeviceValues& _dv );
+
+    void addDataField ( const std::string& _name );
+
+    void clearDataFields ();
+
   protected:
     typedef std::vector < std::string > StringList;
 
@@ -150,7 +157,7 @@ namespace HAPI {
     /// \param[out] _dv   The device values read from the recording
     /// \param[out] _time The time of the device values in the recording
     ///
-    bool getPlaybackValuesNext ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime& _time );
+    bool getPlaybackValuesNext ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time );
 
     /// Read the next entry in the recording that corresponds to the specified time
     ///
@@ -213,6 +220,8 @@ namespace HAPI {
 
     /// A mutex lock used to access playback data
     H3DUtil::MutexLock playback_lock;
+
+    StringList use_field_names;
   };
 }
 
