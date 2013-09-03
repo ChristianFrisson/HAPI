@@ -398,10 +398,10 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   // that contact to the new position.
   bool done = false;
 
-  for( unsigned int i = 0; !done && i < last_contact_transforms.size(); i++ ) {
+  for( unsigned int i = 0; !done && i < last_contact_transforms.size(); ++i ) {
     for( HapticShapeVector::const_iterator s = shapes.begin();
          s != shapes.end();
-         s++ ) {
+         ++s ) {
       if( (*s)->getShapeId() == last_contact_transforms[i].first ) {
         // move proxy with shape.
         Matrix4 last_transform_inv = last_contact_transforms[i].second;
@@ -447,13 +447,13 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   // get the constraints from the current shapes.
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
-       i++ ) {
+       ++i ) {
     (*i)->getConstraints( proxy_pos, constraints, (*i)->getTouchableFace(), r);
   }
 
   // move them out by the proxy radius in the direction of the normal. 
   for( Constraints::iterator i = constraints.begin();
-       i != constraints.end(); i++ ) {
+       i != constraints.end(); ++i ) {
     (*i).point += (*i).normal * proxy_radius;
   }
 
@@ -464,14 +464,14 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   while( !done && counter < 25 ) {
     done = true;
     for( Constraints::iterator i = constraints.begin();
-         i != constraints.end(); i++ ) {
+         i != constraints.end(); ++i ) {
       HAPIFloat d = (*i).normal * (proxy_pos - (*i).point );
       if( d <= 0 && d > -proxy_radius ) {
         proxy_pos = proxy_pos + (*i).normal * (-d+RuspiniRendererConstants::above_plane_epsilon);
         done = false;
       }
     }
-    counter++;
+    ++counter;
   }
 
   // the constraints which contraint point is closest to the proxy.
@@ -486,7 +486,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
 
   // find the closest constraining PlaneConstraints
   for( Constraints::iterator i = constraints.begin();
-       i != constraints.end(); i++ ) {
+       i != constraints.end(); ++i ) {
     if( (*i).lineIntersect( proxy_pos, input.position, intersection ) ) {
 
       if( !has_intersection ) {
@@ -511,7 +511,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
           bool unique_constraint = true;
           for( Constraints::iterator j = 
                  closest_constraints.begin();
-               j != closest_constraints.end(); j++ ) {
+               j != closest_constraints.end(); ++j ) {
             if( ( intersection.normal - (*j).normal ).lengthSqr() < 
                 RuspiniRendererConstants::length_sqr_normal_epsilon ) {
               // same normal, ignore plane
@@ -554,12 +554,12 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   if( nr_constraints > 0 ) {
     constraints.clear();
     for( Constraints::iterator j = other_constraints.begin();
-         j != other_constraints.end(); j++ ) {
+         j != other_constraints.end(); ++j ) {
       HAPIFloat t = (*j).normal * ( proxy_pos  - (*j).point );
       if( t * t < RuspiniRendererConstants::length_sqr_point_epsilon ) {
         bool add_it = true;
         for( Constraints::iterator k = closest_constraints.begin();
-             k != closest_constraints.end(); k++ ) {
+             k != closest_constraints.end(); ++k ) {
           if( ( (*k).normal + (*j).normal ).lengthSqr() <
               RuspiniRendererConstants::length_sqr_normal_epsilon ||
               ( (*k).normal - (*j).normal ).lengthSqr() <
@@ -623,13 +623,13 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   // still we try to move the proxy with moving shapes. 
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
-       i++ ) {
+       ++i ) {
     // only check if the shape is moving 
     if( (*i)->isDynamic() ) {
       bool move_proxy = true;
 
       // see if there is already a contact with current shape
-      for( unsigned int j = 0; j < tmp_contacts.size(); j++ ) {
+      for( unsigned int j = 0; j < tmp_contacts.size(); ++j ) {
         if( tmp_contacts[j].first->getShapeId() == (*i)->getShapeId() ) {
           move_proxy = false;
           break;
@@ -656,7 +656,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   // we save the transformations of the shapes in contact to be able to move the proxy
   // with them in next timestep if they have moved.
   last_contact_transforms.clear();
-  for( unsigned int i = 0; i < tmp_contacts.size(); i++ ) {
+  for( unsigned int i = 0; i < tmp_contacts.size(); ++i ) {
     if( tmp_contacts[i].first->isDynamic() ) {
       last_contact_transforms.push_back( make_pair( tmp_contacts[i].first->getShapeId(),
                                                     tmp_contacts[i].first->getInverse() ) );
@@ -690,7 +690,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( const Vec3 &from,
   Constraints::iterator inter_i;
   for( Constraints::iterator i = 
          other_constraints.begin();
-       i != other_constraints.end(); i++ ) {
+       i != other_constraints.end(); ++i ) {
     
     Vec3 from_point = from;
     Vec3 to_point = to;
@@ -773,7 +773,7 @@ Vec3 RuspiniRenderer::tryProxyMovement( const Vec3 &from,
           from_point = from_point + (*i).normal * (-d+RuspiniRendererConstants::above_plane_epsilon);
         } 
       }
-      counter++;
+      ++counter;
     }
 
     

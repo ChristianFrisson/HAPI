@@ -89,7 +89,7 @@ void HapticTriangleSet::getConstraintsOfShape( const Vec3 &point,
       // triangle set is convex so only need the closest constraint
       for( vector< Collision::Triangle >::iterator i = triangles.begin();
            i != triangles.end(); ++i ) {
-        //unsigned int i = 0; i < triangles.size(); i++ ) {
+        //unsigned int i = 0; i < triangles.size(); ++i ) {
         Collision::Triangle &t = (*i); //*triangles[i];
         
         if( t.getConstraint( point, &constraint, face ) ) {
@@ -112,13 +112,13 @@ void HapticTriangleSet::getConstraintsOfShape( const Vec3 &point,
       if( !first_constraint ) constraints.push_back( best );
     } else {
       // not convex, so add constraints from all triangles.
-      for( unsigned int i = 0; i < triangles.size(); i++ ) {
+      for( unsigned int i = 0; i < triangles.size(); ++i ) {
         Collision::Triangle &t = triangles[i];
         t.getConstraints( point, constraints, face, radius  );
       }
     }
     
-    for( unsigned int i = size; i < constraints.size(); i ++ ) {
+    for( unsigned int i = size; i < constraints.size(); ++i ) {
       PlaneConstraint &pc = constraints[i];
       pc.haptic_shape.reset(this);
     }
@@ -127,7 +127,7 @@ void HapticTriangleSet::getConstraintsOfShape( const Vec3 &point,
 
 #ifdef HAVE_OPENGL
 void HapticTriangleSet::glRenderShape() {
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
+  for( unsigned int i = 0; i < triangles.size(); ++i ) {
     triangles[i].render();
   }
 }
@@ -139,7 +139,7 @@ void HapticTriangleSet::closestPointOnShape( const Vec3 &p,
                                              Vec3 &tc ) {
   Vec3 temp_cp, temp_n, temp_tc;
   HAPIFloat distance, temp_distance;
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
+  for( unsigned int i = 0; i < triangles.size(); ++i ) {
     triangles[i].closestPoint( p, temp_cp, temp_n, temp_tc );
     if( i == 0 ) {
       cp = temp_cp;
@@ -162,7 +162,7 @@ void HapticTriangleSet::closestPointOnShape( const Vec3 &p,
 bool HapticTriangleSet::movingSphereIntersectShape( HAPIFloat radius,
                                                     const Vec3 &from, 
                                                     const Vec3 &to ) {
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
+  for( unsigned int i = 0; i < triangles.size(); ++i ) {
     if( triangles[i].movingSphereIntersect( radius, from, to ) ) return true;
   }
   return false;
@@ -179,7 +179,7 @@ void HapticTriangleSet::getTangentSpaceMatrixShape( const Vec3 &point,
       triangles[0].closestPoint( point, temp_cp, temp_n, temp_n );
       HAPIFloat distance = ( temp_cp - point).lengthSqr();
       HAPIFloat temp_distance;
-      for( unsigned int i = 1; i < triangles.size(); i++ ) {
+      for( unsigned int i = 1; i < triangles.size(); ++i ) {
         triangles[i].closestPoint( point, temp_cp, temp_n, temp_n );
         temp_distance = (temp_cp - point).lengthSqr();
         if( temp_distance < distance ) {

@@ -51,14 +51,14 @@ H3DUtil::PeriodicThread::CallbackCode
 
   // update last transform for all shapes.
   // TODO: do this much faster/better
-  for( unsigned int layer = 0; layer < hd->tmp_shapes.size(); layer++ ) {
+  for( unsigned int layer = 0; layer < hd->tmp_shapes.size(); ++layer ) {
     for( HapticShapeVector::const_iterator s = hd->tmp_shapes[layer].begin(); 
-         s != hd->tmp_shapes[layer].end(); s++ ) {
+         s != hd->tmp_shapes[layer].end(); ++s ) {
       HAPIHapticShape *shape = NULL;
       if( hd->current_shapes.size() > layer ) {
         for( HapticShapeVector::const_iterator current_s =
                hd->current_shapes[layer].begin();
-             current_s != hd->current_shapes[layer].end(); current_s++ ) {
+             current_s != hd->current_shapes[layer].end(); ++current_s ) {
           if( (*s)->getShapeId() == (*current_s)->getShapeId() ) {
             shape = (*current_s);
             break;
@@ -101,7 +101,7 @@ H3DUtil::PeriodicThread::CallbackCode
   if( !hd->added_effects_indices.empty() ) {
     for( vector< pair< unsigned int, HAPITime > >::iterator i =
            hd->added_effects_indices.begin();
-         i != hd->added_effects_indices.end(); i++ ) {
+         i != hd->added_effects_indices.end(); ++i ) {
       unsigned int index = (*i).first;
       if( !already_transferred ) {
         // The current_force_effects vector has not been updated.
@@ -121,13 +121,13 @@ H3DUtil::PeriodicThread::CallbackCode
   if( !hd->force_effects_to_remove.empty() ) {
     for( vector< pair< HAPIForceEffect *, HAPITime > >::iterator i =
          hd->force_effects_to_remove.begin();
-         i != hd->force_effects_to_remove.end(); i++ ) {
+         i != hd->force_effects_to_remove.end(); ++i ) {
 
       // Find index of HAPIForceEffect if it is rendered.
       unsigned int j = 0;
       for( HapticEffectVector::const_iterator k =
            hd->current_force_effects.begin();
-           k != hd->current_force_effects.end(); k++, j++ ) {
+           k != hd->current_force_effects.end(); ++k, ++j ) {
         if( (*i).first == (*k) )
         break;
       }
@@ -217,7 +217,7 @@ H3DUtil::PeriodicThread::CallbackCode
     hd->haptics_rate = (unsigned int)( nr_loops / dt );
     hd->last_hr_update = now;
   }
-  hd->nr_haptics_loops++;
+  ++(hd->nr_haptics_loops);
   
   TimeStamp start_time = TimeStamp();
   TimeStamp dt = start_time - hd->last_loop_time;
@@ -250,7 +250,7 @@ H3DUtil::PeriodicThread::CallbackCode
       for( HapticEffectVector::const_iterator i =
              hd->last_force_effects.begin();
            i != hd->last_force_effects.end();
-           i++, j++ ) {
+           ++i, ++j ) {
         IndexTimeMap::iterator found = hd->last_add_rem_effect_map.find( j );
         if( found != hd->last_add_rem_effect_map.end() ) {
           HAPIFloat temp_fraction = (*found).second.getFraction( now_time );
@@ -258,7 +258,7 @@ H3DUtil::PeriodicThread::CallbackCode
           if( temp_fraction < 0 ) {
             hd->last_add_rem_effect_map.erase( found );
             to_remove.push_back( *i );
-            shift_index++;
+            ++shift_index;
           } else {
             if ( shift_index > 0 ) {
               hd->last_add_rem_effect_map[ j - shift_index ] =
@@ -276,7 +276,7 @@ H3DUtil::PeriodicThread::CallbackCode
       for( HapticEffectVector::const_iterator i =
            hd->last_force_effects.begin();
          i != hd->last_force_effects.end();
-         i++ ) {
+         ++i ) {
         output = output + (*i)->calculateForces( input );
       }
     }
@@ -302,7 +302,7 @@ H3DUtil::PeriodicThread::CallbackCode
       // phased out.
       for( list< HAPIForceEffect * >::iterator i = to_remove.begin();
            i != to_remove.end();
-           i++ ) {
+           ++i ) {
         hd->last_force_effects.erase( *i );
       }
     }
@@ -315,7 +315,7 @@ H3DUtil::PeriodicThread::CallbackCode
       for( HapticEffectVector::const_iterator i =
              hd->current_force_effects.begin();
            i != hd->current_force_effects.end();
-           i++, j++ ) {
+           ++i, ++j ) {
         IndexTimeMap::iterator found =
           hd->current_add_rem_effect_map.find( j );
         if( found != hd->current_add_rem_effect_map.end() ) {
@@ -337,7 +337,7 @@ H3DUtil::PeriodicThread::CallbackCode
       for( HapticEffectVector::const_iterator i =
            hd->current_force_effects.begin();
          i != hd->current_force_effects.end();
-         i++ ) {
+         ++i ) {
         output = output + (*i)->calculateForces( input )
           * force_interpolation_fraction;
       }
@@ -348,14 +348,14 @@ H3DUtil::PeriodicThread::CallbackCode
     for( HapticEffectVector::const_iterator i =
            hd->current_force_effects.begin();
          i != hd->current_force_effects.end();
-         i++ ) {
+         ++i ) {
       output = output + (*i)->calculateForces( input );
     }
   }
 
   hd->renderer_change_lock.lock();
 
-  for( unsigned int s = 0; s < hd->haptics_renderers.size(); s++ ) {
+  for( unsigned int s = 0; s < hd->haptics_renderers.size(); ++s ) {
     if( hd->haptics_renderers[s] ) {
       // Resize current_shapes, this is done since we want renderHapticsOneStep
       // to be called even when there are no current_shapes in the scene in
@@ -397,9 +397,9 @@ H3DUtil::PeriodicThread::CallbackCode
   hd->sendOutput( dt );
 
   // move shapes according to velocity, etc
-  for( unsigned int r = 0; r < hd->haptics_renderers.size(); r++ ) {
+  for( unsigned int r = 0; r < hd->haptics_renderers.size(); ++r ) {
     if( r < hd->current_shapes.size() ) {
-      for( unsigned int s = 0; s < hd->current_shapes[r].size(); s++ ) {
+      for( unsigned int s = 0; s < hd->current_shapes[r].size(); ++s ) {
         hd->current_shapes[r][s]->moveTimestep( dt );
       } 
     }
@@ -423,7 +423,7 @@ H3DUtil::PeriodicThread::CallbackCode
 
 void HAPIHapticsDevice::transferObjects() {
   if( thread ) {
-    for( unsigned int s = 0; s < haptics_renderers.size(); s++ ) {
+    for( unsigned int s = 0; s < haptics_renderers.size(); ++s ) {
       if( haptics_renderers[s] && s < tmp_shapes.size() ) {
          haptics_renderers[s]->preProcessShapes( this, tmp_shapes[s] );
       }
@@ -443,7 +443,7 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice(
       return FAIL;
     }
     device_state = INITIALIZED;
-    for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
+    for( unsigned int i = 0; i < haptics_renderers.size(); ++i ) {
       if( haptics_renderers[i] ) {
         haptics_renderers[i]->initRenderer( this );
       }

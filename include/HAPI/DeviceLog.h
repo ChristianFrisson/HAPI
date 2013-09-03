@@ -73,17 +73,17 @@ namespace HAPI {
   ///     readH3DType( file_stream, tmp );
   ///     what_is_logged.push_back( tmp );
   ///   }
-  ///   // Read the next character '\0' in order to put the stream pointe
+  ///   // Read the next character '\0' in order to put the stream pointer
   ///   // in the correct position.
   ///   char tmp;
   ///   file_stream.read( &tmp, sizeof( char ) );
   ///   // Print to console.
-  ///   for( unsigned int i = 0; i < what_is_logged.size(); i++ )
+  ///   for( unsigned int i = 0; i < what_is_logged.size(); ++i )
   ///     cerr << what_is_logged[i] << " ";
   ///   cerr << endl;
   ///   // Read until end of file and print values to console.
   ///   while( !file_stream.eof() ) {
-  ///     for( unsigned int i = 0; i < what_is_logged.size(); i++ ) {
+  ///     for( unsigned int i = 0; i < what_is_logged.size(); ++i ) {
   ///       if( what_is_logged[i] == "TIME" ) {
   ///         HAPI::HAPITime tmp;
   ///         readH3DType( file_stream, tmp );

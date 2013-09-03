@@ -67,12 +67,12 @@ EntactHapticsDevice::EntactHapticsDevice( int _serial_number,
   // different devices have different maximum stiffness values.
   max_stiffness = 1450;
 
-  nr_device_instances++;
+  ++nr_device_instances;
 }
 
 // Destructor.
 EntactHapticsDevice::~EntactHapticsDevice() {
-  nr_device_instances--;
+  --nr_device_instances;
   if( nr_device_instances == 0 && EAPI_initialized != ENTACT_UNINITIALIZED ) {
 		// Here I am assuming that closeEAPI can be called even if connectDeviceEAPI
 		// has been used instead of openEAPI.
@@ -107,7 +107,7 @@ bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 		return false;
 	} else {
 			char *_ip_address = new char[ip_address.size()];
-			for( unsigned int i = 0; i < ip_address.size(); i++ )
+			for( unsigned int i = 0; i < ip_address.size(); ++i )
 				_ip_address[i] = ip_address[i];
 			if (connectDeviceEAPI( handles, nr_entact_devices, _ip_address )==EAPI_ERR) {
 				stringstream s;
@@ -117,7 +117,7 @@ bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 				return false;
 			}
 			delete [] _ip_address;
-			nr_entact_devices++;
+			++nr_entact_devices;
 			EAPI_initialized = ENTACT_IP_ADDRESS;
 		}
  
@@ -132,7 +132,7 @@ bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 		if( serial_number == -1 ) {
 			bool device_found = false;
 			// Use any of the available devices.
-			for( int i = 0; i < nr_entact_devices; i++ ) {
+			for( int i = 0; i < nr_entact_devices; ++i ) {
 				// This relies on the fact that getModeEAPI returns EAPI_DISABLED_MODE
 				// if device is not used, and that define is 0. All other return values are
 				// non-zero.
@@ -303,7 +303,7 @@ bool EntactHapticsDevice::calibrateDevice() {
   // so try a number of times before deciding that it could not home
   while( res == EAPI_ERR && i < 20 ) {
     res = homeDeviceEAPI( handles[device_id] );
-    i++;
+    ++i;
   }
 
   return i < 20;

@@ -61,7 +61,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       setErrorMsg( s.str() );
       return false;
     } else {
-      for( int i = 0; i < nr_of_connected_dhd_devices; i++ )
+      for( int i = 0; i < nr_of_connected_dhd_devices; ++i )
         free_dhd_ids.push_back( i );
     }
   } else if( free_dhd_ids.empty() ) {

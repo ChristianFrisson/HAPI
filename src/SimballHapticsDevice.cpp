@@ -68,7 +68,7 @@ bool SimballHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   }
   if( nr_found_devices < nr_devices )
     nr_found_devices = nr_devices;
-  nr_initialized_devices++;
+  ++nr_initialized_devices;
   return true;
 }
 
@@ -83,7 +83,7 @@ bool SimballHapticsDevice::releaseHapticsDevice() {
       return false;
     }
   }
-  nr_initialized_devices--;
+  --nr_initialized_devices;
   return true;
 }
 

@@ -168,7 +168,7 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 
   HLThread *hl_thread = HLThread::getInstance();
   thread = hl_thread;
-  nr_of_scheduled++;
+  ++nr_of_scheduled;
   if( !scheduler_started ) {
 		// Just making sure that no other calls between the last check and this one
 		// generated any errors.
@@ -217,7 +217,7 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 bool PhantomHapticsDevice::releaseHapticsDevice() {
   HAPIHapticsDevice::disableDevice();
 
-  nr_of_scheduled--;
+  --nr_of_scheduled;
   hdMakeCurrentDevice( device_handle );
 
   bool restart = true;
@@ -227,7 +227,7 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
 
   for( vector< HDCallbackCode >::iterator i = hd_handles.begin();
        i != hd_handles.end();
-       i++ ) {
+       ++i ) {
     hdUnschedule(*i);
   }
   hd_handles.clear();

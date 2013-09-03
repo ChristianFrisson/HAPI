@@ -161,7 +161,7 @@ namespace CollisionInternals {
                  const Vec3 &to ) {
     HAPIFloat tmax = 1.0f;
     // For all three slabs
-    for( int i = 0; i < 3; i++ ) {
+    for( int i = 0; i < 3; ++i ) {
       if( H3DUtil::H3DAbs(d[i]) < Constants::epsilon ) {
         // Ray is parallel to slab. No hit if origin not within slab.
         if( from[i] < _min[i] || from[i] > _max[i] ) return false;
@@ -219,13 +219,13 @@ namespace CollisionInternals {
 
   void increaseSphereCounter() {
     nr_of_spheres_lock.lock();
-    nr_of_spheres++;
+    ++nr_of_spheres;
     nr_of_spheres_lock.unlock();
   }
 
   void decreseSphereCounter() {
     nr_of_spheres_lock.lock();
-    nr_of_spheres--;
+    --nr_of_spheres;
     if( nr_of_spheres == 0 && sphere_display_list_created ) {
       glDeleteLists( sphere_display_list_id, 1 );
       sphere_display_list_created = false;
@@ -252,13 +252,13 @@ namespace CollisionInternals {
 
   void increaseCylinderCounter() {
     nr_of_cylinders_lock.lock();
-    nr_of_cylinders++;
+    ++nr_of_cylinders;
     nr_of_cylinders_lock.unlock();
   }
 
   void decreseCylinderCounter() {
     nr_of_cylinders_lock.lock();
-    nr_of_cylinders--;
+    --nr_of_cylinders;
     if( nr_of_cylinders == 0 && cylinder_display_list_created ) {
       glDeleteLists( cylinder_display_list_id, 1 );
       cylinder_display_list_created = false;
@@ -359,7 +359,7 @@ void AABoxBound::fitAroundPoints( const vector< Vec3 > &points ) {
   min = points[0];
   max = points[0];
   
-  for(unsigned int i=1 ; i<points.size() ; i++) {
+  for(unsigned int i=1 ; i<points.size() ; ++i) {
     if (points[i].x < min.x) min.x = points[i].x;
     if (points[i].y < min.y) min.y = points[i].y;
     if (points[i].z < min.z) min.z = points[i].z;
@@ -526,7 +526,7 @@ void SphereBound::fitAroundPoints( const vector< Vec3 > &points ) {
   HAPIFloat r = 0;
   
   // find largest square distance
-  for(unsigned int i=0 ; i<points.size() ; i++) {
+  for(unsigned int i=0 ; i<points.size() ; ++i) {
     Vec3 from_center = points[i]-c;
     HAPIFloat d = from_center * from_center;
     if (d > r) r = d;
@@ -560,7 +560,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
   point_reps.reserve( triangle_vector.size() );
 
   start.triangles.reserve( triangle_vector.size() );
-  for( unsigned int i = 0; i < triangle_vector.size(); i++ ) {
+  for( unsigned int i = 0; i < triangle_vector.size(); ++i ) {
     start.triangles.push_back( i );
     point_reps.push_back( triangle_vector[i].pointRepresentation() );
   }
@@ -576,7 +576,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
 
     std::vector<Vec3 > fitting_points;
     points.reserve( stack_triangles.size() * 3 );
-    for (unsigned int i=0 ; i<stack_triangles.size() ; i++ ) {
+    for (unsigned int i=0 ; i<stack_triangles.size() ; ++i ) {
       const Triangle &tri = triangle_vector[ stack_triangles[i ] ];
       fitting_points.push_back( tri.a );
       fitting_points.push_back( tri.b );
@@ -590,7 +590,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     if ( stack_triangles.size() <= max_nr_triangles_in_leaf ) {
       //  build a leaf
       stack_tree->triangles.reserve( stack_triangles.size() );
-      for( unsigned int i = 0; i < stack_triangles.size(); i++ ) {
+      for( unsigned int i = 0; i < stack_triangles.size(); ++i ) {
         stack_tree->triangles.push_back( triangle_vector[stack_triangles[i]] );
       }
       stack.pop();
@@ -605,7 +605,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     // middle point of current set
     Vec3 mid(0,0,0);
 
-    for(unsigned int i = 0 ; i < stack_triangles.size() ; i++) {
+    for(unsigned int i = 0 ; i < stack_triangles.size() ; ++i) {
       mid = mid + point_reps[stack_triangles[i]];
     }
 
@@ -619,7 +619,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     right.reserve( stack_triangles.size() / 2 );
 
     
-    for( unsigned int i = 0 ; i<stack_triangles.size() ; i++ ) {
+    for( unsigned int i = 0 ; i<stack_triangles.size() ; ++i ) {
       Vec3 mid_to_point = 
         point_reps[ stack_triangles[i] ] - mid;
       if ( mid_to_point * axis < 0 )
@@ -633,10 +633,10 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     if ( (left.size() == 0) || (right.size() == 0) ) {
       left.clear();
       right.clear();
-      for (size_t i = 0 ; i<stack_triangles.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_triangles.size()/2 ; ++i) 
         left.push_back(stack_triangles[i]);
       for (size_t i = stack_triangles.size()/2 ;
-           i<stack_triangles.size() ; i++)
+           i<stack_triangles.size() ; ++i)
         right.push_back(stack_triangles[i]);
     }
     
@@ -690,20 +690,20 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
   point_reps_points.reserve( point_vector.size() );
 
   start.triangles.reserve( triangle_vector.size() );
-  for( unsigned int i = 0; i < triangle_vector.size(); i++ ) {
+  for( unsigned int i = 0; i < triangle_vector.size(); ++i ) {
     start.triangles.push_back( i );
     point_reps_triangles.push_back( triangle_vector[i].pointRepresentation() );
   }
 
   start.linesegments.reserve( linesegment_vector.size() );
-  for( unsigned int i = 0; i < linesegment_vector.size(); i++ ) {
+  for( unsigned int i = 0; i < linesegment_vector.size(); ++i ) {
     start.linesegments.push_back( i );
     point_reps_linesegments.push_back(
       linesegment_vector[i].pointRepresentation() );
   }
 
   start.points.reserve( point_vector.size() );
-  for( unsigned int i = 0; i < point_vector.size(); i++ ) {
+  for( unsigned int i = 0; i < point_vector.size(); ++i ) {
     start.points.push_back( i );
     point_reps_points.push_back( point_vector[i].pointRepresentation() );
   }
@@ -720,20 +720,20 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     std::vector<Vec3 > fitting_points;
     fitting_points.reserve( stack_triangles.size() * 3 +
       stack_linesegments.size() * 2 + stack_points.size() );
-    for (unsigned int i=0 ; i<stack_triangles.size() ; i++ ) {
+    for (unsigned int i=0 ; i<stack_triangles.size() ; ++i ) {
       const Triangle &tri = triangle_vector[ stack_triangles[i ] ];
       fitting_points.push_back( tri.a );
       fitting_points.push_back( tri.b );
       fitting_points.push_back( tri.c);
     }
 
-    for (unsigned int i=0 ; i<stack_linesegments.size() ; i++ ) {
+    for (unsigned int i=0 ; i<stack_linesegments.size() ; ++i ) {
       const LineSegment &ls = linesegment_vector[ stack_linesegments[i ] ];
       fitting_points.push_back( ls.start );
       fitting_points.push_back( ls.end );
     }
 
-    for (unsigned int i=0 ; i<stack_points.size() ; i++ ) {
+    for (unsigned int i=0 ; i<stack_points.size() ; ++i ) {
       const Point &p = point_vector[ stack_points[i ] ];
       fitting_points.push_back( p.position );
     }
@@ -747,18 +747,18 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
           stack_points.size() <= max_nr_triangles_in_leaf ) ) {
       // build a leaf
       stack_tree->triangles.reserve( stack_triangles.size() );
-      for( unsigned int i = 0; i < stack_triangles.size(); i++ ) {
+      for( unsigned int i = 0; i < stack_triangles.size(); ++i ) {
         stack_tree->triangles.push_back( triangle_vector[stack_triangles[i]] );
       }
 
       stack_tree->linesegments.reserve( stack_linesegments.size() );
-      for( unsigned int i = 0; i < stack_linesegments.size(); i++ ) {
+      for( unsigned int i = 0; i < stack_linesegments.size(); ++i ) {
         stack_tree->linesegments.push_back(
           linesegment_vector[stack_linesegments[i]] );
       }
 
       stack_tree->points.reserve( stack_points.size() );
-      for( unsigned int i = 0; i < stack_points.size(); i++ ) {
+      for( unsigned int i = 0; i < stack_points.size(); ++i ) {
         stack_tree->points.push_back( point_vector[stack_points[i]] );
       }
       stack.pop();
@@ -772,15 +772,15 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     // middle point of current set
     Vec3 mid(0,0,0);
 
-    for(unsigned int i = 0 ; i < stack_triangles.size() ; i++) {
+    for(unsigned int i = 0 ; i < stack_triangles.size() ; ++i) {
       mid = mid + point_reps_triangles[stack_triangles[i]];
     }
 
-    for(unsigned int i = 0 ; i < stack_linesegments.size() ; i++) {
+    for(unsigned int i = 0 ; i < stack_linesegments.size() ; ++i) {
       mid = mid + point_reps_linesegments[stack_linesegments[i]];
     }
 
-    for(unsigned int i = 0 ; i < stack_points.size() ; i++) {
+    for(unsigned int i = 0 ; i < stack_points.size() ; ++i) {
       mid = mid + point_reps_points[stack_points[i]];
     }
 
@@ -794,7 +794,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     left_triangles.reserve( stack_triangles.size() / 2 );
     right_triangles.reserve( stack_triangles.size() / 2 );
     
-    for( unsigned int i = 0 ; i<stack_triangles.size() ; i++ ) {
+    for( unsigned int i = 0 ; i<stack_triangles.size() ; ++i ) {
       Vec3 mid_to_point = 
         point_reps_triangles[ stack_triangles[i] ] - mid;
       if ( mid_to_point * axis < 0 )
@@ -808,10 +808,10 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     if ( (left_triangles.size() == 0) || (right_triangles.size() == 0) ) {
       left_triangles.clear();
       right_triangles.clear();
-      for (size_t i = 0 ; i<stack_triangles.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_triangles.size()/2 ; ++i) 
         left_triangles.push_back(stack_triangles[i]);
       for (size_t i = stack_triangles.size()/2;
-        i<stack_triangles.size() ; i++) 
+        i<stack_triangles.size() ; ++i) 
         right_triangles.push_back(stack_triangles[i]);
     }
 
@@ -822,7 +822,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     left_linesegments.reserve( stack_linesegments.size() / 2 );
     right_linesegments.reserve( stack_linesegments.size() / 2 );
     
-    for( unsigned int i = 0 ; i<stack_linesegments.size() ; i++ ) {
+    for( unsigned int i = 0 ; i<stack_linesegments.size() ; ++i ) {
       Vec3 mid_to_point = 
         point_reps_linesegments[ stack_linesegments[i] ] - mid;
       if ( mid_to_point * axis < 0 )
@@ -836,10 +836,10 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     if ( (left_linesegments.size() == 0) || (right_linesegments.size() == 0) ) {
       left_linesegments.clear();
       right_linesegments.clear();
-      for (size_t i = 0 ; i<stack_linesegments.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_linesegments.size()/2 ; ++i) 
         left_linesegments.push_back(stack_linesegments[i]);
       for (size_t i = stack_linesegments.size()/2 ;
-        i<stack_linesegments.size() ; i++) 
+        i<stack_linesegments.size() ; ++i) 
         right_linesegments.push_back(stack_linesegments[i]);
     }
 
@@ -850,7 +850,7 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     left_points.reserve( stack_points.size() / 2 );
     right_points.reserve( stack_points.size() / 2 );
     
-    for( unsigned int i = 0 ; i<stack_points.size() ; i++ ) {
+    for( unsigned int i = 0 ; i<stack_points.size() ; ++i ) {
       Vec3 mid_to_point = 
         point_reps_points[ stack_points[i] ] - mid;
       if ( mid_to_point * axis < 0 )
@@ -864,10 +864,10 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     if ( (left_points.size() == 0) || (right_points.size() == 0) ) {
       left_points.clear();
       right_points.clear();
-      for (size_t i = 0 ; i<stack_points.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_points.size()/2 ; ++i) 
         left_points.push_back(stack_points[i]);
       for (size_t i = stack_points.size()/2;
-        i<stack_points.size() ; i++) 
+        i<stack_points.size() ; ++i) 
         right_points.push_back(stack_points[i]);
     }
     
@@ -907,13 +907,13 @@ void BinaryBoundTree::render() {
     if( left.get() ) left->render();
     if( right.get() ) right->render();
   } else {
-    for( unsigned int i = 0; i < triangles.size(); i++ ) { 
+    for( unsigned int i = 0; i < triangles.size(); ++i ) {
       triangles[i].render();
     }
-    for( unsigned int i = 0; i < linesegments.size(); i++ ) { 
+    for( unsigned int i = 0; i < linesegments.size(); ++i ) {
       linesegments[i].render();
     }
-    for( unsigned int i = 0; i < points.size(); i++ ) { 
+    for( unsigned int i = 0; i < points.size(); ++i ) {
       points[i].render();
     }
   }
@@ -943,13 +943,13 @@ void BinaryBoundTree::renderBounds( int depth ) {
     glPushAttrib( GL_POLYGON_BIT );
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 #endif
-    for( unsigned int i = 0; i < triangles.size(); i++ ) { 
+    for( unsigned int i = 0; i < triangles.size(); ++i ) {
       triangles[i].render();
     }
-    for( unsigned int i = 0; i < linesegments.size(); i++ ) { 
+    for( unsigned int i = 0; i < linesegments.size(); ++i ) {
       linesegments[i].render();
     }
-    for( unsigned int i = 0; i < points.size(); i++ ) { 
+    for( unsigned int i = 0; i < points.size(); ++i ) {
       points[i].render();
     }
 #ifdef HAVE_OPENGL
@@ -1568,7 +1568,7 @@ bool BinaryBoundTree::lineIntersect( const Vec3 &from,
                                      FaceType face ) {
   if ( isLeaf() )  {
     IntersectionInfo tempResult;
-    for( unsigned int i = 0; i < triangles.size(); i++ ) {
+    for( unsigned int i = 0; i < triangles.size(); ++i ) {
       Triangle &t = triangles[i];
       if( t.lineIntersect( from, to, tempResult, face ) ) {
         if( result.intersection) {
@@ -1581,7 +1581,7 @@ bool BinaryBoundTree::lineIntersect( const Vec3 &from,
       }
     }
 
-    for( unsigned int i = 0; i < linesegments.size(); i++ ) {
+    for( unsigned int i = 0; i < linesegments.size(); ++i ) {
       LineSegment &ls = linesegments[i];
       if( ls.lineIntersect( from, to, tempResult, face ) ) {
         if( result.intersection) {
@@ -1594,7 +1594,7 @@ bool BinaryBoundTree::lineIntersect( const Vec3 &from,
       }
     }
 
-    for( unsigned int i = 0; i < points.size(); i++ ) {
+    for( unsigned int i = 0; i < points.size(); ++i ) {
       Point &p = points[i];
       if( p.lineIntersect( from, to, tempResult, face ) ) {
         if( result.intersection) {
@@ -1625,17 +1625,17 @@ bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
                                              const Vec3 &from, 
                                              const Vec3 &to ) {
   if ( isLeaf() )  {
-    for( unsigned int i = 0; i < triangles.size(); i++ ) {
+    for( unsigned int i = 0; i < triangles.size(); ++i ) {
       Triangle &t = triangles[i];
       if( t.movingSphereIntersect( radius, from, to ) )  return true;
     }
 
-    for( unsigned int i = 0; i < linesegments.size(); i++ ) {
+    for( unsigned int i = 0; i < linesegments.size(); ++i ) {
       LineSegment &ls = linesegments[i];
       if( ls.movingSphereIntersect( radius, from, to ) )  return true;
     }
 
-    for( unsigned int i = 0; i < points.size(); i++ ) {
+    for( unsigned int i = 0; i < points.size(); ++i ) {
       Point &pt = points[i];
       if( pt.movingSphereIntersect( radius, from, to ) )  return true;
     }
@@ -1663,7 +1663,7 @@ bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
                                              IntersectionInfo &result ) {
   if ( isLeaf() )  {
     IntersectionInfo temp_result;
-    for( unsigned int i = 0; i < triangles.size(); i++ ) {
+    for( unsigned int i = 0; i < triangles.size(); ++i ) {
       Triangle &t = triangles[i];
       if( t.movingSphereIntersect( radius, from, to, temp_result ) ) {
         if( temp_result.intersection ) {
@@ -1701,7 +1701,7 @@ Matrix3 covarianceMatrix( const vector< Vec3 >&points ) {
   size_t nr_points = points.size();
 
   Vec3 c = points[0];
-  for(unsigned int i=1 ; i < nr_points; i++) 
+  for(unsigned int i=1 ; i < nr_points; ++i) 
     c+= points[i];
 
   c = c / points.size();
@@ -1709,7 +1709,7 @@ Matrix3 covarianceMatrix( const vector< Vec3 >&points ) {
   HAPIFloat e00 = 0, e01 = 0, e02 = 0,
                     e11 = 0, e12 = 0,
                              e22 = 0;
-  for (unsigned int i = 0; i < nr_points; i++)  {
+  for (unsigned int i = 0; i < nr_points; ++i)  {
     Vec3 p = points[i] - c;
     
     e00 += p.x * p.x;
@@ -1772,15 +1772,15 @@ void eigenValuesAndEigenVectorsJacobi(const Matrix3& A,
   Matrix3 J, b, t;
 
   // Repeat for some maximum number of iterations
-  for (n = 0; n < maxIterations; n++)  {
+  for (n = 0; n < maxIterations; ++n)  {
     p = 0; q = 1;
-    for ( i = 0; i < 3; i++) for (j = 0; j < 3; j++ ) {
+    for ( i = 0; i < 3; ++i) for (j = 0; j < 3; ++j ) {
       if (i == j) continue;
       if (H3DUtil::H3DAbs(a[i][j]) > H3DUtil::H3DAbs(a[p][q])) {p = i; q = j;}
     }
 
     symmetricSchurDecomposition(a, p, q, c, s);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; ++i) {
       J[i][0] = J[i][1] = J[i][2] = 0.0f;
       J[i][i] = 1.0f;
     }
@@ -1795,7 +1795,7 @@ void eigenValuesAndEigenVectorsJacobi(const Matrix3& A,
     
     //  eval norm
     HAPIFloat off = 0.0;
-    for (i = 0; i < 3; i++) for (j = 0; j < 3; j++)  {
+    for (i = 0; i < 3; ++i) for (j = 0; j < 3; ++j)  {
       if (i == j) continue;
       off += a[i][j] * a[i][j];
     }
@@ -1821,11 +1821,11 @@ void OrientedBoxBound::fitAroundPoints( const vector< Vec3 > &points ) {
   //  guess an oriented reference frame
   unsigned int length_order[3];
   //  initialize
-  for(unsigned int i=0 ; i<3 ; i++) length_order[i] = i;
+  for(unsigned int i=0 ; i<3 ; ++i) length_order[i] = i;
   
   //  do a bubble sort on indices
-  for( unsigned int i=0 ; i<2 ; i++) {
-    for(unsigned int j=i+1 ; j<3 ; j++)  {
+  for( unsigned int i=0 ; i<2 ; ++i) {
+    for(unsigned int j=i+1 ; j<3 ; ++j)  {
       if ( eig_values[length_order[i]] < eig_values[length_order[j]] ) {
         // swap
         unsigned int temp( length_order[i] );
@@ -1854,7 +1854,7 @@ void OrientedBoxBound::fitAroundPoints( const vector< Vec3 > &points ) {
   // build box in the new frame
   min = frame * points[0];
   max = min;
-  for(unsigned int i=1 ; i<points.size() ; i++)  {
+  for(unsigned int i=1 ; i<points.size() ; ++i)  {
     Vec3 pt = frame * points[i];
     
     if (pt.x < min.x) min.x = pt.x;
@@ -1971,15 +1971,15 @@ void BinaryBoundTree::getConstraints( const Vec3 &point,
                                       FaceType face,
                                       HAPIFloat radius ) {
   if ( isLeaf() )  {
-    for( unsigned int i = 0; i < triangles.size(); i++ ) {
+    for( unsigned int i = 0; i < triangles.size(); ++i ) {
       Triangle &t = triangles[i];
       t.getConstraints( point, constraints, face, radius );
     }
-    for( unsigned int i = 0; i < linesegments.size(); i++ ) {
+    for( unsigned int i = 0; i < linesegments.size(); ++i ) {
       LineSegment &ls = linesegments[i];
       ls.getConstraints( point, constraints, face, radius );
     }
-    for( unsigned int i = 0; i < points.size(); i++ ) {
+    for( unsigned int i = 0; i < points.size(); ++i ) {
       Point &pt = points[i];
       pt.getConstraints( point, constraints, face, radius );
     }
@@ -1997,7 +1997,7 @@ void BinaryBoundTree::getTrianglesWithinRadius( const Vec3 &p,
   HAPIFloat r2 = radius * radius;
   if ( isLeaf() )  {
     for( vector< Triangle >::iterator i = triangles.begin();
-         i != triangles.end(); i++ ) {
+         i != triangles.end(); ++i ) {
       Vec3 cp, tmp;
       (*i).closestPoint( p, cp, tmp, tmp );
       if( (cp - p).lengthSqr() <= r2 )
@@ -2022,7 +2022,7 @@ void BinaryBoundTree::getPrimitivesWithinRadius( const Vec3 &p,
   HAPIFloat r2 = radius * radius;
   if ( isLeaf() )  {
     for( vector< Triangle >::iterator i = triangles.begin();
-         i != triangles.end(); i++ ) {
+         i != triangles.end(); ++i ) {
       Vec3 cp, tmp;
       (*i).closestPoint( p, cp, tmp, tmp );
       if( (cp - p).lengthSqr() <= r2 )
@@ -2030,7 +2030,7 @@ void BinaryBoundTree::getPrimitivesWithinRadius( const Vec3 &p,
     }
 
     for( vector< LineSegment >::iterator i = linesegments.begin();
-         i != linesegments.end(); i++ ) {
+         i != linesegments.end(); ++i ) {
       Vec3 cp, tmp;
       (*i).closestPoint( p, cp, tmp, tmp );
       if( (cp - p).lengthSqr() <= r2 )
@@ -2038,7 +2038,7 @@ void BinaryBoundTree::getPrimitivesWithinRadius( const Vec3 &p,
     }
 
     for( vector< Point >::iterator i = points.begin();
-         i != points.end(); i++ ) {
+         i != points.end(); ++i ) {
       Vec3 cp, tmp;
       (*i).closestPoint( p, cp, tmp, tmp );
       if( (cp - p).lengthSqr() <= r2 )
@@ -2574,7 +2574,7 @@ void BinaryBoundTree::getTrianglesIntersectedByMovingSphere( HAPIFloat radius,
                                                              vector< Triangle > &result) {
   if ( isLeaf() )  {
     for( vector< Triangle >::iterator i = triangles.begin();
-         i != triangles.end(); i++ ) {
+         i != triangles.end(); ++i ) {
       if( (*i).movingSphereIntersect( radius, from, to ) )
         result.push_back( *i );
     }
@@ -2595,19 +2595,19 @@ void BinaryBoundTree::getPrimitivesIntersectedByMovingSphere(
                 vector< Point > &result_points ) {
   if ( isLeaf() )  {
     for( vector< Triangle >::iterator i = triangles.begin();
-         i != triangles.end(); i++ ) {
+         i != triangles.end(); ++i ) {
       if( (*i).movingSphereIntersect( radius, from, to ) )
         result_triangles.push_back( *i );
     }
 
     for( vector< LineSegment >::iterator i = linesegments.begin();
-         i != linesegments.end(); i++ ) {
+         i != linesegments.end(); ++i ) {
       if( (*i).movingSphereIntersect( radius, from, to ) )
         result_lines.push_back( *i );
     }
 
     for( vector< Point >::iterator i = points.begin();
-         i != points.end(); i++ ) {
+         i != points.end(); ++i ) {
       if( (*i).movingSphereIntersect( radius, from, to ) )
         result_points.push_back( *i );
     }
@@ -2631,7 +2631,7 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
     Vec3 cp, cn;
     HAPIFloat d2 = std::numeric_limits<HAPIFloat>::max();
     for( vector< Triangle >::iterator i = triangles.begin();
-         i != triangles.end(); i++ ) {
+         i != triangles.end(); ++i ) {
       Vec3 point, normal;
       (*i).closestPoint( p, point, normal, tex_coord );
       Vec3 v = p - point;
@@ -2644,7 +2644,7 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
     }
 
     for( vector< LineSegment >::iterator i = linesegments.begin();
-         i != linesegments.end(); i++ ) {
+         i != linesegments.end(); ++i ) {
       Vec3 point, normal;
       (*i).closestPoint( p, point, normal, tex_coord );
       Vec3 v = p - point;
@@ -2657,7 +2657,7 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
     }
 
     for( vector< Point >::iterator i = points.begin();
-         i != points.end(); i++ ) {
+         i != points.end(); ++i ) {
       Vec3 point, normal;
       (*i).closestPoint( p, point, normal, tex_coord );
       Vec3 v = p - point;
@@ -2731,7 +2731,7 @@ const vector<int> &BinaryBoundTree::getNeighbours() {
   typedef map< pair< Vec3, Vec3 >, pair<int, int>, lt >  EdgeTriangleMap;
   EdgeTriangleMap edges;
  
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
+  for( unsigned int i = 0; i < triangles.size(); ++i ) {
     const HAPI::Collision::Triangle &tri = triangles[i];
 
     // ignore invalid triangles that are lines or points
@@ -2856,7 +2856,7 @@ BBPrimitiveTree::BBPrimitiveTree(
   point_reps.reserve( primitive_vector.size() );
 
   start.primitives.reserve( primitive_vector.size() );
-  for( unsigned int i = 0; i < primitive_vector.size(); i++ ) {
+  for( unsigned int i = 0; i < primitive_vector.size(); ++i ) {
     start.primitives.push_back( i );
     point_reps.push_back( primitive_vector[i]->pointRepresentation() );
   }
@@ -2873,7 +2873,7 @@ BBPrimitiveTree::BBPrimitiveTree(
     if ( stack_primitives.size() <= max_nr_primitives_in_leaf ) {
       //  build a leaf
       stack_tree->primitives.reserve( stack_primitives.size() );
-      for( unsigned int i = 0; i < stack_primitives.size(); i++ ) {
+      for( unsigned int i = 0; i < stack_primitives.size(); ++i ) {
         stack_tree->primitives.push_back(
           primitive_vector[stack_primitives[i]] );
       }
@@ -2883,7 +2883,7 @@ BBPrimitiveTree::BBPrimitiveTree(
 
     std::vector<Vec3 > points;
     points.reserve( stack_primitives.size() * 3 );
-    for (unsigned int i=0 ; i<stack_primitives.size() ; i++ ) {
+    for (unsigned int i=0 ; i<stack_primitives.size() ; ++i ) {
       GeometryPrimitive *a_primitive = primitive_vector[ stack_primitives[i ]];
       Triangle *tri = dynamic_cast< Triangle * >(a_primitive);
       if( tri ) {
@@ -2944,7 +2944,7 @@ BBPrimitiveTree::BBPrimitiveTree(
     //  middle point of current set
     Vec3 mid(0,0,0);
 
-    for(unsigned int i = 0 ; i < stack_primitives.size() ; i++) {
+    for(unsigned int i = 0 ; i < stack_primitives.size() ; ++i) {
       mid = mid + point_reps[stack_primitives[i]];
     }
 
@@ -2958,7 +2958,7 @@ BBPrimitiveTree::BBPrimitiveTree(
     right.reserve( stack_primitives.size() / 2 );
 
     
-    for( unsigned int i = 0 ; i<stack_primitives.size() ; i++ ) {
+    for( unsigned int i = 0 ; i<stack_primitives.size() ; ++i ) {
       Vec3 mid_to_point = 
         point_reps[ stack_primitives[i] ] - mid;
       if ( mid_to_point * axis < 0 )
@@ -2972,10 +2972,10 @@ BBPrimitiveTree::BBPrimitiveTree(
     if ( (left.size() == 0) || (right.size() == 0) ) {
       left.clear();
       right.clear();
-      for (size_t i = 0 ; i<stack_primitives.size()/2 ; i++) 
+      for (size_t i = 0 ; i<stack_primitives.size()/2 ; ++i) 
         left.push_back(stack_primitives[i]);
       for (size_t i = stack_primitives.size()/2 ;
-            i<stack_primitives.size() ; i++) 
+            i<stack_primitives.size() ; ++i) 
         right.push_back(stack_primitives[i]);
     }
     
@@ -3008,7 +3008,7 @@ void BBPrimitiveTree::getConstraints(
                                   FaceType face,
                                   HAPIFloat radius ) {
   if ( isLeaf() )  {
-    for( unsigned int i = 0; i < primitives.size(); i++ ) {
+    for( unsigned int i = 0; i < primitives.size(); ++i ) {
       GeometryPrimitive *gp = primitives[i];
       gp->getConstraints( point, constraints, face, radius );
     }
@@ -3028,7 +3028,7 @@ void BBPrimitiveTree::getPrimitivesWithinRadius(
   if ( isLeaf() )  {
     for( H3DUtil::AutoRefVector< GeometryPrimitive >::const_iterator
           i = primitives.begin();
-         i != primitives.end(); i++ ) {
+         i != primitives.end(); ++i ) {
       Vec3 cp, tmp;
       (*i)->closestPoint( p, cp, tmp, tmp );
       if( (cp - p).lengthSqr() <= r2 )
@@ -3055,7 +3055,7 @@ void BBPrimitiveTree::closestPoint( const Vec3 &p,
     HAPIFloat d2 = std::numeric_limits<HAPIFloat>::max();
     for( H3DUtil::AutoRefVector< GeometryPrimitive >::const_iterator
           i = primitives.begin();
-         i != primitives.end(); i++ ) {
+         i != primitives.end(); ++i ) {
       Vec3 point, normal;
       (*i)->closestPoint( p, point, normal, tex_coord );
       Vec3 v = p - point;
@@ -3108,7 +3108,7 @@ bool BBPrimitiveTree::lineIntersect( const Vec3 &from,
                                      FaceType face ) {
   if ( isLeaf() )  {
     IntersectionInfo tempResult;
-    for( unsigned int i = 0; i < primitives.size(); i++ ) {
+    for( unsigned int i = 0; i < primitives.size(); ++i ) {
       GeometryPrimitive *gp = primitives[i];
       if( gp->lineIntersect( from, to, tempResult, face ) ) {
         if( result.intersection) {
@@ -3141,7 +3141,7 @@ bool BBPrimitiveTree::movingSphereIntersect( HAPIFloat radius,
                                              const Vec3 &from, 
                                              const Vec3 &to ) {
   if ( isLeaf() )  {
-    for( unsigned int i = 0; i < primitives.size(); i++ ) {
+    for( unsigned int i = 0; i < primitives.size(); ++i ) {
       GeometryPrimitive *gp = primitives[i];
       if( gp->movingSphereIntersect( radius, from, to ) )  return true;
     }
@@ -3168,7 +3168,7 @@ void BBPrimitiveTree::render() {
     if( left.get() ) left->render();
     if( right.get() ) right->render();
   } else {
-    for( unsigned int i = 0; i < primitives.size(); i++ ) { 
+    for( unsigned int i = 0; i < primitives.size(); ++i ) { 
       primitives[i]->render();
     }
   }
@@ -3187,7 +3187,7 @@ void BBPrimitiveTree::renderBounds( int depth ) {
     glPushAttrib( GL_POLYGON_BIT );
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 #endif
-    for( unsigned int i = 0; i < primitives.size(); i++ ) { 
+    for( unsigned int i = 0; i < primitives.size(); ++i ) { 
       primitives[i]->render();
     }
 #ifdef HAVE_OPENGL
@@ -3204,7 +3204,7 @@ void BBPrimitiveTree::getPrimitivesIntersectedByMovingSphere(
   if ( isLeaf() )  {
     for( H3DUtil::AutoRefVector< GeometryPrimitive >::const_iterator
           i = primitives.begin();
-         i != primitives.end(); i++ ) {
+         i != primitives.end(); ++i ) {
       if( (*i)->movingSphereIntersect( radius, from, to ) )
         result.push_back( *i );
     }
@@ -3438,7 +3438,7 @@ bool BBPrimitiveTree::movingSphereIntersect( HAPIFloat radius,
                                              IntersectionInfo &result ) {
   if ( isLeaf() )  {
     IntersectionInfo temp_result;
-    for( unsigned int i = 0; i < primitives.size(); i++ ) {
+    for( unsigned int i = 0; i < primitives.size(); ++i ) {
       GeometryPrimitive *pr = primitives[i];
       if( pr->movingSphereIntersect( radius, from, to, temp_result ) ) {
         if( temp_result.intersection ) {
@@ -4082,7 +4082,7 @@ void Cylinder::render() {
     // render end_cap
     glBegin( GL_POLYGON );
     glNormal3f( 0, 1, 0 );
-    for( int i = 0; i < nr_faces; i++ ) {
+    for( int i = 0; i < nr_faces; ++i ) {
       float angle = (float)( i * (H3DUtil::Constants::pi*2) /(float) nr_faces);
       float sina = sin( angle );
       float cosa = cos( angle );
@@ -4095,7 +4095,7 @@ void Cylinder::render() {
     // render start_cap
     glBegin( GL_POLYGON );
     glNormal3f( 0, -1, 0 );
-    for( int i = nr_faces; i >= 0; i-- ) {
+    for( int i = nr_faces; i >= 0; --i ) {
       float angle = (float)( i * (H3DUtil::Constants::pi*2) /(float) nr_faces);
       float sina = sin( angle );
       float cosa = cos( angle );
@@ -4319,7 +4319,7 @@ void AABox::closestPoint( const Vec3 &p,
                           PointLocation &point_location ) {
   Vec3 _normal;
   point_location = INSIDE;
-  for( int i = 0; i < 3; i++ ) {
+  for( int i = 0; i < 3; ++i ) {
     HAPIFloat v = p[i];
     if( v < _min[i] ) {
       _normal[i] = v - _min[i];
@@ -4337,7 +4337,7 @@ void AABox::closestPoint( const Vec3 &p,
     HAPIFloat smallest_distance = std::numeric_limits<HAPIFloat>::max();
     bool on_surface = false;
     bool max_value = false;
-    for( int i = 0; i < 3; i++ ) {
+    for( int i = 0; i < 3; ++i ) {
       HAPIFloat v = p[i];
       HAPIFloat v_min = v - _min[i];
       HAPIFloat v_max = _max[i] - v;
@@ -4348,7 +4348,7 @@ void AABox::closestPoint( const Vec3 &p,
           _normal[i] = -1;
           if( !on_surface ) {
             on_surface = true;
-            for( int j = 0; j < i; j++ )
+            for( int j = 0; j < i; ++j )
               _normal[j] = 0;
           }
         } else if( closest_i == -1 || v_min < smallest_distance ) {
@@ -4364,7 +4364,7 @@ void AABox::closestPoint( const Vec3 &p,
           _normal[i] = 1;
           if( !on_surface ) {
             on_surface = true;
-            for( int j = 0; j < i; j++ )
+            for( int j = 0; j < i; ++j )
               _normal[j] = 0;
           }
         } else if( closest_i == -1 || v_max < smallest_distance ) {
@@ -4381,7 +4381,7 @@ void AABox::closestPoint( const Vec3 &p,
         normal.normalize();
         closest_point = p;
       } else if( closest_i == i ) {
-        for( int i = 0; i < 3; i++ ) {
+        for( int i = 0; i < 3; ++i ) {
           if( i != closest_i )
             _normal[i] = 0;
         }
@@ -4574,7 +4574,7 @@ bool AABox::movingSphereIntersect( HAPIFloat radius,
     // correct intersection time. We need to change the result.point
     // though. Should only be one of the dimensions to change
     // since we already is in a face region.
-    for( int i = 0; i < 3; i++ ) {
+    for( int i = 0; i < 3; ++i ) {
       if( result.point[i] < min[i] ) {
         result.point[i] += radius;
         break;
@@ -4665,7 +4665,7 @@ void AABox::getConstraints( const Vec3 &point,
   if( (closest_point - point).lengthSqr() < radius * radius ) {
     if( ( face != FRONT && point_location == INSIDE ) ||
       ( face == BACK && point_location == ON_SURFACE ) ) {
-        for( int i = 0; i < 3; i++ ) {
+        for( int i = 0; i < 3; ++i ) {
           if( point[i] - min[i] <= radius ) {
             Vec3 closest = point;
             closest[i] = min[i];

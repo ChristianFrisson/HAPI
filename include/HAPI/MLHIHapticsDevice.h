@@ -70,7 +70,7 @@ namespace HAPI {
       server_ip_addr(_server_ip_addr)
     {
       // No need for mutex yet.
-      for (int i = 0; i < 6; i++)
+      for (int i = 0; i < 6; ++i)
         forces.values[i] = 0;
     }
 

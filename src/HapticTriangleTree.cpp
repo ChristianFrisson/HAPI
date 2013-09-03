@@ -87,7 +87,7 @@ void HapticTriangleTree::getTangentSpaceMatrixShape( const Vec3 &point,
       triangles[0].closestPoint( point, temp_cp, temp_n, temp_n );
       HAPIFloat distance = ( temp_cp - point).lengthSqr(); 
       HAPIFloat temp_distance;
-      for( unsigned int i = 1; i < triangles.size(); i++ ) {
+      for( unsigned int i = 1; i < triangles.size(); ++i ) {
         triangles[i].closestPoint( point, temp_cp, temp_n, temp_n );
         temp_distance = (temp_cp - point).lengthSqr();
         if( temp_distance < distance ) {

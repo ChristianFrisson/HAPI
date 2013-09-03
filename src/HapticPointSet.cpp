@@ -47,7 +47,7 @@ bool HapticPointSet::lineIntersectShape( const Vec3 &from,
   bool have_intersection = false;
   Collision::IntersectionInfo closest_intersection;
   HAPIFloat min_d2;
-  for( unsigned int i = 0; i < points.size(); i++ ) {
+  for( unsigned int i = 0; i < points.size(); ++i ) {
     Collision::Point &p = points[i];
     if( p.lineIntersect( from, to, closest_intersection, face ) )	{
       Vec3 v = closest_intersection.point - from;
@@ -75,12 +75,12 @@ void HapticPointSet::getConstraintsOfShape( const Vec3 &point,
                                             HAPIFloat radius ) {
   if( points.size() > 0 ) {
     unsigned int size = constraints.size();
-    for( unsigned int i = 0; i < points.size(); i++ ) {
+    for( unsigned int i = 0; i < points.size(); ++i ) {
       Collision::Point &temp_p = points[i];
       temp_p.getConstraints( point, constraints, face, radius );
     }
     
-    for( unsigned int i = size; i < constraints.size(); i ++ ) {
+    for( unsigned int i = size; i < constraints.size(); ++i ) {
       PlaneConstraint &pc = constraints[i];
       pc.haptic_shape.reset(this);
     }
@@ -93,7 +93,7 @@ void HapticPointSet::glRenderShape() {
   glDisable( GL_CULL_FACE );
   glDisable( GL_LIGHTING );
   glBegin( GL_POINTS );
-  for( unsigned int i = 0; i < points.size(); i++ ) {
+  for( unsigned int i = 0; i < points.size(); ++i ) {
     HAPI::Collision::Point &p = points[i];
     glVertex3d( p.position.x, p.position.y, p.position.z );
   }
@@ -108,7 +108,7 @@ void HapticPointSet::closestPointOnShape( const Vec3 &p,
                                           Vec3 &tc ) {
   Vec3 temp_cp, temp_n;
   HAPIFloat distance, temp_distance;
-  for( unsigned int i = 0; i < points.size(); i++ ) {
+  for( unsigned int i = 0; i < points.size(); ++i ) {
     temp_cp = points[i].position;
     if( i == 0 ) {
       cp = temp_cp;
@@ -133,7 +133,7 @@ void HapticPointSet::closestPointOnShape( const Vec3 &p,
 bool HapticPointSet::movingSphereIntersectShape( HAPIFloat radius,
                                                 const Vec3 &from, 
                                                 const Vec3 &to ) {
-  for( unsigned int i = 0; i < points.size(); i++ ) {
+  for( unsigned int i = 0; i < points.size(); ++i ) {
     if( points[i].movingSphereIntersect( radius, from, to ) ) return true;
   }
   return false;
@@ -150,7 +150,7 @@ void HapticPointSet::getTangentSpaceMatrixShape( const Vec3 &point,
       points[0].closestPoint( point, temp_cp, temp_n, temp_n );
       HAPIFloat distance = ( temp_cp - point).lengthSqr();
       HAPIFloat temp_distance;
-      for( unsigned int i = 1; i < points.size(); i++ ) {
+      for( unsigned int i = 1; i < points.size(); ++i ) {
         points[i].closestPoint( point, temp_cp, temp_n, temp_n );
         temp_distance = (temp_cp - point).lengthSqr();
         if( temp_distance < distance ) {

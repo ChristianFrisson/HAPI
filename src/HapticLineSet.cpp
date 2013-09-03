@@ -46,7 +46,7 @@ bool HapticLineSet::lineIntersectShape( const Vec3 &from,
   bool have_intersection = false;
   Collision::IntersectionInfo closest_intersection;
   HAPIFloat min_d2;
-  for( unsigned int i = 0; i < lines.size(); i++ ) {
+  for( unsigned int i = 0; i < lines.size(); ++i ) {
     Collision::LineSegment &l = lines[i];
     if( l.lineIntersect( from, to, closest_intersection, face ) )	{
       Vec3 v = closest_intersection.point - from;
@@ -74,12 +74,12 @@ void HapticLineSet::getConstraintsOfShape( const Vec3 &point,
                                            HAPIFloat radius ) {
   if( lines.size() > 0 ) {
     unsigned int size = constraints.size();
-    for( unsigned int i = 0; i < lines.size(); i++ ) {
+    for( unsigned int i = 0; i < lines.size(); ++i ) {
       Collision::LineSegment &l = lines[i];
       l.getConstraints( point, constraints, face, radius );
     }
 
-    for( unsigned int i = size; i < constraints.size(); i ++ ) {
+    for( unsigned int i = size; i < constraints.size(); ++i ) {
       PlaneConstraint &pc = constraints[i];
       pc.haptic_shape.reset(this);
     }
@@ -92,7 +92,7 @@ void HapticLineSet::glRenderShape() {
   glDisable( GL_CULL_FACE );
   glDisable( GL_LIGHTING );
   glBegin( GL_LINES );
-  for( unsigned int i = 0; i < lines.size(); i++ ) {
+  for( unsigned int i = 0; i < lines.size(); ++i ) {
     HAPI::Collision::LineSegment &l = lines[i];
     glVertex3d( l.start.x, l.start.y, l.start.z );
     glVertex3d( l.end.x, l.end.y, l.end.z );
@@ -109,7 +109,7 @@ void HapticLineSet::closestPointOnShape( const Vec3 &p,
                                          Vec3 &tc ) {
   Vec3 temp_cp, temp_n, temp_tc;
   HAPIFloat distance, temp_distance;
-  for( unsigned int i = 0; i < lines.size(); i++ ) {
+  for( unsigned int i = 0; i < lines.size(); ++i ) {
     lines[i].closestPoint( p, temp_cp, temp_n, temp_tc );
     if( i == 0 ) {
       cp = temp_cp;
@@ -133,7 +133,7 @@ void HapticLineSet::closestPointOnShape( const Vec3 &p,
 bool HapticLineSet::movingSphereIntersectShape( HAPIFloat radius,
                                                 const Vec3 &from, 
                                                 const Vec3 &to ) {
-  for( unsigned int i = 0; i < lines.size(); i++ ) {
+  for( unsigned int i = 0; i < lines.size(); ++i ) {
     if( lines[i].movingSphereIntersect( radius, from, to ) ) return true;
   }
   return false;
@@ -150,7 +150,7 @@ void HapticLineSet::getTangentSpaceMatrixShape( const Vec3 &point,
       lines[0].closestPoint( point, temp_cp, temp_n, temp_n );
       HAPIFloat distance = ( temp_cp - point).lengthSqr();
       HAPIFloat temp_distance;
-      for( unsigned int i = 1; i < lines.size(); i++ ) {
+      for( unsigned int i = 1; i < lines.size(); ++i ) {
         lines[i].closestPoint( point, temp_cp, temp_n, temp_n );
         temp_distance = (temp_cp - point).lengthSqr();
         if( temp_distance < distance ) {

@@ -119,9 +119,9 @@ namespace HAPI {
       if( _tree->isLeaf() ) {
         int counter = 0;
         for( PrimitiveVector::const_iterator i = _tree->primitives.begin();
-             i != _tree->primitives.end(); i++ ) {
+             i != _tree->primitives.end(); ++i ) {
           if( dynamic_cast< ClassToCount * >( *i ) )
-            counter++;
+            ++counter;
           else if( dynamic_cast< Collision::Plane * >( *i ) ||
             dynamic_cast< Collision::Sphere * >( *i ) ) {
             counter = -1;

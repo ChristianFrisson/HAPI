@@ -127,11 +127,11 @@ void MLHIHapticsDevice::renderForces(ml_position_t position)
   ml_gain_vec_t gains;
 
   // Copy feedforward forces
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; ++i)
     gains.values[i].ff = initial_gains.values[i].ff;
 
   // Copy torque gains
-  for (int i = 3; i < 6; i++)
+  for (int i = 3; i < 6; ++i)
   {
     gains.values[i].p = initial_gains.values[i].p;
     gains.values[i].i = initial_gains.values[i].i;
