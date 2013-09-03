@@ -82,7 +82,7 @@ bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     return false;
   }
   
-  nr_of_initalized++;
+  ++nr_of_initalized;
   hdlMakeCurrent( device_handle );
 
   double ws[6];
@@ -109,7 +109,7 @@ bool FalconHapticsDevice::releaseHapticsDevice() {
   hdlMakeCurrent( device_handle );
 
   hdlUninitDevice( device_handle );
-  nr_of_initalized--;
+  --nr_of_initalized;
   if( nr_of_initalized == 0 ) {
     hdlStop();
   }
@@ -185,7 +185,7 @@ HDLServoOpExitCode falconCallbackAsynchronous( void *_data ) {
     FalconThreadInternals::callback_handles_lock.lock();
     for( FalconThreadInternals::CallbackHandleList::iterator i =
          FalconThreadInternals::callback_handles.begin();
-         i != FalconThreadInternals::callback_handles.end(); i++ ) {
+         i != FalconThreadInternals::callback_handles.end(); ++i ) {
       if( (*i).second.first == _data ) {
         FalconHapticsDevice::FalconThread * falc_thread =
           static_cast< FalconHapticsDevice::FalconThread * >(data[2]);
@@ -233,7 +233,7 @@ bool FalconHapticsDevice::FalconThread::
   FalconThreadInternals::callback_handles_lock.lock();
   for( FalconThreadInternals::CallbackHandleList::iterator i =
          FalconThreadInternals::callback_handles.begin();
-       i != FalconThreadInternals::callback_handles.end(); i++ ) {
+       i != FalconThreadInternals::callback_handles.end(); ++i ) {
     if( (*i).first == callback_handle ) {
       free_ids.push_back( callback_handle );
       hdlDestroyServoOp( (*i).second.second );

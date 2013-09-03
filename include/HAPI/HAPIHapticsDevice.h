@@ -189,7 +189,7 @@ namespace HAPI {
         return NOT_INITIALIZED;
       }
       
-      for( unsigned int i = 0; i < haptics_renderers.size(); i++ ) {
+      for( unsigned int i = 0; i < haptics_renderers.size(); ++i ) {
         if( haptics_renderers[i] ) {
           haptics_renderers[i]->releaseRenderer( this );
           haptics_renderers[i]->cleanUpStuff( this );
@@ -340,7 +340,7 @@ namespace HAPI {
       unsigned int i = 0;
       for( HapticEffectVector::const_iterator j =
              tmp_current_force_effects.begin();
-           j != tmp_current_force_effects.end(); j++, i++ )
+           j != tmp_current_force_effects.end(); ++j, ++i )
         if( effect == (*j) )
           break;
 
@@ -348,13 +348,13 @@ namespace HAPI {
         force_effects_to_remove.push_back( make_pair( effect, fade_out_time ));
         for( vector< pair< unsigned int, HAPITime > >::iterator j =
                added_effects_indices.begin();
-             j != added_effects_indices.end(); j++ ) {
+             j != added_effects_indices.end(); ++j ) {
           if( i == (*j).first ) {
             added_effects_indices.erase( j );
             for( vector< pair< unsigned int, HAPITime > >::iterator k =
                    added_effects_indices.begin();
-                 k != added_effects_indices.end(); k++ ) {
-              (*k).first--;
+                 k != added_effects_indices.end(); ++k ) {
+              --((*k).first);
             }
             break;
           }

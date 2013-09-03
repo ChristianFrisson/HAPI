@@ -92,9 +92,9 @@ HAPIFloat ImageInterfaceObject::getSample( Vec3 &tex_coord ) {
     HAPIFloat cy = H3DUtil::H3DCeil( py );
     HAPIFloat cz = H3DUtil::H3DCeil( pz );
 
-    if( cx >= width ) cx--;
-    if( cy >= height ) cy--;
-    if( cz >= depth ) cz--;
+    if( cx >= width ) --cx;
+    if( cy >= height ) --cy;
+    if( cz >= depth ) --cz;
 
     HAPIFloat xd = px - fx;
     HAPIFloat yd = py - fy;
@@ -181,7 +181,7 @@ void ImageInterfaceObject::getElement( void *value, int x, int y, int z ) {
   assert( byte_rem == 0 );
 
   if( byte_rem != 0 ) {
-    bytes_per_pixel++;
+    ++bytes_per_pixel;
   }
 
   memcpy( value, 

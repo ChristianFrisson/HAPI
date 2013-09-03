@@ -204,7 +204,7 @@ FeedbackBufferCollector::endCollecting(
     }
     case( GL_POLYGON_TOKEN ): {
       int nr_vertices =  (int)buffer[i];
-      i++;
+      ++i;
       Vec3 v0, v1, v2; 
       Vec3 tc0, tc1, tc2; 
       if( nr_vertices > 4 ) { 
@@ -235,7 +235,7 @@ FeedbackBufferCollector::endCollecting(
       break;
     }
     case( GL_PASS_THROUGH_TOKEN ): {
-      i++;
+      ++i;
       break;
     }
     };
@@ -298,7 +298,7 @@ FeedbackBufferCollector::endCollecting(
     }
     case( GL_POLYGON_TOKEN ): {
       int nr_vertices =  (int)buffer[i];
-      i++;
+      ++i;
       Vec3 v0, v1, v2; 
       Vec3 tc0, tc1, tc2; 
       if( nr_vertices > 4 ) { 
@@ -328,7 +328,7 @@ FeedbackBufferCollector::endCollecting(
       break;
     }
     case( GL_PASS_THROUGH_TOKEN ): {
-      i++;
+      ++i;
       break;
     }
     };

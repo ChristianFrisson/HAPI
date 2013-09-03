@@ -80,7 +80,7 @@ void DeviceLog::writeLog( const EffectInput &input, HAPITime log_time ) {
   HAPIHapticsDevice::DeviceValues crdv = input.hd->getRawDeviceValues();
   if( binary ) {
     for( LogTypeVector::iterator i = log_type.begin();
-         i != log_type.end(); i++ ) {
+         i != log_type.end(); ++i ) {
       switch( *i ) {
         case TIME: {
           H3DUtil::writeH3DType( log_file, log_time );
@@ -135,7 +135,7 @@ void DeviceLog::writeLog( const EffectInput &input, HAPITime log_time ) {
     }
   } else {
     for( LogTypeVector::iterator i = log_type.begin();
-         i != log_type.end(); i++ ) {
+         i != log_type.end(); ++i ) {
       if( i != log_type.begin() )
         log_file << " ";
       switch( *i ) {
@@ -197,7 +197,7 @@ void DeviceLog::writeLog( const EffectInput &input, HAPITime log_time ) {
 void DeviceLog::writeHeader() {
   if( binary ) {
     for( LogTypeVector::iterator i = log_type.begin();
-         i != log_type.end(); i++ ) {
+         i != log_type.end(); ++i ) {
       switch( *i ) {
         case TIME: {
           H3DUtil::writeH3DType( log_file, "TIME" );
@@ -254,7 +254,7 @@ void DeviceLog::writeHeader() {
     log_file.write( &null_char, sizeof(char) );
   } else {
     for( LogTypeVector::iterator i = log_type.begin();
-         i != log_type.end(); i++ ) {
+         i != log_type.end(); ++i ) {
       if( i != log_type.begin() )
         log_file << " ";
       switch( *i ) {

@@ -170,7 +170,7 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
        setErrorMsg( s.str() );
        return false;
     }
-    dll_references++;
+    ++dll_references;
   }
 
   
@@ -222,7 +222,7 @@ bool HapticMasterDevice::releaseHapticsDevice() {
     SetState(device_handle, FCSSTATE_INITIALISED);
     CloseHapticMaster(device_handle);    
     if( dll_references > 0 ) {
-      dll_references--;
+      --dll_references;
       if( dll_references == 1 )
         H3DUtil::DynamicLibrary::close( dll_handle );
     }

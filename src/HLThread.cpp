@@ -75,7 +75,7 @@ HDCallbackCode HDCALLBACK hdCallbackAsynchronous( void *_data ) {
     HLThreadInternals::callback_handles_lock.lock();
     for( HLThreadInternals::CallbackHandleList::iterator i =
          HLThreadInternals::callback_handles.begin();
-         i != HLThreadInternals::callback_handles.end(); i++ ) {
+         i != HLThreadInternals::callback_handles.end(); ++i ) {
       if( (*i).second.first == _data ) {
         HLThread * hl_thread = static_cast< HLThread * >(data[2]);
         hl_thread->addFreeId( (*i).first );
@@ -126,7 +126,7 @@ bool HLThread::removeAsynchronousCallback( int callback_handle )  {
   HLThreadInternals::callback_handles_lock.lock();
   for( HLThreadInternals::CallbackHandleList::iterator i =
        HLThreadInternals::callback_handles.begin();
-       i != HLThreadInternals::callback_handles.end(); i++ ) {
+       i != HLThreadInternals::callback_handles.end(); ++i ) {
     if( (*i).first == callback_handle ) {
       free_ids.push_back( callback_handle );
       hdUnschedule( (*i).second.second );

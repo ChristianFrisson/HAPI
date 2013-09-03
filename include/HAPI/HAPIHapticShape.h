@@ -506,7 +506,7 @@ namespace HAPI {
     void getRenderOption( T * &option ) {
       for( H3DUtil::AutoPtrVector< HAPIShapeRenderOptions >::const_iterator i =
              options.begin();
-           i != options.end(); i++ ) {
+           i != options.end(); ++i ) {
         T *o = dynamic_cast< T * >( *i );
         if( o ) {
           option = o;

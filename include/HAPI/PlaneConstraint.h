@@ -115,7 +115,7 @@ namespace HAPI {
       }
       
       inline iterator& operator++(void) {
-        if( index != end_value ) index++;
+        if( index != end_value ) ++index;
         if( index == size ) index = end_value;
         return *this;
       }
@@ -164,7 +164,7 @@ namespace HAPI {
       return iterator( iterator::end_value, nr_constraints, this );
     }
     inline void clear() { 
-      for( unsigned int i = 0; i < nr_constraints; i++ )
+      for( unsigned int i = 0; i < nr_constraints; ++i )
         constraints[i].haptic_shape.reset( NULL );
       nr_constraints = 0;
 
@@ -175,7 +175,7 @@ namespace HAPI {
 
     // TODO: implement properly
     inline void insert( iterator pos, iterator s, iterator e ) {
-      for( iterator i = s; i != e; i++ )
+      for( iterator i = s; i != e; ++i )
         push_back( *i );
     }
     
@@ -194,13 +194,13 @@ namespace HAPI {
         // increase reference count of the contained haptic shapes and
         // delete [] old_constraints will call unref on the contained haptic
         // shapes.
-        for( int i = 0; i < old_allocated_constraints; i++ )
+        for( int i = 0; i < old_allocated_constraints; ++i )
           if( old_constraints[i].haptic_shape.get() )
             old_constraints[i].haptic_shape->ref();
         delete[] old_constraints;
       }
       constraints[nr_constraints] = p;
-      nr_constraints++;
+      ++nr_constraints;
     }
 
     inline PlaneConstraint & front() { return constraints[0];}

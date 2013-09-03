@@ -53,7 +53,7 @@ void HaptikHapticsDevice::changeHaptikDevice(
 #else
       UINT32
 #endif
-         i = 0 ; i<haptik.numberOfDevices ; i++) {
+         i = 0 ; i<haptik.numberOfDevices ; ++i) {
       if( haptik.device[i].id == info.id ) {
         index = i;
         break;

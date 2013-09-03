@@ -1229,7 +1229,7 @@ namespace HAPI {
         Vec3 result;
         // for each coordinate axis, if the point coordinate value
         // is outside box, clamp it to the box, else keep it as it is
-        for( int i = 0; i < 3; i++ ) {
+        for( int i = 0; i < 3; ++i ) {
           HAPIFloat v = p[i];
           if( v < min[i] ) v = min[i];
           if( v > max[i] ) v = max[i];

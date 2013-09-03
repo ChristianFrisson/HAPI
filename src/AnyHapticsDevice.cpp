@@ -45,7 +45,7 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   hd.reset( NULL );
   for( list< HapticsDeviceRegistration >::iterator i = 
          registered_devices->begin(); 
-       i != registered_devices->end(); i++ ) {
+       i != registered_devices->end(); ++i ) {
     if( (*i).name != "Any" ) {
 #ifdef WIN32
       /// need to go through list of libs to see if it is even
@@ -53,7 +53,7 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       bool all_libs_ok = true;
       for( list< string >::iterator j = (*i).libs_to_support.begin();
            j != (*i).libs_to_support.end();
-           j++ ) {
+           ++j ) {
         if( H3DUtil::DynamicLibrary::load( *j ) == NULL ) {
           all_libs_ok = false;
           break;

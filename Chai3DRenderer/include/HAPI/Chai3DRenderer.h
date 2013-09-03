@@ -191,7 +191,7 @@ namespace HAPI {
           m_potentialFieldsForceModel = NULL;
         }
 #else
-        for( unsigned int i = 0; i < m_pointForceAlgos.size(); i++ ) {
+        for( unsigned int i = 0; i < m_pointForceAlgos.size(); ++i ) {
           delete m_pointForceAlgos[i];
         }
         m_pointForceAlgos.clear();

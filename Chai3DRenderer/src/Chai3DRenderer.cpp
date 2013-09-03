@@ -193,7 +193,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   new_meshes.clear();
 
   for( HapticShapeVector::const_iterator s = shapes.begin();
-       s != shapes.end(); s++ ) {
+       s != shapes.end(); ++s ) {
     
     HAPIHapticShape *shape = (*s);
     Chai3DSurface *chai3d_surface = 
@@ -217,7 +217,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
         int index = 0;
         for( vector< Collision::Triangle >::iterator i = 
                tri_set->triangles.begin();
-             i != tri_set->triangles.end(); i++ ) {
+             i != tri_set->triangles.end(); ++i ) {
           Vec3 a = transform * (*i).a;
           Vec3 b = transform * (*i).b;
           Vec3 c = transform * (*i).c;
@@ -250,7 +250,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   world->clearAllChildren();
   meshes.clear();
 
-  for( unsigned int i = 0; i < new_meshes.size(); i++ ) {
+  for( unsigned int i = 0; i < new_meshes.size(); ++i ) {
     world->addChild(new_meshes[i]);
   }
   meshes.swap( new_meshes );

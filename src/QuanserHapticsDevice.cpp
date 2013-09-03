@@ -85,7 +85,7 @@ bool QuanserHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     // [calibrate, enable_amps, Fx, Fy, KDx, KDy, KSx, KSy, SSx, SSy, 
     //     checksum_api_w, enable_pos_watch]
     // initialize all of the API inputs to zero
-    for (int i = 0; i < shmem_API_write_num_doubles; i++)
+    for (int i = 0; i < shmem_API_write_num_doubles; ++i)
         write_API_inputs[i] = 0.0;
     // force calibration to be run
     schedule_calibration( true );
@@ -126,7 +126,7 @@ bool QuanserHapticsDevice::releaseHapticsDevice()
     {
         /// clean-up the shared memory
         // reset 'checksum_api_w' in API shmem to 0 
-        for (int i = 0; i < shmem_API_write_num_doubles; i++)
+        for (int i = 0; i < shmem_API_write_num_doubles; ++i)
             write_API_inputs[i] = 0.0;
         // force calibration to be run
         schedule_calibration( true );
@@ -228,7 +228,7 @@ void QuanserHapticsDevice::sendOutput( DeviceOutput &dv,
 
   t_double snd_temp[SND_STREAM_SIZE];
   
-  for (int i = 0; i < SND_STREAM_SIZE; i++)
+  for (int i = 0; i < SND_STREAM_SIZE; ++i)
     snd_temp[i] = 0;
 
   snd_temp[0] = -dv.force.x;

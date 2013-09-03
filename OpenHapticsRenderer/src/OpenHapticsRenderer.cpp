@@ -122,7 +122,7 @@ void OpenHapticsRenderer::initRenderer( HAPIHapticsDevice *hd ) {
       OpenHapticsRenderer::transferContactsAndProxy,
       update_thread_callback_data.get() );
     // Increase the callbacks counter for the data_update_thread.
-    OpenHapticsRenderer::nr_of_data_update_callbacks++;
+    ++OpenHapticsRenderer::nr_of_data_update_callbacks;
   }
 }
 
@@ -151,7 +151,7 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
   // Ugly solution to clean up stuff correctly when the device is removed.
   if( dummy_context ) {
     bool add_dummy = true;
-    for( unsigned int i = 0; i < clean_up_stuff[hd].size(); i++ ) {
+    for( unsigned int i = 0; i < clean_up_stuff[hd].size(); ++i ) {
       OpenHapticsWorkAroundToCleanUpHLContext * temp_ptr = 
         dynamic_cast< OpenHapticsWorkAroundToCleanUpHLContext * >
         ( clean_up_stuff[hd][i] );
@@ -175,7 +175,7 @@ void OpenHapticsRenderer::releaseRenderer( HAPIHapticsDevice *hd ) {
     hlMakeCurrent( (*i).second );
     for( IdMap::iterator j = id_map.begin();
          j != id_map.end();
-         j++ ) {
+         ++j ) {
       HLuint hl_shape_id = (*j).second; 
       hlDeleteShapes( hl_shape_id, 1 );
       removeHLEventCallbacks( hl_shape_id );
@@ -290,7 +290,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   previous_shape_ids.clear();
   for( HapticShapeVector::const_iterator i = shapes.begin();
        i != shapes.end();
-         i++ ) {
+         ++i ) {
     HLuint hl_shape_id = getHLShapeId( *i, hd );
     
     HLShape *hl = dynamic_cast< HLShape * >( *i );
@@ -429,13 +429,13 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   }
 
   for( ShapeIdList::iterator i = previous_shape_ids_copy.begin();
-       i != previous_shape_ids_copy.end(); i++ ) {
+       i != previous_shape_ids_copy.end(); ++i ) {
     HLuint hl_shape_id = id_map[*i];
     removeHLEventCallbacks( hl_shape_id );
     Contacts::iterator to_remove;
     for( to_remove = tmp_contacts.begin();
          to_remove != tmp_contacts.end();
-         to_remove++ ) {
+         ++to_remove ) {
       if( (*to_remove).first->getShapeId() ==
         callback_data[ id_cb_map[*i] ]->shape->getShapeId() ) {
          break;
@@ -495,11 +495,11 @@ HHLRC OpenHapticsRenderer::initHLLayer( HAPIHapticsDevice *hd ) {
       if( restart ) {
         PhantomHapticsDevice::startScheduler();
       }
-      nr_of_context++;
+      ++nr_of_context;
 
       if( !dummy_context ) {
         dummy_context = hlCreateContext( jj );
-        nr_of_context++;
+        ++nr_of_context;
       }
       hlMakeCurrent( context_map[ pd ] );
 
@@ -545,7 +545,7 @@ void HLCALLBACK OpenHapticsRenderer::motionCallback( HLenum event,
   HAPI::Vec3 cn = HAPI::Vec3( n[0], n[1], n[2] );
   HAPI::Vec3 f  = HAPI::Vec3( hlforce[0], hlforce[1], hlforce[2] );
   for( Contacts::iterator i = renderer->tmp_contacts.begin();
-       i != renderer->tmp_contacts.end(); i++ ) {
+       i != renderer->tmp_contacts.end(); ++i ) {
     if( (*i).first->getShapeId() == shape->getShapeId() ) {
       if( (*i).first.get() != shape ) {
         (*i).first.reset( shape );
@@ -599,7 +599,7 @@ void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
 
   Contacts::iterator i;
   for( i = renderer->tmp_contacts.begin();
-       i != renderer->tmp_contacts.end(); i++ ) {
+       i != renderer->tmp_contacts.end(); ++i ) {
     if( (*i).first->getShapeId() == shape->getShapeId() ) {
       to_remove = i;
       break;

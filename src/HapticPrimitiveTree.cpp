@@ -81,7 +81,7 @@ void HapticPrimitiveTree::getTangentSpaceMatrixShape( const Vec3 &point,
       primitives[0]->closestPoint( point, temp_cp, temp_n, temp_n );
       HAPIFloat distance = ( temp_cp - point).lengthSqr();
       HAPIFloat temp_distance;
-      for( unsigned int i = 1; i < primitives.size(); i++ ) {
+      for( unsigned int i = 1; i < primitives.size(); ++i ) {
         primitives[i]->closestPoint( point, temp_cp, temp_n, temp_n );
         temp_distance = (temp_cp - point).lengthSqr();
         if( temp_distance < distance ) {
