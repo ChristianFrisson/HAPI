@@ -62,20 +62,22 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       if( all_libs_ok ) {
 #endif
       HAPIHapticsDevice *device = ((*i).create_func)();
-      if( device->initHapticsDevice( _thread_frequency ) ) {
-        hd.reset( device );
-        hd->device_state = HAPIHapticsDevice::INITIALIZED;
-        setup_haptic_rendering_callback = hd->setup_haptic_rendering_callback;
-        if( !setup_haptic_rendering_callback ) {
-          hd->haptic_rendering_callback_data = this;
-        }
-        if( hd->thread )
-          thread = hd->thread;
-        max_stiffness = hd->getMaxStiffness();
-        break;
-      } else {
-        delete device;
-      }
+			if( device ) { // Device should never be NULL here, but who knows.
+				if( device->initHapticsDevice( _thread_frequency ) ) {
+					hd.reset( device );
+					hd->device_state = HAPIHapticsDevice::INITIALIZED;
+					setup_haptic_rendering_callback = hd->setup_haptic_rendering_callback;
+					if( !setup_haptic_rendering_callback ) {
+						hd->haptic_rendering_callback_data = this;
+					}
+					if( hd->thread )
+						thread = hd->thread;
+					max_stiffness = hd->getMaxStiffness();
+					break;
+				} else {
+					delete device;
+				}
+			}
 #ifdef WIN32
       }
 #endif
