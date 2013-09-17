@@ -37,12 +37,6 @@
 #include <H3DUtil/Threads.h>
 #include <H3DUtil/AutoRefVector.h>
 
-#ifdef HAVE_PROFILER
-#include <H3DUtil/H3DTimer.h>
-#include <H3DUtil/Console.h>
-#include <string>
-#include <sstream>
-#endif
 #include <memory>
 namespace HAPI {
 

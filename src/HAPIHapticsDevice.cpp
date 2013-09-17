@@ -30,6 +30,10 @@
 #include <HAPI/HAPIHapticsDevice.h>
 #include <HAPI/GodObjectRenderer.h>
 
+#ifdef HAVE_PROFILER
+#include <H3DUtil/H3DTimer.h>
+#endif
+
 using namespace HAPI;
 
 HAPIHapticsDevice::local_auto_ptr< 

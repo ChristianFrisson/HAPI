@@ -2105,6 +2105,7 @@ bool LineSegment::lineIntersect( const Vec3 &from,
     result.t = t;
     // TODO:
     result.tex_coord = Vec3();
+		result.face = Collision::FRONT;
     return true;
   }
   return false;
