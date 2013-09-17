@@ -192,10 +192,10 @@ IF( GENERATE_CPACK_PROJECT )
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw29u_${library_name}.lib
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw29ud_${library_name}.lib )
         SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293u_${library_name}_vc_custom.dll
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293u_${library_name}_vc_custom.pdb
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293ud_${library_name}_vc_custom.dll
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw293ud_${library_name}_vc_custom.pdb
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_${library_name}_vc_custom.dll
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_${library_name}_vc_custom.pdb
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295ud_${library_name}_vc_custom.dll
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295ud_${library_name}_vc_custom.pdb
                                )
       ENDFOREACH( library_name )
       SET( wxlibs "" _net _xml )
@@ -208,10 +208,10 @@ IF( GENERATE_CPACK_PROJECT )
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxbase29u${library_name}.lib
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxbase29ud${library_name}.lib )
         SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293u${library_name}_vc_custom.dll
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293u${library_name}_vc_custom.pdb
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293ud${library_name}_vc_custom.dll
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase293ud${library_name}_vc_custom.pdb
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295u${library_name}_vc_custom.dll
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295u${library_name}_vc_custom.pdb
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295ud${library_name}_vc_custom.dll
+                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295ud${library_name}_vc_custom.pdb
                                )
       ENDFOREACH( library_name )
       
