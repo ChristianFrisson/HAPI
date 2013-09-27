@@ -228,6 +228,13 @@ IF(OPENGL_FOUND)
   SET(HAPI_requiredLibs ${HAPI_requiredLibs} ${OPENGL_LIBRARIES} )
 ENDIF(OPENGL_FOUND)
 
+FIND_PACKAGE(H3Dfparser)
+IF(fparser_FOUND)
+  SET(HAVE_FPARSER 1)
+  INCLUDE_DIRECTORIES( ${fparser_INCLUDE_DIRS} )
+  SET(HAPI_requiredLibs ${HAPI_requiredLibs} ${fparser_LIBRARIES} )
+ENDIF(fparser_FOUND)
+
 # The current implementation only have support for Haptic Master on Windows.
 # No use in looking for the libs/dlls on the system since the dlls for
 # haptic master are run-time loaded.

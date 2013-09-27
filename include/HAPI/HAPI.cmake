@@ -69,7 +69,7 @@
 /// Undef if you do not have the fparser library
 /// (http://iki.fi/warp/FunctionParser/) installed.
 /// Required for the ParsedFunction class
-#define HAVE_FPARSER
+#cmakedefine HAVE_FPARSER
 
 /// Undef if you do not have Haptik(www.haptiklibrary.org) installed. 
 /// HaptikDevice will not be usable.

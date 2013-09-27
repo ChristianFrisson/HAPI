@@ -34,7 +34,7 @@
 #ifdef HAVE_FPARSER
 
 // fparser includes
-#include <HAPI/fparser.hh>
+#include <fparser.hh>
 #include <memory>
 
 namespace HAPI {
