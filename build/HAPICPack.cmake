@@ -161,13 +161,16 @@ IF( GENERATE_CPACK_PROJECT )
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/DHD-API/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/chai3d/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/Simball/
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/include/wx/ )
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/include/wx/
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/include/fparser/ )
       SET( EXTERNAL_INCLUDE_INSTALL_PATHS External/include/GL
                                           External/include/DHD-API
                                           External/include/chai3d
                                           External/include/Simball
-                                          External/include/wx )
+                                          External/include/wx
+                                          External/include/fparser )
       SET( EXTERNAL_INCLUDE_IGNORE_PATTERN "((/.svn)|(/CVS))|(/old)"
+                                           "(/.svn)|(/CVS)"
                                            "(/.svn)|(/CVS)"
                                            "(/.svn)|(/CVS)"
                                            "(/.svn)|(/CVS)"
@@ -181,7 +184,9 @@ IF( GENERATE_CPACK_PROJECT )
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/EntactAPI.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/SimballMedicalHID.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/dhdms64.lib
-                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/dhdms.lib )
+                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/dhdms.lib
+                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/fparser.lib
+                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/fparser_d.lib )
       
       SET( wxlibs core adv aui html media propgrid ribbon stc webview xrc gl qa richtext )
       FOREACH( library_name ${wxlibs} )
@@ -245,7 +250,9 @@ IF( GENERATE_CPACK_PROJECT )
                              ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/EntactAPI.dll
                              ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/SimballMedicalHID.dll
                              ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/HapticAPI.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/HapticMasterDriver.dll )
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/HapticMasterDriver.dll
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/fparser.dll
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/fparser_d.dll )
 
     ELSE( EXISTS ${HAPI_CPACK_EXTERNAL_ROOT} )
       MESSAGE( WARNING "HAPI_CPACK_EXTERNAL_ROOT must be set to the External directory used by HAPI in order to package properly." )
