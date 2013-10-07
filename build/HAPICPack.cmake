@@ -407,6 +407,7 @@ IF( GENERATE_CPACK_PROJECT )
                  ${HAPI_SOURCE_DIR}/modules/FindSimballMedical.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindVirtuoseAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindWxWidgetsWin.cmake
+                 ${HAPI_SOURCE_DIR}/modules/InstallHAPIAndExternals.cmake
                  ${HAPI_SOURCE_DIR}/modules/NSIS.InstallOptions.ini.in
                  ${HAPI_SOURCE_DIR}/modules/NSIS.template.in
                  ${HAPI_SOURCE_DIR}/modules/StripAndAddLibraryDirectories.cmake
