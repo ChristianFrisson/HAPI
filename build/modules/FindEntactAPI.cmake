@@ -13,12 +13,22 @@ ELSE( CMAKE_CL_64 )
   SET( LIB "lib32" )
 ENDIF( CMAKE_CL_64 )
 
+SET( ENTACT_INCLUDE_SEARCH_PATHS "" )
+SET( ENTACT_LIB_SEARCH_PATHS "" )
+IF( CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_SYSTEM_VERSION VERSION_GREATER "5.9999" )
+  SET( ENTACT_INCLUDE_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                   $ENV{H3D_ROOT}/../External/include
+                                   ../../External/include
+                                   ${module_file_path}/../../../External/include )
+  SET( ENTACT_LIB_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                               $ENV{H3D_ROOT}/../External/${LIB}
+                               ../../External/${LIB}
+                               ${module_file_path}/../../../External/${LIB} )
+ENDIF( CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_SYSTEM_VERSION VERSION_GREATER "5.9999" )
+
 # Look for the header file.
 FIND_PATH(ENTACTAPI_INCLUDE_DIR NAMES EntactAPI.h 
-                          PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                $ENV{H3D_ROOT}/../External/include
-                                ../../External/include
-                                ${module_file_path}/../../../External/include
+                          PATHS ${ENTACT_INCLUDE_SEARCH_PATHS}
                           DOC "Path in which the file EntactAPI.h is located." )
 MARK_AS_ADVANCED(ENTACTAPI_INCLUDE_DIR)
 
@@ -26,17 +36,11 @@ MARK_AS_ADVANCED(ENTACTAPI_INCLUDE_DIR)
 # Look for the library.
 IF(WIN32)
   FIND_LIBRARY(ENTACTAPI_LIBRARY NAMES EntactAPI 
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                 $ENV{H3D_ROOT}/../External/${LIB}
-                                 ../../External/${LIB}
-                                 ${module_file_path}/../../../External/${LIB}
+                           PATHS ${ENTACT_LIB_SEARCH_PATHS}
                            DOC "Path to EntactAPI.lib library." )
 ELSE(WIN32)
   FIND_LIBRARY(ENTACTAPI_LIBRARY NAMES entact
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                 $ENV{H3D_ROOT}/../External/${LIB}
-                                 ../../External/${LIB}
-                                 ${module_file_path}/../../../External/${LIB}
+                           PATHS ${ENTACT_LIB_SEARCH_PATHS}
                            DOC "Path to EntactAPI library." )
 
 ENDIF(WIN32)
