@@ -296,7 +296,8 @@ IF( HAPI_INCLUDE_DIR AND EXTERNAL_ROOT)
             ENDIF( ${include_length} GREATER ${include_dir_to_check_length} )
           endforeach( include_dir_to_check )
           INSTALL( DIRECTORY ${ext_dir}
-                   DESTINATION ${feature_to_install}${include_file_path_last_part} )
+                   DESTINATION ${feature_to_install}${include_file_path_last_part}
+                   REGEX "(/.svn)|(/CVS)" EXCLUDE )
         endforeach( ext_dir )
       ENDIF( HAPI_INCLUDE_DIRECTORIES_INSTALL )
 
