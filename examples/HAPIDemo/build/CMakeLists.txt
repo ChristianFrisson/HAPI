@@ -89,23 +89,28 @@ ELSE( TARGET HAPI )
   ENDIF(HAPI_FOUND)
 ENDIF( TARGET HAPI )
 
+# TMP_wxWidgets_FOUND is needed in a metarepository build, otherwise if
+# Wxwidgets have been found already then wxWidgets_USE_FILE will not be used
+# properly. On non-Windows systems.
+SET( TMP_wxWidgets_FOUND FALSE )
 IF(WIN32)
   FIND_PACKAGE(wxWidgetsWin)
   IF(wxWidgets_FOUND)
     INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIR} ) 
     SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+    SET( TMP_wxWidgets_FOUND TRUE )
   ENDIF(wxWidgets_FOUND)
 ENDIF(WIN32)
 
-IF(wxWidgets_FOUND)
-ELSE(wxWidgets_FOUND)
+IF(TMP_wxWidgets_FOUND)
+ELSE(TMP_wxWidgets_FOUND)
   SET(wxWidgets_USE_LIBS base core)
   FIND_PACKAGE(wxWidgets REQUIRED)
   IF(wxWidgets_FOUND)
     INCLUDE(${wxWidgets_USE_FILE})
     SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
   ENDIF(wxWidgets_FOUND)
-ENDIF(wxWidgets_FOUND)
+ENDIF(TMP_wxWidgets_FOUND)
 
 ADD_EXECUTABLE(HAPIDemo WIN32 MACOSX_BUNDLE ${HAPIDemo_SRCS})
 
