@@ -396,6 +396,7 @@ IF( GENERATE_CPACK_PROJECT )
                  ${HAPI_SOURCE_DIR}/modules/FindEntactAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindFalconAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindGLUTWin.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindH3Dfparser.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindH3DUtil.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindHAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindHaptik.cmake
