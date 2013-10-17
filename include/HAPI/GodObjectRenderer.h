@@ -65,7 +65,11 @@ namespace HAPI {
 
     /// Get the current position of the proxy.
     inline virtual Vec3 getProxyPosition() {
-      return proxy_position;
+      Vec3 tmp_proxy_pos;
+			proxy_info_lock.lock();
+			tmp_proxy_pos = proxy_position;
+			proxy_info_lock.unlock();
+      return tmp_proxy_pos;
     }
 
     /// Register this renderer to the haptics renderer database.
@@ -124,6 +128,8 @@ namespace HAPI {
     // all intersections that were discovered in the last loop.
     // only valid if any of the haptic shapes we have is dynamic.
     vector< PlaneConstraint > all_constraints;
+
+		H3DUtil::MutexLock proxy_info_lock;
   };
 }
 

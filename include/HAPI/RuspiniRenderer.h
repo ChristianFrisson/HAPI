@@ -65,17 +65,27 @@ namespace HAPI {
 
     /// Get the current position of the proxy.
     inline virtual Vec3 getProxyPosition() {
-      return proxy_position;
+			Vec3 tmp_proxy_pos;
+			proxy_info_lock.lock();
+			tmp_proxy_pos = proxy_position;
+			proxy_info_lock.unlock();
+      return tmp_proxy_pos;
     }
 
     /// Get the current radius of the proxy.
     inline HAPIFloat getProxyRadius() {
-      return proxy_radius;
+			HAPIFloat tmp_proxy_radius;
+			proxy_info_lock.lock();
+			tmp_proxy_radius = proxy_radius;
+			proxy_info_lock.unlock();
+      return tmp_proxy_radius;
     }
 
     /// Set the radius of the proxy.
     inline void setProxyRadius( HAPIFloat r ) {
+			proxy_info_lock.lock();
       proxy_radius = r;
+			proxy_info_lock.unlock();
     }
     
 	/// Always move the proxy when the object that it is in contact with moves.
@@ -141,6 +151,7 @@ namespace HAPI {
     // of the shapes that were in contact during last haptics loop and
     // their transform matrices at the time.
     vector< pair< int, Matrix4 > > last_contact_transforms;
+		H3DUtil::MutexLock proxy_info_lock;
     
   };
 }
