@@ -280,7 +280,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   hlMultMatrixd( m );
 
   hlBeginFrame();
-  // Need previous_shape_ids is used for knowing when to remove and add
+  // previous_shape_ids is used for knowing when to remove and add
   // eventcallbacks to shapes. Only those shapes that are rendered in a
   // specific frame are allowed to have callbacks set up. The reason for this
   // is because of OpenHaptics, see HL API documentation for hlGetShapeDoublev.
