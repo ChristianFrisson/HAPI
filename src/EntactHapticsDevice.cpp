@@ -87,6 +87,11 @@ eapi_device_handle handles[MAX_NR_DEVICES]; // detecting up to 10 attached devic
 
 bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
+  if( !device_registration.libs_can_load ) {
+    setErrorMsg("Error: can not load dll for EntactHapticsDevice, init fail.\n");
+    return false;
+  }
+  
   if( serial_number != -1 || ip_address == "" ) {
 		if( EAPI_initialized == ENTACT_UNINITIALIZED ) {
 			nr_entact_devices = openEAPI( handles, MAX_NR_DEVICES );

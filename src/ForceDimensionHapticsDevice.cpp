@@ -52,6 +52,11 @@ ForceDimensionHapticsDevice::device_registration(
 vector< int > ForceDimensionHapticsDevice::free_dhd_ids;
 int ForceDimensionHapticsDevice::nr_of_connected_dhd_devices = -1;
 bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
+  if( !device_registration.libs_can_load ) {
+    setErrorMsg("Error: can not load dll for ForceDimenstionHapticsDevice, init fail.\n");
+    return false;
+  }
+
   if( nr_of_connected_dhd_devices <= 0 ) {
     nr_of_connected_dhd_devices = dhdGetDeviceCount();
     if( nr_of_connected_dhd_devices <= 0 ) {

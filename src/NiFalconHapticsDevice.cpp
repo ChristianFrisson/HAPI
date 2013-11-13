@@ -89,7 +89,10 @@ NiFalconHapticsDevice::~NiFalconHapticsDevice() {
 }
 
 bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-  
+  if( !device_registration.libs_can_load ) {
+    setErrorMsg("Error: can not load dll for NiFalconHapticsDevice, init fail.\n");
+    return false;
+  }
 #ifdef NIFALCONAPI_LIBUSB
   device->setFalconComm<libnifalcon::FalconCommLibUSB>();
 #else

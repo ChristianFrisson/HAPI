@@ -50,6 +50,11 @@ int SimballHapticsDevice::nr_found_devices = -1;
 int SimballHapticsDevice::nr_initialized_devices = 0;
 
 bool SimballHapticsDevice::initHapticsDevice( int _thread_frequency ) {
+  if( !device_registration.libs_can_load ) {
+    setErrorMsg("Error: can not load dll for SimballHapticsDevice, init fail.\n");
+    return false;
+  }
+
   int nr_devices = -1;
   int error_ms = SBM_Init( nr_devices );
   if( error_ms != SBMError_NoError ) {

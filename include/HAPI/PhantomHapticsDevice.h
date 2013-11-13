@@ -54,7 +54,8 @@ namespace HAPI {
       device_name( _device_name ),
       in_calibration_mode( false ),
       motor_temperatures( 6, 0 ) {
-      hdapi_version = hdGetString( HD_VERSION );
+      // hdGetString() is not safe to be used before initHapticDevice
+      hdapi_version = "not yet initialized"; 
       setup_haptic_rendering_callback = false;
     }
 

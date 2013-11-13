@@ -50,6 +50,11 @@ HaptionHapticsDevice::device_registration(
 
 bool HaptionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
+  if( !device_registration.libs_can_load ) {
+    setErrorMsg("Error: can not load dll for HaptionHapticsDevice, init fail.\n");
+    return false;
+  }
+
   context = virtOpen( ip_address.c_str() );
   if (context == NULL) {
 		int error_code = virtGetErrorCode(NULL);
