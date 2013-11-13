@@ -81,6 +81,13 @@ bool PhantomHapticsDevice::enable_start_scheduler = true;
 int PhantomHapticsDevice::nr_of_scheduled = 0;
 
 bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
+
+  if( !device_registration.libs_can_load ) {
+    setErrorMsg("Error: can not load dll for PhantomHapticsDevice, init fail.\n");
+    return false;
+  }
+
+  hdapi_version = hdGetString( HD_VERSION );
   device_handle = hdInitDevice( device_name == "" ? 
                                 HD_DEFAULT_DEVICE : device_name.c_str() );
   HDErrorInfo error = hdGetError();

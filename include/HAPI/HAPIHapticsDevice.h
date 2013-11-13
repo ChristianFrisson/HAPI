@@ -36,6 +36,8 @@
 #include <HAPI/HAPIForceEffect.h>
 #include <H3DUtil/Threads.h>
 #include <H3DUtil/AutoRefVector.h>
+#include <H3DUtil/DynamicLibrary.h>
+#include <H3DUtil/Console.h>
 
 #include <memory>
 namespace HAPI {
@@ -799,9 +801,20 @@ namespace HAPI {
                                  list< string > _libs_to_support = list<string >() ):
       name( _name ),
       create_func( _create ),
-      libs_to_support( _libs_to_support )
+      libs_to_support( _libs_to_support ),
+      libs_can_load( true )
       {
-        
+#ifdef WIN32
+  /// need to go check if the dll to support this haptic device can be correctly
+  /// loaded
+  list<string>::iterator it = _libs_to_support.begin();
+  for( ; it!= _libs_to_support.end();++it ) {
+    if( !H3DUtil::DynamicLibrary::load(*it) ) {
+      libs_can_load=false;
+      return; // if required lib can not be loaed, do not register this device
+    }
+  }
+#endif
         if( !initialized ) {
           HAPIHapticsDevice::registered_devices.reset( 
             new list< HapticsDeviceRegistration > );
@@ -813,6 +826,7 @@ namespace HAPI {
       string name;
       CreateInstanceFunc create_func;
       list< string > libs_to_support;
+      bool libs_can_load;
     };
 #ifdef __BORLANDC__
     friend struct HapticsDeviceRegistration;
@@ -1022,7 +1036,10 @@ namespace HAPI {
     /// \param dt Time since last call to this function.
     virtual void sendOutput( DeviceOutput &dv,
                              HAPITime dt ) = 0;
-
+    /// Initialize the haptics device, and check if required dll can be correctly
+    /// loaded before the initialization
+    ///
+    //bool initHapticDeviceWithDLLCheck();
     /// Initialize the haptics device.
     /// \param _thread_frequency is the desired haptic frequency. Check
     /// comment for the function initHapticsDevice() for each haptics device

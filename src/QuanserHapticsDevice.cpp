@@ -41,6 +41,10 @@ QuanserHapticsDevice::device_registration(
 
 
 bool QuanserHapticsDevice::initHapticsDevice( int _thread_frequency ) {
+  if( !device_registration.libs_can_load ) {
+    setErrorMsg("Error: can not load dll for QuanserHapticsDevice, init fail.\n");
+    return false;
+  }
   const t_boolean nonblocking         = false;
   const t_int     send_buffer_size    = 80;
   const t_int     receive_buffer_size = 80;
