@@ -30,6 +30,7 @@
 
 
 #include <HAPI/HaptionHapticsDevice.h>
+#include <H3DUtil/DynamicLibrary.h>
 
 #ifdef HAVE_VIRTUOSEAPI
 
@@ -49,12 +50,17 @@ HaptionHapticsDevice::device_registration(
 
 
 bool HaptionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-  
-  if( !device_registration.libs_can_load ) {
-    setErrorMsg("Error: can not load dll for HaptionHapticsDevice, init fail.\n");
-    return false;
+#ifdef WIN32
+  /// need to go check if the dll to support this haptic device can be correctly
+  /// loaded
+  list<string>::iterator it = device_registration.libs_to_support.begin();
+  for( ; it!= device_registration.libs_to_support.end();++it ) {
+    if( !H3DUtil::DynamicLibrary::load(*it) ) {
+      setErrorMsg("Warning: can not load required DLL for "+ device_registration.name+ "device");
+      return false; // if required lib can not be loaed, do not register this device
+    }
   }
-
+#endif
   context = virtOpen( ip_address.c_str() );
   if (context == NULL) {
 		int error_code = virtGetErrorCode(NULL);

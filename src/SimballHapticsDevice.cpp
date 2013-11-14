@@ -29,6 +29,7 @@
 
 
 #include <HAPI/SimballHapticsDevice.h>
+#include <H3DUtil/DynamicLibrary.h>
 
 #ifdef HAVE_SIMBALLMEDICAL_API
 #include <Simball/SimballMedicalHID.h>
@@ -50,11 +51,17 @@ int SimballHapticsDevice::nr_found_devices = -1;
 int SimballHapticsDevice::nr_initialized_devices = 0;
 
 bool SimballHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-  if( !device_registration.libs_can_load ) {
-    setErrorMsg("Error: can not load dll for SimballHapticsDevice, init fail.\n");
-    return false;
+#ifdef WIN32
+  /// need to go check if the dll to support this haptic device can be correctly
+  /// loaded
+  list<string>::iterator it = device_registration.libs_to_support.begin();
+  for( ; it!= device_registration.libs_to_support.end();++it ) {
+    if( !H3DUtil::DynamicLibrary::load(*it) ) {
+      setErrorMsg("Warning: can not load required DLL for "+ device_registration.name+ "device");
+      return false; // if required lib can not be loaed, do not register this device
+    }
   }
-
+#endif
   int nr_devices = -1;
   int error_ms = SBM_Init( nr_devices );
   if( error_ms != SBMError_NoError ) {

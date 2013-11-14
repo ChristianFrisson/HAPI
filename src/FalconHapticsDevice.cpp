@@ -50,7 +50,17 @@ bool FalconHapticsDevice::hdl_started = false;
 int FalconHapticsDevice::nr_of_initalized = 0;
 
 bool FalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-
+#ifdef WIN32
+  /// need to go check if the dll to support this haptic device can be correctly
+  /// loaded
+  list<string>::iterator it = device_registration.libs_to_support.begin();
+  for( ; it!= device_registration.libs_to_support.end();++it ) {
+    if( !H3DUtil::DynamicLibrary::load(*it) ) {
+      setErrorMsg("Warning: can not load required DLL for "+ device_registration.name+ "device");
+      return false; // if required lib can not be loaed, do not register this device
+    }
+  }
+#endif
   if( device_name != "" ) {
     device_handle = hdlInitNamedDevice( device_name.c_str() );
   } else {

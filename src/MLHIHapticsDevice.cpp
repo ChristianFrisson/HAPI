@@ -68,10 +68,6 @@ MLHIHapticsDevice* MLHIHapticsDevice::getDeviceByHandle(
 
 bool MLHIHapticsDevice::initHapticsDevice(int _thread_frequency)
 {
-  if( !device_registration.libs_can_load ) {
-    setErrorMsg("Error: can not load dll for MLHIHapticsDevice, init fail.\n");
-    return false;
-  }
   if( ml_Connect(&device_hdl, server_ip_addr.c_str()) != ML_STATUS_OK )
   {
     stringstream s;
