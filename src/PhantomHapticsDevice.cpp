@@ -29,6 +29,7 @@
 
 
 #include <HAPI/PhantomHapticsDevice.h>
+#include <H3DUtil/DynamicLibrary.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <HAPI/HLThread.h>
@@ -81,12 +82,17 @@ bool PhantomHapticsDevice::enable_start_scheduler = true;
 int PhantomHapticsDevice::nr_of_scheduled = 0;
 
 bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-
-  if( !device_registration.libs_can_load ) {
-    setErrorMsg("Error: can not load dll for PhantomHapticsDevice, init fail.\n");
-    return false;
-  }
-
+  #ifdef WIN32
+    /// need to go check if the dll to support this haptic device can be correctly
+    /// loaded
+    list<string>::iterator it = device_registration.libs_to_support.begin();
+    for( ; it!= device_registration.libs_to_support.end();++it ) {
+      if( !H3DUtil::DynamicLibrary::load(*it) ) {
+        setErrorMsg("Warning: can not load required DLL for "+ device_registration.name+ "device");
+        return false; // if required lib can not be loaed, do not register this device
+      }
+    }
+  #endif
   hdapi_version = hdGetString( HD_VERSION );
   device_handle = hdInitDevice( device_name == "" ? 
                                 HD_DEFAULT_DEVICE : device_name.c_str() );

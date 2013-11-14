@@ -30,6 +30,7 @@
 
 
 #include <HAPI/ForceDimensionHapticsDevice.h>
+#include <H3DUtil/DynamicLibrary.h>
 
 #ifdef HAVE_DHDAPI
 #include <sstream>
@@ -52,11 +53,17 @@ ForceDimensionHapticsDevice::device_registration(
 vector< int > ForceDimensionHapticsDevice::free_dhd_ids;
 int ForceDimensionHapticsDevice::nr_of_connected_dhd_devices = -1;
 bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-  if( !device_registration.libs_can_load ) {
-    setErrorMsg("Error: can not load dll for ForceDimenstionHapticsDevice, init fail.\n");
-    return false;
+#ifdef WIN32
+  /// need to go check if the dll to support this haptic device can be correctly
+  /// loaded
+  list<string>::iterator it = device_registration.libs_to_support.begin();
+  for( ; it!= device_registration.libs_to_support.end();++it ) {
+    if( !H3DUtil::DynamicLibrary::load(*it) ) {
+      setErrorMsg("Warning: can not load required DLL for "+ device_registration.name+ "device");
+      return false; // if required lib can not be loaed, do not register this device
+    }
   }
-
+#endif
   if( nr_of_connected_dhd_devices <= 0 ) {
     nr_of_connected_dhd_devices = dhdGetDeviceCount();
     if( nr_of_connected_dhd_devices <= 0 ) {
