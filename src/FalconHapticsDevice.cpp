@@ -29,6 +29,7 @@
 
 
 #include <HAPI/FalconHapticsDevice.h>
+#include <H3DUtil/DynamicLibrary.h>
 
 #ifdef HAVE_FALCONAPI
 
