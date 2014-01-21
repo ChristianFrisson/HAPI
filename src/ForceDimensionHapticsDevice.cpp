@@ -93,6 +93,8 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     return false;
   }
   free_dhd_ids.pop_back();
+  
+  dhdEnableForce( DHD_ON, device_id );
 
   com_thread = 
     new H3DUtil::PeriodicThread( H3DUtil::ThreadBase::HIGH_PRIORITY, 1000 );
