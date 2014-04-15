@@ -30,7 +30,7 @@ SET( OPENHAPTICS_LIBRARY_DIRECTORIES $ENV{3DTOUCH_BASE}/lib        # OpenHaptics
                               $ENV{OH_SDK_BASE}/lib/${LIB}/ReleaseAcademicEdition
                               "${program_files_path}/SensAble/3DTouch/lib"        # OpenHaptics 2.0
                               "${program_files_path}/SensAble/3DTouch/lib/${LIB}" # OpenHaptics 3.0
-															"/usr/lib64" )
+                              "/usr/lib64" )
 
 # TODO: Add conditional checking for x64 system
 # Look for the library.
@@ -52,7 +52,7 @@ FIND_LIBRARY(OPENHAPTICS_HDU_LIBRARY NAMES HDU
                                 $ENV{OH_SDK_BASE}/utilities/lib/${LIB}/Release  # OpenHaptics 3.0
                                 "${program_files_path}/SensAble/3DTouch/utilities/lib"        # OpenHaptics 2.0
                                 "${program_files_path}/SensAble/3DTouch/utilities/lib/${LIB}/Release"  # OpenHaptics 3.0
-															  "/usr/lib64"                                
+                                "/usr/lib64"
                          DOC "Path to hdu library." )
 MARK_AS_ADVANCED(OPENHAPTICS_HDU_LIBRARY)
 

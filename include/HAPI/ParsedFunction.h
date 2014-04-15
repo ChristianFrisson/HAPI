@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -32,10 +32,8 @@
 #include <HAPI/HAPIFunctionObject.h>
 
 #ifdef HAVE_FPARSER
-
-// fparser includes
-#include <fparser.hh>
-#include <memory>
+// Forward declare
+class FunctionParser;
 
 namespace HAPI {
   /// \ingroup Others
@@ -132,6 +130,9 @@ namespace HAPI {
     /// Constructor.
     ParsedFunction();
 
+    /// Destructor
+    ~ParsedFunction();
+
     /// Set the function to use.
     /// function is a string specifying the function, e.g. 
     /// "sin(x)" or "x+y"
@@ -155,14 +156,14 @@ namespace HAPI {
 
     /// Evaluate the function. 
     /// \param input is a pointer to the input values of the function to
-		/// evaluate.
+    /// evaluate.
     virtual HAPIFloat evaluate( HAPIFloat *input );
 
   protected:
     bool have_valid_function;
     string function_string;
     string params_string;
-    auto_ptr< FunctionParser > fparser;
+    FunctionParser *fparser;
   };
 }
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -66,9 +66,9 @@ namespace HAPI {
     /// Get the current position of the proxy.
     inline virtual Vec3 getProxyPosition() {
       Vec3 tmp_proxy_pos;
-			proxy_info_lock.lock();
-			tmp_proxy_pos = proxy_position;
-			proxy_info_lock.unlock();
+      proxy_info_lock.lock();
+      tmp_proxy_pos = proxy_position;
+      proxy_info_lock.unlock();
       return tmp_proxy_pos;
     }
 
@@ -129,7 +129,7 @@ namespace HAPI {
     // only valid if any of the haptic shapes we have is dynamic.
     vector< PlaneConstraint > all_constraints;
 
-		H3DUtil::MutexLock proxy_info_lock;
+    H3DUtil::MutexLock proxy_info_lock;
   };
 }
 

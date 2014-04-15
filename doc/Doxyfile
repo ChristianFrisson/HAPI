@@ -1639,6 +1639,7 @@ PREDEFINED             = H3D_WINDOWS:=1 \
                          HAVE_FREEIMAGE:=1 \
                          HAVE_TEEM:=1 \
                          HAVE_DCMTK:=1 \
+                         HAVE_PROFILER:=1 \
                          HAVE_OPENHAPTICS:=1 \
                          HAVE_CHAI3D:=1 \
                          CHAI3D_VERSION_2_0:=1 \

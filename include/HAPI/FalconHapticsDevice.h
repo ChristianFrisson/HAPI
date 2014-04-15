@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -180,9 +180,9 @@ namespace HAPI {
     /// Releases all resources allocated in initHapticsDevice. 
     virtual bool releaseHapticsDevice();
 
-		// Internal function that handles HDAL errors by translating
-		// error code to string and calling the ErrorHandler.
-		void checkIfHDALError();
+    // Internal function that handles HDAL errors by translating
+    // error code to string and calling the ErrorHandler.
+    void checkIfHDALError();
 
     /// The device name for this device.
     string device_name;

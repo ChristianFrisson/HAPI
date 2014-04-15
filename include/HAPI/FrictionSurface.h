@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -56,9 +56,9 @@ namespace HAPI {
     /// Moves the proxy along the surface in the direction of the
     /// probe. The friction parameters limit the movement and can
     /// sometimes stop the proxy from being moved at all.
-		/// \param contact_info Contains information about the contact. The
-		/// function must set the proxy movement by calling setLocalProxyMovement
-		/// function.
+    /// \param contact_info Contains information about the contact. The
+    /// function must set the proxy movement by calling setLocalProxyMovement
+    /// function.
     virtual void getProxyMovement( ContactInfo &contact_info );
 
     /// Calculate a force from the probe towards the proxy.

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -41,10 +41,10 @@ namespace HAPI {
   class HAPI_API HapticPrimitive: public HAPIHapticShape {
   public:
     /// Constructor.
-		/// \param _transform The transformation from local to global space.
-		/// \param _primitive A GeometryPrimitive that contains collision functions
-		/// used by this shape. Setting a GeometryPrimitive sphere means that this
-		/// shape behaves like a sphere.
+    /// \param _transform The transformation from local to global space.
+    /// \param _primitive A GeometryPrimitive that contains collision functions
+    /// used by this shape. Setting a GeometryPrimitive sphere means that this
+    /// shape behaves like a sphere.
     /// \param _surface The surface of the HAPIHapticShape.
     /// \param _touchable_face Tells which face (side) of the shape that
     /// should be possible to touch.
@@ -69,10 +69,10 @@ namespace HAPI {
       primitive( _primitive ) {}
 
     /// Constructor.
-		/// \param _primitive A GeometryPrimitive that contains collision functions
-		/// used by this shape. Setting a GeometryPrimitive sphere means that this
-		/// shape behaves like a sphere.
-		/// \param _surface The surface of the HAPIHapticShape.
+    /// \param _primitive A GeometryPrimitive that contains collision functions
+    /// used by this shape. Setting a GeometryPrimitive sphere means that this
+    /// shape behaves like a sphere.
+    /// \param _surface The surface of the HAPIHapticShape.
     /// \param _touchable_face Tells which face (side) of the shape that
     /// should be possible to touch.
     /// \param _userdata Extra data supplied by the user. HAPIHapticShape

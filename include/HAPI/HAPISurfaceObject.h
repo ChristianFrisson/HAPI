@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -397,9 +397,9 @@ namespace HAPI {
     /// setLocalProxyMovement function. During the 
     /// call to this function the origin of the local coordinate system is
     /// the proxy position/contact point.
-		/// \param contact_info Contains information about the contact. The
-		/// function must set the proxy movement by calling setLocalProxyMovement
-		/// function.
+    /// \param contact_info Contains information about the contact. The
+    /// function must set the proxy movement by calling setLocalProxyMovement
+    /// function.
     virtual void getProxyMovement( ContactInfo &contact_info ) {}
 
     /// This function should be overridden by all subclasses. It determines

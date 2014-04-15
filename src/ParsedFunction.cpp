@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -32,12 +32,21 @@
 #ifdef HAVE_FPARSER
 // H3DUtil include
 #include <H3DUtil/Console.h>
+// fparser includes
+#include <fparser.hh>
 
 using namespace HAPI;
 
 ParsedFunction::ParsedFunction():
   have_valid_function( false ),
   fparser( new FunctionParser ) {
+}
+
+ParsedFunction::~ParsedFunction() {
+  if( fparser ) {
+    delete fparser;
+    fparser = NULL;
+  }
 }
 
 bool ParsedFunction::setFunctionString( const string &function,

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -39,7 +39,11 @@
 using namespace HAPI;
 
 namespace ForceDimensionHapticsDeviceInternal {
+#ifdef H3D_WIN64
+  string libs_array[1] = {"dhd64.dll"};
+#else
   string libs_array[1] = {"dhd.dll"};
+#endif
   list< string > force_dimension_libs(libs_array, libs_array + 1 );
 }
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -43,7 +43,7 @@ bool HapticTriangleSet::lineIntersectShape( const Vec3 &from,
   for( vector< Collision::Triangle >::iterator i = triangles.begin();
        i != triangles.end(); ++i ) {
     Collision::Triangle &t = (*i);
-    if( t.lineIntersect( from, to, closest_intersection, face ) )	{
+    if( t.lineIntersect( from, to, closest_intersection, face ) ) {
       Vec3 v = closest_intersection.point - from;
       HAPIFloat distance_sqr = v * v;
        

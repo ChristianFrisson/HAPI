@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -70,9 +70,9 @@ namespace HAPI {
       return e;
     }
 
-		virtual void setErrorHandler( ErrorHandler *_error_handler ) {
+    virtual void setErrorHandler( ErrorHandler *_error_handler ) {
       error_handler.reset( _error_handler );
-			if( hd.get() ) hd->setErrorHandler( _error_handler );
+      if( hd.get() ) hd->setErrorHandler( _error_handler );
     }
 
     /// Register this renderer to the haptics renderer database.

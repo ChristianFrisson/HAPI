@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -40,22 +40,22 @@ namespace HAPI {
   /// \ingroup HapticsDevices
   /// \class EntactHapticsDevice
   /// \brief Interface to all haptics devices from Entact.
-	/// Note that all EntactHapticsDevices in one application have to
-	/// use the same way to connect. Either serial number for all, or ip
-	/// address for all.
+  /// Note that all EntactHapticsDevices in one application have to
+  /// use the same way to connect. Either serial number for all, or ip
+  /// address for all.
   class HAPI_API EntactHapticsDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.
     /// \param _serial_number The serial number is the serial number of
-		/// the Entact device to use. Only the Entact device with the given
-		/// serial number will be initialized. If -1 any available Entact device
-		/// will be used. All EntactHapticsDevices in one application have to
-		/// use the same way to connect. Either serial number for all, or ip
-		/// address for all.
-		/// \param _ip_address The ip address of the device to initialize. Only used if not empty
-		/// and serial number is -1.
+    /// the Entact device to use. Only the Entact device with the given
+    /// serial number will be initialized. If -1 any available Entact device
+    /// will be used. All EntactHapticsDevices in one application have to
+    /// use the same way to connect. Either serial number for all, or ip
+    /// address for all.
+    /// \param _ip_address The ip address of the device to initialize. Only used if not empty
+    /// and serial number is -1.
     EntactHapticsDevice( int _serial_number = -1,
-												 string _ip_address = "" );
+                         string _ip_address = "" );
 
     /// Destructor.
     virtual ~EntactHapticsDevice();
@@ -127,8 +127,8 @@ namespace HAPI {
     /// The serial number of the device
     int serial_number;
 
-		/// The ip adress of the device. Only used if serial number is -1.
-		string ip_address;
+    /// The ip adress of the device. Only used if serial number is -1.
+    string ip_address;
 
     /// The nr of EntactHapticsDevice class instances that are currently
     /// in use.
@@ -138,11 +138,11 @@ namespace HAPI {
     /// valid if EAPI_initialized is not UNINITIALIZED.
     static int nr_entact_devices;
 
-		typedef enum {
-			ENTACT_UNINITIALIZED = 0,
-			ENTACT_SERIAL_NUMBER = 1,
-			ENTACT_IP_ADDRESS = 2
-		} EAPIInitializedStyle;
+    typedef enum {
+      ENTACT_UNINITIALIZED = 0,
+      ENTACT_SERIAL_NUMBER = 1,
+      ENTACT_IP_ADDRESS = 2
+    } EAPIInitializedStyle;
 
     /// Flag to indicate of the EAPI used to control Entact devices
     /// has been initialized and in what way since only one way is allowed.

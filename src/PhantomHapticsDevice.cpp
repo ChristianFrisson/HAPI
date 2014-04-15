@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -183,11 +183,11 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   thread = hl_thread;
   ++nr_of_scheduled;
   if( !scheduler_started ) {
-		// Just making sure that no other calls between the last check and this one
-		// generated any errors.
-		error = hdGetError();
-		if( HD_DEVICE_ERROR( error ) ) {
-			stringstream s;
+    // Just making sure that no other calls between the last check and this one
+    // generated any errors.
+    error = hdGetError();
+    if( HD_DEVICE_ERROR( error ) ) {
+      stringstream s;
       if( device_name == "" )
         s << "Could not init default Phantom device. ";
       else
@@ -197,7 +197,7 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       s << ". Internal error code: " << error.internalErrorCode;
       setErrorMsg( s.str() );
       return false;
-		}
+    }
     hdSetSchedulerRate( (HDulong)_thread_frequency );
     // Need to catch the error that might occur from trying to set the
     // scheduler rate to an invalid value. According to OpenHaptics reference
