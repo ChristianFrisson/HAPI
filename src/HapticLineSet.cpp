@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -48,7 +48,7 @@ bool HapticLineSet::lineIntersectShape( const Vec3 &from,
   HAPIFloat min_d2;
   for( unsigned int i = 0; i < lines.size(); ++i ) {
     Collision::LineSegment &l = lines[i];
-    if( l.lineIntersect( from, to, closest_intersection, face ) )	{
+    if( l.lineIntersect( from, to, closest_intersection, face ) ) {
       Vec3 v = closest_intersection.point - from;
       HAPIFloat distance_sqr = v * v;
        

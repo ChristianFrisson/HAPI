@@ -26,12 +26,18 @@ FIND_PATH( GLUT_INCLUDE_DIR NAMES GL/glut.h
            DOC "Path in which the file GL/glut.h is located." )
 MARK_AS_ADVANCED(GLUT_INCLUDE_DIR)
 
+SET( GLUT_LIBRARY_NAMES freeglut glut32 )
+IF( WIN32 AND PREFER_FREEGLUT_STATIC_LIBRARIES )
+SET( GLUT_LIBRARY_NAMES freeglut_static )
+ENDIF( WIN32 AND PREFER_FREEGLUT_STATIC_LIBRARIES )
+
 # Look for the library.
-FIND_LIBRARY( GLUT_LIBRARY NAMES  freeglut glut32
+FIND_LIBRARY( GLUT_LIBRARY NAMES  ${GLUT_LIBRARY_NAMES}
               PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
                     $ENV{H3D_ROOT}/../External/${LIB}
                     ../../External/${LIB}
                     ${module_file_path}/../../../External/${LIB}
+                    ${module_file_path}/../../../External/${LIB}/static
               DOC "Path to glut32 library." )
 MARK_AS_ADVANCED(GLUT_LIBRARY)
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -470,12 +470,12 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   // get the current device values
   HAPIHapticsDevice::DeviceValues input = hd->getDeviceValues();
 
-	proxy_info_lock.lock();
+  proxy_info_lock.lock();
   if( proxy_position == GodObjectRendererConstants::UNINITIALIZED_PROXY_POS ) {
     proxy_position = input.position;
   }
   Vec3 proxy_pos = proxy_position;
-	proxy_info_lock.unlock();
+  proxy_info_lock.unlock();
 
   Vec3 moved_proxy_pos = proxy_pos;
 
@@ -637,10 +637,10 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     new_force = contact.force_global;
   }
 
-	output.force = new_force;
-	proxy_info_lock.lock();
+  output.force = new_force;
+  proxy_info_lock.lock();
   proxy_position = new_proxy_pos;
-	proxy_info_lock.unlock();
+  proxy_info_lock.unlock();
   contacts_lock.lock();
   contacts.swap( tmp_contacts );
   contacts_lock.unlock();

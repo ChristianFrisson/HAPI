@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -47,7 +47,7 @@ namespace HAPI {
   /// This renderer allows for variable proxy radius, i.e. a sphere proxy.
   class HAPI_API RuspiniRenderer: public HAPIProxyBasedRenderer {
   public:
-	  typedef Collision::CollisionObject::Constraints Constraints;
+    typedef Collision::CollisionObject::Constraints Constraints;
 
     /// Constructor.
     RuspiniRenderer( HAPIFloat _proxy_radius = 0.0025,
@@ -65,30 +65,30 @@ namespace HAPI {
 
     /// Get the current position of the proxy.
     inline virtual Vec3 getProxyPosition() {
-			Vec3 tmp_proxy_pos;
-			proxy_info_lock.lock();
-			tmp_proxy_pos = proxy_position;
-			proxy_info_lock.unlock();
+      Vec3 tmp_proxy_pos;
+      proxy_info_lock.lock();
+      tmp_proxy_pos = proxy_position;
+      proxy_info_lock.unlock();
       return tmp_proxy_pos;
     }
 
     /// Get the current radius of the proxy.
     inline HAPIFloat getProxyRadius() {
-			HAPIFloat tmp_proxy_radius;
-			proxy_info_lock.lock();
-			tmp_proxy_radius = proxy_radius;
-			proxy_info_lock.unlock();
+      HAPIFloat tmp_proxy_radius;
+      proxy_info_lock.lock();
+      tmp_proxy_radius = proxy_radius;
+      proxy_info_lock.unlock();
       return tmp_proxy_radius;
     }
 
     /// Set the radius of the proxy.
     inline void setProxyRadius( HAPIFloat r ) {
-			proxy_info_lock.lock();
+      proxy_info_lock.lock();
       proxy_radius = r;
-			proxy_info_lock.unlock();
+      proxy_info_lock.unlock();
     }
     
-	/// Always move the proxy when the object that it is in contact with moves.
+  /// Always move the proxy when the object that it is in contact with moves.
   ///
   /// Usually the proxy is only moved with the object if the object is 
   /// moving towards the proxy.
@@ -102,8 +102,8 @@ namespace HAPI {
   /// may fall through a surface where objects intersect.
   ///
   inline void setAlwaysFollowSurface( bool a ) {
-		alwaysFollowSurface = a;
-	}
+    alwaysFollowSurface = a;
+  }
 
     /// Register this renderer to the haptics renderer database.
     static HapticsRendererRegistration renderer_registration;
@@ -151,7 +151,7 @@ namespace HAPI {
     // of the shapes that were in contact during last haptics loop and
     // their transform matrices at the time.
     vector< pair< int, Matrix4 > > last_contact_transforms;
-		H3DUtil::MutexLock proxy_info_lock;
+    H3DUtil::MutexLock proxy_info_lock;
     
   };
 }

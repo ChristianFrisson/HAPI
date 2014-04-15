@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -79,7 +79,7 @@ namespace HAPI {
     /// the surface.
     /// \param data contains a pointer to the DepthMapSurface calling this
     /// function.
-		/// \returns A calculated depth that is somewhere between 0 and max_depth.
+    /// \returns A calculated depth that is somewhere between 0 and max_depth.
     static inline HAPIFloat scaleDepth( const Vec2 &local_point, void *data ) {
       // The local point needs to be transformed into coordinate space
       // of the shape. Otherwise there will be wrong depth values.

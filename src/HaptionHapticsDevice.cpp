@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -63,13 +63,13 @@ bool HaptionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 #endif
   context = virtOpen( ip_address.c_str() );
   if (context == NULL) {
-		int error_code = virtGetErrorCode(NULL);
+    int error_code = virtGetErrorCode(NULL);
     stringstream s;
     s << "Warning: Failed to open Virtuose device.";
-		if( error_code != VIRT_E_VIRTUOSE_DLL_NOT_FOUND )
-			s << " Error: " << virtGetErrorMessage(error_code) << endl;
-		else
-			s << " Could not load library.";
+    if( error_code != VIRT_E_VIRTUOSE_DLL_NOT_FOUND )
+      s << " Error: " << virtGetErrorMessage(error_code) << endl;
+    else
+      s << " Could not load library.";
     setErrorMsg( s.str() );
     return false;
   }

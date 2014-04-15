@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -2105,7 +2105,7 @@ bool LineSegment::lineIntersect( const Vec3 &from,
     result.t = t;
     // TODO:
     result.tex_coord = Vec3();
-		result.face = Collision::FRONT;
+    result.face = Collision::FRONT;
     return true;
   }
   return false;

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -62,22 +62,22 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       if( all_libs_ok ) {
 #endif
       HAPIHapticsDevice *device = ((*i).create_func)();
-			if( device ) { // Device should never be NULL here, but who knows.
-				if( device->initHapticsDevice( _thread_frequency ) ) {
-					hd.reset( device );
-					hd->device_state = HAPIHapticsDevice::INITIALIZED;
-					setup_haptic_rendering_callback = hd->setup_haptic_rendering_callback;
-					if( !setup_haptic_rendering_callback ) {
-						hd->haptic_rendering_callback_data = this;
-					}
-					if( hd->thread )
-						thread = hd->thread;
-					max_stiffness = hd->getMaxStiffness();
-					break;
-				} else {
-					delete device;
-				}
-			}
+      if( device ) { // Device should never be NULL here, but who knows.
+        if( device->initHapticsDevice( _thread_frequency ) ) {
+          hd.reset( device );
+          hd->device_state = HAPIHapticsDevice::INITIALIZED;
+          setup_haptic_rendering_callback = hd->setup_haptic_rendering_callback;
+          if( !setup_haptic_rendering_callback ) {
+            hd->haptic_rendering_callback_data = this;
+          }
+          if( hd->thread )
+            thread = hd->thread;
+          max_stiffness = hd->getMaxStiffness();
+          break;
+        } else {
+          delete device;
+        }
+      }
 #ifdef WIN32
       }
 #endif
@@ -91,7 +91,7 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     setErrorMsg( s.str() );
     return false;
   } else {
-		hd->setErrorHandler( error_handler.get() );
+    hd->setErrorHandler( error_handler.get() );
     return true;
   }
 }

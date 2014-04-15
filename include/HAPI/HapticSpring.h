@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -45,9 +45,9 @@ namespace HAPI {
       position( Vec3( 0, 0, 0 ) ),
       spring_constant( 0 ),
       damping( 0 ),
-			first_time( true ),
-			step_length( 0 ),
-			position_interpolation( 1 ) { }
+      first_time( true ),
+      step_length( 0 ),
+      position_interpolation( 1 ) { }
     
     /// Constructor
     HapticSpring( const Vec3 &_position,
@@ -56,7 +56,7 @@ namespace HAPI {
     HapticSpring( const Vec3 &_position,
                   HAPIFloat _spring_constant,
                   HAPIFloat _damping,
-									HAPIFloat _position_interpolation = 1 );
+                  HAPIFloat _position_interpolation = 1 );
     
     /// The force of the EffectOutput will be a force from the position of
     /// the haptics device to the position of the HapticSpring. 
@@ -79,13 +79,13 @@ namespace HAPI {
       spring_constant = _sc;
     }
 
-		/// Set position_interpolation constant
+    /// Set position_interpolation constant
     inline void setPositionInterpolation( HAPIFloat _pi ) {
       position_interpolation = _pi;
-			if( position_interpolation < 0 )
-				position_interpolation = 0;
-			else if( position_interpolation > 1 )
-				position_interpolation = 1;
+      if( position_interpolation < 0 )
+        position_interpolation = 0;
+      else if( position_interpolation > 1 )
+        position_interpolation = 1;
     }
 
     /// Get position
@@ -113,7 +113,7 @@ namespace HAPI {
       return force;
     }
 
-		/// Get position_interpolation.
+    /// Get position_interpolation.
     inline HAPIFloat getPositionInterpolation() {
       return position_interpolation;
     }
@@ -121,7 +121,7 @@ namespace HAPI {
   protected:
     Vec3 force, position, interpolated_position, last_set_position;
     HAPIFloat spring_constant, damping, step_length, position_interpolation;
-		bool first_time;
+    bool first_time;
   };
 }
 

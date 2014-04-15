@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -134,7 +134,7 @@ bool FalconHapticsDevice::releaseHapticsDevice() {
 
 void FalconHapticsDevice::updateDeviceValues( DeviceValues &dv,
                                               HAPITime dt ) {
-	checkIfHDALError();
+  checkIfHDALError();
  
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
   hdlMakeCurrent( device_handle );
@@ -163,7 +163,7 @@ void FalconHapticsDevice::sendOutput( DeviceOutput &dv,
   v[2] = dv.force.z;
   hdlSetToolForce( v ); 
 
-	checkIfHDALError();
+  checkIfHDALError();
 }
 
 namespace FalconThreadInternals {
@@ -289,74 +289,74 @@ void FalconHapticsDevice::FalconThread::setActive( bool _active ) {
 }
 
 void FalconHapticsDevice::checkIfHDALError() {
-	HDLError error;
+  HDLError error;
   error = hdlGetError();
   if ( error != HDL_NO_ERROR ) {
     // TODO: Verify that error handling is working. Never caught any error
     // here. 
-		if( error_handler.get() ) {
-			string error_string = "";
-			switch (error) {
-				case HDL_ERROR_INTERNAL: {
-					error_string = "HDAL internal error.";
-					break;
-				}
-				case HDL_ERROR_STACK_OVERFLOW: {
-					error_string = "Overflow of error stack.";
-					break;
-				}
-				case HDL_SERVO_START_ERROR: {
-					error_string = "Could not start servo thread.";
-					break;
-				}
-				// The following error codes are all initializations errors and
-				// should therefore never happen here, but we put them here just
-				// 
-				case HDL_ERROR_INIT_FAILED: {
-					error_string = "Device initialization error.";
-					break;
-				}
-				case HDL_INIT_DEVICE_ALREADY_INITED: {
-					error_string = "Device already initalized.";
-					break;
-				}
-				case HDL_INIT_DEVICE_FAILURE: {
-					error_string = "Failed to initalize device.";
-					break;
-				}
-				case HDL_INIT_DEVICE_NOT_CONNECTED: {
-					error_string = "Requested device not connected.";
-					break;
-				}
-				case HDL_INIT_DLL_LOAD_ERROR: {
-					error_string = "Could not load driver DLL.";
-					break;
-				}
-				case HDL_INIT_ERROR_MASK: {
-					error_string = "Mask for all initialization errors.";
-					break;
-				}
-				case HDL_INIT_INI_DLL_STRING_NOT_FOUND: {
-					error_string = "No DLL name in configuration file.";
-					break;
-				}
-				case HDL_INIT_INI_MANUFACTURER_NAME_STRING_NOT_FOUND: {
-					error_string = "No MANUFACTURER_NAME value in configuration file.";
-					break;
-				}
-				case HDL_INIT_INI_NOT_FOUND: {
-					error_string = "Could not find configuration file.";
-					break;
-				}
-				default: {
-					error_string = "No string for this error, check error code.";
-				}
-			}
+    if( error_handler.get() ) {
+      string error_string = "";
+      switch (error) {
+        case HDL_ERROR_INTERNAL: {
+          error_string = "HDAL internal error.";
+          break;
+        }
+        case HDL_ERROR_STACK_OVERFLOW: {
+          error_string = "Overflow of error stack.";
+          break;
+        }
+        case HDL_SERVO_START_ERROR: {
+          error_string = "Could not start servo thread.";
+          break;
+        }
+        // The following error codes are all initializations errors and
+        // should therefore never happen here, but we put them here just
+        // 
+        case HDL_ERROR_INIT_FAILED: {
+          error_string = "Device initialization error.";
+          break;
+        }
+        case HDL_INIT_DEVICE_ALREADY_INITED: {
+          error_string = "Device already initalized.";
+          break;
+        }
+        case HDL_INIT_DEVICE_FAILURE: {
+          error_string = "Failed to initalize device.";
+          break;
+        }
+        case HDL_INIT_DEVICE_NOT_CONNECTED: {
+          error_string = "Requested device not connected.";
+          break;
+        }
+        case HDL_INIT_DLL_LOAD_ERROR: {
+          error_string = "Could not load driver DLL.";
+          break;
+        }
+        case HDL_INIT_ERROR_MASK: {
+          error_string = "Mask for all initialization errors.";
+          break;
+        }
+        case HDL_INIT_INI_DLL_STRING_NOT_FOUND: {
+          error_string = "No DLL name in configuration file.";
+          break;
+        }
+        case HDL_INIT_INI_MANUFACTURER_NAME_STRING_NOT_FOUND: {
+          error_string = "No MANUFACTURER_NAME value in configuration file.";
+          break;
+        }
+        case HDL_INIT_INI_NOT_FOUND: {
+          error_string = "Could not find configuration file.";
+          break;
+        }
+        default: {
+          error_string = "No string for this error, check error code.";
+        }
+      }
       error_handler->handleError( this,
                                   error,
                                   error_string );
     }
-	}
+  }
 }
 
 

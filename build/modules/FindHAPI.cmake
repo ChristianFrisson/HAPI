@@ -129,6 +129,7 @@ IF( HAVE_HAPI_LIBRARY AND HAPI_INCLUDE_DIR )
                                PATHS $ENV{H3D_ROOT}/../HAPI/${renderer_name}/include
                                      ../../HAPI/${renderer_name}/include
                                      ${module_file_path}/../../../HAPI/${renderer_name}/include
+                                     ${HAPI_INCLUDE_DIR}/../${renderer_name}/include
                                DOC "Path in which the file HAPI/${renderer_name}.h is located." )
     MARK_AS_ADVANCED(HAPI_${renderer_name}_INCLUDE_DIR)
 

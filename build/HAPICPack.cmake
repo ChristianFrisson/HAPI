@@ -191,32 +191,29 @@ IF( GENERATE_CPACK_PROJECT )
       SET( wxlibs core adv aui html media propgrid ribbon stc webview xrc gl qa richtext )
       FOREACH( library_name ${wxlibs} )
         SET( EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES}
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw29u_${library_name}.lib
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw29ud_${library_name}.lib )
+                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw30u_${library_name}.lib
+                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw30ud_${library_name}.lib )
         #SET( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}
-        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw29u_${library_name}.lib
-        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw29ud_${library_name}.lib )
+        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw30u_${library_name}.lib
+        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw30ud_${library_name}.lib )
         SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_${library_name}_vc_custom.dll
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_${library_name}_vc_custom.pdb
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295ud_${library_name}_vc_custom.dll
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295ud_${library_name}_vc_custom.pdb
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_${library_name}_vc_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_${library_name}_vc_x64_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30ud_${library_name}_vc_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30ud_${library_name}_vc_x64_custom.dll
                                )
       ENDFOREACH( library_name )
       SET( wxlibs "" _net _xml )
       # IN LISTS means that the empty argument is parsed
       FOREACH( library_name IN LISTS wxlibs )
         SET( EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES}
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxbase29u${library_name}.lib
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxbase29ud${library_name}.lib )
-        #SET( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}
-        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxbase29u${library_name}.lib
-        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxbase29ud${library_name}.lib )
+                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxbase30u${library_name}.lib
+                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxbase30ud${library_name}.lib )
         SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295u${library_name}_vc_custom.dll
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295u${library_name}_vc_custom.pdb
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295ud${library_name}_vc_custom.dll
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295ud${library_name}_vc_custom.pdb
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30u${library_name}_vc_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30u${library_name}_vc_x64_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30ud${library_name}_vc_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30ud${library_name}_vc_x64_custom.dll
                                )
       ENDFOREACH( library_name )
       
@@ -225,22 +222,11 @@ IF( GENERATE_CPACK_PROJECT )
         SET( EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES}
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wx${library_name}.lib
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wx${library_name}d.lib )
-        #SET( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}
-        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wx${library_name}.lib
-        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wx${library_name}d.lib )
         SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wx${library_name}.pdb
-                               #${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wx${library_name}d.pdb
                                )
       ENDFOREACH( library_name )
 
       SET( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}
-                                     #${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/freeglut_static.lib
-                                     #${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc7.lib
-                                     #${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc8.lib
-                                     #${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc8_d.lib
-                                     #${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc9.lib
-                                     #${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc9_d.lib
                                      ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10.lib
                                      ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10_d.lib )
      
@@ -349,8 +335,8 @@ IF( GENERATE_CPACK_PROJECT )
 
   # HAPI.cmake that goes to headers is not needed unless sources is required.
   INSTALL( FILES ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.cmake
-			DESTINATION HAPI/include/HAPI
-			COMPONENT HAPI_cpack_sources )
+      DESTINATION HAPI/include/HAPI
+      COMPONENT HAPI_cpack_sources )
 
   INSTALL( FILES ${OH_HEADERS}
            DESTINATION HAPI/OpenHapticsRenderer/include/HAPI
@@ -576,13 +562,13 @@ IF( GENERATE_CPACK_PROJECT )
   ENDIF( NOT DEFINED H3D_cmake_runtime_path )
 
   IF(UNIX)
-    SET(CPACK_SOURCE_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/..;/" )	
+    SET(CPACK_SOURCE_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/..;/" )  
     SET(CPACK_SOURCE_GENERATOR TGZ ZIP ) 
     SET(CPACK_SOURCE_PACKAGE_FILE_NAME "hapi-${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION}") 
 
 
     SET( HAPI_CPACK_IGNORE_PATTERNS ${HAPI_CPACK_IGNORE_PATTERNS}
-				    "/CVS/;/.svn/;/.bzr/;/.hg/;/.git.*/;.swp$;.#;/#;~$")
+            "/CVS/;/.svn/;/.bzr/;/.hg/;/.git.*/;.swp$;.#;/#;~$")
     SET(CPACK_SOURCE_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS} )
   ENDIF( UNIX )
   
@@ -614,12 +600,12 @@ IF( GENERATE_CPACK_PROJECT )
   IF( NOT H3D_USE_DEPENDENCIES_ONLY )
     IF (NOT TARGET H3DAPI)
       INCLUDE(CPack)
-      IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")	
+      IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")  
         INCLUDE(UseDebian)
         IF(DEBIAN_FOUND)
           ADD_DEBIAN_TARGETS(HAPI)
         ENDIF(DEBIAN_FOUND)
-      ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")	
+      ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")  
     ENDIF (NOT TARGET H3DAPI)
   ENDIF( NOT H3D_USE_DEPENDENCIES_ONLY )
 ENDIF( GENERATE_CPACK_PROJECT )

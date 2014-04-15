@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -60,11 +60,11 @@ namespace HAPI {
     EffectOutput virtual calculateForces( const EffectInput &input );
     
   protected:
-	  // viscosity is the viscosity in Pas
+    // viscosity is the viscosity in Pas
     HAPIFloat viscosity;
-		// radius is the radius of the sphere in meters.
+    // radius is the radius of the sphere in meters.
     HAPIFloat radius;
-		// _damping_factor is best left as its initial value unless
+    // _damping_factor is best left as its initial value unless
     HAPIFloat the_constant;
   };
 }

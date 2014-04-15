@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -51,9 +51,9 @@ bool QuanserHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
   //This function attempts to connect to the server using the specified URI.
   result = stream_connect(uri.c_str(), nonblocking, 
-			  send_buffer_size, 
-			  receive_buffer_size, 
-			  &client);
+        send_buffer_size, 
+        receive_buffer_size, 
+        &client);
   
   if( result != 0 ) {
     stringstream s;
@@ -152,7 +152,7 @@ void QuanserHapticsDevice::updateDeviceValues( DeviceValues &dv,
   
   if( device_state == UNINITIALIZED ) return;
   
-  const t_int RCV_STREAM_SIZE = 7;	
+  const t_int RCV_STREAM_SIZE = 7;
   t_double rcv_temp[RCV_STREAM_SIZE];
   t_int result = stream_receive_doubles(client, rcv_temp, RCV_STREAM_SIZE); 
   

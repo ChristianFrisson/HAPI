@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -49,7 +49,7 @@ namespace HAPI {
     /// specified by p, q and r. The segment finds the first along the segment.
     /// If the segment intersects the cylinder the point of intersection can
     /// be calculated from t.
-		/// \returns true if segment intersects cylinder.
+    /// \returns true if segment intersects cylinder.
     bool HAPI_API intersectSegmentCylinder( Vec3 sa, Vec3 sb, 
                                             Vec3 p, Vec3 q, 
                                             HAPIFloat r, 

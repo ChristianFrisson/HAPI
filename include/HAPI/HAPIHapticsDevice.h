@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -119,7 +119,7 @@ namespace HAPI {
       setup_haptic_rendering_callback( true ),
       haptic_rendering_cb_handle( -1 ),
       haptics_rate( 0 ),
-			nr_haptics_loops( 0 ),
+      nr_haptics_loops( 0 ),
       last_force_effect_change( 0 ),
       error_handler( new DefaultErrorHandler ),
       force_limit( -1 ),
@@ -143,7 +143,7 @@ namespace HAPI {
     /// \param _thread_frequency is the desired haptic frequency. Check
     /// comment for the function initHapticsDevice() of each haptics device
     /// class to know what the values might do for that class.
-		/// \returns SUCCESS if device was successfully initialized.
+    /// \returns SUCCESS if device was successfully initialized.
     virtual ErrorCode initDevice( int _thread_frequency = 1024 );
 
     /// Enable the device. Positions can be read and force can be sent.
@@ -158,8 +158,8 @@ namespace HAPI {
 
     /// Temporarily disable the device. Forces sent will be ignored and
     /// positions and orientation will stay the same as previous values.
-		/// \returns SUCCESS if device was enabled and function succeeded.
-		/// NOT_INITALIZED if device was not initalized.
+    /// \returns SUCCESS if device was enabled and function succeeded.
+    /// NOT_INITALIZED if device was not initalized.
     inline virtual ErrorCode disableDevice() {
       if( device_state == UNINITIALIZED ) {
         return NOT_INITIALIZED;
@@ -176,8 +176,8 @@ namespace HAPI {
     /// After a call to this function no haptic rendering can be performed on
     /// the device until the initDevice( _thread_frequency = 1024 ) function
     /// has been called again.
-		/// \returns SUCCESS if device was released. NOT_INITALIZED if device was
-		/// not initalized and FAIL if releasing device failed.
+    /// \returns SUCCESS if device was released. NOT_INITALIZED if device was
+    /// not initalized and FAIL if releasing device failed.
     inline virtual ErrorCode releaseDevice() {
       if( device_state == UNINITIALIZED ) {
         return NOT_INITIALIZED;
@@ -741,8 +741,8 @@ namespace HAPI {
     inline unsigned int getHapticsRate() { return haptics_rate; }
 
     /// Get the time spent in the last haptics loop(in seconds)
-		/// If the time returned is -1 then no haptics loop has yet
-		/// been completed.
+    /// If the time returned is -1 then no haptics loop has yet
+    /// been completed.
     inline HAPITime getTimeSpentInLastLoop() {
       return time_in_last_loop;
     }
@@ -1040,7 +1040,7 @@ namespace HAPI {
     /// each loop in the thread, i.e. 1024, 512, 342, 256, 205 and so on.
     /// Some haptics devices uses other synchronization means than the RTC timer
     /// though and in those cases they might have different possible frequencies.
-		/// \returns true if initialization succeeded.
+    /// \returns true if initialization succeeded.
     virtual bool initHapticsDevice( int _thread_frequency = 1024 ) = 0;
 
     /// Release all resources allocated to the haptics device.
@@ -1199,7 +1199,7 @@ namespace HAPI {
     /// The current error handler.
     H3DUtil::AutoRef< ErrorHandler > error_handler; 
 
-		// Time in last loop, if -1 then no loop has been completed.
+    // Time in last loop, if -1 then no loop has been completed.
     HAPITime time_in_last_loop;
 
     DeviceState device_state;
@@ -1245,9 +1245,9 @@ namespace HAPI {
       transferObjectsCallback( void *data );
 
     friend class AnyHapticsDevice;
-		///\todo Remove this friend statement (CluthedHapticsDevice) when we figure out
-		/// a better way to do it.
-		friend class ClutchedHapticsDevice;
+    ///\todo Remove this friend statement (CluthedHapticsDevice) when we figure out
+    /// a better way to do it.
+    friend class ClutchedHapticsDevice;
 
     unsigned int nr_haptics_loops;
     unsigned int haptics_rate;

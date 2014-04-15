@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -111,7 +111,7 @@ namespace HAPI {
     /// The function that calculates the forces given by this 
     /// HAPIForceEffect.
     /// \param input Contains useful information, see EffectInput struct.
-		/// \returns An EffectOutput struct that contains force and torque.
+    /// \returns An EffectOutput struct that contains force and torque.
     EffectOutput virtual calculateForces( const EffectInput &input ) = 0;
     
     /// Destructor. Virtual to make HAPIForceEffect a polymorphic type.

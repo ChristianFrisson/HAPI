@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -272,10 +272,10 @@ namespace HAPI {
     static bool surfaceSupported( HAPISurfaceObject *s );
 
     /// Renders a HAPISurface object with OpenHaptics. Not all surface types
-		/// are valid.
+    /// are valid.
     /// \param s Surface object to render.
     /// \param hd The haptics device for which the surface should be rendered.
-		/// \returns true if it succeeded, false otherwise.
+    /// \returns true if it succeeded, false otherwise.
     static bool hlRenderHAPISurface( HAPISurfaceObject *s,
                                      HAPIHapticsDevice *hd );
 

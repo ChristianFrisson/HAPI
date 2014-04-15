@@ -8,6 +8,7 @@ IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INST
  SET( CMAKE_INSTALL_PREFIX ${HAPIExamples_SOURCE_DIR} )
  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
 ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+SET(CMAKE_MODULE_PATH ${HAPIExamples_SOURCE_DIR}/../../build/modules )
 
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 IF( H3D_USE_DEPENDENCIES_ONLY )
@@ -47,20 +48,24 @@ ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../SurfaceExample/build
                   ${CMAKE_CURRENT_BINARY_DIR}/SurfaceExample )
 
 FIND_PACKAGE( OpenGL )
-IF( OPENGL_FOUND )
+IF(WIN32)
+  FIND_PACKAGE(GLUTWin)
+ELSE(WIN32)
+  FIND_PACKAGE(GLUT)
+ENDIF(WIN32)
+IF( OPENGL_FOUND AND GLUT_FOUND )
   MESSAGE( STATUS "Including HAPI FeedbackBufferCollectionExample" )
   ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../FeedbackBufferCollectorExample/build
                     ${CMAKE_CURRENT_BINARY_DIR}/FeedbackBufferCollectorExample )
-ELSE( OPENGL_FOUND )
-  MESSAGE( STATUS "OpenGL was not found. FeedbackBufferCollectorExample will not be generated." )
-ENDIF( OPENGL_FOUND )
+ELSE( OPENGL_FOUND AND GLUT_FOUND )
+  MESSAGE( STATUS "OpenGL or GLUT was not found. FeedbackBufferCollectorExample will not be generated." )
+ENDIF( OPENGL_FOUND AND GLUT_FOUND )
 
 MESSAGE( STATUS "Including HAPI ThreadExamples" )
 ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../ThreadExamples/build
                   ${CMAKE_CURRENT_BINARY_DIR}/ThreadExamples )
 
 IF( WIN32 )
-  SET(CMAKE_MODULE_PATH ${HAPIExamples_SOURCE_DIR}/../../build/modules )
   FIND_PACKAGE( DirectX )
   IF( DirectX_FOUND )
     MESSAGE( STATUS "Including HAPI DirectXExample" )
