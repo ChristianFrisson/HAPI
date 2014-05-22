@@ -72,8 +72,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     nr_of_connected_dhd_devices = dhdGetDeviceCount();
     if( nr_of_connected_dhd_devices <= 0 ) {
       stringstream s;
-      s << "Warning: Failed to open Omega device. No connected devices. "
-        << "Error: " << dhdErrorGetLastStr();
+      s << "Warning: Failed to open Omega device. No connected devices. ";
       setErrorMsg( s.str() );
       return false;
     } else {
