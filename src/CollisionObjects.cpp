@@ -1957,7 +1957,19 @@ void GeometryPrimitive::getConstraints( const Vec3 &point,
   } else if( face == Collision::BACK ) {
     if( normal * cp_normal > 0 ) return;
   }
-  normal.normalizeSafe();
+  HAPIFloat l2 = normal.x*normal.x+normal.y*normal.y+normal.z*normal.z;
+  // if the length already is 1 we don't have to do anything
+  if( H3DUtil::H3DAbs(l2-1) > Constants::epsilon ) {
+    HAPIFloat l = H3DUtil::H3DSqrt( l2 );
+    if( H3DUtil::H3DAbs(l) >= Constants::epsilon ) {
+      normal.x /= l; 
+      normal.y /= l;
+      normal.z /= l;
+    } else {
+      // Choose primitive normal instead.
+      normal = cp_normal;
+    }
+  }
   //cerr << closest_point << endl;
    Vec3 v = closest_point - point;
    if( radius < 0 || v * v <= radius * radius )
@@ -3232,7 +3244,19 @@ bool Triangle::getConstraint(  const Vec3 &point,
   } else if( face == Collision::BACK ) {
     if( normal * cp_normal > 0 ) return false;
   }
-  normal.normalizeSafe();
+  HAPIFloat l2 = normal.x*normal.x+normal.y*normal.y+normal.z*normal.z;
+  // if the length already is 1 we don't have to do anything
+  if( H3DUtil::H3DAbs(l2-1) > Constants::epsilon ) {
+    HAPIFloat l = H3DUtil::H3DSqrt( l2 );
+    if( H3DUtil::H3DAbs(l) >= Constants::epsilon ) {
+      normal.x /= l; 
+      normal.y /= l;
+      normal.z /= l;
+    } else {
+      // Choose primitive normal instead.
+      normal = cp_normal;
+    }
+  }
   
   *constraint = PlaneConstraint( closest_point, normal, 
                                  cp_tex_coord, NULL, this );
