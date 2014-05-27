@@ -242,7 +242,7 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
   PlaneConstraint &p2 = (*i++);
 
   Vec3 contact_global = contact.globalContactPoint();
-  Vec3 probe_local_pos;
+  Vec3 probe_local_pos( 0, 0, 0 );
 
   if( i == constraints.end() ) {
     // transformation matrix from local coordinate system with the normals
@@ -251,8 +251,20 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
                p0.normal.y, p1.normal.y, p2.normal.y, contact_global.y, 
                p0.normal.z, p1.normal.z, p2.normal.z, contact_global.z,
                0, 0, 0, 1 );
-    Matrix4 m_inv = m.inverse();
-    probe_local_pos = m_inv * contact.globalProbePosition();
+    try{
+      Matrix4 m_inv = m.inverse();
+      probe_local_pos = m_inv * contact.globalProbePosition();
+    } catch( H3DUtil::Exception::H3DAPIException ){
+      // If the constructed matrix is a singular matrix then the
+      // normals lie in the same plane, this is not particulary likely to
+      // happen but it can happen, in that case just use probe_local_pos(0,0,0)
+      // to trigger the "three-plane-constraint" code further down. I guess theoretically
+      // this case should result in a movement along the normal perpendicular to
+      // the plane spanned by the three normals, but this is a much faster fix.
+      /// \todo Implement correct case for when three normals are in the same plane?
+      /// Not very likely to happen unless FakeHapticsDevice is used with surface
+      /// that changes. probe_local_pos is already 0,0,0 so do nothing here.
+    }
   } else {
     while( i != constraints.end() ) {
       // transformation matrix from local coordinate system with the normals
@@ -261,20 +273,26 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
                  p0.normal.y, p1.normal.y, p2.normal.y, contact_global.y, 
                  p0.normal.z, p1.normal.z, p2.normal.z, contact_global.z,
                  0, 0, 0, 1 );
-      Matrix4 m_inv = m.inverse();
-      probe_local_pos = m_inv * contact.globalProbePosition();
+      try {
+        Matrix4 m_inv = m.inverse();
+        probe_local_pos = m_inv * contact.globalProbePosition();
       
-      if( probe_local_pos.x > Constants::epsilon ) {
-        // discard p0
-        std::swap( p0, *i++ ); 
-      } else if( probe_local_pos.y > Constants::epsilon ) {
-        // discard p1
-        std::swap( p1, *i++ ); 
-      } else if( probe_local_pos.z > Constants::epsilon ) {
-        // discard p2
-        std::swap( p2, *i++ );
-      } else {
-        break;
+        if( probe_local_pos.x > Constants::epsilon ) {
+          // discard p0
+          std::swap( p0, *i++ ); 
+        } else if( probe_local_pos.y > Constants::epsilon ) {
+          // discard p1
+          std::swap( p1, *i++ ); 
+        } else if( probe_local_pos.z > Constants::epsilon ) {
+          // discard p2
+          std::swap( p2, *i++ );
+        } else {
+          break;
+        }
+      } catch( H3DUtil::Exception::H3DAPIException ){
+        // See comment for the case of only three plane constraints.
+        // In this case however we will just move to the next plane.
+        ++i;
       }
     }
   }
