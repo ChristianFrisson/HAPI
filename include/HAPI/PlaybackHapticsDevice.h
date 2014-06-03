@@ -188,6 +188,16 @@ namespace HAPI {
     /// Implementation of getPlaybackValuesNext() for text file types
     bool getPlaybackValuesNextText ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime& _time );
 
+    /// Virtual function to read field values from binary file
+    ///
+    /// Subclasses may override this to read additional non-standard field values
+    virtual void readFieldsValuesBinary ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time );
+
+    /// Virtual function to read field values from text file
+    ///
+    /// Subclasses may override this to read additional non-standard field values
+    virtual void readFieldsValuesText ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time );
+
     /// Read and returns a list of column headings from the recording file, when file is 
     /// in binary format.
     StringList readColumnNamesBinary ();

@@ -200,53 +200,7 @@ bool PlaybackHapticsDevice::getPlaybackValuesNextText ( HAPIHapticsDevice::Devic
 
   HAPIHapticsDevice::DeviceValues dv_tmp;
   HAPITime time_tmp= -1;
-  for ( StringList::iterator i= field_names.begin(); i != field_names.end(); ++i ) {
-    std::string field_name= *i;
-
-    if ( field_name == "TIME" ) {
-      playback_file >> time_tmp;
-    }
-    else if ( field_name == "POSITION" ) {
-      HAPIFloat f;
-      playback_file >> f; playback_file >> f; playback_file >> f;
-    }
-    else if ( field_name == "ORIENTATION" ) {
-      HAPIFloat f;
-      playback_file >> f; playback_file >> f; playback_file >> f; playback_file >> f;
-    }
-    else if ( field_name == "VELOCITY" ) {
-      HAPIFloat f;
-      playback_file >> f; playback_file >> f; playback_file >> f;
-    }
-    else if ( field_name == "FORCE" ) {
-      HAPIFloat f;
-      playback_file >> f; playback_file >> f; playback_file >> f;
-    }
-    else if ( field_name == "TORQUE" ) {
-      HAPIFloat f;
-      playback_file >> f; playback_file >> f; playback_file >> f;
-    }
-    else if ( field_name == "BUTTONS" ) {
-      playback_file >> dv_tmp.button_status;
-    }
-    else if ( field_name == "RAW_POSITION" ) {
-      playback_file >> dv_tmp.position.x; playback_file >> dv_tmp.position.y; playback_file >> dv_tmp.position.z;
-    }
-    else if ( field_name == "RAW_ORIENTATION" ) {
-      playback_file >> dv_tmp.orientation.axis.x; playback_file >> dv_tmp.orientation.axis.y; playback_file >> dv_tmp.orientation.axis.z; playback_file >> dv_tmp.orientation.angle;
-    }
-    else if ( field_name == "RAW_VELOCITY" ) {
-      playback_file >> dv_tmp.velocity.x; playback_file >> dv_tmp.velocity.y; playback_file >> dv_tmp.velocity.z;
-    }
-    else if ( field_name == "RAW_FORCE" ) {
-      HAPIFloat f;
-      playback_file >> f; playback_file >> f; playback_file >> f;
-    }
-    else if ( field_name == "RAW_TORQUE" ) {
-      HAPIFloat f;
-      playback_file >> f; playback_file >> f; playback_file >> f;
-    }
-  }
+  readFieldsValuesText ( dv_tmp, time_tmp );
 
   if ( playback_file.good() ) {
     _time= time_tmp;
@@ -264,53 +218,7 @@ bool PlaybackHapticsDevice::getPlaybackValuesNextBinary ( HAPIHapticsDevice::Dev
 
   HAPIHapticsDevice::DeviceValues dv_tmp;
   HAPITime time_tmp= -1;
-  for ( StringList::iterator i= field_names.begin(); i != field_names.end(); ++i ) {
-    std::string field_name= *i;
-
-    if ( field_name == "TIME" ) {
-      H3DUtil::readH3DType ( playback_file, time_tmp );
-    }
-    else if ( field_name == "POSITION" ) {
-      HAPI::Vec3 p;
-      H3DUtil::readH3DType ( playback_file, p );
-    }
-    else if ( field_name == "ORIENTATION" ) {
-      HAPI::Rotation r;
-      H3DUtil::readH3DType ( playback_file, r );
-    }
-    else if ( field_name == "VELOCITY" ) {
-      HAPI::Vec3 v;
-      H3DUtil::readH3DType ( playback_file, v );
-    }
-    else if ( field_name == "FORCE" ) {
-      HAPI::Vec3 f;
-      H3DUtil::readH3DType ( playback_file, f );
-    }
-    else if ( field_name == "TORQUE" ) {
-      HAPI::Vec3 t;
-      H3DUtil::readH3DType ( playback_file, t );
-    }
-    else if ( field_name == "BUTTONS" ) {
-      H3DUtil::readH3DType ( playback_file, dv_tmp.button_status );
-    }
-    else if ( field_name == "RAW_POSITION" ) {
-      H3DUtil::readH3DType ( playback_file, dv_tmp.position );
-    }
-    else if ( field_name == "RAW_ORIENTATION" ) {
-      H3DUtil::readH3DType ( playback_file, dv_tmp.orientation );
-    }
-    else if ( field_name == "RAW_VELOCITY" ) {
-      H3DUtil::readH3DType ( playback_file, dv_tmp.velocity );
-    }
-    else if ( field_name == "RAW_FORCE" ) {
-      HAPI::Vec3 f;
-      H3DUtil::readH3DType ( playback_file, f );
-    }
-    else if ( field_name == "RAW_TORQUE" ) {
-      HAPI::Vec3 t;
-      H3DUtil::readH3DType ( playback_file, t );
-    }
-  }
+  readFieldsValuesBinary ( dv_tmp, time_tmp );
 
   if ( playback_file.good() ) {
     _time= time_tmp;
@@ -358,5 +266,105 @@ bool PlaybackHapticsDevice::getPlaybackValuesAtTime ( HAPI::HAPIHapticsDevice::D
   } else {
     dv= playback_device_values;
     return true;
+  }
+}
+
+void PlaybackHapticsDevice::readFieldsValuesBinary ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time ) { 
+  for ( StringList::iterator i= field_names.begin(); i != field_names.end(); ++i ) {
+    std::string field_name= *i;
+
+    if ( field_name == "TIME" ) {
+      H3DUtil::readH3DType ( playback_file, _time );
+    }
+    else if ( field_name == "POSITION" ) {
+      HAPI::Vec3 p;
+      H3DUtil::readH3DType ( playback_file, p );
+    }
+    else if ( field_name == "ORIENTATION" ) {
+      HAPI::Rotation r;
+      H3DUtil::readH3DType ( playback_file, r );
+    }
+    else if ( field_name == "VELOCITY" ) {
+      HAPI::Vec3 v;
+      H3DUtil::readH3DType ( playback_file, v );
+    }
+    else if ( field_name == "FORCE" ) {
+      HAPI::Vec3 f;
+      H3DUtil::readH3DType ( playback_file, f );
+    }
+    else if ( field_name == "TORQUE" ) {
+      HAPI::Vec3 t;
+      H3DUtil::readH3DType ( playback_file, t );
+    }
+    else if ( field_name == "BUTTONS" ) {
+      H3DUtil::readH3DType ( playback_file, _dv.button_status );
+    }
+    else if ( field_name == "RAW_POSITION" ) {
+      H3DUtil::readH3DType ( playback_file, _dv.position );
+    }
+    else if ( field_name == "RAW_ORIENTATION" ) {
+      H3DUtil::readH3DType ( playback_file, _dv.orientation );
+    }
+    else if ( field_name == "RAW_VELOCITY" ) {
+      H3DUtil::readH3DType ( playback_file, _dv.velocity );
+    }
+    else if ( field_name == "RAW_FORCE" ) {
+      HAPI::Vec3 f;
+      H3DUtil::readH3DType ( playback_file, f );
+    }
+    else if ( field_name == "RAW_TORQUE" ) {
+      HAPI::Vec3 t;
+      H3DUtil::readH3DType ( playback_file, t );
+    }
+  }
+}
+
+void PlaybackHapticsDevice::readFieldsValuesText ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time ) {
+  for ( StringList::iterator i= field_names.begin(); i != field_names.end(); ++i ) {
+    std::string field_name= *i;
+
+    if ( field_name == "TIME" ) {
+      playback_file >> _time;
+    }
+    else if ( field_name == "POSITION" ) {
+      HAPIFloat f;
+      playback_file >> f; playback_file >> f; playback_file >> f;
+    }
+    else if ( field_name == "ORIENTATION" ) {
+      HAPIFloat f;
+      playback_file >> f; playback_file >> f; playback_file >> f; playback_file >> f;
+    }
+    else if ( field_name == "VELOCITY" ) {
+      HAPIFloat f;
+      playback_file >> f; playback_file >> f; playback_file >> f;
+    }
+    else if ( field_name == "FORCE" ) {
+      HAPIFloat f;
+      playback_file >> f; playback_file >> f; playback_file >> f;
+    }
+    else if ( field_name == "TORQUE" ) {
+      HAPIFloat f;
+      playback_file >> f; playback_file >> f; playback_file >> f;
+    }
+    else if ( field_name == "BUTTONS" ) {
+      playback_file >> _dv.button_status;
+    }
+    else if ( field_name == "RAW_POSITION" ) {
+      playback_file >> _dv.position.x; playback_file >> _dv.position.y; playback_file >> _dv.position.z;
+    }
+    else if ( field_name == "RAW_ORIENTATION" ) {
+      playback_file >> _dv.orientation.axis.x; playback_file >> _dv.orientation.axis.y; playback_file >> _dv.orientation.axis.z; playback_file >> _dv.orientation.angle;
+    }
+    else if ( field_name == "RAW_VELOCITY" ) {
+      playback_file >> _dv.velocity.x; playback_file >> _dv.velocity.y; playback_file >> _dv.velocity.z;
+    }
+    else if ( field_name == "RAW_FORCE" ) {
+      HAPIFloat f;
+      playback_file >> f; playback_file >> f; playback_file >> f;
+    }
+    else if ( field_name == "RAW_TORQUE" ) {
+      HAPIFloat f;
+      playback_file >> f; playback_file >> f; playback_file >> f;
+    }
   }
 }
