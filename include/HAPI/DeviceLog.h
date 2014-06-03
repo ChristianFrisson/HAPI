@@ -144,7 +144,7 @@ namespace HAPI {
     /// \param _freq The frequency of logging.
     /// \param _binary If true the logging will be done to a binary file.
     ///                Otherwise it will be done to an ASCII-text file.
-    DeviceLog( string &_log_file, LogTypeVector &_log_type,
+    DeviceLog( const string &_log_file, const LogTypeVector &_log_type,
                int _freq = 100, bool _binary = false );
 
     /// Destructor
@@ -155,6 +155,9 @@ namespace HAPI {
     /// will be done.
     /// \param input Contains useful information, see EffectInput struct.
     virtual EffectOutput calculateForces( const EffectInput &input );
+
+    /// Stop logging and flush and close the log file
+    void close ();
 
   protected:
     // Contains certain times needed in order to know when to log.
@@ -169,7 +172,12 @@ namespace HAPI {
     
     // Internal helper functions.
     void writeLog( const EffectInput &input, HAPITime log_time );
-    void writeHeader();
+    void writeHeader( const EffectInput &input );
+
+    // Virtual functions to write log data. Sub-classes should override
+    // these in order to log additional values.
+    virtual void writeLogRow ( const EffectInput &input, HAPITime log_time );
+    virtual void writeHeaderRow ( const EffectInput &input );
   };
 }
 

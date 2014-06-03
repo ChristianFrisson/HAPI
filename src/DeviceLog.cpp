@@ -33,8 +33,8 @@
 
 using namespace HAPI;
 
-DeviceLog::DeviceLog( string &_log_file, 
-                      DeviceLog::LogTypeVector &_log_type,
+DeviceLog::DeviceLog( const string &_log_file, 
+                      const DeviceLog::LogTypeVector &_log_type,
                       int _freq, bool _binary ) :
   log_type( _log_type ), binary( _binary ) {
 
@@ -62,7 +62,7 @@ HAPI::HAPIForceEffect::EffectOutput DeviceLog::calculateForces(
     if( last_time < 0 ) {
       start_time = TimeStamp::now();
       last_time = start_time;
-      writeHeader();
+      writeHeader( input );
       writeLog( input, 0 );
     } else {
       HAPITime this_time = TimeStamp::now();
@@ -75,7 +75,31 @@ HAPI::HAPIForceEffect::EffectOutput DeviceLog::calculateForces(
   return EffectOutput();
 }
 
+void DeviceLog::close () {
+  if( log_file.is_open() )
+    log_file.close();
+}
+
 void DeviceLog::writeLog( const EffectInput &input, HAPITime log_time ) {
+  writeLogRow ( input, log_time );
+
+  if( !binary ) {
+    log_file << endl;
+  }
+}
+
+void DeviceLog::writeHeader( const EffectInput &input ) {
+  writeHeaderRow ( input );
+
+  if( binary ) {
+    char null_char = '\0';
+    log_file.write( &null_char, sizeof(char) );
+  } else {
+    log_file << endl;
+  }
+}
+
+void DeviceLog::writeLogRow ( const EffectInput &input, HAPITime log_time ) {
   HAPIHapticsDevice::DeviceValues cdv = input.hd->getDeviceValues();
   HAPIHapticsDevice::DeviceValues crdv = input.hd->getRawDeviceValues();
   if( binary ) {
@@ -190,11 +214,10 @@ void DeviceLog::writeLog( const EffectInput &input, HAPITime log_time ) {
         default: {}
       }
     }
-    log_file << endl;
   }
 }
 
-void DeviceLog::writeHeader() {
+void DeviceLog::writeHeaderRow ( const EffectInput & /*input*/ ) {
   if( binary ) {
     for( LogTypeVector::iterator i = log_type.begin();
          i != log_type.end(); ++i ) {
@@ -250,8 +273,6 @@ void DeviceLog::writeHeader() {
         default: {}
       }
     }
-    char null_char = '\0';
-    log_file.write( &null_char, sizeof(char) );
   } else {
     for( LogTypeVector::iterator i = log_type.begin();
          i != log_type.end(); ++i ) {
@@ -309,7 +330,5 @@ void DeviceLog::writeHeader() {
         default: {}
       }
     }
-    log_file << endl;
   }
 }
-
