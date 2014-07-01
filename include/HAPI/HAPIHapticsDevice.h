@@ -463,9 +463,9 @@ namespace HAPI {
       profiled_result_lock.unlock();
       if(!temp1.empty()&&!temp2.empty())
       {
-        return temp1+temp2;
+        return "haptic rendering profiling result: \n" + temp1+temp2;
       }
-      return "";
+      return "haptic rendering profiling result: \n";
     }
 #endif
     /// Get the current device values in device coordinates.
