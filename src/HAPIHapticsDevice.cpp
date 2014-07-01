@@ -56,8 +56,10 @@ H3DUtil::PeriodicThread::CallbackCode
   // update last transform for all shapes.
   // TODO: do this much faster/better
   for( unsigned int layer = 0; layer < hd->tmp_shapes.size(); ++layer ) {
+    H3DTIMER_BEGIN("TransferObjectPerLayer");
     for( HapticShapeVector::const_iterator s = hd->tmp_shapes[layer].begin(); 
          s != hd->tmp_shapes[layer].end(); ++s ) {
+      H3DTIMER_BEGIN("TransferObjectPerShape");
       HAPIHapticShape *shape = NULL;
       if( hd->current_shapes.size() > layer ) {
         for( HapticShapeVector::const_iterator current_s =
@@ -72,7 +74,9 @@ H3DUtil::PeriodicThread::CallbackCode
       // if we have a new shape we need to initialize it.
       if( (*s) != shape ) 
         (*s)->initializeTransfer( shape );
+      H3DTIMER_END("TransferObjectPerShape");
     }
+    H3DTIMER_END("TransferObjectPerLayer");
   }
 
   // shapes
@@ -82,6 +86,7 @@ H3DUtil::PeriodicThread::CallbackCode
   // should be added with interpolation in some cases.
   bool already_transferred = false;
   // If set effects was called.
+  H3DTIMER_BEGIN("HANDLE_SWITCHING_EFFECTS");
   if( hd->tmp_switching_effects ) {
     if( hd->tmp_switch_effects_duration > Constants::epsilon ) {
       hd->last_add_rem_effect_map.clear();
@@ -100,9 +105,11 @@ H3DUtil::PeriodicThread::CallbackCode
     hd->current_force_effects = hd->tmp_current_force_effects;
     already_transferred = true;
   }
-
+  H3DTIMER_END("HANDLE_SWITCHING_EFFECTS");
+  H3DTIMER_BEGIN("HANDLE_ADDEFFECT");
   // If addEffect was called
   if( !hd->added_effects_indices.empty() ) {
+    
     for( vector< pair< unsigned int, HAPITime > >::iterator i =
            hd->added_effects_indices.begin();
          i != hd->added_effects_indices.end(); ++i ) {
@@ -120,7 +127,8 @@ H3DUtil::PeriodicThread::CallbackCode
     }
     hd->added_effects_indices.clear();
   }
-
+  H3DTIMER_END("HANDLE_ADDEFFECT");
+  H3DTIMER_BEGIN("HANDLE_REMOVEEFFECT");
   // If removeEffect was called.
   if( !hd->force_effects_to_remove.empty() ) {
     for( vector< pair< HAPIForceEffect *, HAPITime > >::iterator i =
@@ -177,6 +185,7 @@ H3DUtil::PeriodicThread::CallbackCode
     }
     hd->force_effects_to_remove.clear();
   }
+  H3DTIMER_END("HANDLE_REMOVEEFFECT");
 #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::stepEnd("transferObject_begin");
   std::stringstream temp_profiledResult;
@@ -184,10 +193,12 @@ H3DUtil::PeriodicThread::CallbackCode
   H3DUtil::H3DTimer::end("haptic_profile_transferObject",temp_profiledResult);
 
   hd->profiled_result_lock.lock();
-  hd->profiled_result_haptic[0] = temp_profiledResult.str();
+  hd->profiled_result_haptic[0] = "timer_for_objectTransfer: \n"+temp_profiledResult.str();
   hd->profiled_result_lock.unlock();
   //std::cout<<"hatpic profile result:"<<temp<<std::endl;
 #endif
+  hd->force_effect_lock.unlock();
+  hd->shape_lock.unlock();
   return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
 #ifdef HAVE_PROFILER
@@ -419,21 +430,28 @@ H3DUtil::PeriodicThread::CallbackCode
   
   H3DUtil::H3DTimer::end("haptic_profile",temp);
   hd->profiled_result_lock.lock();
-  hd->profiled_result_haptic[1] = temp.str();
+  hd->profiled_result_haptic[1] ="timer_for_haptic_rendering: \n" + temp.str();
   hd->profiled_result_lock.unlock();
 #endif
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
 
 void HAPIHapticsDevice::transferObjects() {
+  
   if( thread ) {
+    force_effect_lock.lock();
+    shape_lock.lock();
     for( unsigned int s = 0; s < haptics_renderers.size(); ++s ) {
+      H3DTIMER_BEGIN("TRANSFEROBJECT_preprocessShape");
       if( haptics_renderers[s] && s < tmp_shapes.size() ) {
          haptics_renderers[s]->preProcessShapes( this, tmp_shapes[s] );
+      H3DTIMER_END("TRANSFEROBJECT_preprocessShape");
       }
     }
-    thread->synchronousCallback( transferObjectsCallback,
-                                 this );
+    H3DTIMER_BEGIN("transferObjectCallback");
+    thread->asynchronousCallback( transferObjectsCallback, this);
+    //thread->synchronousCallback( transferObjectsCallback,this );
+    H3DTIMER_END("transferObjectCallback");
 
   }
 }
