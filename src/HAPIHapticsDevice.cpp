@@ -194,8 +194,9 @@ H3DUtil::PeriodicThread::CallbackCode
   hd->profiled_result_lock.unlock();
   //std::cout<<"hatpic profile result:"<<temp<<std::endl;
 #endif
-  hd->force_effect_lock.unlock();
-  hd->shape_lock.unlock();
+  //todo: need to check why the following two lines crash with Openhaptics
+  //hd->force_effect_lock.unlock();
+  //hd->shape_lock.unlock();
   return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
 #ifdef HAVE_PROFILER
@@ -436,8 +437,9 @@ H3DUtil::PeriodicThread::CallbackCode
 void HAPIHapticsDevice::transferObjects() {
   
   if( thread ) {
-    force_effect_lock.lock();
-    shape_lock.lock();
+    //todo: need to check why the following two lines crash with Openhaptics
+    //force_effect_lock.lock();
+    //shape_lock.lock();
     for( unsigned int s = 0; s < haptics_renderers.size(); ++s ) {
       H3DTIMER_BEGIN("TRANSFEROBJECT_preprocessShape");
       if( haptics_renderers[s] && s < tmp_shapes.size() ) {
@@ -446,8 +448,9 @@ void HAPIHapticsDevice::transferObjects() {
       }
     }
     H3DTIMER_BEGIN("transferObjectCallback");
-    thread->asynchronousCallback( transferObjectsCallback, this);
-    //thread->synchronousCallback( transferObjectsCallback,this );
+    //todo: temporary changed back to synchronous because of crash with Openhaptics
+    //thread->asynchronousCallback( transferObjectsCallback, this);
+    thread->synchronousCallback( transferObjectsCallback,this );
     H3DTIMER_END("transferObjectCallback");
 
   }
