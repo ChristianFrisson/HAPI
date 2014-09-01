@@ -123,7 +123,9 @@ namespace HAPI {
       last_force_effect_change( 0 ),
       error_handler( new DefaultErrorHandler ),
       force_limit( -1 ),
-      torque_limit ( -1 ){
+      torque_limit ( -1 ),
+      transfer_objects_active ( false ),
+      always_transfer_objects ( true ) {
       setHapticsRenderer( NULL );
       haptic_rendering_callback_data = this;
       // This value is choosen ad hoc as fairly "standard".
@@ -213,95 +215,191 @@ namespace HAPI {
     //
 
     /// Add a HAPIHapticShape to be rendered haptically.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+    ///
     /// \param shape The haptic shape to render.
     /// \param layer The haptic layer to add the shape to.
     inline void addShape( HAPIHapticShape *shape, 
                           unsigned int layer = 0 ) {
+
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock ();
+
       assureSize( layer );
-      shape_lock.lock();
       tmp_shapes[layer].push_back( shape );
-      shape_lock.unlock();
     }
     
     
     /// Set the HapticShapes to be rendered.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     /// \param shapes The haptic shapes to render.
     /// \param layer The haptic layer to add the shape to.
     inline void setShapes( const HapticShapeVector &shapes, 
                            unsigned int layer = 0 ) {
+
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock ();
+
       assureSize( layer );
       HapticShapeVector v = shapes;
-      shape_lock.lock();
       v.swap( tmp_shapes[layer] );
-      shape_lock.unlock();
     }
 
     /// Get the shapes currently used
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     /// \param layer The haptic layer to get the shapes from.
-    inline const HapticShapeVector &getShapes( unsigned int layer = 0 ) {
+    inline HapticShapeVector getShapes( unsigned int layer = 0 ) {
+      HapticShapeVector return_shapes;
+      
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock ();
+
       assureSize( layer );
-      return tmp_shapes[layer];
+      return_shapes= tmp_shapes[layer];
+
+      return return_shapes;
     }
 
     /// Remove a HAPIHapticShape from the shapes being rendered.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+    ///
     /// \param shape The haptic shape to remove.
     /// \param layer The haptic layer to remove the shape from.
     inline void removeShape( HAPIHapticShape *shape,
                              unsigned int layer = 0 ) {
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock ();
+
       assureSize( layer );
-      shape_lock.lock();
       tmp_shapes[layer].erase( shape );
-      shape_lock.unlock();
     }
     
     /// Add all shapes between [begin, end)
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     /// \param begin Iterator of where to begin getting shapes.
     /// \param end Iterator of where to stop getting shapes.
     /// \param layer The haptic layer to add shapes to
     template< class InputIterator > 
     inline void addShapes( InputIterator begin, InputIterator end,
                            unsigned int layer = 0 ) {
+
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock ();
+
       assureSize( layer );
-      shape_lock.lock();
       tmp_shapes[layer].insert( tmp_shapes[0].end(), begin, end );
-      shape_lock.unlock();
     }
 
     /// Swap the vector of shapes currently being rendered with the
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     /// given vector, replacing all shapes being rendered.
     /// \param shapes The haptic shapes to render.
     /// \param layer The haptic layer to add shapes to
     inline void swapShapes( HapticShapeVector &shapes, 
                             unsigned int layer = 0 ) {
+
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock ();
+      
       assureSize( layer );
-      shape_lock.lock();
       tmp_shapes[layer].swap( shapes );
-      shape_lock.unlock();
     }
 
     /// Remove all HAPIHapticShape objects that are currently being rendered.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     /// \param layer The haptic layer to clear
     inline void clearShapes( unsigned int layer = 0 ) {
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock ();
+
       assureSize( layer );
-      shape_lock.lock();
       tmp_shapes[layer].clear();
-      shape_lock.unlock();
     }
 
     /// Add a HapticForceEffect to be rendered.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     /// \param effect The haptic shapes to render.
     /// \param fade_in_time The time until the effect is rendered at full
     /// strength.
     inline void addEffect( HAPIForceEffect *effect,
                            HAPITime fade_in_time = 0 ) {
-      force_effect_lock.lock();
+
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock ();
+
       tmp_current_force_effects.push_back( effect );
       added_effects_indices.push_back(
         make_pair( (unsigned int) tmp_current_force_effects.size() - 1, fade_in_time ) );
-      force_effect_lock.unlock();
     }
 
     /// Set the HapticForceEffects to be rendered.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     /// \param effects The haptic shapes to render.
     /// \param _switch_effects_duration The time until the new effects have
     /// completely replaced the old ones. During this time the old will be
@@ -309,28 +407,58 @@ namespace HAPI {
     /// 1 - fraction.
     inline void setEffects( const HapticEffectVector &effects,
                             HAPITime _switch_effects_duration = 0 ) {
-      force_effect_lock.lock();
+      
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock ();
+
       tmp_current_force_effects = effects;
       tmp_switch_effects_duration = _switch_effects_duration;
       tmp_switching_effects = true;
       force_effects_to_remove.clear();
       added_effects_indices.clear();
-      force_effect_lock.unlock();
     }
 
     /// Get the shapes currently used
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     inline HapticEffectVector getEffects() {
       HapticEffectVector return_force_effects;
-      force_effect_lock.lock();
+      
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock();
+      
       return_force_effects = tmp_current_force_effects;
-      force_effect_lock.unlock();
+
       return return_force_effects;
     }
 
     /// Remove a force effect so that it is not rendered any longer.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     inline void removeEffect( HAPIForceEffect *effect,
                               HAPITime fade_out_time = 0 ) {
-      force_effect_lock.lock();
+      
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock();
+
       unsigned int i = 0;
       for( HapticEffectVector::const_iterator j =
              tmp_current_force_effects.begin();
@@ -355,21 +483,36 @@ namespace HAPI {
         }
       }
       tmp_current_force_effects.erase( effect );
-      force_effect_lock.unlock();
     }
 
 
 
     /// Add all effects between [begin, end)
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     template< class InputIterator > 
     inline void addEffects( InputIterator begin, InputIterator end ) {
-      force_effect_lock.lock();
-      current_force_effects.insert( current_force_effects.end(), begin, end );
-      force_effect_lock.unlock();
+
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock();
+      
+      tmp_current_force_effects.insert( tmp_current_force_effects.end(), begin, end );
     }
 
     /// Swap the vector of effects currently being rendered with the
     /// given vector, replacing all effects being rendered.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     /// \param effects The new effects which should be rendered on the
     /// haptics device.
     /// \param _switch_effects_duration Duration in seconds before the old
@@ -378,28 +521,50 @@ namespace HAPI {
     /// to transferObjects().
     inline void swapEffects( HapticEffectVector &effects,
                              HAPITime _switch_effects_duration = 0 ) {
-      force_effect_lock.lock();
+
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }      
+      transfer_objects_cond.unlock();
+
       tmp_current_force_effects.swap( effects );
       tmp_switch_effects_duration = _switch_effects_duration;
       tmp_switching_effects = true;
       force_effects_to_remove.clear();
       added_effects_indices.clear();
-      force_effect_lock.unlock();
     }
 
     /// Remove all HAPIForceEffect objects that are currently being rendered.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     inline void clearEffects() {
-      force_effect_lock.lock();
+      
+      // Wait for previous callback to complete
+      transfer_objects_cond.lock ();
+      while ( transfer_objects_active ) {
+        transfer_objects_cond.wait();
+      }
+      transfer_objects_cond.unlock();
+
       tmp_current_force_effects.clear();
       tmp_switching_effects = true;
       tmp_switch_effects_duration = 0;
       force_effects_to_remove.clear();
       added_effects_indices.clear();
-      force_effect_lock.unlock();
     }
     
     /// Transfer all current haptic objects to be rendered by the haptics
     /// renderer.
+    ///
+    /// Adding and removing shapes and force effects should all be
+    /// done from the same ("main") thread. To move the objects to the
+    /// haptics thread call transferObjects(), also from the main thread.
+	  ///
     virtual void transferObjects();
 
     //////////////////////////////////////////////////////////////
@@ -776,6 +941,18 @@ namespace HAPI {
     /// no limit
     inline void setTorqueLimit( HAPIFloat limit ) { torque_limit = limit; }
 
+    /// If true then shapes and force effects are always transfered to the haptic thread
+    /// when transferObjects() is called. If false then they are only transfered if they have
+    /// been changed.
+    ///
+    /// Examining the objects to detect changes will consume more time, but transfering the objects
+    /// is also time consuming, especially if the haptics thread rate fluctuates. Therefor the optimal
+    /// setting is application dependant.
+	  ///
+	  /// The default is to always transfer objects.
+	  ///
+    void setAlwaysTransferObjects ( bool _alwaysTransferObjects ) { always_transfer_objects= _alwaysTransferObjects; }
+
     // The following is part of the database of available haptics devices.
     typedef HAPIHapticsDevice*( *CreateInstanceFunc)(); 
 
@@ -1046,6 +1223,10 @@ namespace HAPI {
     /// Release all resources allocated to the haptics device.
     virtual bool releaseHapticsDevice() = 0;
 
+    /// Returns true if and only if a shapes or force effects have been changed
+    /// requiring a synchronisation with the haptics thread
+    bool haveObjectsChanged ();
+
     /// The thread that this haptics device loop is run in.
     H3DUtil::PeriodicThreadBase *thread;
 
@@ -1173,9 +1354,6 @@ namespace HAPI {
     // the values to send to the haptics device.
     DeviceOutput output;
 
-    // lock for when changing the shapes to be rendered
-    H3DUtil::MutexLock shape_lock;
-
     // lock for when updating device values/sending output
     H3DUtil::MutexLock device_values_lock;
 #ifdef HAVE_PROFILER
@@ -1185,9 +1363,6 @@ namespace HAPI {
 
     // lock for when changing haptics renderer
     H3DUtil::MutexLock renderer_change_lock;
-
-    // lock for when using force effects
-    H3DUtil::MutexLock force_effect_lock;
 
     // container for shapes that will be transferred to the haptic
     // rendering loop through transferObjects.
@@ -1268,6 +1443,13 @@ namespace HAPI {
     /// Default value is 700 N/m.
     HAPIFloat max_stiffness;
     
+    /// A condition lock to signal that the transfer of objects is complete
+    H3DUtil::ConditionLock transfer_objects_cond;
+    bool transfer_objects_active;
+
+    /// If true objects are always transfered to the haptics thread. Otherwise
+    /// they are checked and only transfered if they have changed.
+    bool always_transfer_objects;
   };
 }
 

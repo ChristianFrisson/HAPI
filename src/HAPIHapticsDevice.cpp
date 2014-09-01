@@ -50,8 +50,6 @@ H3DUtil::PeriodicThread::CallbackCode
   HAPIHapticsDevice *hd = 
     static_cast< HAPIHapticsDevice * >( data );
 
-  hd->shape_lock.lock();
-
   // update last transform for all shapes.
   // TODO: do this much faster/better
   for( unsigned int layer = 0; layer < hd->tmp_shapes.size(); ++layer ) {
@@ -80,10 +78,6 @@ H3DUtil::PeriodicThread::CallbackCode
 
   // shapes
   hd->current_shapes = hd->tmp_shapes;
-
-  hd->shape_lock.unlock();
-
-  hd->force_effect_lock.lock();
 
   // force effects. A bit more confusing due to the fact that they
   // should be added with interpolation in some cases.
@@ -201,7 +195,12 @@ H3DUtil::PeriodicThread::CallbackCode
   //std::cout<<"hatpic profile result:"<<temp<<std::endl;
 #endif
   
-  hd->force_effect_lock.unlock();
+  // Signal that transfer obejcts callback is done
+  // Wake up threads that are waiting to write to the shared data
+  hd->transfer_objects_cond.lock ();
+  hd->transfer_objects_active= false;
+  hd->transfer_objects_cond.signal ();
+  hd->transfer_objects_cond.unlock ();
 
   return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
@@ -443,8 +442,22 @@ H3DUtil::PeriodicThread::CallbackCode
 void HAPIHapticsDevice::transferObjects() {
   
   if( thread ) {
-    shape_lock.lock();
-    renderer_change_lock.lock();
+
+    // Wait for previous callback to complete before starting next
+    transfer_objects_cond.lock ();
+    
+    while ( transfer_objects_active ) {
+      transfer_objects_cond.wait();
+    }
+
+    if ( !haveObjectsChanged() ) {
+      transfer_objects_cond.unlock ();
+      return;
+    }
+    
+    transfer_objects_active= true;
+    transfer_objects_cond.unlock ();
+
     for( unsigned int s = 0; s < haptics_renderers.size(); ++s ) {
       H3DTIMER_BEGIN("TRANSFEROBJECT_preprocessShape");
       if( haptics_renderers[s] && s < tmp_shapes.size() ) {
@@ -452,15 +465,10 @@ void HAPIHapticsDevice::transferObjects() {
       H3DTIMER_END("TRANSFEROBJECT_preprocessShape");
       }
     }
-    shape_lock.unlock();
-    renderer_change_lock.unlock();
 
     H3DTIMER_BEGIN("transferObjectCallback");
-    //todo: temporary changed back to synchronous because of crash with Openhaptics
     thread->asynchronousCallback( transferObjectsCallback, this);
-    //thread->synchronousCallback( transferObjectsCallback,this );
     H3DTIMER_END("transferObjectCallback");
-
   }
 }
 
@@ -533,5 +541,41 @@ void HAPIHapticsDevice::updateDeviceValues( HAPITime dt ) {
       last_raw_device_values = current_raw_device_values;
       device_values_lock.unlock();
     }
+  }
+}
+
+bool HAPIHapticsDevice::haveObjectsChanged () {
+  if ( always_transfer_objects ) {
+    return true;
+  }
+
+  // Compare force effects
+  if ( tmp_current_force_effects.size() == current_force_effects.size() ) {
+    for ( size_t i= 0; i < tmp_current_force_effects.size(); ++i ) {
+      if ( tmp_current_force_effects[i] != current_force_effects[i] ) {
+        // Force effects have changed
+        return true;
+      }
+    }
+
+    // Compare shapes
+    if ( tmp_shapes.size() == current_shapes.size() ) {
+      for ( size_t i= 0; i < tmp_shapes.size(); ++i ) {
+        if ( tmp_shapes[i].size() == current_shapes[i].size() ) {
+          for ( size_t j= 0; j < tmp_shapes[i].size(); ++j ) {
+            if ( tmp_shapes[i][j] != current_shapes[i][j] ) {
+              // Shapes have changed
+              return true;
+            }
+          }
+        }
+      }
+    }
+
+    // Every thing is the same
+    return false;
+  } else {
+    // Force effects have changed
+    return true;
   }
 }
