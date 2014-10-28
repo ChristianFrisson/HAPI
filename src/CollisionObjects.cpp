@@ -4687,7 +4687,7 @@ void AABox::getConstraints( const Vec3 &point,
   PointLocation point_location;
   closestPoint( point, min, max,
                 closest_point, normal, tex_coord, point_location );
-  if( (closest_point - point).lengthSqr() < radius * radius ) {
+  if( radius < 0 || (closest_point - point).lengthSqr() < radius * radius ) {
     if( ( face != FRONT && point_location == INSIDE ) ||
       ( face == BACK && point_location == ON_SURFACE ) ) {
         for( int i = 0; i < 3; ++i ) {
