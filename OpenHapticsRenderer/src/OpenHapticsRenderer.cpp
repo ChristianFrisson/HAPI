@@ -572,6 +572,7 @@ void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
 
   OpenHapticsRenderer *renderer = cb_data->renderer;
   HAPIHapticShape *shape = cb_data->shape.get();
+  if( !shape ) return;
 
   vector< int >::iterator found_id =
     find( renderer->already_removed_id.begin(),

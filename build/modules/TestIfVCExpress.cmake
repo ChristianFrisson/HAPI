@@ -2,7 +2,7 @@
 # Can be seen as a way of detecting whether an express version of visual studio is used or not.
 MACRO(TestIfVCExpress)
   IF(MSVC)
-    IF("CMake_HAVE_MFC" MATCHES "^CMake_HAVE_MFC$")
+    IF(CMake_HAVE_MFC MATCHES "^CMake_HAVE_MFC$")
       SET(CHECK_INCLUDE_FILE_VAR "afxwin.h")
       CONFIGURE_FILE(${CMAKE_ROOT}/Modules/CheckIncludeFile.cxx.in
         ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/CheckIncludeFile.cxx)
@@ -27,6 +27,6 @@ MACRO(TestIfVCExpress)
           "Determining if MFC exists failed with the following output:\n"
           "${OUTPUT}\n\n")
       ENDIF(CMake_HAVE_MFC)
-    ENDIF("CMake_HAVE_MFC" MATCHES "^CMake_HAVE_MFC$")
+    ENDIF(CMake_HAVE_MFC MATCHES "^CMake_HAVE_MFC$")
   ENDIF(MSVC)
 ENDMACRO(TestIfVCExpress)
