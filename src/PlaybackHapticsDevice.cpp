@@ -309,8 +309,7 @@ void PlaybackHapticsDevice::readFieldsValuesBinary ( HAPIHapticsDevice::DeviceVa
       H3DUtil::readH3DType ( playback_file, _dv.velocity );
     }
     else if ( field_name == "RAW_FORCE" ) {
-      HAPI::Vec3 f;
-      H3DUtil::readH3DType ( playback_file, f );
+      H3DUtil::readH3DType ( playback_file, _dv.force );
     }
     else if ( field_name == "RAW_TORQUE" ) {
       HAPI::Vec3 t;
