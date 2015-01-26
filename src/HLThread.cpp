@@ -108,13 +108,11 @@ int HLThread::asynchronousCallback( CallbackFunc func, void *data ) {
   param[0] = (void*)func;
   param[1] = data;
   param[2] = (void*)this;
-  HLThreadInternals::callback_handles_lock.lock();
-  
   HDSchedulerHandle hd_callback_handle = 
     hdScheduleAsynchronous( hdCallbackAsynchronous,
                             param,
                             HD_DEFAULT_SCHEDULER_PRIORITY );
-  
+  HLThreadInternals::callback_handles_lock.lock();
   cb_handle = genCallbackId();
   HLThreadInternals::callback_handles.push_back(
     std::make_pair( cb_handle, std::make_pair( param, hd_callback_handle ) ) );
