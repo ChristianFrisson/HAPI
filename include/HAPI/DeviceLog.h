@@ -132,7 +132,8 @@ namespace HAPI {
       RAW_ORIENTATION = 8,
       RAW_VELOCITY = 9,
       RAW_FORCE = 10,
-      RAW_TORQUE = 11
+      RAW_TORQUE = 11,
+      TIMESTAMP = 12
     } LogType;
 
     typedef vector< LogType > LogTypeVector;
