@@ -154,6 +154,10 @@ void DeviceLog::writeLogRow ( const EffectInput &input, HAPITime log_time ) {
           H3DUtil::writeH3DType( log_file, crdv.torque );
           break;
         }
+        case TIMESTAMP: {
+          H3DUtil::writeH3DType( log_file, TimeStamp() );
+          break;
+        }
         default: {}
       }
     }
@@ -209,6 +213,10 @@ void DeviceLog::writeLogRow ( const EffectInput &input, HAPITime log_time ) {
         }
         case RAW_TORQUE: {
           log_file << crdv.torque;
+          break;
+        }
+        case TIMESTAMP: {
+          log_file << TimeStamp();
           break;
         }
         default: {}
@@ -270,10 +278,16 @@ void DeviceLog::writeHeaderRow ( const EffectInput & /*input*/ ) {
           H3DUtil::writeH3DType( log_file, "RAW_TORQUE" );
           break;
         }
+        case TIMESTAMP: {
+          H3DUtil::writeH3DType( log_file, "TIMESTAMP" );
+          break;
+        }
         default: {}
       }
     }
   } else {
+    log_file.precision ( 5 );
+    log_file << std::fixed;
     for( LogTypeVector::iterator i = log_type.begin();
          i != log_type.end(); ++i ) {
       if( i != log_type.begin() )
@@ -325,6 +339,10 @@ void DeviceLog::writeHeaderRow ( const EffectInput & /*input*/ ) {
         }
         case RAW_TORQUE: {
           log_file << "RAW_TORQUE";
+          break;
+        }
+        case TIMESTAMP: {
+          log_file << "TIMESTAMP";
           break;
         }
         default: {}
