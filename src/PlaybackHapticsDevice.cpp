@@ -185,25 +185,27 @@ void PlaybackHapticsDevice::clearDataFields () {
   use_field_names.clear();
 }
 
-bool PlaybackHapticsDevice::getPlaybackValuesNext ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time ) {
+bool PlaybackHapticsDevice::getPlaybackValuesNext ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time, HAPITime& _timestamp ) {
   if ( binary ) {
-    return getPlaybackValuesNextBinary ( _dv, _time );
+    return getPlaybackValuesNextBinary ( _dv, _time, _timestamp );
   } else {
-    return getPlaybackValuesNextText ( _dv, _time );
+    return getPlaybackValuesNextText ( _dv, _time, _timestamp );
   }
 }
 
-bool PlaybackHapticsDevice::getPlaybackValuesNextText ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time ) {
+bool PlaybackHapticsDevice::getPlaybackValuesNextText ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time, HAPITime& _timestamp ) {
   if ( !playback_file.good() ) {
     return false;
   }
 
   HAPIHapticsDevice::DeviceValues dv_tmp;
   HAPITime time_tmp= -1;
-  readFieldsValuesText ( dv_tmp, time_tmp );
+  HAPITime timestamp_tmp= -1;
+  readFieldsValuesText ( dv_tmp, time_tmp, timestamp_tmp );
 
   if ( playback_file.good() ) {
     _time= time_tmp;
+    _timestamp= timestamp_tmp;
     _dv= dv_tmp;
     return true;
   } else {
@@ -211,17 +213,19 @@ bool PlaybackHapticsDevice::getPlaybackValuesNextText ( HAPIHapticsDevice::Devic
   }
 }
 
-bool PlaybackHapticsDevice::getPlaybackValuesNextBinary ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time ) {
+bool PlaybackHapticsDevice::getPlaybackValuesNextBinary ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time, HAPITime& _timestamp ) {
   if ( !playback_file.good() ) {
     return false;
   }
 
   HAPIHapticsDevice::DeviceValues dv_tmp;
   HAPITime time_tmp= -1;
-  readFieldsValuesBinary ( dv_tmp, time_tmp );
+  HAPITime timestamp_tmp= -1;
+  readFieldsValuesBinary ( dv_tmp, time_tmp, timestamp_tmp );
 
   if ( playback_file.good() ) {
     _time= time_tmp;
+    _timestamp= timestamp_tmp;
     _dv= dv_tmp;
     return true;
   } else {
@@ -234,10 +238,11 @@ bool PlaybackHapticsDevice::getPlaybackValuesAtTime ( HAPI::HAPIHapticsDevice::D
   if ( _time > playback_time ) {
     DeviceValues dv_tmp= playback_device_values;
 
-    bool success= getPlaybackValuesNext ( dv_tmp, playback_time );
+    HAPITime timestamp;
+    bool success= getPlaybackValuesNext ( dv_tmp, playback_time, timestamp );
   
     while ( success && playback_time < _time && playback_time > 0 ) {
-      success= getPlaybackValuesNext ( dv_tmp, playback_time );
+      success= getPlaybackValuesNext ( dv_tmp, playback_time, timestamp );
     }
 
     if ( use_field_names.empty() ) {
@@ -269,7 +274,7 @@ bool PlaybackHapticsDevice::getPlaybackValuesAtTime ( HAPI::HAPIHapticsDevice::D
   }
 }
 
-void PlaybackHapticsDevice::readFieldsValuesBinary ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time ) { 
+void PlaybackHapticsDevice::readFieldsValuesBinary ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time, HAPITime& _timestamp ) { 
   for ( StringList::iterator i= field_names.begin(); i != field_names.end(); ++i ) {
     std::string field_name= *i;
 
@@ -315,10 +320,13 @@ void PlaybackHapticsDevice::readFieldsValuesBinary ( HAPIHapticsDevice::DeviceVa
       HAPI::Vec3 t;
       H3DUtil::readH3DType ( playback_file, t );
     }
+    else if ( field_name == "TIMESTAMP" ) {
+      H3DUtil::readH3DType ( playback_file, _timestamp );
+    }
   }
 }
 
-void PlaybackHapticsDevice::readFieldsValuesText ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time ) {
+void PlaybackHapticsDevice::readFieldsValuesText ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time, HAPITime& _timestamp ) {
   for ( StringList::iterator i= field_names.begin(); i != field_names.end(); ++i ) {
     std::string field_name= *i;
 
@@ -364,6 +372,9 @@ void PlaybackHapticsDevice::readFieldsValuesText ( HAPIHapticsDevice::DeviceValu
     else if ( field_name == "RAW_TORQUE" ) {
       HAPIFloat f;
       playback_file >> f; playback_file >> f; playback_file >> f;
+    }
+    else if ( field_name == "TIMESTAMP" ) {
+      playback_file >> _timestamp;
     }
   }
 }

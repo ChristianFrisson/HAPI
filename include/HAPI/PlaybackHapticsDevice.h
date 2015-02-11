@@ -168,7 +168,7 @@ namespace HAPI {
     /// \param[out] _dv   The device values read from the recording
     /// \param[out] _time The time of the device values in the recording
     ///
-    bool getPlaybackValuesNext ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time );
+    bool getPlaybackValuesNext ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time, HAPITime& _timestamp );
 
   protected:
     typedef std::vector < std::string > StringList;
@@ -183,20 +183,20 @@ namespace HAPI {
     bool getPlaybackValuesAtTime ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime _time );
 
     /// Implementation of getPlaybackValuesNext() for binary file types
-    bool getPlaybackValuesNextBinary ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime& _time );
+    bool getPlaybackValuesNextBinary ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime& _time, HAPITime& _timestamp );
 
     /// Implementation of getPlaybackValuesNext() for text file types
-    bool getPlaybackValuesNextText ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime& _time );
+    bool getPlaybackValuesNextText ( HAPI::HAPIHapticsDevice::DeviceValues& _dv, HAPI::HAPITime& _time, HAPITime& _timestamp );
 
     /// Virtual function to read field values from binary file
     ///
     /// Subclasses may override this to read additional non-standard field values
-    virtual void readFieldsValuesBinary ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time );
+    virtual void readFieldsValuesBinary ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time, HAPITime& _timestamp );
 
     /// Virtual function to read field values from text file
     ///
     /// Subclasses may override this to read additional non-standard field values
-    virtual void readFieldsValuesText ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time );
+    virtual void readFieldsValuesText ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time, HAPITime& _timestamp );
 
     /// Read and returns a list of column headings from the recording file, when file is 
     /// in binary format.
