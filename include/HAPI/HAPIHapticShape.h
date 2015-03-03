@@ -605,7 +605,7 @@ namespace HAPI {
     // shape was used.
     Matrix4 last_inverse;
     
-    /// The volocity of the shape(m/s)
+    /// The velocity of the shape(m/s)
     Vec3 velocity;
 
     /// The angular velocity of the shape(radians/s)
@@ -632,7 +632,7 @@ namespace HAPI {
     /// \param cp Return parameter for closest point (in local coords).
     /// \param n Return parameter for normal at closest point
     /// (in local coords).
-    /// \param tc Return paramater for texture coordinate at closest point.
+    /// \param tc Return parameter for texture coordinate at closest point.
     virtual void closestPointOnShape( const Vec3 &p, Vec3 &cp, 
                                       Vec3 &n, Vec3 &tc ) = 0;
 
