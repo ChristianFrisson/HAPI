@@ -479,11 +479,11 @@ bool SphereBound::boundIntersect( const Vec3 &from,
   return (ap*ap - e*e/f) <= r2;
 }
 
-bool SphereBound::movingSphereIntersect( HAPIFloat radius,
-                                              const Vec3 &from, 
-                                              const Vec3 &to ) {
+bool SphereBound::movingSphereIntersect( HAPIFloat _radius,
+                                         const Vec3 &from, 
+                                         const Vec3 &to ) {
   Sphere sphere( center, radius );
-  return sphere.movingSphereIntersect( radius, from, to );
+  return sphere.movingSphereIntersect( _radius, from, to );
 }
 
 bool SphereBound::lineIntersect( const Vec3 &from, 
@@ -612,52 +612,51 @@ BinaryBoundTree::BinaryBoundTree( BoundNewFunc func,
     mid = (1.0f/stack_triangles.size()) * mid;  //divide by N
     
     //  build subsets based on axis/middle point
-    std::vector<int> left;
-    std::vector<int> right;
+    std::vector<int> left_points;
+    std::vector<int> right_points;
     
-    left.reserve( stack_triangles.size() / 2 );
-    right.reserve( stack_triangles.size() / 2 );
+    left_points.reserve( stack_triangles.size() / 2 );
+    right_points.reserve( stack_triangles.size() / 2 );
 
     
     for( unsigned int i = 0 ; i<stack_triangles.size() ; ++i ) {
-      Vec3 mid_to_point = 
-        point_reps[ stack_triangles[i] ] - mid;
+      Vec3 mid_to_point = point_reps[ stack_triangles[i] ] - mid;
       if ( mid_to_point * axis < 0 )
-        left.push_back(stack_triangles[i]);
+        left_points.push_back(stack_triangles[i]);
       else
-        right.push_back(stack_triangles[i]);
+        right_points.push_back(stack_triangles[i]);
     }
     
     // anity check... sometimes current subset cannot be divided by longest
     // axis: change axis or just half
-    if ( (left.size() == 0) || (right.size() == 0) ) {
-      left.clear();
-      right.clear();
+    if ( (left_points.size() == 0) || (right_points.size() == 0) ) {
+      left_points.clear();
+      right_points.clear();
       for (size_t i = 0 ; i<stack_triangles.size()/2 ; ++i) 
-        left.push_back(stack_triangles[i]);
+        left_points.push_back(stack_triangles[i]);
       for (size_t i = stack_triangles.size()/2 ;
            i<stack_triangles.size() ; ++i)
-        right.push_back(stack_triangles[i]);
+        right_points.push_back(stack_triangles[i]);
     }
     
     stack.pop();
 
     // do recurse
-    if ( left.size() != 0) {
+    if (left_points.size() != 0) {
       stack_tree->left.reset( new BinaryBoundTree );
       
       StackElement element;
       element.tree = stack_tree->left.get();
-      element.triangles.swap( left );
+      element.triangles.swap(left_points);
       stack.push( element );
     }
     
-    if ( right.size() != 0) {
+    if (right_points.size() != 0) {
       stack_tree->right.reset( new BinaryBoundTree );
       
       StackElement element;
       element.tree = stack_tree->right.get();
-      element.triangles.swap( right );
+      element.triangles.swap( right_points );
       stack.push( element );
     }
   }
@@ -963,16 +962,16 @@ void BinaryBoundTree::renderBounds( int depth ) {
                               Vec3 &return_normal,
                               Vec3 &tex_coord ) {
 
-  Vec3 ab = b-a;
-  Vec3 ac = c-a;
+  Vec3 _ab = b-a;
+  Vec3 _ac = c-a;
   Vec3 ap = p-a ;
 
-  Vec3  nn = ab % ac;
+  Vec3  nn = _ab % _ac;
   nn.normalizeSafe();
   return_normal = nn;
 
-  HAPIFloat d1 = ab * ap;
-  HAPIFloat d2 = ac * ap;
+  HAPIFloat d1 = _ab * ap;
+  HAPIFloat d2 = _ac * ap;
   if( d1 <= Constants::epsilon && d2 <= Constants::epsilon ) {
     //cerr << "1" << endl;
     tex_coord = ta;
@@ -981,8 +980,8 @@ void BinaryBoundTree::renderBounds( int depth ) {
   }
 
   Vec3 bp = p - b;
-  HAPIFloat d3 = ab * bp;
-  HAPIFloat d4 = ac * bp;
+  HAPIFloat d3 = _ab * bp;
+  HAPIFloat d4 = _ac * bp;
 
   if( d3 >= -Constants::epsilon && d4 <= d3 ) {
     //    cerr << "2" << endl;
@@ -997,14 +996,14 @@ void BinaryBoundTree::renderBounds( int depth ) {
       d3 <= Constants::epsilon ) {
     // cerr << "3" << endl;
     HAPIFloat v = d1 / ( d1 - d3 );
-    closest_point = a + v * ab;
+    closest_point = a + v * _ab;
     tex_coord = ta + v * (tb - ta);
     return;
   }
 
   Vec3 cp = p - c;
-  HAPIFloat d5 = ab * cp;
-  HAPIFloat d6 = ac * cp;
+  HAPIFloat d5 = _ab * cp;
+  HAPIFloat d6 = _ac * cp;
   if( d6 >= -Constants::epsilon && d5 <= d6 ) {
     //cerr << "4" << endl;
     tex_coord = tc;
@@ -1018,7 +1017,7 @@ void BinaryBoundTree::renderBounds( int depth ) {
       d6 <= Constants::epsilon ) {
     //cerr << "5" << endl;
     HAPIFloat w = d2 / ( d2 - d6 );
-    closest_point = a + w * ac;
+    closest_point = a + w * _ac;
     tex_coord = ta + w * (tc - ta );
     return;
   }
@@ -1038,7 +1037,7 @@ void BinaryBoundTree::renderBounds( int depth ) {
   HAPIFloat denom = 1 / ( va + vb + vc );
   HAPIFloat v = vb * denom;
   HAPIFloat w = vc * denom;
-  closest_point = a + ab * v + ac * w;
+  closest_point = a + _ab * v + _ac * w;
   tex_coord = ta + (tb - ta) * v + (tc - ta ) * w;
   /*
   Vec3 normal = ca % cb;
@@ -1086,11 +1085,11 @@ void BinaryBoundTree::renderBounds( int depth ) {
 
   HAPIFloat ca_length2 = ca.lengthSqr();
   HAPIFloat cb_length2 = cb.lengthSqr();
-  HAPIFloat ab_length2 = ab.lengthSqr();
+  HAPIFloat ab_length2 = _ab.lengthSqr();
 
   HAPIFloat ca_t = (cp * ca) / ca_length2;
   HAPIFloat cb_t = (cp * cb) / cb_length2;
-  HAPIFloat ab_t = (ap * ab) / ab_length2;
+  HAPIFloat ab_t = (ap * _ab) / ab_length2;
 
   if( ca_t < 0 && cb_t < 0 )
     return c;
@@ -1107,7 +1106,7 @@ void BinaryBoundTree::renderBounds( int depth ) {
 
   Vec3 ca_p = c + ca * ca_t;
   Vec3 cb_p = c + cb * cb_t;
-  Vec3 ab_p = a + ab * ab_t;
+  Vec3 ab_p = a + _ab * ab_t;
   
   HAPIFloat dist_cap = (ca_p - p).lengthSqr();  
   HAPIFloat dist_cbp = (cb_p - p).lengthSqr();  
@@ -1360,12 +1359,12 @@ bool Triangle::movingSphereIntersect( HAPIFloat radius,
     Vec3 a0 = a - P;
     Vec3 b0 = b - P;
     Vec3 c0 = c - P;
-    HAPIFloat ab = a0 * b0;
-    HAPIFloat ac = a0 * c0;
+    HAPIFloat _ab = a0 * b0;
+    HAPIFloat _ac = a0 * c0;
     HAPIFloat bc = b0 * c0;
     // Make sure plane normals for pab and pbc point in the same direction
-    if( bc * ac - (c0 * c0) * ab < 0.0f ) inside = false;
-    else if( ab * bc - ac * (b0 * b0) ) inside = false;
+    if( bc * _ac - (c0 * c0) * _ab < 0.0f ) inside = false;
+    else if(_ab * bc - _ac * (b0 * b0) ) inside = false;
     
     if( inside )
       return true;
@@ -1470,12 +1469,12 @@ bool Triangle::movingSphereIntersect( HAPIFloat radius,
     Vec3 a0 = a - P;
     Vec3 b0 = b - P;
     Vec3 c0 = c - P;
-    HAPIFloat ab = a0 * b0;
-    HAPIFloat ac = a0 * c0;
+    HAPIFloat _ab = a0 * b0;
+    HAPIFloat _ac = a0 * c0;
     HAPIFloat bc = b0 * c0;
     // Make sure plane normals for pab and pbc point in the same direction
-    if( bc * ac - (c0 * c0) * ab < 0.0f ) inside = false;
-    else if( ab * bc - ac * (b0 * b0) < 0.0f ) inside = false;
+    if( bc * _ac - (c0 * c0) * _ab < 0.0f ) inside = false;
+    else if(_ab * bc - _ac * (b0 * b0) < 0.0f ) inside = false;
 
     if( inside ) {
       result.point = P;
@@ -1901,13 +1900,13 @@ bool OrientedBoxBound::insideBound( const Vec3 &p ) {
 }
 
 void OrientedBoxBound::render() {
-  Vec3 center = -orientation * ((max + min)/2);
+  Vec3 _center = -orientation * ((max + min)/2); // Why not use already calculated center?
 #ifdef HAVE_OPENGL
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glDisable( GL_LIGHTING );
   glColor3d( 1, 1, 0 );
-  glTranslated( center.x, center.y, center.z );
+  glTranslated(_center.x, _center.y, _center.z );
   glRotated( -orientation.angle *180 / H3DUtil::Constants::pi, 
              orientation.axis.x, orientation.axis.y, orientation.axis.z );
   Vec3 minf( - halfsize );
@@ -2734,20 +2733,20 @@ struct lt {
 const vector<int> &BinaryBoundTree::getNeighbours() {
   if( !neighbours.empty() ) return neighbours;
 
-  vector< HAPI::Collision::Triangle > triangles;
-  getAllTriangles( triangles );
+  vector< HAPI::Collision::Triangle > tris;
+  getAllTriangles(tris);
 
-  neighbours.resize( triangles.size()*3, -1 );
+  neighbours.resize(tris.size()*3, -1 );
 
   // map from triangle edge(as pair of vertex) to pair of 
   // (triangle index, edge index within triangle) 
   typedef map< pair< Vec3, Vec3 >, pair<int, int>, lt >  EdgeTriangleMap;
   EdgeTriangleMap edges;
  
-  for( unsigned int i = 0; i < triangles.size(); ++i ) {
-    const HAPI::Collision::Triangle &tri = triangles[i];
+  for( unsigned int i = 0; i < tris.size(); ++i ) {
+    const HAPI::Collision::Triangle &tri = tris[i];
 
-    // ignore invalid triangles that are lines or points
+    // ignore invalid tris that are lines or points
     if( tri.a == tri.b || tri.b == tri.c || tri.a == tri.c ) {
       continue;
     }
@@ -2964,52 +2963,51 @@ BBPrimitiveTree::BBPrimitiveTree(
     mid = (1.0f/stack_primitives.size()) * mid;  //divide by N
     
     //  build subsets based on axis/middle point
-    std::vector<int> left;
-    std::vector<int> right;
+    std::vector<int> left_primitives;
+    std::vector<int> right_primitives;
     
-    left.reserve( stack_primitives.size() / 2 );
-    right.reserve( stack_primitives.size() / 2 );
+    left_primitives.reserve( stack_primitives.size() / 2 );
+    right_primitives.reserve( stack_primitives.size() / 2 );
 
     
     for( unsigned int i = 0 ; i<stack_primitives.size() ; ++i ) {
-      Vec3 mid_to_point = 
-        point_reps[ stack_primitives[i] ] - mid;
+      Vec3 mid_to_point = point_reps[ stack_primitives[i] ] - mid;
       if ( mid_to_point * axis < 0 )
-        left.push_back(stack_primitives[i]);
+        left_primitives.push_back(stack_primitives[i]);
       else
-        right.push_back(stack_primitives[i]);
+        right_primitives.push_back(stack_primitives[i]);
     }
     
     // anity check. sometimes current subset cannot be divided by longest 
     // axis: change axis or just half
-    if ( (left.size() == 0) || (right.size() == 0) ) {
-      left.clear();
-      right.clear();
+    if( ( left_primitives.size() == 0 ) || ( right_primitives.size() == 0 ) ) {
+      left_primitives.clear();
+      right_primitives.clear();
       for (size_t i = 0 ; i<stack_primitives.size()/2 ; ++i) 
-        left.push_back(stack_primitives[i]);
+          left_primitives.push_back(stack_primitives[i]);
       for (size_t i = stack_primitives.size()/2 ;
             i<stack_primitives.size() ; ++i) 
-        right.push_back(stack_primitives[i]);
+        right_primitives.push_back(stack_primitives[i]);
     }
     
     stack.pop();
 
     //  do recurse
-    if ( left.size() != 0) {
+    if( left_primitives.size() != 0 ) {
       stack_tree->left.reset( new BBPrimitiveTree );
       
       StackElementPrimitive element;
       element.tree = stack_tree->left.get();
-      element.primitives.swap( left );
+      element.primitives.swap( left_primitives );
       stack.push( element );
     }
     
-    if ( right.size() != 0) {
+    if( right_primitives.size() != 0 ) {
       stack_tree->right.reset( new BBPrimitiveTree );
       
       StackElementPrimitive element;
       element.tree = stack_tree->right.get();
-      element.primitives.swap( right );
+      element.primitives.swap( right_primitives );
       stack.push( element );
     }
   }
@@ -3237,28 +3235,28 @@ bool Triangle::getConstraint(  const Vec3 &point,
                                FaceType face ) {
   Vec3 closest_point, cp_normal, cp_tex_coord;
   closestPoint( point, closest_point, cp_normal, cp_tex_coord );
-  Vec3 normal = point - closest_point;
+  Vec3 pc_normal = point - closest_point;
   
   if( face == Collision::FRONT ) {
-    if( normal * cp_normal < 0 ) return false;
+    if(pc_normal * cp_normal < 0 ) return false;
   } else if( face == Collision::BACK ) {
-    if( normal * cp_normal > 0 ) return false;
+    if(pc_normal * cp_normal > 0 ) return false;
   }
-  HAPIFloat l2 = normal.x*normal.x+normal.y*normal.y+normal.z*normal.z;
+  HAPIFloat l2 = pc_normal.x*pc_normal.x+ pc_normal.y*pc_normal.y+ pc_normal.z*pc_normal.z;
   // if the length already is 1 we don't have to do anything
   if( H3DUtil::H3DAbs(l2-1) > Constants::epsilon ) {
     HAPIFloat l = H3DUtil::H3DSqrt( l2 );
     if( H3DUtil::H3DAbs(l) >= Constants::epsilon ) {
-      normal.x /= l; 
-      normal.y /= l;
-      normal.z /= l;
+      pc_normal.x /= l;
+      pc_normal.y /= l;
+      pc_normal.z /= l;
     } else {
       // Choose primitive normal instead.
-      normal = cp_normal;
+      pc_normal = cp_normal;
     }
   }
   
-  *constraint = PlaneConstraint( closest_point, normal, 
+  *constraint = PlaneConstraint( closest_point, pc_normal,
                                  cp_tex_coord, NULL, this );
   return true;
 }
@@ -4406,9 +4404,9 @@ void AABox::closestPoint( const Vec3 &p,
         normal.normalize();
         closest_point = p;
       } else if( closest_i == i ) {
-        for( int i = 0; i < 3; ++i ) {
-          if( i != closest_i )
-            _normal[i] = 0;
+        for( int j = 0; j < 3; ++j ) {
+          if( j != closest_i )
+            _normal[j] = 0;
         }
         normal = _normal;
         closest_point = p;
