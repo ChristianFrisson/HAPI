@@ -13,12 +13,22 @@ ELSE( CMAKE_CL_64 )
   SET( LIB "lib32" )
 ENDIF( CMAKE_CL_64 )
 
+SET( VIRTUOSE_INCLUDE_SEARCH_PATHS "" )
+SET( VIRTUOSE_LIB_SEARCH_PATHS "" )
+IF( NOT MSVC14 )
+  SET( VIRTUOSE_INCLUDE_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                     $ENV{H3D_ROOT}/../External/include
+                                     ../../External/include
+                                     ${module_file_path}/../../../External/include )
+  SET( VIRTUOSE_LIB_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                                 $ENV{H3D_ROOT}/../External/${LIB}
+                                 ../../External/${LIB}
+                                 ${module_file_path}/../../../External/${LIB} )
+ENDIF()
+
 # Look for the header file.
 FIND_PATH(VIRTUOSE_INCLUDE_DIR NAMES VirtuoseAPI.h 
-                          PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                $ENV{H3D_ROOT}/../External/include
-                                ../../External/include
-                                ${module_file_path}/../../../External/include
+                          PATHS ${VIRTUOSE_INCLUDE_SEARCH_PATHS}
                           DOC "Path in which the file VirtuoseAPI.h is located." )
 MARK_AS_ADVANCED(VIRTUOSE_INCLUDE_DIR)
 
@@ -26,17 +36,11 @@ MARK_AS_ADVANCED(VIRTUOSE_INCLUDE_DIR)
 # Look for the library.
 IF(WIN32)
   FIND_LIBRARY(VIRTUOSE_LIBRARY NAMES virtuoseDLL
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                 $ENV{H3D_ROOT}/../External/${LIB}
-                                 ../../External/${LIB}
-                                 ${module_file_path}/../../../External/${LIB}
+                           PATHS ${VIRTUOSE_LIB_SEARCH_PATHS}
                            DOC "Path to virtuoseDLL.lib library." )
 ELSE(WIN32)
   FIND_LIBRARY(VIRTUOSE_LIBRARY NAMES virtuose
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                 $ENV{H3D_ROOT}/../External/${LIB}
-                                 ../../External/${LIB}
-                                 ${module_file_path}/../../../External/${LIB}
+                           PATHS ${VIRTUOSE_LIB_SEARCH_PATHS}
                            DOC "Path to dhd library." )
 
 ENDIF(WIN32)
