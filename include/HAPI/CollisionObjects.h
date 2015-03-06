@@ -526,6 +526,10 @@ namespace HAPI {
 
       // The vectors from a to c and from a to b. Help variables for collision
       // functions.
+      /// \todo Consider removing these since they are not always used in the collision
+      /// functions and when they are there might be issues if a, b and c are updated
+      /// but ab/ac are not. So either add function to set a,b,c, and hide them or
+      /// remove these.
       Vec3 ac, ab;
     };
 
