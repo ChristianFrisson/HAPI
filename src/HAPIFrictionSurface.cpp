@@ -51,12 +51,12 @@ void HAPIFrictionSurface::setLocalProxyMovement( ContactInfo &contact_info,
                                                  HAPIFloat t_force_length,
                                                  HAPIFloat n_force_length,
                                                  Vec2 &proxy_movement,
-                                                 HAPIFloat static_friction,
-                                                 HAPIFloat dynamic_friction,
+                                                 HAPIFloat _static_friction,
+                                                 HAPIFloat _dynamic_friction,
                                                  HAPIFloat *proxy_mov_length ) {
   if( in_static_contact ) {
     // Determine if the movement should start.
-    if( t_force_length <= static_friction * n_force_length ) {
+    if( t_force_length <= _static_friction * n_force_length ) {
       contact_info.setLocalProxyMovement(Vec2( 0, 0 ));
     } else {
       in_static_contact = false;
@@ -67,7 +67,7 @@ void HAPIFrictionSurface::setLocalProxyMovement( ContactInfo &contact_info,
     HAPIFloat b = 1;
     HAPIFloat dt = 1.0 / contact_info.hapticsDevice()->getHapticsRate();
     HAPIFloat velocity = 
-      ( t_force_length - dynamic_friction * n_force_length ) / b;
+      ( t_force_length - _dynamic_friction * n_force_length ) / b;
 
     if( velocity < Constants::epsilon ) {
       // If the velocity is negative then the dynamic friction term is

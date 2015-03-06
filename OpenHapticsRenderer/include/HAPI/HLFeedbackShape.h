@@ -78,7 +78,7 @@ namespace HAPI {
     /// \param hd The haptics device for which the surface should be rendered.
     /// \param shape_id The HL-id for the shape.
     virtual void hlRender( HAPI::HAPIHapticsDevice *hd,
-                           HLuint shape_id );
+                           HLuint _shape_id );
   protected:
     /// Must be defined in order to link correctly.
     virtual bool lineIntersectShape( const Vec3 &from, 

@@ -40,7 +40,7 @@
 using namespace HAPI;
 
 void HLDepthBufferShape::hlRender( HAPI::HAPIHapticsDevice *hd,
-                                   HLuint shape_id ) {
+                                   HLuint _shape_id ) {
 
   if( OpenHapticsRenderer::surfaceSupported( surface.get() ) ) {
     //&& closeEnoughToBound( hd->proxyPosition->getValue(),  
@@ -108,7 +108,7 @@ void HLDepthBufferShape::hlRender( HAPI::HAPIHapticsDevice *hd,
     } else if( negative_scaling )
       glFrontFace( GL_CW );
 
-    hlBeginShape( HL_SHAPE_DEPTH_BUFFER, shape_id );
+    hlBeginShape( HL_SHAPE_DEPTH_BUFFER, _shape_id );
     glClear( GL_DEPTH_BUFFER_BIT );
     gl_shape->glRender();
     //    geometry->hlRender( hd, (Matrix4f)transform );
