@@ -231,12 +231,12 @@ void RuspiniRenderer::onTwoPlaneContact( const Vec3& proxy_pos,
 
 void RuspiniRenderer::onThreeOrMorePlaneContact(  
           const Vec3& proxy_pos,
-          Constraints &constraints,
+          Constraints &_constraints,
           HAPISurfaceObject::ContactInfo &contact ) {
-  assert( constraints.size() >= 3 );
+  assert(_constraints.size() >= 3 );
 
   // find the first three planes that all constrain the proxy
-  Constraints::iterator i = constraints.begin();
+  Constraints::iterator i = _constraints.begin();
   PlaneConstraint &p0 = (*i++);
   PlaneConstraint &p1 = (*i++);
   PlaneConstraint &p2 = (*i++);
@@ -244,7 +244,7 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
   Vec3 contact_global = contact.globalContactPoint();
   Vec3 probe_local_pos( 0, 0, 0 );
 
-  if( i == constraints.end() ) {
+  if( i == _constraints.end() ) {
     // transformation matrix from local coordinate system with the normals
     // of the constraint planes as axis to global space
     Matrix4 m( p0.normal.x, p1.normal.x, p2.normal.x, contact_global.x, 
@@ -266,7 +266,7 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
       /// that changes. probe_local_pos is already 0,0,0 so do nothing here.
     }
   } else {
-    while( i != constraints.end() ) {
+    while( i != _constraints.end() ) {
       // transformation matrix from local coordinate system with the normals
       // of the constraint planes as axis to global space
       Matrix4 m( p0.normal.x, p1.normal.x, p2.normal.x, contact_global.x, 
@@ -661,8 +661,8 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         // the shape will probably come into contact with the object between now
         // and next time step so we move the proxy with the shape to not miss it.
         Vec3 new_target = (*i)->moveTimestep( new_proxy_pos, -dt );
-        Collision::IntersectionInfo intersection;
-        if( (*i)->lineIntersect( new_proxy_pos, new_target, intersection,
+        Collision::IntersectionInfo intersection_tmp;
+        if( (*i)->lineIntersect( new_proxy_pos, new_target, intersection_tmp,
                                  (*i)->getTouchableFace()) ){
           new_proxy_pos = (*i)->moveTimestep( new_proxy_pos, dt );
         }

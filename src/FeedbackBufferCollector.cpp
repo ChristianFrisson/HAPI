@@ -343,11 +343,11 @@ FeedbackBufferCollector::endCollecting(
 
 
    
-int FeedbackBufferCollector::parseVertex( GLfloat *buffer, int index, 
+int FeedbackBufferCollector::parseVertex( GLfloat *_buffer, int index, 
                                          Vec3 &p, H3DUtil::RGBA &color, Vec3 &tc ) {
-  p = Vec3( buffer[index], buffer[index+1], buffer[index+2] );
-  color = H3DUtil::RGBA( buffer[index + 3], buffer[index+4], buffer[index+5], buffer[index+6] );
-  tc = Vec3( buffer[index + 7], buffer[index+8], buffer[index+9] ) / buffer[index+10];
+  p = Vec3( _buffer[index], _buffer[index+1], _buffer[index+2] );
+  color = H3DUtil::RGBA( _buffer[index + 3], _buffer[index+4], _buffer[index+5], _buffer[index+6] );
+  tc = Vec3( _buffer[index + 7], _buffer[index+8], _buffer[index+9] ) / _buffer[index+10];
   
   return 11;
 }

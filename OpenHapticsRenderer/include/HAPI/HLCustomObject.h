@@ -86,7 +86,7 @@ namespace HAPI {
     /// \param hd The haptics device for which the surface should be rendered.
     /// \param shape_id The HL-id for the shape.
     virtual void hlRender( HAPIHapticsDevice *hd,
-                           HLuint shape_id );
+                           HLuint _shape_id );
 
   protected:
     // Callback function for finding the intersection between a line segment

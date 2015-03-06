@@ -104,8 +104,8 @@ namespace HAPI {
                                 HAPIFloat t_force_length,
                                 HAPIFloat n_force_length,
                                 Vec2 &proxy_movement,
-                                HAPIFloat static_friction,
-                                HAPIFloat dynamic_friction,
+                                HAPIFloat _static_friction,
+                                HAPIFloat _dynamic_friction,
                                 HAPIFloat *proxy_mov_length = 0 );
 
     /// Common way of calculating the proxy movement for a friction surface.
