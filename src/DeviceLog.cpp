@@ -51,11 +51,6 @@ DeviceLog::DeviceLog( const string &_log_file,
   time_diff = 1.0/_freq;
 }
 
-DeviceLog::~DeviceLog() {
-  if( log_file.is_open() )
-    log_file.close();
-}
-
 HAPI::HAPIForceEffect::EffectOutput DeviceLog::calculateForces(
   const HAPI::HAPIForceEffect::EffectInput &input ) {
   if( log_file.is_open() ) {
@@ -76,8 +71,7 @@ HAPI::HAPIForceEffect::EffectOutput DeviceLog::calculateForces(
 }
 
 void DeviceLog::close () {
-  if( log_file.is_open() )
-    log_file.close();
+  H3DUtil::HapticThread::synchronousHapticCB ( closeCallback, this );
 }
 
 void DeviceLog::writeLog( const EffectInput &input, HAPITime log_time ) {
@@ -349,4 +343,14 @@ void DeviceLog::writeHeaderRow ( const EffectInput & /*input*/ ) {
       }
     }
   }
+}
+
+H3DUtil::PeriodicThread::CallbackCode DeviceLog::closeCallback ( void* data ) {
+  DeviceLog* o= static_cast < DeviceLog* > ( data );
+
+  if( o->log_file.is_open() ) {
+    o->log_file.close();
+  }
+
+  return H3DUtil::PeriodicThread::CALLBACK_DONE;
 }
