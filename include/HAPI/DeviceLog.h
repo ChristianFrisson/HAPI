@@ -29,6 +29,7 @@
 #ifndef __DEVICELOG_H__
 #define __DEVICELOG_H__
 
+#include <H3DUtil/Threads.h> 
 #include <HAPI/HAPIForceEffect.h> 
 #include <fstream>
 
@@ -148,17 +149,13 @@ namespace HAPI {
     DeviceLog( const string &_log_file, const LogTypeVector &_log_type,
                int _freq = 100, bool _binary = false );
 
-    /// Destructor
-    /// Closes the opened file stream.
-    ~DeviceLog();
-
     /// The force of the EffectOutput will zero. Only logging to file
     /// will be done.
     /// \param input Contains useful information, see EffectInput struct.
     virtual EffectOutput calculateForces( const EffectInput &input );
 
     /// Stop logging and flush and close the log file
-    void close ();
+    virtual void close ();
 
   protected:
     // Contains certain times needed in order to know when to log.
@@ -179,6 +176,10 @@ namespace HAPI {
     // these in order to log additional values.
     virtual void writeLogRow ( const EffectInput &input, HAPITime log_time );
     virtual void writeHeaderRow ( const EffectInput &input );
+
+    /// A callback executed in the haptic thread when the node is destroyed
+    /// in order to force the HAPI loggers to flush and close their logging files
+    static H3DUtil::PeriodicThread::CallbackCode closeCallback ( void* data );
   };
 }
 
