@@ -99,6 +99,28 @@ namespace HAPI {
     static H3DUtil::PeriodicThread::CallbackCode setThreadId( void * _data );
     static std::auto_ptr< HLThread > singleton;
     bool is_active;
+
+    typedef std::list< std::pair< int, std::pair< CallbackFunc, void * > > >
+      CallbackList;
+    // A list of the callback functions to run.
+    CallbackList callbacks;
+    
+    // A lock for synchronizing changes to the callbacks member.
+    H3DUtil::ConditionLock callback_lock;
+
+    // A list of the callback functions to add to the callbacks variable
+    // when the callback_lock is released. 
+    CallbackList callbacks_added;
+
+    // A lock used when modifying callbacks_added variable.
+    H3DUtil::MutexLock callbacks_added_lock;
+
+  public:
+    /// The main function that calls all callbacks and transfers asynchronous callbacks.
+    /// Public in order to still be able to include HD/hd.h in HlThread.cpp to not get
+    /// dependent symbols in classes that include HLThread.h.
+    /// ANY OTHER USE OF THIS FUNCTION RESULTS IN UNDEFINED BEHAVIOUR.
+    void threadFunction();
   };
 
 }
