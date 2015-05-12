@@ -5,24 +5,13 @@
 #  DHD_LIBRARIES    - List of libraries when using DHD.
 #  DHD_FOUND        - True if DHD found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "DHD-API" )
 
 # Look for the header file.
 FIND_PATH(DHD_INCLUDE_DIR NAMES dhdc.h 
-                          PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                $ENV{H3D_EXTERNAL_ROOT}/include/DHD-API
-                                $ENV{H3D_ROOT}/../External/include
-                                $ENV{H3D_ROOT}/../External/include/DHD-API
-                                ../../External/include
-                                ../../External/include/DHD-API 
-                                ${module_file_path}/../../../External/include
-                                ${module_file_path}/../../../External/include/DHD-API
+                          PATHS ${module_include_search_paths}
                           DOC "Path in which the file dhdc.h is located." )
 MARK_AS_ADVANCED(DHD_INCLUDE_DIR)
 
@@ -30,17 +19,11 @@ MARK_AS_ADVANCED(DHD_INCLUDE_DIR)
 # Look for the library.
 IF(WIN32)
   FIND_LIBRARY(DHD_LIBRARY NAMES dhdms dhdms64
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                 $ENV{H3D_ROOT}/../External/${LIB}
-                                 ../../External/${LIB}
-                                 ${module_file_path}/../../../External/${LIB}
+                           PATHS ${module_lib_search_paths}
                            DOC "Path to dhdms library." )
 ELSE(WIN32)
   FIND_LIBRARY(DHD_LIBRARY NAMES dhd
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                 $ENV{H3D_ROOT}/../External/${LIB}
-                                 ../../External/${LIB}
-                                 ${module_file_path}/../../../External/${LIB}
+                           PATHS ${module_lib_search_paths}
                            DOC "Path to dhd library." )
 
   IF(APPLE)

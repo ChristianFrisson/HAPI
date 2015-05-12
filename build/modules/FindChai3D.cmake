@@ -15,24 +15,13 @@ IF(MSVC)
   ENDIF( NOT CMake_HAVE_MFC )
 ENDIF(MSVC)
 
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
-
 IF( SEARCH_FOR_CHAI3D )
-  GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+  include( H3DExternalSearchPath )
+  GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+  get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "chai3d/include" "static" )
   # Look for the header file.
   FIND_PATH(CHAI3D_INCLUDE_DIR NAMES chai3d.h cWorld.h
-                               PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                     $ENV{H3D_EXTERNAL_ROOT}/include/chai3d/include
-                                     $ENV{H3D_ROOT}/../External/include
-                                     $ENV{H3D_ROOT}/../External/include/chai3d/include
-                                     ../../External/include
-                                     ../../External/include/chai3d/include
-                                     ${module_file_path}/../../../External/include
-                                     ${module_file_path}/../../../External/include/chai3d/include
+                               PATHS ${module_include_search_paths}
                                DOC "Path in which the file chai3d.h ( cWorld.h for chai3d versions earlier than 2.0 ) is located." )
 
   # Look for the library.
@@ -49,17 +38,11 @@ IF( SEARCH_FOR_CHAI3D )
     ENDIF( MSVC70 OR MSVC71)
 
     FIND_LIBRARY(CHAI3D_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME} chai3d-release
-                                PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                                      ../../External/${LIB}/static
-                                      ${module_file_path}/../../../External/${LIB}/static
+                                PATHS ${module_lib_search_paths}
                                 DOC "Path to ${CHAI3D_LIBRARY_NAME} library." )
     IF( MSVC80 OR MSVC90 OR MSVC10 )
       FIND_LIBRARY( CHAI3D_DEBUG_LIBRARY NAMES ${CHAI3D_LIBRARY_NAME}_d chai3d-debug
-                                         PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                                               $ENV{H3D_ROOT}/../External/${LIB}/static
-                                               ../../External/${LIB}/static
-                                               ${module_file_path}/../../../External/${LIB}/static
+                                         PATHS ${module_lib_search_paths}
                                          DOC "Path to ${CHAI3D_LIBRARY_NAME}_d library." )
     ENDIF( MSVC80 OR MSVC90 OR MSVC10 )
     MARK_AS_ADVANCED(CHAI3D_DEBUG_LIBRARY)

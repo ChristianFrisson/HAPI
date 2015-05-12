@@ -5,36 +5,15 @@
 #  wxWidgets_LIBRARIES    - List of libraries when using WxWidgets.
 #  wxWidgets_FOUND        - True if WxWidgets found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
-
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 SET( wxWidgets_LIBRARY_SEARCH_PATHS "" )
 SET( wxWidgets_INCLUDE_SEARCH_PATHS "" )
-IF( MSVC10 )
-  SET( wxWidgets_INCLUDE_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                      $ENV{H3D_ROOT}/../External/include
-                                      ../../External/include
-                                      ${module_file_path}/../../../External/include )
-  SET( wxWidgets_LIBRARY_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                      $ENV{H3D_ROOT}/../External/${LIB}
-                                      ../../External/${LIB}
-                                      ${module_file_path}/../../../External/${LIB} )                                      
-ENDIF( MSVC10 )
 IF( MSVC11 )
-  SET( wxWidgets_INCLUDE_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                      $ENV{H3D_ROOT}/../External/include
-                                      ../../External/include
-                                      ${module_file_path}/../../../External/include )
-  SET( wxWidgets_LIBRARY_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/vc11/${LIB}
-                                      $ENV{H3D_ROOT}/../External/vc11/${LIB}
-                                      ../../External/vc11/${LIB}
-                                      ${module_file_path}/../../../External/vc11/${LIB} )              
+  get_external_search_paths_h3d( wxWidgets_INCLUDE_SEARCH_PATHS wxWidgets_LIBRARY_SEARCH_PATHS ${module_file_path} "vc11" )      
+ELSE( MSVC11 )
+  get_external_search_paths_h3d( wxWidgets_INCLUDE_SEARCH_PATHS wxWidgets_LIBRARY_SEARCH_PATHS ${module_file_path} "chai3d/include" "static" )      
 ENDIF( MSVC11 )
 
 

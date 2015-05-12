@@ -5,29 +5,19 @@
 #  SIMBALLMEDICAL_LIBRARIES    - List of libraries when using SimballMedical.
 #  SIMBALLMEDICAL_FOUND        - True if SimballMedical found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} )
 
 # Look for the header file.
 FIND_PATH(SIMBALLMEDICAL_INCLUDE_DIR NAMES Simball/SimballMedicalHID.h
-                                PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                      $ENV{H3D_ROOT}/../External/include
-                                      ../../External/include
-                                      ${module_file_path}/../../../External/include
+                                PATHS ${module_include_search_paths}
                                 DOC "Path in which the file Simball/SimballMedicalHID.h is located." )
 MARK_AS_ADVANCED(SIMBALLMEDICAL_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(SIMBALLMEDICAL_LIBRARY NAMES SimballMedicalHID 
-                        PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                              $ENV{H3D_ROOT}/../External/${LIB}
-                              ../../External/${LIB}
-                              ${module_file_path}/../../../External/${LIB}
+                        PATHS ${module_lib_search_paths}
                         DOC "Path to SimballMedicalHID library." )
 MARK_AS_ADVANCED(SIMBALLMEDICAL_LIBRARY)
 

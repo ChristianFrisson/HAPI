@@ -5,36 +5,20 @@
 #  PTHREAD_LIBRARIES    - List of libraries when using pthread.
 #  PTHREAD_FOUND        - True if pthread found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "pthread" )
 
 # Look for the header file.
 FIND_PATH(PTHREAD_INCLUDE_DIR NAMES pthread.h
-                              PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
-                                    $ENV{H3D_EXTERNAL_ROOT}/include/pthread
-                                    $ENV{H3D_ROOT}/../External/include  
-                                    $ENV{H3D_ROOT}/../External/include/pthread
-                                    ../../External/include
-                                    ../../External/include/pthread
-                                    ${module_file_path}/../../../External/include
-                                    ${module_file_path}/../../../External/include/pthread
+                              PATHS ${module_include_search_paths}
                               DOC "Path in which the file pthread.h is located." )
-
 MARK_AS_ADVANCED(PTHREAD_INCLUDE_DIR)
 
 # Look for the library.
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
-
 IF(WIN32)
   FIND_LIBRARY(PTHREAD_LIBRARY NAMES pthreadVC2 
-                               PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                     $ENV{H3D_ROOT}/../External/${LIB}
-                                     ../../External/${LIB}
-                                     ${module_file_path}/../../../External/${LIB}
+                               PATHS ${module_lib_search_paths}
                                DOC "Path to pthreadVC2 library." )
 ELSE(WIN32)
   FIND_LIBRARY( PTHREAD_LIBRARY NAMES pthread
@@ -46,6 +30,9 @@ MARK_AS_ADVANCED(PTHREAD_LIBRARY)
 IF(PTHREAD_INCLUDE_DIR AND PTHREAD_LIBRARY)
   SET(PTHREAD_FOUND 1)
   SET(PTHREAD_LIBRARIES ${PTHREAD_LIBRARY})
+  IF( NOT WIN32 AND UNIX )
+    SET(PTHREAD_LIBRARIES ${PTHREAD_LIBRARIES} dl)
+  ENDIF( NOT WIN32 AND UNIX )
   SET(PTHREAD_INCLUDE_DIR ${PTHREAD_INCLUDE_DIR})
 ELSE(PTHREAD_INCLUDE_DIR AND PTHREAD_LIBRARY)
   SET(PTHREAD_FOUND 0)

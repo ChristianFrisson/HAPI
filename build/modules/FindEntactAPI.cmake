@@ -5,25 +5,12 @@
 #  ENTACTAPI_LIBRARIES    - List of libraries when using ENTACTAPI.
 #  ENTACTAPI_FOUND        - True if ENTACTAPI found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
-
 SET( ENTACT_INCLUDE_SEARCH_PATHS "" )
 SET( ENTACT_LIB_SEARCH_PATHS "" )
 IF( CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_SYSTEM_VERSION VERSION_GREATER "5.9999" )
-  SET( ENTACT_INCLUDE_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                   $ENV{H3D_ROOT}/../External/include
-                                   ../../External/include
-                                   ${module_file_path}/../../../External/include )
-  SET( ENTACT_LIB_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                               $ENV{H3D_ROOT}/../External/${LIB}
-                               ../../External/${LIB}
-                               ${module_file_path}/../../../External/${LIB} )
+  include( H3DExternalSearchPath )
+  GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+  get_external_search_paths_h3d( ENTACT_INCLUDE_SEARCH_PATHS ENTACT_LIB_SEARCH_PATHS ${module_file_path} )
 ENDIF( CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_SYSTEM_VERSION VERSION_GREATER "5.9999" )
 
 # Look for the header file.

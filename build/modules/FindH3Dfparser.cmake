@@ -4,38 +4,25 @@
 #  fparser_INCLUDE_DIRS -  where to find fparser headers
 #  fparser_LIBRARIES    - List of libraries when using fparser.
 #  fparser_FOUND        - True if fparser found.
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "fparser" )
 
 # Look for the header file.
 FIND_PATH(fparser_INCLUDE_DIR NAMES fparser.hh
-                          PATHS $ENV{H3D_EXTERNAL_ROOT}/include/fparser
-                                $ENV{H3D_ROOT}/../External/include/fparser
-                                ../../External/include/fparser
-                                ${module_file_path}/../../../External/include/fparser
+                          PATHS ${module_include_search_paths}
                           DOC "Path in which the file fparser.hh is located." )
 MARK_AS_ADVANCED(fparser_INCLUDE_DIR)
 
 
 # Look for the library.
 FIND_LIBRARY(fparser_LIBRARY NAMES fparser 
-                             PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                   $ENV{H3D_ROOT}/../External/${LIB}
-                                   ../../External/${LIB}
-                                   ${module_file_path}/../../../External/${LIB}
+                             PATHS ${module_lib_search_paths}
                              DOC "Path to fparser.lib library." )
 MARK_AS_ADVANCED(fparser_LIBRARY)
 
 FIND_LIBRARY(fparser_DEBUG_LIBRARY NAMES fparser_d
-                                   PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                   $ENV{H3D_ROOT}/../External/${LIB}
-                                   ../../External/${LIB}
-                                   ${module_file_path}/../../../External/${LIB}
+                                   PATHS ${module_lib_search_paths}
                                    DOC "Path to fparser.lib library." )
 MARK_AS_ADVANCED(fparser_DEBUG_LIBRARY)
 
