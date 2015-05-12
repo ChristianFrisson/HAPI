@@ -403,6 +403,12 @@ SET( HAPI_COMPILE_FLAGS "-DHAPI_EXPORTS" )
 # add the libraries needed for linking
 TARGET_LINK_LIBRARIES( HAPI ${HAPI_requiredLibs} ${HAPI_optionalLibs} )
 
+IF( COMMAND cmake_policy )
+  IF( POLICY CMP0054 )
+    cmake_policy(SET CMP0054 OLD)
+  ENDIF( POLICY CMP0054 )
+ENDIF( COMMAND cmake_policy )
+
 foreach( H3DUTIL_INCLUDE_DIR_TMP ${H3DUTIL_INCLUDE_DIR} )
   IF( EXISTS ${H3DUTIL_INCLUDE_DIR_TMP}/H3DUtil/H3DUtil.h )
     FILE( STRINGS ${H3DUTIL_INCLUDE_DIR_TMP}/H3DUtil/H3DUtil.h list_of_defines REGEX "#define THREAD_LOCK_DEBUG"  )

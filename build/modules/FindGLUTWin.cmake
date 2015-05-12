@@ -4,25 +4,18 @@
 #  GLUT_LIBRARIES    - List of libraries when using GLUT.
 #  GLUT_FOUND        - True if GLUT found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
 IF( WIN32 )
   SET(GLUT_FIND_QUIETLY 1)
   FIND_PACKAGE(GLUT)
 ENDIF( WIN32 )
 
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "static" )
 
 # Look for the header file.
 FIND_PATH( GLUT_INCLUDE_DIR NAMES GL/glut.h
-           PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                 $ENV{H3D_ROOT}/../External/include
-                 ../../External/include
-                 ${module_file_path}/../../../External/include
+           PATHS ${module_include_search_paths}
            DOC "Path in which the file GL/glut.h is located." )
 MARK_AS_ADVANCED(GLUT_INCLUDE_DIR)
 
@@ -33,11 +26,7 @@ ENDIF( WIN32 AND PREFER_FREEGLUT_STATIC_LIBRARIES )
 
 # Look for the library.
 FIND_LIBRARY( GLUT_LIBRARY NAMES  ${GLUT_LIBRARY_NAMES}
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                    $ENV{H3D_ROOT}/../External/${LIB}
-                    ../../External/${LIB}
-                    ${module_file_path}/../../../External/${LIB}
-                    ${module_file_path}/../../../External/${LIB}/static
+              PATHS ${module_lib_search_paths}
               DOC "Path to glut32 library." )
 MARK_AS_ADVANCED(GLUT_LIBRARY)
 

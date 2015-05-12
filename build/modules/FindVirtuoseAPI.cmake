@@ -5,25 +5,13 @@
 #  VIRTUOSE_LIBRARIES    - List of libraries when using VIRTUOSE.
 #  VIRTUOSE_FOUND        - True if VIRTUOSE found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 SET( VIRTUOSE_INCLUDE_SEARCH_PATHS "" )
 SET( VIRTUOSE_LIB_SEARCH_PATHS "" )
 IF( NOT MSVC14 )
-  SET( VIRTUOSE_INCLUDE_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                     $ENV{H3D_ROOT}/../External/include
-                                     ../../External/include
-                                     ${module_file_path}/../../../External/include )
-  SET( VIRTUOSE_LIB_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                 $ENV{H3D_ROOT}/../External/${LIB}
-                                 ../../External/${LIB}
-                                 ${module_file_path}/../../../External/${LIB} )
+  get_external_search_paths_h3d( VIRTUOSE_INCLUDE_SEARCH_PATHS VIRTUOSE_LIB_SEARCH_PATHS ${module_file_path} )
 ENDIF()
 
 # Look for the header file.
