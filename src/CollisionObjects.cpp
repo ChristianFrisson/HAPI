@@ -3062,23 +3062,25 @@ void BBPrimitiveTree::closestPoint( const Vec3 &p,
                                     Vec3 &tex_coord ) {
   if ( isLeaf() )  {
     if( primitives.size() == 0 ) return;
-    Vec3 cp, cn;
+    Vec3 cp, cn, tc;
     HAPIFloat d2 = std::numeric_limits<HAPIFloat>::max();
     for( H3DUtil::AutoRefVector< GeometryPrimitive >::const_iterator
           i = primitives.begin();
          i != primitives.end(); ++i ) {
-      Vec3 point, normal;
-      (*i)->closestPoint( p, point, normal, tex_coord );
+      Vec3 point, normal, tmp_tc;
+      (*i)->closestPoint( p, point, normal, tmp_tc );
       Vec3 v = p - point;
       HAPIFloat new_d2 = v * v;
       if( new_d2 < d2 ) {
         cp = point;
         cn = normal;
         d2 = new_d2;
+        tc = tmp_tc;
       }
     }
     closest_point = cp;
     closest_normal = cn;
+    tex_coord = tc;
   }  else   {
    
     if( left.get() && right.get() ) {
