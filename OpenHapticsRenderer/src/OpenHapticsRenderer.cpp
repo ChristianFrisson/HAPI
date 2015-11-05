@@ -422,7 +422,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
             hlPopMatrix();
           }
       } else {
-        H3DUtil::Console(2) 
+        H3DUtil::Console(H3DUtil::LogLevel::Debug)
           <<  "Surface type not supported by OpenHapticsRenderer." << endl;
       }
     } 
@@ -461,7 +461,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   // check for any errors
   HLerror error;
   while ( HL_ERROR(error = hlGetError()) ) {
-    H3DUtil::Console(4) <<
+    H3DUtil::Console(H3DUtil::LogLevel::Error) <<
       OpenHapticsRendererInternals::getHLErrorString( error ) << endl;
   }
 }

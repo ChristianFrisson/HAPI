@@ -114,10 +114,10 @@ bool NiFalconHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   
 #ifdef DEBUG_PRINTOUTS
   if(!device->getDeviceCount(num_falcons)) {
-    H3DUtil::Console(4) << "Cannot get device count" << std::endl;
+    H3DUtil::Console(LogLevel::Error) << "Cannot get device count" << std::endl;
   }
 
-  H3DUtil::Console(4) << "Falcons found: " << num_falcons << std::endl;
+  H3DUtil::Console(LogLevel::Error) << "Falcons found: " << num_falcons << std::endl;
 
   std::cout << "Opening falcon " << index << std::endl;
 

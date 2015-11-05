@@ -59,7 +59,7 @@ bool ParsedFunction::setFunctionString( const string &function,
     return true;
   }
  
-  H3DUtil::Console(3) << fparser->ErrorMsg() << endl;
+  H3DUtil::Console(H3DUtil::LogLevel::Warning) << fparser->ErrorMsg() << endl;
   have_valid_function = false;
   return false;
 }

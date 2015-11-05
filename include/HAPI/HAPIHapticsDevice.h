@@ -886,7 +886,7 @@ namespace HAPI {
       virtual void handleError( HAPIHapticsDevice *hd, 
                                 long internal_error_code,
                                 string error_string ) {
-        H3DUtil::Console( 4 ) << "Haptics device error: " << error_string 
+        H3DUtil::Console(H3DUtil::LogLevel::Error) << "Haptics device error: " << error_string
                               << " (error code " << internal_error_code 
                               << ")" << endl;
       }
