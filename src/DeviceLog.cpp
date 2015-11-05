@@ -44,7 +44,7 @@ DeviceLog::DeviceLog( const string &_log_file,
 
   log_file.open( _log_file.c_str(), mode );
   if( !log_file.is_open() )
-    H3DUtil::Console(3) << "The _log_file argument to HAPI::DeviceLog "
+    H3DUtil::Console(H3DUtil::LogLevel::Warning) << "The _log_file argument to HAPI::DeviceLog "
                         << "does not point "
                         << "to a valid path, the file could not be created.";
   last_time = -1;
