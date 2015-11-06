@@ -104,12 +104,12 @@ IF(OPENHAPTICS_FOUND)
   SET(HAVE_OPENHAPTICS 1)
   INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} 
                        ../OpenHapticsRenderer/include )
-	SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
+  SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${OPENHAPTICS_LIBRARIES} )
   SET(OpenHaptics_requiredLibs ${OpenHaptics_requiredLibs} ${OPENHAPTICS_LIBRARIES} )
 ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../OpenHapticsRenderer/include )
-	SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
+  SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
 ENDIF(OPENHAPTICS_FOUND)
 
 # Option to include all available external libraries, haptics devices etc.
@@ -132,7 +132,7 @@ IF(CHAI3D_FOUND)
   SET(HAVE_CHAI3D 1)
   INCLUDE_DIRECTORIES( ${CHAI3D_INCLUDE_DIR}
                        ../Chai3DRenderer/include )
-	SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
+  SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
   SET(Chai3D_requiredLibs ${Chai3D_requiredLibs} ${CHAI3D_LIBRARIES} )
 
   IF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
@@ -151,18 +151,18 @@ IF(CHAI3D_FOUND)
 
     IF(GLUT_FOUND)
       INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
-			IF( WIN32 )
-				STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
-			ELSE( WIN32 )
-				SET(Chai3D_requiredLibs ${Chai3D_requiredLibs} ${GLUT_LIBRARIES} )
-			ENDIF( WIN32 )
-	  ELSE(GLUT_FOUND)
-		  SET(HAVE_CHAI3D 0)
+      IF( WIN32 )
+        STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
+      ELSE( WIN32 )
+        SET(Chai3D_requiredLibs ${Chai3D_requiredLibs} ${GLUT_LIBRARIES} )
+      ENDIF( WIN32 )
+    ELSE(GLUT_FOUND)
+      SET(HAVE_CHAI3D 0)
     ENDIF(GLUT_FOUND)
   ENDIF( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
 ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../Chai3DRenderer/include )
-	SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
+  SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
 ENDIF(CHAI3D_FOUND)
 
 FIND_PACKAGE(DHD)
@@ -459,43 +459,13 @@ IF( WIN32 )
     SET( DEFAULT_LIB_INSTALL "lib64" )
   ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 
-  SET( H3D_MSVC_VERSION "" )
   IF( MSVC )
-    SET( H3D_MSVC_VERSION 6 )
-    SET( TEMP_MSVC_VERSION 1299 )
-    WHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
-      MATH( EXPR H3D_MSVC_VERSION "${H3D_MSVC_VERSION} + 1" )
-      MATH( EXPR TEMP_MSVC_VERSION "${TEMP_MSVC_VERSION} + 100" )
-    ENDWHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
-    SET( H3D_MSVC_VERSION "_vc${H3D_MSVC_VERSION}" )
-    
+    include( H3DCommonFunctions )
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
-    SET_TARGET_PROPERTIES( HAPI PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${H3D_MSVC_VERSION} )
-    
-    # Treat wchar_t as built in type for all visual studio versions.
-    # This is default for every version above 7 ( so far ) but we still set it for all.
-    SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /Zc:wchar_t")
-    
-    IF( MSVC80 )
-      # This might be useful for visual studio 2005 users that often recompile the api.
-      IF( NOT DEFINED USE_VC8_MP_FLAG )
-        SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
-      ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
-
-      IF( USE_VC8_MP_FLAG )
-        SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
-      ENDIF( USE_VC8_MP_FLAG )
-    ENDIF( MSVC80 )
-
-		# HAPI can not link incrementally on vc8 for some reason. Seems to be an issue for
-		# vc9 also in some cases.
-    SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /INCREMENTAL:NO" )
-    
-    IF( ${MSVC_VERSION} GREATER 1499 )
-      # Build using several threads for visual studio versions 9 and above.
-      SET( HAPI_COMPILE_FLAGS "${HAPI_COMPILE_FLAGS} /MP" )
-    ENDIF( ${MSVC_VERSION} GREATER 1499 )
+    setH3DMSVCOutputName( HAPI "HAPI" )
+    # Add common H3D compile flags for microsoft visual studio
+    addCommonH3DMSVCCompileFlags( HAPI_COMPILE_FLAGS )
   ENDIF( MSVC )
 
   # Set properties for OpenHapticsRenderer if the project is created.
@@ -503,7 +473,7 @@ IF( WIN32 )
     TARGET_LINK_LIBRARIES( OpenHapticsRenderer ${OpenHaptics_requiredLibs} ${OpenHaptics_requiredLibs} HAPI )
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
-    SET_TARGET_PROPERTIES( OpenHapticsRenderer PROPERTIES OUTPUT_NAME OpenHapticsRenderer${H3D_MSVC_VERSION} )
+    setH3DMSVCOutputName( OpenHapticsRenderer "OpenHapticsRenderer" )
       
     # make sure symbols are exported.
     SET( OpenHapticsRenderer_COMPILE_FLAGS "-DOPENHAPTICSRENDERER_EXPORTS" )
@@ -543,13 +513,13 @@ IF( WIN32 )
     
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
-    SET_TARGET_PROPERTIES( Chai3DRenderer PROPERTIES OUTPUT_NAME Chai3DRenderer${H3D_MSVC_VERSION} )
+    setH3DMSVCOutputName( Chai3DRenderer "Chai3DRenderer" )
     
     # make sure symbols are exported.
-		SET( Chai3DRenderer_COMPILE_FLAGS "-DCHAI3DRENDERER_EXPORTS" )
-		IF( HAVE_CHAI3D AND CHAI3D_VERSION_2_0 AND GLUT_FOUND AND PREFER_FREEGLUT_STATIC_LIBRARIES )
-			SET( Chai3DRenderer_COMPILE_FLAGS "${Chai3DRenderer_COMPILE_FLAGS} -DFREEGLUT_STATIC" )
-		ENDIF( HAVE_CHAI3D AND CHAI3D_VERSION_2_0 AND GLUT_FOUND AND PREFER_FREEGLUT_STATIC_LIBRARIES )
+    SET( Chai3DRenderer_COMPILE_FLAGS "-DCHAI3DRENDERER_EXPORTS" )
+    IF( HAVE_CHAI3D AND CHAI3D_VERSION_2_0 AND GLUT_FOUND AND PREFER_FREEGLUT_STATIC_LIBRARIES )
+      SET( Chai3DRenderer_COMPILE_FLAGS "${Chai3DRenderer_COMPILE_FLAGS} -DFREEGLUT_STATIC" )
+    ENDIF( HAVE_CHAI3D AND CHAI3D_VERSION_2_0 AND GLUT_FOUND AND PREFER_FREEGLUT_STATIC_LIBRARIES )
     SET_TARGET_PROPERTIES( Chai3DRenderer 
                            PROPERTIES COMPILE_FLAGS ${Chai3DRenderer_COMPILE_FLAGS} )
     # make the name of debug libraries end in _d.
@@ -580,7 +550,7 @@ IF( WIN32 )
     /DELAYLOAD:\"SimballMedicalHID.dll\" 
     /DELAYLOAD:\"VirtuoseDLL.dll\"
     /DELAYLOAD:\"FTD2XX.dll\"
-	  /DELAYLOAD:\"EntactAPI.dll\"" )
+    /DELAYLOAD:\"EntactAPI.dll\"" )
   ENDIF( MSVC )
 ENDIF( WIN32 )
 
