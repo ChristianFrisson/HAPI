@@ -37,8 +37,8 @@
 using namespace HAPI;
 
 namespace SimballHapticsDeviceInternal {
-  string libs_array[1] = {"SimballMedicalHID.dll"};
-  list< string > simball_device_libs(libs_array, libs_array + 1 );
+  std::string libs_array[1] = {"SimballMedicalHID.dll"};
+  std::list< std::string > simball_device_libs(libs_array, libs_array + 1 );
 }
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
@@ -54,7 +54,7 @@ bool SimballHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 #ifdef WIN32
   /// need to go check if the dll to support this haptic device can be correctly
   /// loaded
-  list<string>::iterator it = device_registration.libs_to_support.begin();
+  std::list<std::string>::iterator it = device_registration.libs_to_support.begin();
   for( ; it!= device_registration.libs_to_support.end();++it ) {
     if( !H3DUtil::DynamicLibrary::load(*it) ) {
       setErrorMsg("Warning: can not load required DLL for "+ device_registration.name+ "device");
@@ -65,13 +65,13 @@ bool SimballHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   int nr_devices = -1;
   int error_ms = SBM_Init( nr_devices );
   if( error_ms != SBMError_NoError ) {
-    stringstream s;
+    std::stringstream s;
     s << "Could not initialize SimballHapticsDevice. "
       << "Make sure one is connected properly. ";
     setErrorMsg( s.str() );
     return false;
   } else if( device_nr > nr_devices - 1 ) {
-    stringstream s;
+    std::stringstream s;
     s << "Could not initialize SimballHapticsDevice with device nr "
       << device_nr << " because the number of connected devices are "
       << nr_devices << " Make sure all are connected properly. ";
@@ -89,7 +89,7 @@ bool SimballHapticsDevice::releaseHapticsDevice() {
   if( nr_initialized_devices == 1 ) {
     int error_ms = SBM_Exit();
     if( error_ms != SBMError_NoError ) {
-      stringstream s;
+      std::stringstream s;
       s << "Error when closing connection to SimballHapticsDevice. ";
       setErrorMsg( s.str() );
       return false;
@@ -106,7 +106,7 @@ void SimballHapticsDevice::updateDeviceValues( DeviceValues &dv,
     SBMDeviceValues simball_values;
     int error_ms = SBM_GetValues( device_nr, simball_values );
     if( error_ms != SBMError_NoError ) {
-      stringstream s;
+      std::stringstream s;
       s << "Could not update device values for SimballHapticsDevice. "
         << "Make sure one is connected properly. ";
       setErrorMsg( s.str() );

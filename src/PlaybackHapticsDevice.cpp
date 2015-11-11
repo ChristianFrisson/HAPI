@@ -71,7 +71,7 @@ PlaybackHapticsDevice::StringList PlaybackHapticsDevice::readColumnNamesText () 
   std::string line;
   std::getline ( playback_file, line );
 
-  istringstream iss(line);
+  std::istringstream iss(line);
   while ( iss ) {
     std::string field_name;
     iss >> field_name;

@@ -37,8 +37,8 @@
 using namespace HAPI;
 
 namespace HaptionHapticsDeviceInternal {
-  string libs_array[1] = {"VirtuoseDLL.dll"};
-  list< string > haption_libs(libs_array, libs_array + 1 );
+  std::string libs_array[1] = {"VirtuoseDLL.dll"};
+  std::list< std::string > haption_libs(libs_array, libs_array + 1 );
 }
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
@@ -53,7 +53,7 @@ bool HaptionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 #ifdef WIN32
   /// need to go check if the dll to support this haptic device can be correctly
   /// loaded
-  list<string>::iterator it = device_registration.libs_to_support.begin();
+  std::list<std::string>::iterator it = device_registration.libs_to_support.begin();
   for( ; it!= device_registration.libs_to_support.end();++it ) {
     if( !H3DUtil::DynamicLibrary::load(*it) ) {
       setErrorMsg("Warning: can not load required DLL for "+ device_registration.name+ "device");
@@ -64,10 +64,10 @@ bool HaptionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   context = virtOpen( ip_address.c_str() );
   if (context == NULL) {
     int error_code = virtGetErrorCode(NULL);
-    stringstream s;
+    std::stringstream s;
     s << "Warning: Failed to open Virtuose device.";
     if( error_code != VIRT_E_VIRTUOSE_DLL_NOT_FOUND )
-      s << " Error: " << virtGetErrorMessage(error_code) << endl;
+      s << " Error: " << virtGetErrorMessage(error_code) << std::endl;
     else
       s << " Could not load library.";
     setErrorMsg( s.str() );

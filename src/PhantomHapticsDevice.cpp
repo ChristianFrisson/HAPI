@@ -38,8 +38,8 @@
 using namespace HAPI;
 
 namespace PhantomDeviceInternal {
-  string libs_array[1] = {"HD.dll"};
-  list< string > phantom_device_libs(libs_array, libs_array + 1 );
+  std::string libs_array[1] = {"HD.dll"};
+  std::list< std::string > phantom_device_libs(libs_array, libs_array + 1 );
 
   // Callback function that starts a new hd frame. It is used in order to 
   // encapsulate all HD API callback function within a hdBeginFrame/hdEndFrame
@@ -85,7 +85,7 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   #ifdef WIN32
     /// need to go check if the dll to support this haptic device can be correctly
     /// loaded
-    list<string>::iterator it = device_registration.libs_to_support.begin();
+    std::list<std::string>::iterator it = device_registration.libs_to_support.begin();
     for( ; it!= device_registration.libs_to_support.end();++it ) {
       if( !H3DUtil::DynamicLibrary::load(*it) ) {
         setErrorMsg("Warning: can not load required DLL for "+ device_registration.name+ "device");
@@ -98,13 +98,13 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
                                 HD_DEFAULT_DEVICE : device_name.c_str() );
   HDErrorInfo error = hdGetError();
   if( HD_DEVICE_ERROR( error ) ) {
-    stringstream s;
+    std::stringstream s;
     if( device_name == "" )
       s << "Could not init default Phantom device. ";
     else
       s << "Could not init Phantom device named \"" << device_name << "\".";
     s << "Error code: ";
-    s << string( hdGetErrorString( error.errorCode ) ) ;
+    s << std::string( hdGetErrorString( error.errorCode ) ) ;
     s << ". Internal error code: " << error.internalErrorCode;
     setErrorMsg( s.str() );
     return false;
@@ -187,13 +187,13 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     // generated any errors.
     error = hdGetError();
     if( HD_DEVICE_ERROR( error ) ) {
-      stringstream s;
+      std::stringstream s;
       if( device_name == "" )
         s << "Could not init default Phantom device. ";
       else
         s << "Could not init Phantom device named \"" << device_name << "\".";
       s << "Error code: ";
-      s << string( hdGetErrorString( error.errorCode ) ) ;
+      s << std::string( hdGetErrorString( error.errorCode ) ) ;
       s << ". Internal error code: " << error.internalErrorCode;
       setErrorMsg( s.str() );
       return false;
@@ -212,13 +212,13 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
         error2.errorCode != HD_INVALID_VALUE &&
         error2.errorCode != HD_TIMER_ERROR &&
         error2.errorCode != HD_INVALID_OPERATION) ) {
-      stringstream s;
+      std::stringstream s;
       if( device_name == "" )
         s << "Could not init default Phantom device. ";
       else
         s << "Could not init Phantom device named \"" << device_name << "\".";
       s << "Error code: ";
-      s << string( hdGetErrorString( error2.errorCode ) ) ;
+      s << std::string( hdGetErrorString( error2.errorCode ) ) ;
       s << ". Internal error code: " << error2.internalErrorCode;
       setErrorMsg( s.str() );
       return false;
@@ -238,7 +238,7 @@ bool PhantomHapticsDevice::releaseHapticsDevice() {
     restart = false;
   stopScheduler();
 
-  for( vector< HDCallbackCode >::iterator i = hd_handles.begin();
+  for( std::vector< HDCallbackCode >::iterator i = hd_handles.begin();
        i != hd_handles.end();
        ++i ) {
     hdUnschedule(*i);

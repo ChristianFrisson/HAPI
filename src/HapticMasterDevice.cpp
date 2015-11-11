@@ -38,8 +38,8 @@
 using namespace HAPI;
 
 namespace HapticMasterDeviceInternal {
-  string libs_array[2] = {"HapticAPI.dll", "HapticMasterDriver.dll"};
-  list< string > haptic_master_device_libs(libs_array, libs_array + 2 );
+  std::string libs_array[2] = {"HapticAPI.dll", "HapticMasterDriver.dll"};
+  std::list< std::string > haptic_master_device_libs(libs_array, libs_array + 2 );
 }
 
 enum FCSSTATE
@@ -164,7 +164,7 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
 
     // If we failed to load the library or any of the functions, quit...
     if (dll_handle==NULL) {
-       stringstream s;
+       std::stringstream s;
        s << "Could not initialize HapticMasterDevice. "
          << "HapticMasterDriver.dll or HapticAPI.dll not found. ";
        setErrorMsg( s.str() );
@@ -191,8 +191,8 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
     return true;
   } else {
     // check for the servers.db file
-    ifstream is( "servers.db");
-    stringstream s;
+    std::ifstream is( "servers.db");
+    std::stringstream s;
     if( is.fail() ) {
       s << "Could not initialize HapticMasterDevice. No servers.db file "
         << "in the current directory. The servers.db file specifies the "

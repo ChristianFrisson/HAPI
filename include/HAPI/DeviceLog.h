@@ -137,7 +137,7 @@ namespace HAPI {
       TIMESTAMP = 12
     } LogType;
 
-    typedef vector< LogType > LogTypeVector;
+    typedef std::vector< LogType > LogTypeVector;
 
     /// Constructor
     /// \param _log_file The name/url of the file to log to.
@@ -146,7 +146,7 @@ namespace HAPI {
     /// \param _freq The frequency of logging.
     /// \param _binary If true the logging will be done to a binary file.
     ///                Otherwise it will be done to an ASCII-text file.
-    DeviceLog( const string &_log_file, const LogTypeVector &_log_type,
+    DeviceLog( const std::string &_log_file, const LogTypeVector &_log_type,
                int _freq = 100, bool _binary = false );
 
     /// The force of the EffectOutput will zero. Only logging to file
@@ -162,7 +162,7 @@ namespace HAPI {
     HAPITime last_time, start_time;
     HAPITime time_diff;
     // The file stream to which writing is done.
-    ofstream log_file;
+    std::ofstream log_file;
     // Contains information about which parameters of the haptics device
     // should be logged.
     LogTypeVector log_type;

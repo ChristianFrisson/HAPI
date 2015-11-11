@@ -40,7 +40,7 @@ bool HapticTriangleSet::lineIntersectShape( const Vec3 &from,
   Collision::IntersectionInfo closest_intersection;
   HAPIFloat min_d2;
 
-  for( vector< Collision::Triangle >::iterator i = triangles.begin();
+  for( std::vector< Collision::Triangle >::iterator i = triangles.begin();
        i != triangles.end(); ++i ) {
     Collision::Triangle &t = (*i);
     if( t.lineIntersect( from, to, closest_intersection, face ) ) {
@@ -87,7 +87,7 @@ void HapticTriangleSet::getConstraintsOfShape( const Vec3 &point,
       bool first_constraint = true;
       
       // triangle set is convex so only need the closest constraint
-      for( vector< Collision::Triangle >::iterator i = triangles.begin();
+      for( std::vector< Collision::Triangle >::iterator i = triangles.begin();
            i != triangles.end(); ++i ) {
         //unsigned int i = 0; i < triangles.size(); ++i ) {
         Collision::Triangle &t = (*i); //*triangles[i];

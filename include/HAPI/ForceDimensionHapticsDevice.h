@@ -155,7 +155,7 @@ namespace HAPI {
 
     /// Ids of devices that can be initialized. Needed because dhdOpen
     /// does not work for multiple devices. dhdOpenID have to be used.
-    static vector< int > free_dhd_ids;
+    static std::vector< int > free_dhd_ids;
   };
 }
 

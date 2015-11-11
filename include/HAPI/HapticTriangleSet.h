@@ -45,7 +45,7 @@ namespace HAPI {
     } ConvexType;
 
     /// Constructor.
-    HapticTriangleSet( const vector< Collision::Triangle > &_triangles,
+    HapticTriangleSet( const std::vector< Collision::Triangle > &_triangles,
                        HAPISurfaceObject *_surface, 
                        ConvexType _convex = NOT_CONVEX,
                        Collision::FaceType _touchable_face = 
@@ -61,7 +61,7 @@ namespace HAPI {
 
     /// Constructor.
     HapticTriangleSet( const Matrix4 &_transform,
-                       const vector< Collision::Triangle > &_triangles,
+                       const std::vector< Collision::Triangle > &_triangles,
                        HAPISurfaceObject *_surface, 
                        ConvexType _convex = NOT_CONVEX,
                        Collision::FaceType _touchable_face = 
@@ -94,7 +94,7 @@ namespace HAPI {
     HapticTriangleSet( const Vec3 &_velocity,
                        const Rotation &_angular_velocity,
                        const Vec3 &_growth_rate,
-                       const vector< Collision::Triangle > &_triangles,
+                       const std::vector< Collision::Triangle > &_triangles,
                        HAPISurfaceObject *_surface, 
                        ConvexType _convex = NOT_CONVEX,
                        Collision::FaceType _touchable_face = 
@@ -114,7 +114,7 @@ namespace HAPI {
                        const Vec3 &_velocity,
                        const Rotation &_angular_velocity,
                        const Vec3 & _growth_rate,
-                       const vector< Collision::Triangle > &_triangles,
+                       const std::vector< Collision::Triangle > &_triangles,
                        HAPISurfaceObject *_surface, 
                        ConvexType _convex = NOT_CONVEX,
                        Collision::FaceType _touchable_face = 
@@ -156,7 +156,7 @@ namespace HAPI {
 #endif
     
     /// The triangles.
-    vector< Collision::Triangle > triangles;
+    std::vector< Collision::Triangle > triangles;
     ConvexType convex;
 
   protected:

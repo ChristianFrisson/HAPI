@@ -150,7 +150,7 @@ namespace HAPI {
     // vector with pairs shape_id, transform matrix. It contains the id
     // of the shapes that were in contact during last haptics loop and
     // their transform matrices at the time.
-    vector< pair< int, Matrix4 > > last_contact_transforms;
+    std::vector< std::pair< int, Matrix4 > > last_contact_transforms;
     H3DUtil::MutexLock proxy_info_lock;
     
   };

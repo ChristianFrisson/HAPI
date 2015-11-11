@@ -49,8 +49,8 @@ ParsedFunction::~ParsedFunction() {
   }
 }
 
-bool ParsedFunction::setFunctionString( const string &function,
-                                        const string &evaluation_params ) {
+bool ParsedFunction::setFunctionString( const std::string &function,
+                                        const std::string &evaluation_params ) {
   function_string = function;
   params_string = evaluation_params;
   int res = fparser->Parse( function_string, evaluation_params );
@@ -59,7 +59,7 @@ bool ParsedFunction::setFunctionString( const string &function,
     return true;
   }
  
-  H3DUtil::Console(H3DUtil::LogLevel::Warning) << fparser->ErrorMsg() << endl;
+  H3DUtil::Console(H3DUtil::LogLevel::Warning) << fparser->ErrorMsg() << std::endl;
   have_valid_function = false;
   return false;
 }
@@ -77,7 +77,7 @@ HAPIFloat ParsedFunction::evaluate( HAPIFloat *input ) {
       // not possible here since Eval returns 0 on these
       // instances and we have no way identifying what the error
       // was. Always return NaN do get it right in most cases. 
-      return numeric_limits<HAPIFloat>::quiet_NaN();
+      return std::numeric_limits<HAPIFloat>::quiet_NaN();
     }
   }
   else return 0;

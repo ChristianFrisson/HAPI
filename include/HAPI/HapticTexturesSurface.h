@@ -131,10 +131,10 @@ namespace HAPI {
     HAPIFloat min_dynamic_friction_value;
 
     // Containers used to access values in image.
-    auto_ptr< ImageInterfaceObject > stiffness_image;
-    auto_ptr< ImageInterfaceObject > damping_image;
-    auto_ptr< ImageInterfaceObject > static_friction_image;
-    auto_ptr< ImageInterfaceObject > dynamic_friction_image;
+    std::auto_ptr< ImageInterfaceObject > stiffness_image;
+    std::auto_ptr< ImageInterfaceObject > damping_image;
+    std::auto_ptr< ImageInterfaceObject > static_friction_image;
+    std::auto_ptr< ImageInterfaceObject > dynamic_friction_image;
 
     // Lock used when getting values from images.
     H3DUtil::MutexLock stiffness_lock;

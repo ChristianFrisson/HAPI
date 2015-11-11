@@ -391,7 +391,7 @@ namespace HAPI {
 
       tmp_current_force_effects.push_back( effect );
       added_effects_indices.push_back(
-        make_pair( (unsigned int) tmp_current_force_effects.size() - 1, fade_in_time ) );
+        std::make_pair( (unsigned int) tmp_current_force_effects.size() - 1, fade_in_time ) );
     }
 
     /// Set the HapticForceEffects to be rendered.
@@ -467,13 +467,13 @@ namespace HAPI {
           break;
 
       if( i < tmp_current_force_effects.size() ) {
-        force_effects_to_remove.push_back( make_pair( effect, fade_out_time ));
-        for( vector< pair< unsigned int, HAPITime > >::iterator j =
+        force_effects_to_remove.push_back( std::make_pair( effect, fade_out_time ));
+        for( std::vector< std::pair< unsigned int, HAPITime > >::iterator j =
                added_effects_indices.begin();
              j != added_effects_indices.end(); ++j ) {
           if( i == (*j).first ) {
             added_effects_indices.erase( j );
-            for( vector< pair< unsigned int, HAPITime > >::iterator k =
+            for( std::vector< std::pair< unsigned int, HAPITime > >::iterator k =
                    added_effects_indices.begin();
                  k != added_effects_indices.end(); ++k ) {
               --((*k).first);
@@ -620,8 +620,8 @@ namespace HAPI {
 #ifdef HAVE_PROFILER
     /// Get the current profiled result
     inline std::string getProfiledResult() {
-      string temp1 = "";
-      string temp2 = "";
+      std::string temp1 = "";
+      std::string temp2 = "";
       profiled_result_lock.lock();
       temp1 = profiled_result_haptic[0];
       temp2 = profiled_result_haptic[1];
@@ -834,7 +834,7 @@ namespace HAPI {
       // Give ownership to temporary auto_ptr to get correct deletion of 
       // the renderer that is replaced since the auto_ptr_vector does not
       // take care of this.
-      auto_ptr< HAPIHapticsRenderer > temp_rendr( haptics_renderers[ layer ] );
+      std::auto_ptr< HAPIHapticsRenderer > temp_rendr( haptics_renderers[ layer ] );
       haptics_renderers[ layer ] = r;
       renderer_change_lock.unlock();
     }
@@ -852,7 +852,7 @@ namespace HAPI {
     }
 
     /// Get the error message from the latest error.
-    inline const string &getLastErrorMsg() {
+    inline const std::string &getLastErrorMsg() {
       return last_error_message;
     }
 
@@ -875,7 +875,7 @@ namespace HAPI {
       /// \param error_string Human readable text describing the error.
       virtual void handleError( HAPIHapticsDevice *hd, 
                                 long internal_error_code,
-                                string error_string ) = 0;
+                                std::string error_string ) = 0;
     };
     
     /// The default error handler that is used by haptics devices. It outputs
@@ -885,10 +885,10 @@ namespace HAPI {
       /// Outputs a Console error message.
       virtual void handleError( HAPIHapticsDevice *hd, 
                                 long internal_error_code,
-                                string error_string ) {
+                                std::string error_string ) {
         H3DUtil::Console(H3DUtil::LogLevel::Error) << "Haptics device error: " << error_string
                               << " (error code " << internal_error_code 
-                              << ")" << endl;
+                              << ")" << std::endl;
       }
     };
     
@@ -971,9 +971,9 @@ namespace HAPI {
       /// \param _libs_to_support A list of names of dlls that must exist on
       /// the system for this device to be supported. Only needed for devices
       /// that should be supported in Microsoft Windows.
-      HapticsDeviceRegistration( const string &_name,
+      HapticsDeviceRegistration( const std::string &_name,
                                  CreateInstanceFunc _create,
-                                 list< string > _libs_to_support = list<string >() ):
+                                 std::list< std::string > _libs_to_support = std::list<std::string >() ):
       name( _name ),
       create_func( _create ),
       libs_to_support( _libs_to_support )
@@ -981,15 +981,15 @@ namespace HAPI {
         
         if( !initialized ) {
           HAPIHapticsDevice::registered_devices.reset( 
-            new list< HapticsDeviceRegistration > );
+            new std::list< HapticsDeviceRegistration > );
           initialized = true;
         }
         HAPIHapticsDevice::registerDevice( *this );
       }
 
-      string name;
+      std::string name;
       CreateInstanceFunc create_func;
-      list< string > libs_to_support;
+      std::list< std::string > libs_to_support;
     };
 #ifdef __BORLANDC__
     friend struct HapticsDeviceRegistration;
@@ -1000,9 +1000,9 @@ namespace HAPI {
     /// \param create A function for creating an instance of that class.
     /// \param libs_to_support A list of strings with libraries that is needed
     /// to be supported by this device (dlls, so).
-    static void registerDevice( const string &name,
+    static void registerDevice( const std::string &name,
                                   CreateInstanceFunc create,
-                                  list< string > libs_to_support ) {
+                                  std::list< std::string > libs_to_support ) {
       registerDevice( HapticsDeviceRegistration( name, create, 
                                                  libs_to_support ) );
     }
@@ -1092,7 +1092,7 @@ namespace HAPI {
       }
     };
 
-    static local_auto_ptr< list< HapticsDeviceRegistration > >
+    static local_auto_ptr< std::list< HapticsDeviceRegistration > >
     registered_devices;
     static bool initialized;
 
@@ -1176,7 +1176,7 @@ namespace HAPI {
 
     /// Sets an error message that can be accessed later through
     /// getLastErrorMsg()
-    inline void setErrorMsg( const string &err ) {
+    inline void setErrorMsg( const std::string &err ) {
       last_error_message = err;
     }
 
@@ -1258,11 +1258,11 @@ namespace HAPI {
     HAPITime tmp_switch_effects_duration;
 
     // Used to know which effects was added through the addEffect function.
-    vector< pair< unsigned int, HAPITime > > added_effects_indices;
+    std::vector< std::pair< unsigned int, HAPITime > > added_effects_indices;
 
     // Used to know which effects was removed through the removeEffect
     // function.
-    vector< pair< HAPIForceEffect *, HAPITime > > force_effects_to_remove;
+    std::vector< std::pair< HAPIForceEffect *, HAPITime > > force_effects_to_remove;
 
     // The time of the last call to setForceEffects or swapForceEffects.
     // Only set if switching_effects is true.
@@ -1332,14 +1332,14 @@ namespace HAPI {
       bool set_max_fraction;
     };
 
-    // TODO: evaluate whether a change to list< pair< int, PhaseInOut > > would
+    // TODO: evaluate whether a change to std::list< std::pair< int, PhaseInOut > > would
     // be a better solution. The shifted part may go faster. The search
     // function that needs to be implemented could use an extra variable that
     // tells where to start the search. Because of the way things are added
     // the index part (int) is added in increasing order. So no need to start
     // searching from the beginning each time, maybe only need to go one step.
     // Need to check that.
-    typedef map< int, PhaseInOut > IndexTimeMap;
+    typedef std::map< int, PhaseInOut > IndexTimeMap;
     // map to keep track of which force effects in current_force_effects that
     // are phased in.
     IndexTimeMap current_add_rem_effect_map;
@@ -1349,7 +1349,7 @@ namespace HAPI {
 
     // the shapes that are currently being rendered in the realtime loop.
     // One HapticEffectVector for each layer.
-    vector< HapticShapeVector > current_shapes;
+    std::vector< HapticShapeVector > current_shapes;
 
     // the values to send to the haptics device.
     DeviceOutput output;
@@ -1366,7 +1366,7 @@ namespace HAPI {
 
     // container for shapes that will be transferred to the haptic
     // rendering loop through transferObjects.
-    vector< HapticShapeVector > tmp_shapes ;
+    std::vector< HapticShapeVector > tmp_shapes ;
 
     /// The time at the beginning of the last rendering loop
     TimeStamp last_loop_time;
@@ -1389,8 +1389,8 @@ namespace HAPI {
     Matrix4 position_calibration_inverse;
     Rotation orientation_calibration;
     H3DUtil::AutoPtrVector< HAPIHapticsRenderer > haptics_renderers;
-    string last_error_message;
-    string device_name;
+    std::string last_error_message;
+    std::string device_name;
 
     /// Callback function to render forces.
     static H3DUtil::PeriodicThread::CallbackCode

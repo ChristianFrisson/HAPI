@@ -50,6 +50,7 @@
 
 using namespace HAPI;
 using namespace Collision;
+using namespace std;
 
 namespace CollisionInternals {
   // Intersects segment r = p * t * d, |d| = tmax,

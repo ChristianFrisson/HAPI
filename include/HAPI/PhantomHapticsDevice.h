@@ -50,7 +50,7 @@ namespace HAPI {
     /// \param _device_name is the name of the device, as defined in the 
     /// "Phantom Configuration" tool. A device_name of "" will use the first
     /// available device.
-    PhantomHapticsDevice( string _device_name = "" ):
+    PhantomHapticsDevice( std::string _device_name = "" ):
       device_name( _device_name ),
       in_calibration_mode( false ),
       motor_temperatures( 6, 0 ) {
@@ -68,7 +68,7 @@ namespace HAPI {
     }
 
     /// Returns the name of the device.
-    virtual const string &getDeviceName() {
+    virtual const std::string &getDeviceName() {
       return device_name;
     }
 
@@ -82,23 +82,23 @@ namespace HAPI {
     }
 
     /// Get the HDAPI software version, in the form major.minor.build
-    inline string getHDAPIVersion() { return hdapi_version; }
+    inline std::string getHDAPIVersion() { return hdapi_version; }
 
     /// Get the device model of the device. Undefined if device not
     /// initialized.
-    inline string getDeviceModelType() { return device_model_type; }
+    inline std::string getDeviceModelType() { return device_model_type; }
 
     /// Get the device driver version of the device. Undefined if device not
     /// initialized.
-    inline string getDeviceDriverVersion() { return device_driver_version; }
+    inline std::string getDeviceDriverVersion() { return device_driver_version; }
 
     /// Get the vendor of the device. Undefined if device not
     /// initialized.
-    inline string getDeviceVendor() { return device_vendor; }
+    inline std::string getDeviceVendor() { return device_vendor; }
 
     /// Get the serial number of the device. Undefined if device not
     /// initialized.
-    inline string getDeviceSerialNumber() { return device_serial_number; }
+    inline std::string getDeviceSerialNumber() { return device_serial_number; }
 
     /// Get the motor temperatures from the temperature model of the device.
     /// The returned vector contains 6 values, where the first three are the
@@ -106,7 +106,7 @@ namespace HAPI {
     /// The values are normalized between 0 and 1 where 1 means that a temperature
     /// error will be generated and the device temporarily be shut down by the driver
     /// a few seconds to cool down.
-    inline const vector< HAPIFloat > &getMotorTemperatures(){ return motor_temperatures; }
+    inline const std::vector< HAPIFloat > &getMotorTemperatures(){ return motor_temperatures; }
    
     /// \brief Get the maximum workspace dimensions of the device, i.e. the
     /// mechanical limits of the device. Undefined if
@@ -213,11 +213,11 @@ namespace HAPI {
 
   protected:
     double device_firmware_version;
-    string hdapi_version;
-    string device_model_type;
-    string device_driver_version;
-    string device_vendor;
-    string device_serial_number;
+    std::string hdapi_version;
+    std::string device_model_type;
+    std::string device_driver_version;
+    std::string device_vendor;
+    std::string device_serial_number;
     Vec3 usable_workspace_max;
     Vec3 usable_workspace_min;
     Vec3 max_workspace_max;
@@ -225,7 +225,7 @@ namespace HAPI {
     HAPIFloat max_force, max_cont_force, tabletop_offset;
     int input_dof, output_dof;
     Vec3 joint_angles, gimbal_angles;
-    vector< HAPIFloat > motor_temperatures;
+    std::vector< HAPIFloat > motor_temperatures;
     
     /// Implementation of updateDeviceValues using HD API to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt );
@@ -255,12 +255,12 @@ namespace HAPI {
     static HDCallbackCode HDCALLBACK endFrameCallback( void *data );
 
     /// The device name for this device.
-    string device_name;
+    std::string device_name;
     /// The OpenHaptics device handle for this device.
     HHD device_handle;
 
     /// Handle for all setup callbacks.
-    vector< HDCallbackCode > hd_handles;
+    std::vector< HDCallbackCode > hd_handles;
 
     /// If true the device is in calibration_mode and will try to be
     /// calibrated. It is up to the user to decide if haptics should be

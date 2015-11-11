@@ -42,7 +42,7 @@ namespace HAPI {
   public:
     /// Constructor.
     HapticPrimitiveTree( 
-              const vector< Collision::GeometryPrimitive * > &_primitives,
+              const std::vector< Collision::GeometryPrimitive * > &_primitives,
               HAPISurfaceObject *_surface, 
               Collision::FaceType _touchable_face = 
               Collision::FRONT_AND_BACK,
@@ -57,7 +57,7 @@ namespace HAPI {
 
     HapticPrimitiveTree(
               const Matrix4 &_transform,
-              const vector< Collision::GeometryPrimitive * > &_primitives,
+              const std::vector< Collision::GeometryPrimitive * > &_primitives,
               HAPISurfaceObject *_surface, 
               Collision::FaceType _touchable_face = 
               Collision::FRONT_AND_BACK,

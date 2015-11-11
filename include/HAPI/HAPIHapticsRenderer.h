@@ -113,8 +113,8 @@ namespace HAPI {
       return renderHapticsOneStep( hd, shapes );
     };
 
-    typedef std::vector< pair< H3DUtil::AutoRef< HAPI::HAPIHapticShape >,
-                               HAPISurfaceObject::ContactInfo> > Contacts; 
+    typedef std::vector< std::pair< H3DUtil::AutoRef< HAPI::HAPIHapticShape >,
+                                    HAPISurfaceObject::ContactInfo> > Contacts; 
 
     inline Contacts getContacts() {
       contacts_lock.lock();
@@ -133,20 +133,20 @@ namespace HAPI {
     struct HAPI_API HapticsRendererRegistration{
     public:
       /// Constructor.
-      HapticsRendererRegistration( const string &_name,
+      HapticsRendererRegistration( const std::string &_name,
                                    CreateInstanceFunc _create ):
       name( _name ),
       create_func( _create ) {
         
         if( !HAPIHapticsRenderer::initialized ) {
           HAPIHapticsRenderer::registered_renderers.reset( 
-            new list< HapticsRendererRegistration > );
+            new std::list< HapticsRendererRegistration > );
           initialized = true;
         }
         HAPIHapticsRenderer::registerRenderer( *this );
       }
 
-      string name;
+      std::string name;
       CreateInstanceFunc create_func;
     };
 #ifdef __BORLANDC__
@@ -156,7 +156,7 @@ namespace HAPI {
     /// Register a haptics renderer to the database.
     /// \param name The name of the renderer
     /// \param create A function for creating an instance of that class.
-    static void registerRenderer( const string &name,
+    static void registerRenderer( const std::string &name,
                                   CreateInstanceFunc create ) {
       registerRenderer( HapticsRendererRegistration( name, create ) );
     }
@@ -253,7 +253,7 @@ namespace HAPI {
     };
 
   protected:
-    static local_auto_ptr< list< HapticsRendererRegistration > >
+    static local_auto_ptr< std::list< HapticsRendererRegistration > >
     registered_renderers;
     H3DUtil::MutexLock contacts_lock;
     Contacts contacts;
@@ -266,8 +266,8 @@ namespace HAPI {
       virtual void cleanUp() {}
     };
 
-    static map< HAPIHapticsDevice *,
-      vector< WorkAroundToCleanUpHLContext * > > clean_up_stuff;
+    static std::map< HAPIHapticsDevice *,
+      std::vector< WorkAroundToCleanUpHLContext * > > clean_up_stuff;
   };
 }
 

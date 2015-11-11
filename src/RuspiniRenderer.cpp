@@ -109,7 +109,7 @@ void RuspiniRenderer::onOnePlaneContact( const Vec3& proxy_pos,
   c.haptic_shape->getSurface()->getForces( contact );
   
   // add a contact
-  tmp_contacts.push_back( make_pair( c.haptic_shape, contact ) );
+  tmp_contacts.push_back( std::make_pair( c.haptic_shape, contact ) );
 }
 
 void RuspiniRenderer::onTwoPlaneContact( const Vec3& proxy_pos,
@@ -222,9 +222,9 @@ void RuspiniRenderer::onTwoPlaneContact( const Vec3& proxy_pos,
     contact.force_global = p0_force * weight + p1_force * ( 1 - weight );
 
     // add contacts
-    tmp_contacts.push_back( make_pair( p0.haptic_shape, contact ) );
+    tmp_contacts.push_back( std::make_pair( p0.haptic_shape, contact ) );
     if( p0.haptic_shape.get() != p1.haptic_shape.get() )
-      tmp_contacts.push_back( make_pair( p1.haptic_shape, contact ) );
+      tmp_contacts.push_back( std::make_pair( p1.haptic_shape, contact ) );
   }
 }
 
@@ -387,14 +387,14 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
 
 
     // add contacts
-    tmp_contacts.push_back( make_pair( p0.haptic_shape, contact ) );
+    tmp_contacts.push_back( std::make_pair( p0.haptic_shape, contact ) );
     if( p0.haptic_shape.get() != p1.haptic_shape.get() ) {
-      tmp_contacts.push_back( make_pair( p1.haptic_shape, contact ) );
+      tmp_contacts.push_back( std::make_pair( p1.haptic_shape, contact ) );
     }
     
     if( p0.haptic_shape.get() != p2.haptic_shape.get() &&
         p1.haptic_shape.get() != p2.haptic_shape.get() ) {
-      tmp_contacts.push_back( make_pair( p2.haptic_shape, contact ) );
+      tmp_contacts.push_back( std::make_pair( p2.haptic_shape, contact ) );
     }
   }
 }
@@ -675,7 +675,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   last_contact_transforms.clear();
   for( unsigned int i = 0; i < tmp_contacts.size(); ++i ) {
     if( tmp_contacts[i].first->isDynamic() ) {
-      last_contact_transforms.push_back( make_pair( tmp_contacts[i].first->getShapeId(),
+      last_contact_transforms.push_back( std::make_pair( tmp_contacts[i].first->getShapeId(),
                                                     tmp_contacts[i].first->getInverse() ) );
     }
   }
