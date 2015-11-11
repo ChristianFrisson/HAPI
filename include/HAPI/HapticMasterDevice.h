@@ -43,7 +43,7 @@ namespace HAPI {
   class HAPI_API HapticMasterDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.
-    HapticMasterDevice( const string &_device_name = "vmd" ):
+    HapticMasterDevice( const std::string &_device_name = "vmd" ):
       device_handle( -1 ),
       device_name( _device_name ),
       com_thread( NULL ),
@@ -62,7 +62,7 @@ namespace HAPI {
     }
 
     /// Get the name of this device as specified in servers.db.
-    inline string getName() {
+    inline std::string getName() {
       return device_name;
     }
 
@@ -115,7 +115,7 @@ namespace HAPI {
     // the device handle for the haptics device.
     int device_handle;
     // the name of this device as specified in servers.db.
-    string device_name;
+    std::string device_name;
     
     /// Callback function for communication thread
     static H3DUtil::PeriodicThread::CallbackCode com_func( void *data );

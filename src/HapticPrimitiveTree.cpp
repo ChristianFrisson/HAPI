@@ -31,6 +31,7 @@
 #include <HAPI/PlaneConstraint.h>
 
 using namespace HAPI;
+using namespace std;
 
 bool HapticPrimitiveTree::lineIntersectShape( const Vec3 &from, 
                                           const Vec3 &to,

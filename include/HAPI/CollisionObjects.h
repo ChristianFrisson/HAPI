@@ -71,7 +71,7 @@ namespace HAPI {
         H3DUtil::RefCountedClass( _use_lock ){};
          
       typedef HAPI::Constraints Constraints;
-      //typedef vector< Collision::PlaneConstraint > Constraints;
+      //typedef std::vector< Collision::PlaneConstraint > Constraints;
 
       /// Get constraint planes of the object. A proxy of a haptics renderer
       /// will always stay above any constraints added.
@@ -190,7 +190,7 @@ namespace HAPI {
       BoundPrimitive() {}
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3 >&points ) = 0;
+      virtual void fitAroundPoints( const std::vector< Vec3 >&points ) = 0;
 
       /// Returns a Vec3 specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
@@ -1172,7 +1172,7 @@ namespace HAPI {
       }
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3 > &points );
+      virtual void fitAroundPoints( const std::vector< Vec3 > &points );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -1281,7 +1281,7 @@ namespace HAPI {
       inline virtual Vec3 longestAxis() const;
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3 > &points );
+      virtual void fitAroundPoints( const std::vector< Vec3 > &points );
 
       /// Detect collision between a line segment and the object.
       /// \param from The start of the line segment.
@@ -1397,7 +1397,7 @@ namespace HAPI {
                                           const Vec3 &to );
 
       /// Update the bound primitive to contain all the given points.
-      virtual void fitAroundPoints( const vector< Vec3 > &points );
+      virtual void fitAroundPoints( const std::vector< Vec3 > &points );
 
       /// Returns a Vec3 specifying the longest axis of the bound primitive.
       /// 1 0 0 means the x-axis, 0 1 0 the y-axis and 0 0 1 the z-axis.
@@ -1437,7 +1437,7 @@ namespace HAPI {
       /// max_nr_triangles_in_leaf specifies the maximum number of triangles 
       /// that are allowed to be in a bound of a leaf in the tree. 
       BinaryBoundTree( BoundNewFunc func, 
-                       const vector< Triangle > &triangles,
+                       const std::vector< Triangle > &triangles,
                        unsigned int max_nr_triangles_in_leaf = 1 );
 
       /// Builds a binary tree from a vector of triangles, lines and points.
@@ -1446,16 +1446,16 @@ namespace HAPI {
       /// max_nr_triangles_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
       BinaryBoundTree( BoundNewFunc func, 
-                       const vector< Triangle > &triangle_vector,
-                       const vector< LineSegment > &linesegment_vector,
-                       const vector< Point > &point_vector,
+                       const std::vector< Triangle > &triangle_vector,
+                       const std::vector< LineSegment > &linesegment_vector,
+                       const std::vector< Point > &point_vector,
                        unsigned int max_nr_triangles_in_leaf = 1 );
 
 
       /// Array of 3*(nr triangles in tree) triangle indices specifying
       /// for each triangle edge which triangle is its neighbour. The index
       /// is into the triangles received by the getAllTriangles function.
-      const vector<int> &getNeighbours();
+      const std::vector<int> &getNeighbours();
 
       /// Returns true if the tree is a leaf, i.e. has no sub-tress
       /// and hence just contains triangles. false otherwise.
@@ -1480,15 +1480,15 @@ namespace HAPI {
       /// radius from p, to the triangles vector.
       virtual void getTrianglesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
-                                             vector< Triangle > &triangles);
+                                             std::vector< Triangle > &triangles);
 
       /// Adds the triangles, lines and points found in the tree, that are 
       /// within the distance radius from p, to their respective vector.
       virtual void getPrimitivesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
-                                             vector< Triangle > &triangles,
-                                             vector< LineSegment > &lines,
-                                             vector< Point > &points );
+                                             std::vector< Triangle > &triangles,
+                                             std::vector< LineSegment > &lines,
+                                             std::vector< Point > &points );
 
       /// Adds the triangles that are intersected by the volume swept by a
       /// sphere when moving from "from" to "to".
@@ -1496,7 +1496,7 @@ namespace HAPI {
                     HAPIFloat radius,
                     Vec3 from,
                     Vec3 to,
-                    vector< Triangle > &triangles);
+                    std::vector< Triangle > &triangles);
 
       /// Adds the triangles, lines and points that are intersected by 
       /// the volume swept by a sphere when moving from "from" to "to".
@@ -1504,9 +1504,9 @@ namespace HAPI {
                     HAPIFloat radius,
                     Vec3 from,
                     Vec3 to,
-                    vector< Triangle > &triangles,
-                    vector< LineSegment > &lines,
-                    vector< Point > &points );
+                    std::vector< Triangle > &triangles,
+                    std::vector< LineSegment > &lines,
+                    std::vector< Point > &points );
 
       /// Render the objects in the leafs. The caller of the function need to
       /// set up OpenGL state in case the rendering should be done differently
@@ -1615,12 +1615,12 @@ namespace HAPI {
       }
 
       /// Add all triangles in the tree to the given vector.
-      virtual void getAllTriangles( vector< Triangle > &triangles );
+      virtual void getAllTriangles( std::vector< Triangle > &triangles );
 
       /// Add all triangles, lines and points in the tree to the given vector.
-      virtual void getAllPrimitives( vector< Triangle > &triangles,
-                                    vector< LineSegment > &lines,
-                                    vector< Point > &points );
+      virtual void getAllPrimitives( std::vector< Triangle > &triangles,
+                                    std::vector< LineSegment > &lines,
+                                    std::vector< Point > &points );
 
       /// The bound for this node in the tree, will be a bound around
       /// all its children (left and right subtree).
@@ -1628,19 +1628,19 @@ namespace HAPI {
 
       /// The triangles for this node in the tree. Will only be non-empty
       /// for leafs.
-      vector< Triangle > triangles;
+      std::vector< Triangle > triangles;
 
       /// The line segments for this node in the tree. Will only be non-empty
       /// for leafs.
-      vector< LineSegment > linesegments;
+      std::vector< LineSegment > linesegments;
 
       /// The points for this node in the tree. Will only be non-empty
       /// for leafs.
-      vector< Point > points;
+      std::vector< Point > points;
 
       /// Array of 3*nr_triangles triangle indices specifying for each triangle
       /// edge which triangle is its neighbour. 
-      vector< int > neighbours;
+      std::vector< int > neighbours;
 
       /// The left subtree.
       H3DUtil::AutoRef< BinaryBoundTree > left;
@@ -1664,7 +1664,7 @@ namespace HAPI {
       /// Builds a binary tree from a vector of triangles. 
       /// max_nr_triangles_in_leaf specifies the maximum number of triangles 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      AABBTree( const vector< Triangle > &triangles,
+      AABBTree( const std::vector< Triangle > &triangles,
                 unsigned int max_nr_triangles_in_leaf = 1 ):
         BinaryBoundTree( &(newInstance< AABoxBound >),
                          triangles,
@@ -1673,9 +1673,9 @@ namespace HAPI {
       /// Builds a binary tree from a vector of triangles, lines and points.
       /// max_nr_triangles_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      AABBTree( const vector< Triangle > &triangles,
-                const vector< LineSegment > &linesegment_vector,
-                const vector< Point > &point_vector,
+      AABBTree( const std::vector< Triangle > &triangles,
+                const std::vector< LineSegment > &linesegment_vector,
+                const std::vector< Point > &point_vector,
                 unsigned int max_nr_triangles_in_leaf = 1 ):
         BinaryBoundTree( &(newInstance< AABoxBound >), triangles,
                          linesegment_vector, point_vector,
@@ -1696,7 +1696,7 @@ namespace HAPI {
       /// Builds a binary tree from a vector of triangles. 
       /// max_nr_triangles_in_leaf specifies the maximum number of triangles 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      OBBTree( const vector< Triangle > &triangles,
+      OBBTree( const std::vector< Triangle > &triangles,
                unsigned int max_nr_triangles_in_leaf = 1 ):
         BinaryBoundTree( &(newInstance< OrientedBoxBound >), triangles, 
                          max_nr_triangles_in_leaf ) {}
@@ -1704,9 +1704,9 @@ namespace HAPI {
       /// Builds a binary tree from a vector of triangles, lines and points.
       /// max_nr_triangles_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      OBBTree( const vector< Triangle > &triangles,
-                const vector< LineSegment > &linesegment_vector,
-                const vector< Point > &point_vector,
+      OBBTree( const std::vector< Triangle > &triangles,
+                const std::vector< LineSegment > &linesegment_vector,
+                const std::vector< Point > &point_vector,
                 unsigned int max_nr_triangles_in_leaf = 1 ):
         BinaryBoundTree( &(newInstance< OrientedBoxBound >), triangles,
                          linesegment_vector, point_vector,
@@ -1726,7 +1726,7 @@ namespace HAPI {
       /// Builds a binary tree from a vector of triangles. 
       /// max_nr_triangles_in_leaf specifies the maximum number of triangles 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      SphereBoundTree( const vector< Triangle > &triangles,
+      SphereBoundTree( const std::vector< Triangle > &triangles,
                        unsigned int max_nr_triangles_in_leaf = 1): 
         BinaryBoundTree( &(newInstance< SphereBound > ),
                          triangles,
@@ -1735,9 +1735,9 @@ namespace HAPI {
       /// Builds a binary tree from a vector of triangles, lines and points.
       /// max_nr_triangles_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      SphereBoundTree( const vector< Triangle > &triangles,
-                const vector< LineSegment > &linesegment_vector,
-                const vector< Point > &point_vector,
+      SphereBoundTree( const std::vector< Triangle > &triangles,
+                const std::vector< LineSegment > &linesegment_vector,
+                const std::vector< Point > &point_vector,
                 unsigned int max_nr_triangles_in_leaf = 1 ):
         BinaryBoundTree( &(newInstance< SphereBound >), triangles,
                          linesegment_vector, point_vector,
@@ -1771,7 +1771,7 @@ namespace HAPI {
       /// the maximum number of primitives that are allowed to be in a bound
       /// of a leaf in the tree. 
       BBPrimitiveTree( BoundNewFunc func, 
-                       const vector< GeometryPrimitive * > &_primitives,
+                       const std::vector< GeometryPrimitive * > &_primitives,
                        unsigned int max_nr_primitives_in_leaf = 1 );
 
       /// Returns true if the tree is a leaf, i.e. has no sub-trees
@@ -1797,7 +1797,7 @@ namespace HAPI {
       /// within the distance radius from p, to the vector of primitives.
       virtual void getPrimitivesWithinRadius( const Vec3 &p,
                                              HAPIFloat radius,
-                                    vector< GeometryPrimitive * > &primitives);
+                                    std::vector< GeometryPrimitive * > &primitives);
 
       /// Adds the primitives that are intersected by the volume swept by a
       /// sphere when moving from "from" to "to".
@@ -1805,7 +1805,7 @@ namespace HAPI {
                       HAPIFloat radius,
                       Vec3 from,
                       Vec3 to,
-                      vector< GeometryPrimitive * > &primitives);
+                      std::vector< GeometryPrimitive * > &primitives);
 
       /// Render the objects in the leafs. The caller of the function need to
       /// set up OpenGL state in case the rendering should be done differently
@@ -1915,7 +1915,7 @@ namespace HAPI {
 
       /// Add all primitives in the tree to the given vector.
       virtual void getAllPrimitives(
-        vector< GeometryPrimitive * > &primitives );
+        std::vector< GeometryPrimitive * > &primitives );
 
       /// The bound for this node in the tree, will be a bound around
       /// all its children (left and right subtree).
@@ -1947,7 +1947,7 @@ namespace HAPI {
       /// Builds a binary tree from a vector of primitives. 
       /// max_nr_primitives_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      AABBPrimitiveTree( const vector< GeometryPrimitive * > &_primitives,
+      AABBPrimitiveTree( const std::vector< GeometryPrimitive * > &_primitives,
                 unsigned int max_nr_primitives_in_leaf = 1 ):
         BBPrimitiveTree( &(newInstance< AABoxBound >),
                          _primitives,
@@ -1968,7 +1968,7 @@ namespace HAPI {
       /// Builds a binary tree from a vector of primitives. 
       /// max_nr_primitives_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      OBBPrimitiveTree( const vector< GeometryPrimitive * > &_primitives,
+      OBBPrimitiveTree( const std::vector< GeometryPrimitive * > &_primitives,
                unsigned int max_nr_primitives_in_leaf = 1 ):
         BBPrimitiveTree( &(newInstance< OrientedBoxBound >), _primitives, 
                          max_nr_primitives_in_leaf ) {}
@@ -1987,7 +1987,7 @@ namespace HAPI {
       /// Builds a binary tree from a vector of primitives. 
       /// max_nr_primitives_in_leaf specifies the maximum number of primitives 
       /// that are allowed to be in a bound of a leaf in the tree. 
-      SBPrimitiveTree( const vector< GeometryPrimitive * > &_primitives,
+      SBPrimitiveTree( const std::vector< GeometryPrimitive * > &_primitives,
                        unsigned int max_nr_primitives_in_leaf = 1): 
         BBPrimitiveTree( &(newInstance< SphereBound > ),
                          _primitives,

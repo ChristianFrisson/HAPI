@@ -80,9 +80,9 @@ namespace HAPI {
   
   /// \ingroup CollisionStructures
   /// \class Constraints
-  /// \brief Similar to vector< PlaneConstraint >.
+  /// \brief Similar to std::vector< PlaneConstraint >.
   ///
-  /// This class has many of the same functions as vector< PlaneConstraint >,
+  /// This class has many of the same functions as std::vector< PlaneConstraint >,
   /// but does some optimizations to avoid reallocation of memory
   /// when used in RuspiniRenderer.
   class Constraints {

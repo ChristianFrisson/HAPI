@@ -32,7 +32,7 @@
 #include <H3DUtil/H3DMath.h>
 
 using namespace HAPI;
-
+using namespace std;
 
 HAPIHapticsRenderer::HapticsRendererRegistration 
 GodObjectRenderer::renderer_registration(

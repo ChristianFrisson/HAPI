@@ -98,7 +98,7 @@ namespace HAPI {
     // Might call onTwoPlaneContact after further reducing the problem of
     // how many planes the proxy is in contact with.
     void onThreeOrMorePlaneContact(  const Vec3& proxy_pos,
-                                     vector< PlaneConstraint > &constraints,
+                                     std::vector< PlaneConstraint > &constraints,
                                      HAPISurfaceObject::ContactInfo &contact,
                                      const HapticShapeVector &shapes );
 
@@ -119,15 +119,15 @@ namespace HAPI {
     // vector with pairs shape_id, transform matrix. It contains the id
     // of the shapes that were in contact during last haptics loop and
     // their transform matrices at the time.
-    vector< pair< int, Matrix4 > > last_contact_transforms;
+    std::vector< std::pair< int, Matrix4 > > last_contact_transforms;
 
     // the intersections that are closest to the user (several if the 
     // intersections are in the same point)
-    vector< PlaneConstraint > closest_constraints;
+    std::vector< PlaneConstraint > closest_constraints;
 
     // all intersections that were discovered in the last loop.
     // only valid if any of the haptic shapes we have is dynamic.
-    vector< PlaneConstraint > all_constraints;
+    std::vector< PlaneConstraint > all_constraints;
 
     H3DUtil::MutexLock proxy_info_lock;
   };

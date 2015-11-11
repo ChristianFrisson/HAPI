@@ -139,8 +139,8 @@ namespace HAPI {
     /// evaluation_params specifies the parameters given as input and the order
     /// in which they are given
     /// e.g. "x" or "x,y" to match the variables in the function string. 
-    bool setFunctionString( const string &function,
-                            const string &evaluation_params = "x" );
+    bool setFunctionString( const std::string &function,
+                            const std::string &evaluation_params = "x" );
 
     /// Returns true if the class has successfully parsed a function and
     /// is ready for use.
@@ -149,10 +149,10 @@ namespace HAPI {
     }
       
     /// Get the current function string.
-    inline const string& getFunction() { return function_string; }
+    inline const std::string& getFunction() { return function_string; }
 
     /// Get the current function parameters string.
-    inline const string& getParams() { return params_string; }
+    inline const std::string& getParams() { return params_string; }
 
     /// Evaluate the function. 
     /// \param input is a pointer to the input values of the function to
@@ -161,8 +161,8 @@ namespace HAPI {
 
   protected:
     bool have_valid_function;
-    string function_string;
-    string params_string;
+    std::string function_string;
+    std::string params_string;
     FunctionParser *fparser;
   };
 }

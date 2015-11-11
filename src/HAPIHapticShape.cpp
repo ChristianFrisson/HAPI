@@ -43,7 +43,7 @@
 using namespace HAPI;
 
 int HAPIHapticShape::current_max_id = 0;
-list< int > HAPIHapticShape::free_ids;
+std::list< int > HAPIHapticShape::free_ids;
 
 int HAPIHapticShape::genShapeId() {
   if( free_ids.empty() ) {

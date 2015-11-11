@@ -33,20 +33,20 @@
 using namespace HAPI;
 
 
-HAPIHapticsRenderer::local_auto_ptr< list< HAPIHapticsRenderer::HapticsRendererRegistration > > 
+HAPIHapticsRenderer::local_auto_ptr< std::list< HAPIHapticsRenderer::HapticsRendererRegistration > > 
 HAPIHapticsRenderer::registered_renderers(NULL);
 
 bool HAPIHapticsRenderer::initialized = false; 
 
-map< HAPIHapticsDevice *,
-vector< HAPIHapticsRenderer::WorkAroundToCleanUpHLContext * > >
+std::map< HAPIHapticsDevice *,
+std::vector< HAPIHapticsRenderer::WorkAroundToCleanUpHLContext * > >
       HAPIHapticsRenderer::clean_up_stuff;
 
 HAPIHapticsRenderer::~HAPIHapticsRenderer() { }
 
 void HAPIHapticsRenderer::cleanUpStuff( HAPIHapticsDevice *hd ) {
   if( clean_up_stuff.find( hd ) != clean_up_stuff.end() ) {
-    vector< WorkAroundToCleanUpHLContext * >
+    std::vector< WorkAroundToCleanUpHLContext * >
       &clean_up_classes = clean_up_stuff[ hd ];
     for( unsigned int i = 0; i < clean_up_classes.size(); ++i ) {
       clean_up_classes[i]->cleanUp();

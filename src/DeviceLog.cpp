@@ -33,14 +33,14 @@
 
 using namespace HAPI;
 
-DeviceLog::DeviceLog( const string &_log_file, 
+DeviceLog::DeviceLog( const std::string &_log_file, 
                       const DeviceLog::LogTypeVector &_log_type,
                       int _freq, bool _binary ) :
   log_type( _log_type ), binary( _binary ) {
 
-  ios_base::openmode mode = ios::out | ios::trunc;
+  std::ios_base::openmode mode = std::ios::out | std::ios::trunc;
   if( binary )
-    mode = mode | ios::binary;
+    mode = mode | std::ios::binary;
 
   log_file.open( _log_file.c_str(), mode );
   if( !log_file.is_open() )
@@ -78,7 +78,7 @@ void DeviceLog::writeLog( const EffectInput &input, HAPITime log_time ) {
   writeLogRow ( input, log_time );
 
   if( !binary ) {
-    log_file << endl;
+    log_file << std::endl;
   }
 }
 
@@ -89,7 +89,7 @@ void DeviceLog::writeHeader( const EffectInput &input ) {
     char null_char = '\0';
     log_file.write( &null_char, sizeof(char) );
   } else {
-    log_file << endl;
+    log_file << std::endl;
   }
 }
 

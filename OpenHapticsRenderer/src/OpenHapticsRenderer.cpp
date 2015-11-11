@@ -53,9 +53,9 @@ OpenHapticsRenderer::renderer_registration(
                             &(newInstance< OpenHapticsRenderer >)
                             );
 namespace OpenHapticsRendererInternals {
-  string getHLErrorString( HLerror error ) {
+  std::string getHLErrorString( HLerror error ) {
     if( error.errorCode == HL_DEVICE_ERROR ) {
-      stringstream s;
+      std::stringstream s;
       s << "HL_DEVICE_ERROR( " 
         << hdGetErrorString( error.errorInfo.errorCode )
         << " )";
@@ -68,7 +68,7 @@ namespace OpenHapticsRendererInternals {
 
 // Initialize static variables.
 int OpenHapticsRenderer::nr_of_context = 0;
-auto_ptr< H3DUtil::PeriodicThread > OpenHapticsRenderer::data_update_thread(0);
+std::auto_ptr< H3DUtil::PeriodicThread > OpenHapticsRenderer::data_update_thread(0);
 H3DUtil::MutexLock OpenHapticsRenderer::data_update_lock;
 HAPIInt32 OpenHapticsRenderer::nr_of_data_update_callbacks = 0;
 
@@ -423,7 +423,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           }
       } else {
         H3DUtil::Console(H3DUtil::LogLevel::Debug)
-          <<  "Surface type not supported by OpenHapticsRenderer." << endl;
+          <<  "Surface type not supported by OpenHapticsRenderer." << std::endl;
       }
     } 
   }
@@ -462,7 +462,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
   HLerror error;
   while ( HL_ERROR(error = hlGetError()) ) {
     H3DUtil::Console(H3DUtil::LogLevel::Error) <<
-      OpenHapticsRendererInternals::getHLErrorString( error ) << endl;
+      OpenHapticsRendererInternals::getHLErrorString( error ) << std::endl;
   }
 }
 
@@ -574,13 +574,13 @@ void HLCALLBACK OpenHapticsRenderer::touchCallback( HLenum event,
   HAPIHapticShape *shape = cb_data->shape.get();
   if( !shape ) return;
 
-  vector< int >::iterator found_id =
+  std::vector< int >::iterator found_id =
     find( renderer->already_removed_id.begin(),
           renderer->already_removed_id.end(),
           shape->getShapeId() );
   if( found_id == renderer->already_removed_id.end() ) {  
     renderer->tmp_contacts.push_back(
-      make_pair( H3DUtil::AutoRef< HAPIHapticShape >(shape), HAPISurfaceObject::ContactInfo()) );
+      std::make_pair( H3DUtil::AutoRef< HAPIHapticShape >(shape), HAPISurfaceObject::ContactInfo()) );
     OpenHapticsRenderer::motionCallback( event, object,
                                          thread, cache, userdata );
   } else {
@@ -619,7 +619,7 @@ void HLCALLBACK OpenHapticsRenderer::untouchCallback( HLenum event,
 
 HLuint OpenHapticsRenderer::getHLShapeId( HAPIHapticShape *hs,
                                           HAPIHapticsDevice *hd ) {
-  pair< int, HAPIHapticsDevice * > key = make_pair( hs->getShapeId(), hd );
+  std::pair< int, HAPIHapticsDevice * > key = std::make_pair( hs->getShapeId(), hd );
 
   if( id_map.find( key ) == id_map.end() ) {
     HLuint hl_shape_id = hlGenShapes(1);

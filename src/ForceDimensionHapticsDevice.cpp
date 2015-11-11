@@ -40,27 +40,27 @@ using namespace HAPI;
 
 namespace ForceDimensionHapticsDeviceInternal {
 #ifdef H3D_WIN64
-  string libs_array[1] = {"dhd64.dll"};
+  std::string libs_array[1] = {"dhd64.dll"};
 #else
-  string libs_array[1] = {"dhd.dll"};
+  std::string libs_array[1] = {"dhd.dll"};
 #endif
-  list< string > force_dimension_libs(libs_array, libs_array + 1 );
+  std::list< std::string > force_dimension_libs(libs_array, libs_array + 1 );
 }
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
 ForceDimensionHapticsDevice::device_registration(
                             "ForceDimension",
                             &(newInstance< ForceDimensionHapticsDevice >),
-                    ForceDimensionHapticsDeviceInternal::force_dimension_libs
+                            ForceDimensionHapticsDeviceInternal::force_dimension_libs
                             );
 
-vector< int > ForceDimensionHapticsDevice::free_dhd_ids;
+std::vector< int > ForceDimensionHapticsDevice::free_dhd_ids;
 int ForceDimensionHapticsDevice::nr_of_connected_dhd_devices = -1;
 bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 #ifdef WIN32
   /// need to go check if the dll to support this haptic device can be correctly
   /// loaded
-  list<string>::iterator it = device_registration.libs_to_support.begin();
+  std::list<std::string>::iterator it = device_registration.libs_to_support.begin();
   for( ; it!= device_registration.libs_to_support.end();++it ) {
     if( !H3DUtil::DynamicLibrary::load(*it) ) {
       setErrorMsg("Warning: can not load required DLL for "+ device_registration.name+ "device");
@@ -71,7 +71,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   if( nr_of_connected_dhd_devices <= 0 ) {
     nr_of_connected_dhd_devices = dhdGetDeviceCount();
     if( nr_of_connected_dhd_devices <= 0 ) {
-      stringstream s;
+      std::stringstream s;
       s << "Warning: Failed to open Omega device. No connected devices. ";
       setErrorMsg( s.str() );
       return false;
@@ -80,7 +80,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
         free_dhd_ids.push_back( i );
     }
   } else if( free_dhd_ids.empty() ) {
-    stringstream s;
+    std::stringstream s;
     s << "Warning: Failed to open Omega device. All connected devices are "
       << "already initialized.";
     setErrorMsg( s.str() );
@@ -89,7 +89,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 
   device_id = dhdOpenID( free_dhd_ids.back() );
   if( device_id == -1 ) {
-    stringstream s;
+    std::stringstream s;
     s << "Warning: Failed to open Omega device. Error: " 
       << dhdErrorGetLastStr();
     setErrorMsg( s.str() );

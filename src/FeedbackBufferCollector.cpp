@@ -38,6 +38,7 @@
 #endif
 
 using namespace HAPI;
+using namespace std;
 
 GLfloat *FeedbackBufferCollector::buffer = NULL;
 bool FeedbackBufferCollector::collecting_triangles = false;

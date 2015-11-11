@@ -71,9 +71,9 @@ void HapticTriangleTree::glRenderShape() {
 
 void HapticTriangleTree::getTangentSpaceMatrixShape( const Vec3 &point,
                                                      Matrix4 &result_mtx ) {
-  vector< Collision::Triangle > triangles;
-  vector< Collision::LineSegment > lines;
-  vector< Collision::Point > points;
+  std::vector< Collision::Triangle > triangles;
+  std::vector< Collision::LineSegment > lines;
+  std::vector< Collision::Point > points;
   tree->getPrimitivesWithinRadius( point,
                                    Constants::epsilon * 10,
                                    triangles, lines,

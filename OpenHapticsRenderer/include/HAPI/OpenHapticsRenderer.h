@@ -405,16 +405,16 @@ namespace HAPI {
     ContextMap context_map;
 
     // A map from HAPI shape_id to HL API shape id
-    typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, HLuint > IdMap;
+    typedef std::map< std::pair< int, HAPI::HAPIHapticsDevice * >, HLuint > IdMap;
     IdMap id_map;
 
     // A map from HAPI shape_id to index in the callback_data vector
-    typedef std::map< pair< int, HAPI::HAPIHapticsDevice * >, unsigned int >
+    typedef std::map< std::pair< int, HAPI::HAPIHapticsDevice * >, unsigned int >
       IdCbMap;
     IdCbMap id_cb_map;
 
     // List used to manage adding and removing of event callbacks.
-    typedef list< pair< int, HAPI::HAPIHapticsDevice * > > ShapeIdList;
+    typedef std::list< std::pair< int, HAPI::HAPIHapticsDevice * > > ShapeIdList;
     ShapeIdList previous_shape_ids;
     ShapeIdList previous_shape_ids_copy;
 
@@ -460,7 +460,7 @@ namespace HAPI {
     // called before touchCallback for a specific hlshape id.
     // TODO: confirm that it is indeed a OpenHaptics Bug by setting up a simple
     // example that gives the same result.
-    vector< int > already_removed_id;
+    std::vector< int > already_removed_id;
 
     // Temporary contacts used by OpenHapticsRenderer.
     Contacts tmp_contacts;
@@ -495,11 +495,11 @@ namespace HAPI {
     // Thread used to update data for each renderer. Run at 100 Hz. No use to
     // have a higher frequency for this thread since it depends on the rate
     // of the collision thread of OpenHaptics which runs at about 100 Hz.
-    static auto_ptr< H3DUtil::PeriodicThread > data_update_thread;
+    static std::auto_ptr< H3DUtil::PeriodicThread > data_update_thread;
     // Used to know when to reset the data_update_thread auto_ptr to NULL.
     static HAPIInt32 nr_of_data_update_callbacks;
     // Reference to callback data for an instance of OpenHapticsRenderer.
-    auto_ptr< CallbackData > update_thread_callback_data;
+    std::auto_ptr< CallbackData > update_thread_callback_data;
     // id for the callback in which update_thread_callback_data is used.
     HAPIInt32 update_thread_callback_id;
 

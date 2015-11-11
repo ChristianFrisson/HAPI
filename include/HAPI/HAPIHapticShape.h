@@ -572,7 +572,7 @@ namespace HAPI {
     Collision::FaceType touchable_face;
 
     static int current_max_id;
-    static list< int > free_ids;
+    static std::list< int > free_ids;
   
     /// The Surface object describing the properties of the surface.
     H3DUtil::AutoRef< HAPISurfaceObject > surface;

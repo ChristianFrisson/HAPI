@@ -39,7 +39,7 @@ namespace HAPI {
   class HAPI_API HapticLineSet: public HAPIHapticShape {
   public:
     /// Constructor.
-    HapticLineSet( const vector< Collision::LineSegment > &_lines,
+    HapticLineSet( const std::vector< Collision::LineSegment > &_lines,
                    HAPISurfaceObject *_surface, 
                    Collision::FaceType _touchable_face = 
                    Collision::FRONT_AND_BACK,
@@ -52,7 +52,7 @@ namespace HAPI {
 
     /// Constructor.
     HapticLineSet( const Matrix4 &_transform,
-                   const vector< Collision::LineSegment > &_lines,
+                   const std::vector< Collision::LineSegment > &_lines,
                    HAPISurfaceObject *_surface, 
                    Collision::FaceType _touchable_face = 
                    Collision::FRONT_AND_BACK,
@@ -146,7 +146,7 @@ namespace HAPI {
 #endif
 
     /// The lines.
-    vector< Collision::LineSegment > lines;
+    std::vector< Collision::LineSegment > lines;
       
   };
 }

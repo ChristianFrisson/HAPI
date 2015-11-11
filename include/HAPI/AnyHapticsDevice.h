@@ -121,7 +121,7 @@ namespace HAPI {
 
 
     /// The haptics device actually used.
-    auto_ptr< HAPIHapticsDevice > hd;
+    std::auto_ptr< HAPIHapticsDevice > hd;
 
   };
 }

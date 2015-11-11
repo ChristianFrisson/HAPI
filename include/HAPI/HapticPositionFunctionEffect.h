@@ -58,9 +58,9 @@ namespace HAPI {
     EffectOutput virtual calculateForces( const EffectInput &input );
 
   protected:
-    auto_ptr< HAPIFunctionObject > x_function;
-    auto_ptr< HAPIFunctionObject > y_function;
-    auto_ptr< HAPIFunctionObject > z_function;
+    std::auto_ptr< HAPIFunctionObject > x_function;
+    std::auto_ptr< HAPIFunctionObject > y_function;
+    std::auto_ptr< HAPIFunctionObject > z_function;
   };
 }
 

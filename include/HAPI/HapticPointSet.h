@@ -39,7 +39,7 @@ namespace HAPI {
   class HAPI_API HapticPointSet: public HAPIHapticShape {
   public:
     /// Constructor.
-    HapticPointSet( const vector< Collision::Point > &_points,
+    HapticPointSet( const std::vector< Collision::Point > &_points,
                     HAPISurfaceObject *_surface, 
                     Collision::FaceType _touchable_face = 
                     Collision::FRONT_AND_BACK,
@@ -53,7 +53,7 @@ namespace HAPI {
 
     /// Constructor.
     HapticPointSet( const Matrix4 &_transform,
-                    const vector< Collision::Point > &_points,
+                    const std::vector< Collision::Point > &_points,
                     HAPISurfaceObject *_surface, 
                     Collision::FaceType _touchable_face = 
                     Collision::FRONT_AND_BACK,
@@ -69,7 +69,7 @@ namespace HAPI {
     template< class Iterator >
     HapticPointSet( Iterator begin,
                     Iterator end,
-                      const vector< Collision::Point > &_points,
+                      const std::vector< Collision::Point > &_points,
                     HAPISurfaceObject *_surface, 
                     Collision::FaceType _touchable_face = 
                     Collision::FRONT_AND_BACK,
@@ -151,7 +151,7 @@ namespace HAPI {
                                              Matrix4 &result_mtx );
 
     /// The points.
-    vector< Collision::Point > points;
+    std::vector< Collision::Point > points;
       
   };
 }

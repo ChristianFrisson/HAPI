@@ -48,7 +48,7 @@ namespace HAPI {
   class HAPI_API HaptionHapticsDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.
-    HaptionHapticsDevice( const string &_ip_address = "192.168.1.1"):
+    HaptionHapticsDevice( const std::string &_ip_address = "192.168.1.1"):
       context( NULL ),
       com_thread( NULL ),
       com_func_cb_handle( -1 ),
@@ -67,7 +67,7 @@ namespace HAPI {
     //trackball?
 
     /// Returns the ip address of the device
-    inline string getIpAddress() { 
+    inline std::string getIpAddress() { 
       return ip_address;
     }
 
@@ -96,7 +96,7 @@ namespace HAPI {
     VirtContext context;
 
     /// The ip address of the virtuose device.
-    string ip_address;
+    std::string ip_address;
 
     /// Callback function for communication thread
     static H3DUtil::PeriodicThread::CallbackCode com_func( void *data );

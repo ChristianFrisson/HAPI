@@ -33,17 +33,18 @@
 #include <H3DUtil/DynamicLibrary.h>
 
 using namespace HAPI;
+using namespace std;
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
 AnyHapticsDevice::device_registration(
                             "Any",
                             &(newInstance< AnyHapticsDevice >),
-                            list< string >()
+                            std::list< std::string >()
                             );
 
 bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   hd.reset( NULL );
-  for( list< HapticsDeviceRegistration >::iterator i = 
+  for( std::list< HapticsDeviceRegistration >::iterator i = 
          registered_devices->begin(); 
        i != registered_devices->end(); ++i ) {
     if( (*i).name != "Any" ) {
