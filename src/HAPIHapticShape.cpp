@@ -304,7 +304,7 @@ bool HAPIHapticShape::movingSphereIntersect( HAPIFloat radius,
     Vec3 scale = inverse.getScalePart();
     Vec3 local_from =  inverse * from;
     Vec3 local_to = inverse * to;
-    HAPIFloat s = max( scale.x, max( scale.y, scale.z ) );
+    HAPIFloat s = H3DMax( scale.x, H3DMax( scale.y, scale.z ) );
     return movingSphereIntersectShape( radius * s,
                                        local_from,
                                        local_to ); 
