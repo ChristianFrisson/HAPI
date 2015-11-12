@@ -48,6 +48,8 @@ namespace HAPI {
   /// \brief Time in HAPI.
   typedef double HAPITime;
   using H3DUtil::RGBA;
+  using H3DUtil::H3DMax;
+  using H3DUtil::H3DMin;
 
 #ifdef USE_DOUBLE_PRECISION
   /// \brief HAPI use double precision. Vec2 is a H3DUtil::Vec2d.
