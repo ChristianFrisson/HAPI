@@ -31,6 +31,7 @@
 
 #include <H3DUtil/LinAlgTypes.h>
 #include <H3DUtil/TimeStamp.h>
+#include <H3DUtil/H3DMath.h>
 
 #include <HAPI/HAPI.h>
 
