@@ -276,7 +276,7 @@ namespace HAPI {
     static HapticsRendererRegistration renderer_registration;
 
   protected:
-    auto_ptr< H3DTool > chai3d_tool;
+    std::auto_ptr< H3DTool > chai3d_tool;
     cWorld *world;
     H3DUtil::AutoPtrVector< cMesh > meshes; 
     H3DUtil::MutexLock mesh_change_lock;
