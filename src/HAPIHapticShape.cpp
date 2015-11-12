@@ -30,6 +30,7 @@
 #include <HAPI/HAPIHapticShape.h>
 #include <HAPI/PlaneConstraint.h>
 #include <H3DUtil/Rotationd.h>
+#include <H3DUtil/H3DMath.h>
 
 
 #ifdef HAVE_OPENGL
@@ -72,7 +73,7 @@ void HAPIHapticShape::getConstraints( const Vec3 &point,
     unsigned int nr_constraints = constraints.size();
     Vec3 local_point = toLocal( point );
     Vec3 scale = inverse.getScalePart();
-    HAPIFloat s = max( scale.x, max( scale.y, scale.z ) );    
+    HAPIFloat s = H3DMax( scale.x, H3DMax( scale.y, scale.z ) );    
     getConstraintsOfShape( local_point, constraints, face, radius * s );
     if( non_uniform_scaling ) {
       for( unsigned int i = nr_constraints; i < constraints.size(); ++i ) {
