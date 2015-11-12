@@ -133,10 +133,10 @@ Chai3DRenderer::renderHapticsOneStep(
       if( H3DUtil::H3DAbs(dot_product) > Constants::epsilon 
           && dot_product < 0 )
         ci.y_axis = -ci.y_axis;
-      map< cMesh *, HAPIHapticShape * >::iterator i = 
+      std::map< cMesh *, HAPIHapticShape * >::iterator i = 
         mesh_map.find( t0->getParent() );
       if( i != mesh_map.end() ) {
-        new_contacts.push_back( make_pair( (*i).second, ci ) );
+        new_contacts.push_back( std::make_pair( (*i).second, ci ) );
       }
 
       if( nr_contacts > 1 ) {
@@ -149,10 +149,10 @@ Chai3DRenderer::renderHapticsOneStep(
         ci.y_axis = Vec3( n.y, n.z, n.x );
         ci.contact_point_global = Vec3( cp.y, cp.z, cp.x );
         ci.force_global = Vec3( f.y, f.z, f.x );
-        map< cMesh *, HAPIHapticShape * >::iterator i = 
+        std::map< cMesh *, HAPIHapticShape * >::iterator i = 
           mesh_map.find( t1->getParent() );
         if( i != mesh_map.end() && t1->getParent() != t0->getParent() ) {
-          new_contacts.push_back( make_pair( (*i).second, ci ) );
+          new_contacts.push_back( std::make_pair( (*i).second, ci ) );
         }
 
         if( nr_contacts > 2 ) {
@@ -165,12 +165,12 @@ Chai3DRenderer::renderHapticsOneStep(
           ci.y_axis = Vec3( n.y, n.z, n.x );
           ci.contact_point_global = Vec3( cp.y, cp.z, cp.x );
           ci.force_global = Vec3( f.y, f.z, f.x );
-          map< cMesh *, HAPIHapticShape * >::iterator i = 
+          std::map< cMesh *, HAPIHapticShape * >::iterator i = 
             mesh_map.find( t2->getParent() );
           if( i != mesh_map.end() && 
               t2->getParent() != t0->getParent() &&
               t2->getParent() != t1->getParent()) {
-            new_contacts.push_back( make_pair( (*i).second, ci ) );
+            new_contacts.push_back( std::make_pair( (*i).second, ci ) );
           }
         }
       }
