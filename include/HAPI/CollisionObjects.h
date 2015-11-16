@@ -567,7 +567,7 @@ namespace HAPI {
       /// \param s The point on line segment from->to at which closest
       /// point is can be calculated as from + s * ( to - from )
       /// \param t The point on this LineSegment at which closest
-      /// point is can be calculated as start + s * ( end - start )
+      /// point is can be calculated as start + t * ( end - start )
       /// \param c0 The closest point on line from->to.
       /// \param c1 The closest point on this LineSegment.
       /// \returns Square distance between the closest points.

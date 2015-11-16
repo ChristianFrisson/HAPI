@@ -52,6 +52,8 @@
 #include <GL/freeglut.h>
 #endif
 
+using namespace std;
+
 // Pointer to the haptics device.
 auto_ptr< HAPI::AnyHapticsDevice > hd(0);
 

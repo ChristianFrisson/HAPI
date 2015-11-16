@@ -185,7 +185,7 @@ bool WidgetsApp::OnInit()
   if( frame->hd.initDevice() != HAPI::HAPIHapticsDevice::SUCCESS ) {
     wxString msg;
 #if( wxUSE_UNICODE )
-    wstringstream m;
+    std::wstringstream m;
 #else
     stringstream m;
 #endif

@@ -56,7 +56,7 @@ class WidgetsPageInfo;
 #include <HAPI/AnyHapticsDevice.h>
 
 namespace HAPIDemo {
-  inline string toStr( const wxString &s ) {
+  inline std::string toStr( const wxString &s ) {
 # if(wxUSE_UNICODE)
     char *b = new char[s.size()+1];
     const wchar_t *wb = s.c_str();
@@ -65,11 +65,11 @@ namespace HAPIDemo {
     }
 
     b[s.size()] = '\0';
-    string sb(b);
+    std::string sb(b);
     delete[] b;
     return sb;
 #else
-    return string( s.c_str() );
+    return std::string( s.c_str() );
 #endif
   }
 }

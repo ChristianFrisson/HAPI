@@ -69,7 +69,7 @@ namespace HAPI {
 
       /// Get the singleton instance of FalconThread.
       static FalconThread *getInstance() {
-        static auto_ptr< FalconThread > singleton ( new FalconThread() );
+        static std::auto_ptr< FalconThread > singleton ( new FalconThread() );
         return singleton.get();
       }
 
@@ -117,7 +117,7 @@ namespace HAPI {
     /// Constructor.
     /// \param _device_name The name of the device as specified in the hdal.ini file.
     /// A _device_name of "" will use the first available device.
-    FalconHapticsDevice( string _device_name ):
+    FalconHapticsDevice( std::string _device_name ):
       device_name( _device_name ),
       device_index( -1 ) {
     }
@@ -138,7 +138,7 @@ namespace HAPI {
     }
 
     /// Returns the name of the device.
-    virtual const string &getDeviceName() {
+    virtual const std::string &getDeviceName() {
       return device_name;
     }
 
@@ -147,7 +147,7 @@ namespace HAPI {
 
     /// Get the device model of the device. Undefined if device not
     /// initialized.
-    inline string getDeviceModel() { return device_model; }
+    inline std::string getDeviceModel() { return device_model; }
 
     /// Get the workspace dimensions of the device, i.e. the
     /// mechanical limits of the device. Undefined if
@@ -160,7 +160,7 @@ namespace HAPI {
     }
 
   protected:
-    string device_model;
+    std::string device_model;
     Vec3 workspace_max;
     Vec3 workspace_min;
     
@@ -181,11 +181,11 @@ namespace HAPI {
     virtual bool releaseHapticsDevice();
 
     // Internal function that handles HDAL errors by translating
-    // error code to string and calling the ErrorHandler.
+    // error code to std::string and calling the ErrorHandler.
     void checkIfHDALError();
 
     /// The device name for this device.
-    string device_name;
+    std::string device_name;
     
     /// The device index to use for this device. 
     int device_index;

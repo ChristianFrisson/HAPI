@@ -35,6 +35,7 @@
 #include <HAPI/GodObjectRenderer.h>
 
 using namespace HAPI;
+using namespace std;
 
 int main(int argc, char* argv[]) {
   // Get a connected device.

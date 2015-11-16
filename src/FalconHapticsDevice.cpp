@@ -34,6 +34,7 @@
 #ifdef HAVE_FALCONAPI
 
 using namespace HAPI;
+using namespace std;
 
 namespace FalconHapticsDeviceInternal {
   string libs_array[1] = {"hdl.dll"};
