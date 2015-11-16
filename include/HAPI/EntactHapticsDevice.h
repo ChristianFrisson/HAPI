@@ -55,7 +55,7 @@ namespace HAPI {
     /// \param _ip_address The ip address of the device to initialize. Only used if not empty
     /// and serial number is -1.
     EntactHapticsDevice( int _serial_number = -1,
-                         string _ip_address = "" );
+                         std::string _ip_address = "" );
 
     /// Destructor.
     virtual ~EntactHapticsDevice();
@@ -128,7 +128,7 @@ namespace HAPI {
     int serial_number;
 
     /// The ip adress of the device. Only used if serial number is -1.
-    string ip_address;
+    std::string ip_address;
 
     /// The nr of EntactHapticsDevice class instances that are currently
     /// in use.

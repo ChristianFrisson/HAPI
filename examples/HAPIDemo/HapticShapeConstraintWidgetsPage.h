@@ -129,17 +129,17 @@ protected:
   // LineSet
   wxPanel *lineSet_panel;
   wxTextCtrl *m_txt_line_set_points;
-  vector< HAPI::Collision::LineSegment > line_set_lines;
+  std::vector< HAPI::Collision::LineSegment > line_set_lines;
 
   // PointSet
   wxPanel *pointSet_panel;
   wxTextCtrl *m_txt_point_set_points;
-  vector< HAPI::Collision::Point > point_set_points;
+  std::vector< HAPI::Collision::Point > point_set_points;
 
   // TriangleSet
   wxPanel *triangleSet_panel;
   wxTextCtrl *m_txt_triangle_set_triangles;
-  vector< HAPI::Collision::Triangle > triangle_set_triangles;
+  std::vector< HAPI::Collision::Triangle > triangle_set_triangles;
 
 private:
   DECLARE_EVENT_TABLE()

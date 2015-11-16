@@ -37,6 +37,7 @@
 #include <sstream>
 
 using namespace HAPI;
+using namespace std;
 
 // define to do communication with device in separate thread
 #define USE_COM_THREAD

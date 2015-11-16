@@ -540,7 +540,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
     case Button_LineSet: {
       wxString temp_string = m_txt_line_set_points->GetValue();
       wxStringTokenizer tkz( temp_string, wxT(","), wxTOKEN_STRTOK );
-      vector< HAPIFloat > line_values;
+      std::vector< HAPIFloat > line_values;
       while ( tkz.HasMoreTokens() )
       {
         wxString token = tkz.GetNextToken();
@@ -577,7 +577,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
     case Button_PointSet: {
       wxString temp_string = m_txt_point_set_points->GetValue();
       wxStringTokenizer tkz( temp_string, wxT(","), wxTOKEN_STRTOK );
-      vector< HAPIFloat > point_values;
+      std::vector< HAPIFloat > point_values;
       while ( tkz.HasMoreTokens() )
       {
         wxString token = tkz.GetNextToken();
@@ -611,7 +611,7 @@ void HapticShapeConstraintWidgetsPage::createForceEffect( ) {
     case Button_TriangleSet: {
       wxString temp_string = m_txt_triangle_set_triangles->GetValue();
       wxStringTokenizer tkz( temp_string, wxT(","), wxTOKEN_STRTOK );
-      vector< HAPIFloat > triangle_values;
+      std::vector< HAPIFloat > triangle_values;
       while ( tkz.HasMoreTokens() )
       {
         wxString token = tkz.GetNextToken();
