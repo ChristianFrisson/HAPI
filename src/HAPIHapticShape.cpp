@@ -115,7 +115,7 @@ void HAPIHapticShape::closestPoint( const Vec3 &p, Vec3 &cp,
                                     Vec3 &n, Vec3 &tc ) {
   if( have_transform ) {
     closestPointOnShape( inverse * p, cp, n, tc );
-    Matrix4 inv = inverse;
+    //Matrix4 inv = inverse;
     cp = transform * cp;
     if( non_uniform_scaling ) {
       Vec3 scaling = inverse.getScalePart();
