@@ -1,5 +1,6 @@
 SET( HAPI_HEADERS "${HAPI_SOURCE_DIR}/../include/HAPI/AnyHapticsDevice.h"
-                  "${HAPI_SOURCE_DIR}/../include/HAPI/CollisionObjects.h"
+                  "${HAPI_SOURCE_DIR}/../include/HAPI/ClutchedHapticsDevice.h"
+                  "${HAPI_SOURCE_DIR}/../include/HAPI/CollisionObjects.h"                  
                   "${HAPI_SOURCE_DIR}/../include/HAPI/DepthMapSurface.h"
                   "${HAPI_SOURCE_DIR}/../include/HAPI/DeviceLog.h"
                   "${HAPI_SOURCE_DIR}/../include/HAPI/EntactHapticsDevice.h"
@@ -59,6 +60,7 @@ ELSE( EXISTS ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/HAPI )
 ENDIF( EXISTS ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/HAPI )
 
 SET( HAPI_SOURCE_FILES "AnyHapticsDevice.cpp"
+               "ClutchedHapticsDevice.cpp"
                "CollisionObjects.cpp"
                "DepthMapSurface.cpp"
                "DeviceLog.cpp"
