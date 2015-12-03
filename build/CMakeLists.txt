@@ -503,7 +503,7 @@ IF( WIN32 )
                              LINK_FLAGS "/DELAYLOAD:\"HD.dll\" /INCREMENTAL:NO" )
 
     # When using OpenHaptics HAPI also need to delayload HD.dll.
-      SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /DELAYLOAD:\"HD.dll\"" )
+      SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /DELAYLOAD:\"HD.dll\" /INCREMENTAL:NO" )
     ENDIF( MSVC )
   ENDIF(OPENHAPTICS_FOUND)
 
@@ -543,14 +543,14 @@ IF( WIN32 )
     SET_TARGET_PROPERTIES( HAPI
                            PROPERTIES
                            LINK_FLAGS "${HAPI_LINK_FLAGS}
-    /DELAYLOAD:\"dhd.dll\" 
-    /DELAYLOAD:\"dhd64.dll\" 
-    /DELAYLOAD:\"hdl.dll\"
-    /DELAYLOAD:\"Haptik.Library.dll\"
-    /DELAYLOAD:\"SimballMedicalHID.dll\" 
-    /DELAYLOAD:\"VirtuoseDLL.dll\"
-    /DELAYLOAD:\"FTD2XX.dll\"
-    /DELAYLOAD:\"EntactAPI.dll\"" )
+                           /DELAYLOAD:\"dhd.dll\" 
+                           /DELAYLOAD:\"dhd64.dll\" 
+                           /DELAYLOAD:\"hdl.dll\"
+                           /DELAYLOAD:\"Haptik.Library.dll\"
+                           /DELAYLOAD:\"SimballMedicalHID.dll\" 
+                           /DELAYLOAD:\"VirtuoseDLL.dll\"
+                           /DELAYLOAD:\"FTD2XX.dll\"
+                           /DELAYLOAD:\"EntactAPI.dll\"" )
   ENDIF( MSVC )
 ENDIF( WIN32 )
 
