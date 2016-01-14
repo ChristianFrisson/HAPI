@@ -54,7 +54,8 @@ namespace HAPI {
     /// the user when moving the proxy.
     HapticViscosity( const HAPIFloat &_viscosity,
                      const HAPIFloat &_radius,
-                     const HAPIFloat &_damping_factor = 1 );
+                     const HAPIFloat &_damping_factor = 1,
+                     bool _use_ref_count_lock = false );
     
     /// The force of the EffectOutput will be calculated using stokes law.
     EffectOutput virtual calculateForces( const EffectInput &input );

@@ -32,7 +32,9 @@
 using namespace HAPI;
 
 HapticForceField::HapticForceField( const Vec3 &_force,
-                                    const Vec3 &_torque ):
+                                    const Vec3 &_torque,
+                                    bool _use_ref_count_lock ):
+  HAPIForceEffect( _use_ref_count_lock ),
   force( _force ),
   torque( _torque ) {}
 

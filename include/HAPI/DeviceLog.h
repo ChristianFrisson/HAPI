@@ -147,7 +147,7 @@ namespace HAPI {
     /// \param _binary If true the logging will be done to a binary file.
     ///                Otherwise it will be done to an ASCII-text file.
     DeviceLog( const std::string &_log_file, const LogTypeVector &_log_type,
-               int _freq = 100, bool _binary = false );
+               int _freq = 100, bool _binary = false, bool _use_ref_count_lock = false );
 
     /// The force of the EffectOutput will zero. Only logging to file
     /// will be done.

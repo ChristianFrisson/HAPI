@@ -46,7 +46,8 @@ namespace HAPI {
   public:
     /// Constructor
     HapticShapeConstraint( Collision::CollisionObject *_col_obj,
-                           const HAPIFloat &_spring_constant );
+                           const HAPIFloat &_spring_constant,
+                           bool _use_ref_count_lock = false );
     
     /// The force of the EffectOutput is a spring force from the current
     /// position of the haptics device towards the closest point on the

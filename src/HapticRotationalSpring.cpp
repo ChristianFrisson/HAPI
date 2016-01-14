@@ -32,7 +32,9 @@
 using namespace HAPI;
 
 HapticRotationalSpring::HapticRotationalSpring( const Vec3 &_desired_axis,
-                            HAPIFloat _spring_constant ):
+                                                HAPIFloat _spring_constant,
+                                                bool _use_ref_count_lock ):
+  HAPIForceEffect( _use_ref_count_lock ),
   desired_axis( _desired_axis ),
   spring_constant( _spring_constant ),
   damping( 0 ) {
@@ -40,8 +42,10 @@ HapticRotationalSpring::HapticRotationalSpring( const Vec3 &_desired_axis,
 }
 
 HapticRotationalSpring::HapticRotationalSpring( const Vec3 &_desired_axis,
-                            HAPIFloat _spring_constant,
-                            HAPIFloat _damping ):
+                                                HAPIFloat _spring_constant,
+                                                HAPIFloat _damping,
+                                                bool _use_ref_count_lock ):
+  HAPIForceEffect( _use_ref_count_lock ),
   desired_axis( _desired_axis ),
   spring_constant( _spring_constant ),
   damping( _damping ) {

@@ -33,7 +33,9 @@ using namespace HAPI;
 
 HapticShapeConstraint::HapticShapeConstraint(
                           Collision::CollisionObject *_col_obj,
-                          const HAPIFloat &_spring_constant ):
+                          const HAPIFloat &_spring_constant,
+                          bool _use_ref_count_lock ):
+  HAPIForceEffect( _use_ref_count_lock ),
   col_obj( _col_obj ),
   spring_constant( _spring_constant ){
 }
