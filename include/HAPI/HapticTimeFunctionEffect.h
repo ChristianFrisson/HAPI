@@ -53,7 +53,8 @@ namespace HAPI {
                               HAPIFunctionObject *_z_function,
                               const HAPITime &_x_zero_time,
                               const HAPITime &_y_zero_time,
-                              const HAPITime &_z_zero_time );
+                              const HAPITime &_z_zero_time,
+                              bool _use_ref_count_lock = false );
     
     /// The force of the EffectOutput is calculated from the provided functions
     /// and the time of evaluation.

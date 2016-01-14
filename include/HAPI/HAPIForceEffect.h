@@ -106,7 +106,7 @@ namespace HAPI {
     };
     
     /// Constructor.
-    HAPIForceEffect(){}
+    HAPIForceEffect( bool _use_ref_count_lock = true ) : RefCountedClass( _use_ref_count_lock ){}
     
     /// The function that calculates the forces given by this 
     /// HAPIForceEffect.

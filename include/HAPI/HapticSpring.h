@@ -41,7 +41,8 @@ namespace HAPI {
   class HAPI_API HapticSpring: public HAPIForceEffect {
   public:
     /// Constructor
-    HapticSpring():
+    HapticSpring( bool _use_ref_count_lock = false ):
+      HAPIForceEffect( _use_ref_count_lock ),
       position( Vec3( 0, 0, 0 ) ),
       spring_constant( 0 ),
       damping( 0 ),
@@ -51,12 +52,14 @@ namespace HAPI {
     
     /// Constructor
     HapticSpring( const Vec3 &_position,
-                  HAPIFloat _spring_constant );
+                  HAPIFloat _spring_constant,
+                  bool _use_ref_count_lock = false );
 
     HapticSpring( const Vec3 &_position,
                   HAPIFloat _spring_constant,
                   HAPIFloat _damping,
-                  HAPIFloat _position_interpolation = 1 );
+                  HAPIFloat _position_interpolation = 1,
+                  bool _use_ref_count_lock = false );
     
     /// The force of the EffectOutput will be a force from the position of
     /// the haptics device to the position of the HapticSpring. 

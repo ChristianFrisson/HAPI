@@ -52,7 +52,8 @@ namespace HAPI {
     HapticPositionFunctionEffect( 
                           HAPIFunctionObject *_x_function,
                           HAPIFunctionObject *_y_function,
-                          HAPIFunctionObject *_z_function );
+                          HAPIFunctionObject *_z_function,
+                          bool _use_ref_count_lock = false );
     
     /// The force of the EffectOutput is calculated from the provided functions
     EffectOutput virtual calculateForces( const EffectInput &input );

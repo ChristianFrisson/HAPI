@@ -37,7 +37,9 @@ HapticTimeFunctionEffect::HapticTimeFunctionEffect(
                            HAPIFunctionObject *_z_function,
                            const HAPITime &_x_zero_time,
                            const HAPITime &_y_zero_time,
-                           const HAPITime &_z_zero_time ):
+                           const HAPITime &_z_zero_time,
+                           bool _use_ref_count_lock ):
+  HAPIForceEffect( _use_ref_count_lock ),
   x_function( _x_function ),
   y_function( _y_function ),
   z_function( _z_function ),

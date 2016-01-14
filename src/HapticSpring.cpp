@@ -32,7 +32,9 @@
 using namespace HAPI;
 
 HapticSpring::HapticSpring( const Vec3 &_position,
-                            HAPIFloat _spring_constant ):
+                            HAPIFloat _spring_constant,
+                            bool _use_ref_count_lock ):
+  HAPIForceEffect( _use_ref_count_lock ),
   position( _position ),
   spring_constant( _spring_constant ),
   damping( 0 ),
@@ -43,7 +45,9 @@ HapticSpring::HapticSpring( const Vec3 &_position,
 HapticSpring::HapticSpring( const Vec3 &_position,
                             HAPIFloat _spring_constant,
                             HAPIFloat _damping,
-                            HAPIFloat _position_interpolation ):
+                            HAPIFloat _position_interpolation,
+                            bool _use_ref_count_lock ):
+  HAPIForceEffect( _use_ref_count_lock ),
   position( _position ),
   spring_constant( _spring_constant ),
   damping( _damping ),

@@ -51,19 +51,22 @@ namespace HAPI {
   class HAPI_API HapticRotationalSpring: public HAPIForceEffect {
   public:
     /// Constructor
-    HapticRotationalSpring():
+    HapticRotationalSpring( bool _use_ref_count_lock = false ):
+      HAPIForceEffect( _use_ref_count_lock ),
       desired_axis( 0, 0, 1 ),
       spring_constant( 0 ),
       damping( 0 ) { }
 
     /// Constructor
     HapticRotationalSpring( const Vec3 &_desired_axis,
-                            HAPIFloat _spring_constant );
+                            HAPIFloat _spring_constant,
+                            bool _use_ref_count_lock = false );
 
     /// Constructor
     HapticRotationalSpring( const Vec3 &_desired_axis,
                             HAPIFloat _spring_constant,
-                            HAPIFloat _damping );
+                            HAPIFloat _damping,
+                            bool _use_ref_count_lock = false );
 
     /// The force of the EffectOutput will be a torque from the current device
     /// rotation to the desired rotation.
