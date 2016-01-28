@@ -59,7 +59,7 @@
 
 using namespace HAPI;
 using namespace libnifalcon;
-
+using namespace std;
 
 //#define DEBUG_PRINTOUTS
 
