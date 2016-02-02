@@ -47,16 +47,18 @@ HLThread *HLThread::getInstance() {
 
 void HLThread::synchronousCallback( CallbackFunc func, void *data ) {
   callback_lock.lock();
+  callbacks_added_lock.lock(); // Have to get added_lock in order to call genCallbackId in a thread safe way
   // add the new callback, the reason for not calling here is simply that we want
   // the callback to be executed in the correct thread.
   callbacks.push_back( std::make_pair( genCallbackId(), std::make_pair( func, data ) ) );
   // wait for the callback to be done.
+  callbacks_added_lock.unlock();
   callback_lock.wait();
   callback_lock.unlock();
 }
 
 int HLThread::asynchronousCallback( CallbackFunc func, void *data ) {
- callbacks_added_lock.lock();
+  callbacks_added_lock.lock();
   int cb_id = genCallbackId();
   // add the new callback
   callbacks_added.push_back( std::make_pair( cb_id, std::make_pair( func, data ) ) );
