@@ -248,5 +248,11 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
 
+void ForceDimensionHapticsDevice::enableForce( bool enable ) {
+  if( device_id != -1 ) {
+    dhdEnableForce( enable ? DHD_ON : DHD_OFF,
+                    device_id );
+  }
+}
 
 #endif

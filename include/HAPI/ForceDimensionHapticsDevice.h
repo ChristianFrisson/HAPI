@@ -156,6 +156,10 @@ namespace HAPI {
     /// Ids of devices that can be initialized. Needed because dhdOpen
     /// does not work for multiple devices. dhdOpenID have to be used.
     static std::vector< int > free_dhd_ids;
+  public:
+    /// Enable/disable the device forces. Useful if the device has no
+    /// button to control this.
+    void enableForce( bool enable );
   };
 }
 
