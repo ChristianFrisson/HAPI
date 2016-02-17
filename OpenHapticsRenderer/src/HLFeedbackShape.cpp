@@ -118,9 +118,12 @@ void HLFeedbackShape::hlRender( HAPI::HAPIHapticsDevice *hd,
 #if HL_VERSION_MAJOR_NUMBER >= 2
     hlPopAttrib();
 #endif
+    glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
-    if( use_hl_modelview )
+    if( use_hl_modelview ) {
+      hlMatrixMode( HL_MODELVIEW );
       hlPopMatrix();
+    }
   }
 }
 

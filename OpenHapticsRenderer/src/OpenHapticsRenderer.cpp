@@ -415,6 +415,7 @@ void OpenHapticsRenderer::preProcessShapes( HAPIHapticsDevice *hd,
           hlPopAttrib();
 #endif
 #ifdef HAVE_OPENGL
+          glMatrixMode( GL_MODELVIEW );
           glPopMatrix();
 #endif
           if( disable_gl_modelview ) {

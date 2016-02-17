@@ -335,6 +335,7 @@ void HAPIHapticShape::glRender() {
                     m[0][3], m[1][3], m[2][3], 1 };
   glMultMatrixd( vt );
   glRenderShape();
+  glMatrixMode( GL_MODELVIEW );
   glPopMatrix();
 }
 #endif

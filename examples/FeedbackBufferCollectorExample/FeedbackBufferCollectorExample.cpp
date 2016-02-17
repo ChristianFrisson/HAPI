@@ -75,6 +75,7 @@ void display() {
   glShadeModel(GL_SMOOTH);
   glEnable( GL_LIGHTING );
   glEnable(GL_LIGHT0);
+  glMatrixMode( GL_MODELVIEW );
   glLoadIdentity();
 
   gluLookAt(0, 0, 0.2, 0, 0, 0, 0, 1, 0);
@@ -111,7 +112,6 @@ void reshape(GLint width, GLint height)
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
    gluPerspective(65.0, (float)width / height, 0.01, 1000);
-   glMatrixMode(GL_MODELVIEW);
 }
 
 // Main.
