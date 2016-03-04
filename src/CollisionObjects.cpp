@@ -1624,37 +1624,31 @@ bool BinaryBoundTree::lineIntersect( const Vec3 &from,
 bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
                                              const Vec3 &from, 
                                              const Vec3 &to ) {
-  if ( isLeaf() )  {
+  if( isLeaf() ) {
     for( unsigned int i = 0; i < triangles.size(); ++i ) {
       Triangle &t = triangles[i];
-      if( t.movingSphereIntersect( radius, from, to ) )  return true;
+      if( t.movingSphereIntersect( radius, from, to ) ) return true;
     }
 
     for( unsigned int i = 0; i < linesegments.size(); ++i ) {
       LineSegment &ls = linesegments[i];
-      if( ls.movingSphereIntersect( radius, from, to ) )  return true;
+      if( ls.movingSphereIntersect( radius, from, to ) ) return true;
     }
 
     for( unsigned int i = 0; i < points.size(); ++i ) {
       Point &pt = points[i];
-      if( pt.movingSphereIntersect( radius, from, to ) )  return true;
+      if( pt.movingSphereIntersect( radius, from, to ) ) return true;
     }
-    return false;
-  }  else   {
-    if ( bound->boundMovingSphereIntersect( radius, from, to ) )  {
-      bool overlap = false;
-      
-      if (left.get()) {
-        overlap = left->movingSphereIntersect( radius, from, to );
-        if( overlap ) return overlap;
-      }
-      if (right.get()) 
-        overlap = right->movingSphereIntersect( radius,from, to );
-      
-      return overlap;
+  } else {
+    if( bound->boundMovingSphereIntersect( radius, from, to ) ) {
+      if( left.get() && left->movingSphereIntersect( radius, from, to ) )
+        return true;
+
+      if( right.get() && right->movingSphereIntersect( radius, from, to ) )
+        return true;
     }
-    else return false;
   }
+  return false;
 }
 
 bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
@@ -2683,8 +2677,8 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
     }
     closest_point = cp;
     closest_normal = cn;
-  }  else   {
-   
+  } else {
+
     if( left.get() && right.get() ) {
       Vec3 cp, cn, tc;
       left->closestPoint( p, cp, cn, tc  );
@@ -2697,7 +2691,7 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
         closest_normal = cn;
         tex_coord = tc;
       }
-      
+
     } else {
       if (left.get()) {
         left->closestPoint( p, closest_point, closest_normal, tex_coord  );

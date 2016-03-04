@@ -61,6 +61,8 @@ namespace HAPI {
     static HLThread *getInstance();
 
     /// If the hd scheduler has been started true is returned.
+    /// Note that the returned value can possible have changed if isActive
+    /// is not called in the same thread as setActive.
     inline bool isActive() { return is_active; }
 
     /// Set the flag indicating if the hd scheduler has been

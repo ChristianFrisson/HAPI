@@ -47,13 +47,17 @@ HLThread *HLThread::getInstance() {
 
 void HLThread::synchronousCallback( CallbackFunc func, void *data ) {
   callback_lock.lock();
-  callbacks_added_lock.lock(); // Have to get added_lock in order to call genCallbackId in a thread safe way
-  // add the new callback, the reason for not calling here is simply that we want
-  // the callback to be executed in the correct thread.
-  callbacks.push_back( std::make_pair( genCallbackId(), std::make_pair( func, data ) ) );
-  // wait for the callback to be done.
-  callbacks_added_lock.unlock();
-  callback_lock.wait();
+  if( is_active ) {
+    callbacks_added_lock.lock(); // Have to get added_lock in order to call genCallbackId in a thread safe way
+    // add the new callback, the reason for not calling here is simply that we want
+    // the callback to be executed in the correct thread.
+    callbacks.push_back( std::make_pair( genCallbackId(), std::make_pair( func, data ) ) );
+    // wait for the callback to be done.
+    callbacks_added_lock.unlock();
+    callback_lock.wait();
+  } else {
+    func(data);
+  }
   callback_lock.unlock();
 }
 
@@ -117,8 +121,11 @@ HDCallbackCode HDCALLBACK mainCallback( void *data ) {
 }
 #endif
 
-void HLThread::setActive( bool _active ) { 
+void HLThread::setActive( bool _active ) {
+  callback_lock.lock();
   if( _active && !is_active ) {
+    is_active = _active;
+    callback_lock.unlock();
     sg_lock.lock(); 
     threads.push_back( this );
     sg_lock.unlock();
@@ -130,6 +137,8 @@ void HLThread::setActive( bool _active ) {
 #endif
     asynchronousCallback( setThreadId, this );
   } else if( !_active && is_active ) {
+    is_active = _active;
+    callback_lock.unlock();
     sg_lock.lock();
     std::vector< H3DUtil::HapticThreadBase *>::iterator i = 
       std::find( threads.begin(), 
@@ -139,15 +148,13 @@ void HLThread::setActive( bool _active ) {
       threads.erase( i );
     }
     sg_lock.unlock();
-  }
-  is_active = _active; 
+  } else
+    callback_lock.unlock();
 }
 
 void HLThread::threadFunction() {
   callbacks_added_lock.lock();
-  for( CallbackList::iterator i = callbacks_added.begin();
-    i != callbacks_added.end(); ++i )
-    callbacks.push_back( *i );
+  callbacks.insert( callbacks.end(), callbacks_added.begin(), callbacks_added.end() );
   callbacks_added.clear();
   callbacks_added_lock.unlock();
 
