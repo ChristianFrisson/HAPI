@@ -67,7 +67,6 @@ function( get_external_search_paths_h3d arg1 arg2 arg3 )
   if( WIN32 )
     set( h3d_external_base_dirs $ENV{H3D_EXTERNAL_ROOT}
                                 $ENV{H3D_ROOT}/../External
-                                ../../External
                                 ${arg3}/../../../External )
     set( h3d_external_base_include_dirs "" )
     set( h3d_external_base_lib_dirs "" )
