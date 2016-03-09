@@ -161,7 +161,7 @@ HAPIFloat ImageInterfaceObject::getValue( int x, int y, int z ) {
 HAPIFloat ImageInterfaceObject::getPixel( int x, int y, int z ) {
   assert( byte_rem == 0 );
   if( bytes_per_pixel <= 8 ) {
-    char pixel_data[8];    
+    char pixel_data[8];
         
     getElement( pixel_data, x, y, z );
     

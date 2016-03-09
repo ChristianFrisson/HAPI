@@ -58,18 +58,20 @@ namespace HAPI {
     inline void setImage( H3DUtil::Image * image ) {
       if( image_lock )
         image_lock->lock();
-      image_object.reset( image );
-      image_data = 0;
-      if( image ) {
-        image_data = (unsigned char *) image->getImageData();
-        byte_rem = image->bitsPerPixel() % 8;
-        bytes_per_pixel = image->bitsPerPixel() / 8;
-        isUnsignedLuminance = image->pixelType() == H3DUtil::Image::LUMINANCE &&
-                              image->pixelComponentType() == H3DUtil::Image::UNSIGNED &&
-                              bytes_per_pixel == 1;
-        width = image->width();
-        height = image->height();
-        depth = image->depth();
+      if( image != image_object.get() ) {
+        image_object.reset( image );
+        image_data = 0;
+        if( image ) {
+          image_data = (unsigned char *) image->getImageData();
+          byte_rem = image->bitsPerPixel() % 8;
+          bytes_per_pixel = image->bitsPerPixel() / 8;
+          isUnsignedLuminance = image->pixelType() == H3DUtil::Image::LUMINANCE &&
+                                image->pixelComponentType() == H3DUtil::Image::UNSIGNED &&
+                                bytes_per_pixel == 1;
+          width = image->width();
+          height = image->height();
+          depth = image->depth();
+        }
       }
       if( image_lock )
         image_lock->unlock();
@@ -110,6 +112,10 @@ namespace HAPI {
     unsigned int height;
     unsigned int depth;
 
+  public:
+    inline H3DUtil::Image * getImage() {
+      return image_object.get();
+    }
   };
 }
 
