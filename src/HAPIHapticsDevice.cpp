@@ -462,8 +462,8 @@ void HAPIHapticsDevice::transferObjects() {
       H3DTIMER_BEGIN("TRANSFEROBJECT_preprocessShape");
       if( haptics_renderers[s] && s < tmp_shapes.size() ) {
          haptics_renderers[s]->preProcessShapes( this, tmp_shapes[s] );
-      H3DTIMER_END("TRANSFEROBJECT_preprocessShape");
       }
+      H3DTIMER_END("TRANSFEROBJECT_preprocessShape");
     }
 
     H3DTIMER_BEGIN("transferObjectCallback");
