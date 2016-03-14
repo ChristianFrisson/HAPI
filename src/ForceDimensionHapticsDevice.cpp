@@ -45,6 +45,20 @@ namespace ForceDimensionHapticsDeviceInternal {
   std::string libs_array[1] = {"dhd.dll"};
 #endif
   std::list< std::string > force_dimension_libs(libs_array, libs_array + 1 );
+
+  Rotation calculateRotationOld( double &rx, double &ry, double &rz ) {
+    return Rotation( 1, 0, 0, (float)( H3DUtil::Constants::pi / 4 ) ) *
+        Rotation( 0, 0, 1, rz ) *
+        Rotation( 1, 0, 0, rx ) *
+        Rotation( 0, 1, 0, ry ) *
+        Rotation( 1, 0, 0, ( -H3DUtil::Constants::pi / 2 ) );
+  }
+
+  Rotation calculateRotationSigma( double &rx, double &ry, double &rz ) {
+    return Rotation( 0, 0, 1, rz ) *
+           Rotation( 1, 0, 0, rx ) *
+           Rotation( 0, 1, 0, ry );
+  }
 }
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
@@ -53,6 +67,16 @@ ForceDimensionHapticsDevice::device_registration(
                             &(newInstance< ForceDimensionHapticsDevice >),
                             ForceDimensionHapticsDeviceInternal::force_dimension_libs
                             );
+
+ForceDimensionHapticsDevice::ForceDimensionHapticsDevice():
+  device_id( -1 ),
+  com_thread( NULL ),
+  com_func_cb_handle( -1 ) {
+  // This might have to be changed if they redo it so that their
+  // different devices have different maximum stiffness values.
+  max_stiffness = 1450;
+  rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationOld;
+}
 
 std::vector< int > ForceDimensionHapticsDevice::free_dhd_ids;
 int ForceDimensionHapticsDevice::nr_of_connected_dhd_devices = -1;
@@ -102,6 +126,14 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   com_thread->setThreadName( "DHD com thread" );
 
   com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+
+#ifdef DHD_DEVICE_SIGMA331
+  int device_type = getDeviceType();
+  if( device_type >= DHD_DEVICE_SIGMA331 && device_type <= DHD_DEVICE_SIGMA331 + 5 ) {
+    rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationSigma;
+  } else
+#endif
+  rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationOld;
 
   return true;
 }
@@ -223,12 +255,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     Vec3 position = Vec3( x, y, z );
     Vec3 velocity = Vec3( vx, vy, vz );
 
-    Rotation orientation =
-      Rotation( 1, 0, 0, (float)( H3DUtil::Constants::pi / 4 ) ) *
-      Rotation( 0, 0, 1, (float)rz ) *
-      Rotation( 1, 0, 0, (float)rx ) *
-      Rotation( 0, 1, 0, (float)ry ) *
-      Rotation( 1, 0, 0, (float)( -H3DUtil::Constants::pi / 2 ) );
+    Rotation orientation = hd->rotation_func( rx, ry, rz );
 
     hd->com_lock.lock();
 

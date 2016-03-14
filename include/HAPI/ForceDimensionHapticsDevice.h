@@ -46,14 +46,7 @@ namespace HAPI {
   class HAPI_API ForceDimensionHapticsDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.
-    ForceDimensionHapticsDevice():
-      device_id( -1 ),
-      com_thread( NULL ),
-      com_func_cb_handle( -1 ) {
-        // This might have to be changed if they redo it so that their
-        // different devices have different maximum stiffness values.
-        max_stiffness = 1450;
-    }
+    ForceDimensionHapticsDevice();
 
     /// Destructor.
     virtual ~ForceDimensionHapticsDevice() {}
@@ -160,6 +153,8 @@ namespace HAPI {
     /// Enable/disable the device forces. Useful if the device has no
     /// button to control this.
     void enableForce( bool enable );
+
+    Rotation (*rotation_func)( double &rx, double &ry, double &rz );
   };
 }
 
