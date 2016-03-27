@@ -248,20 +248,38 @@ ENDIF(WIN32)
 INCLUDE( ${HAPI_SOURCE_DIR}/HAPISourceFiles.txt )
 
 IF( GENERATE_UNITY_BUILD )
-# Generate a unity build, by creating the UnityBuild.cpp and only including the required 
-# source files.
+  IF( NOT DEFINED UNITY_BUILD_${PROJECT_NAME} )
+    SET(  UNITY_BUILD_${PROJECT_NAME} "YES" CACHE BOOL "Decides if a the generated project files should build through a unity build instead of a normal build. A unity builds packs all .cpp files into a UnityBuild.cpp file and then only include this in the project. This greatly reduces build times." )
+  ENDIF()
 
-SET( HAPI_SRCS "${HAPI_SOURCE_DIR}/../src/UnityBuild.cpp" )
+  IF( UNITY_BUILD_${PROJECT_NAME} )
+    # Generate a unity build, by creating the UnityBuild.cpp and only including the required 
+    # source files.
 
-SET( UNITYBUILD_INCLUDES "" )
+    SET( UNITYBUILD_INCLUDES "" )
 
-foreach(filename ${HAPI_SOURCE_FILES})
-  SET( UNITYBUILD_INCLUDES "${UNITYBUILD_INCLUDES}\n #include \"${filename}\"" )
-endforeach(filename)
+    foreach(filename ${HAPI_SOURCE_FILES})
+      SET( UNITYBUILD_INCLUDES "${UNITYBUILD_INCLUDES}\n #include \"${filename}\"" )
+    endforeach(filename)
 
-CONFIGURE_FILE( ${HAPI_SOURCE_DIR}/UnityBuild.cmake ${HAPI_SOURCE_DIR}/../src/UnityBuild.cpp )
+    file(WRITE UnityBuild.cpp ${UNITYBUILD_INCLUDES}  )
 
+    SET( HAPI_SRCS "${HAPI_SOURCE_DIR}/../src/UnityBuild.cpp" )
+
+  ENDIF()
 ENDIF( GENERATE_UNITY_BUILD )
+
+SET( PRECOMPILED_HEADERS_${PROJECT_NAME} "YES" CACHE BOOL "Decides if a the generated project files should use precompiled headers. This greatly reduces build times after first build." )
+
+# set up precompiled headers  
+IF( MSVC AND PRECOMPILED_HEADERS_${PROJECT_NAME})
+  list( APPEND HAPI_HEADERS ${HAPI_SOURCE_DIR}/../include/HAPI/StdAfx.h )
+  list( APPEND HAPI_SRCS ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp )
+  SET_SOURCE_FILES_PROPERTIES( ${HAPI_SRCS}
+                               PROPERTIES COMPILE_FLAGS "/Zm900 /FIHAPI/StdAfx.h /YuHAPI/StdAfx.h" )
+  SET_SOURCE_FILES_PROPERTIES( ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp 
+                               PROPERTIES COMPILE_FLAGS "/Zm900 /YcHAPI/StdAfx.h" )
+ENDIF()
 
 # add the HAPI.rc resource file if Visual Studio
 IF(MSVC)
