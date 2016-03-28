@@ -11,7 +11,7 @@ IF( CMAKE_CL_64 )
   SET( program_files_path "$ENV{ProgramW6432}" )
 ELSE( CMAKE_CL_64 )
   SET( LIB "win32" )
-  SET( program_files_path "$ENV{ProgramFiles}" )
+  SET( program_files_path "$ENV{ProgramFiles(x86)}" )
 ENDIF( CMAKE_CL_64 )
 
 # Look for the header file.

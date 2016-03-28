@@ -259,12 +259,12 @@ IF( GENERATE_UNITY_BUILD )
     SET( UNITYBUILD_INCLUDES "" )
 
     foreach(filename ${HAPI_SOURCE_FILES})
-      SET( UNITYBUILD_INCLUDES "${UNITYBUILD_INCLUDES}\n #include \"${filename}\"" )
+      SET( UNITYBUILD_INCLUDES "${UNITYBUILD_INCLUDES}\n #include \"${HAPI_SOURCE_DIR}/../src/${filename}\"" )
     endforeach(filename)
 
     file(WRITE UnityBuild.cpp ${UNITYBUILD_INCLUDES}  )
 
-    SET( HAPI_SRCS "${HAPI_SOURCE_DIR}/../src/UnityBuild.cpp" )
+    SET( HAPI_SRCS "UnityBuild.cpp" )
 
   ENDIF()
 ENDIF( GENERATE_UNITY_BUILD )
