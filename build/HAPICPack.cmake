@@ -371,7 +371,6 @@ IF( GENERATE_CPACK_PROJECT )
                  ${HAPI_SOURCE_DIR}/HAPICPack.cmake
                  ${HAPI_SOURCE_DIR}/HAPISourceFiles.txt
                  ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc.cmake
-                 ${HAPI_SOURCE_DIR}/UnityBuild.cmake
                  ${HAPI_SOURCE_DIR}/UpdateResourceFile.exe
            DESTINATION HAPI/build
            COMPONENT HAPI_cpack_sources )
