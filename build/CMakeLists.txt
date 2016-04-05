@@ -275,10 +275,17 @@ SET( PRECOMPILED_HEADERS_${PROJECT_NAME} "YES" CACHE BOOL "Decides if a the gene
 IF( MSVC AND PRECOMPILED_HEADERS_${PROJECT_NAME})
   list( APPEND HAPI_HEADERS ${HAPI_SOURCE_DIR}/../include/HAPI/StdAfx.h )
   list( APPEND HAPI_SRCS ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp )
-  SET_SOURCE_FILES_PROPERTIES( ${HAPI_SRCS}
-                               PROPERTIES COMPILE_FLAGS "/Zm900 /FIHAPI/StdAfx.h /YuHAPI/StdAfx.h" )
-  SET_SOURCE_FILES_PROPERTIES( ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp 
-                               PROPERTIES COMPILE_FLAGS "/Zm900 /YcHAPI/StdAfx.h" )
+  IF( ${MSVC_VERSION} LESS 1900)
+    SET_SOURCE_FILES_PROPERTIES( ${HAPI_SRCS}
+                                 PROPERTIES COMPILE_FLAGS "/Zm900 /FIHAPI/StdAfx.h /YuHAPI/StdAfx.h" )
+    SET_SOURCE_FILES_PROPERTIES( ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp 
+                                 PROPERTIES COMPILE_FLAGS "/Zm900 /YcHAPI/StdAfx.h" )
+  ELSE( ${MSVC_VERSION} LESS 1900)
+    SET_SOURCE_FILES_PROPERTIES( ${HAPI_SRCS}
+                                 PROPERTIES COMPILE_FLAGS "/FIHAPI/StdAfx.h /YuHAPI/StdAfx.h" )
+    SET_SOURCE_FILES_PROPERTIES( ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp 
+                                 PROPERTIES COMPILE_FLAGS "/YcHAPI/StdAfx.h" )
+  ENDIF( ${MSVC_VERSION} LESS 1900)                               
 ENDIF()
 
 # add the HAPI.rc resource file if Visual Studio
