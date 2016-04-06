@@ -71,11 +71,8 @@ namespace HAPI {
     /// The force of the EffectOutput will be a torque from the current device
     /// rotation to the desired rotation.
     EffectOutput virtual calculateForces( const EffectInput &input ) {
-      Rotation rotation_diff( input.hd->getOrientation() * Vec3( 0, 0, 1 ),
-                              desired_axis );
-      Vec3 euler_angles = rotation_diff.toEulerAngles();
-      torque = euler_angles * spring_constant/* - 
-        damping * input.hd->getDeviceValues().angular_velocity)*/;
+      Quaternion result( Rotation( input.hd->getOrientation() * Vec3( 0, 0, 1 ), desired_axis ) );
+      torque = spring_constant * result.v;
       return EffectOutput( Vec3(), torque );
     }
 
