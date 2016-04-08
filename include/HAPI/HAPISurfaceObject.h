@@ -281,7 +281,7 @@ namespace HAPI {
         return proxy_movement_local;
       }
 
-      /// Set the output force in local coordinates. 
+      /// Set the output force in local coordinates.
       inline void setLocalForce( const Vec3 &f ) {
         force_global = vectorToGlobal( f );
       }
@@ -291,12 +291,12 @@ namespace HAPI {
         force_global = f;
       }
 
-      /// Set the output torque in local coordinates. 
+      /// Set the output torque in local coordinates.
       inline void setLocalTorque( const Vec3 &t ) {
         torque_global = vectorToGlobal( t );
       }
 
-      /// Set the output torque in glocal coordinates. 
+      /// Set the output torque in global coordinates.
       inline void setGlobalTorque( const Vec3 &t ) {
         torque_global = t;
       }

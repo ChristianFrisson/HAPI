@@ -605,7 +605,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     }
   }
 
-  Vec3 new_proxy_pos, new_force;
+  Vec3 new_proxy_pos, new_force, new_torque;
 
   HAPISurfaceObject::ContactInfo contact;
   contact.hd = hd;
@@ -634,6 +634,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     new_proxy_pos = contact.globalOrigin();
 
     new_force = contact.force_global;
+    new_torque = contact.torque_global;
   }
     
   // In order to prevent fallthrough of moving shapes when holding the proxy
@@ -681,6 +682,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   }
 
   output.force = new_force;
+  output.torque = new_torque;
   proxy_info_lock.lock();
   proxy_position = new_proxy_pos;
   proxy_info_lock.unlock();

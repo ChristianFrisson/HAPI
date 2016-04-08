@@ -1135,7 +1135,7 @@ namespace HAPI {
     inline void sendTorque( const Vec3 &t ) {
       if( device_state == ENABLED ) {
         device_values_lock.lock();
-        output.torque = position_calibration_inverse.getRotationPart() * t;
+        output.torque = -orientation_calibration * t;
         device_values_lock.unlock();
       }
     }

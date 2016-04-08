@@ -45,6 +45,8 @@ namespace HAPI {
   /// by Diego C. Ruspini, Krasimir Kolarov and Oussama Khatib.
   ///
   /// This renderer allows for variable proxy radius, i.e. a sphere proxy.
+  /// This version of RuspiniRenderer will return torque if the surface given
+  /// to the renderer returns torque.
   class HAPI_API RuspiniRenderer: public HAPIProxyBasedRenderer {
   public:
     typedef Collision::CollisionObject::Constraints Constraints;
