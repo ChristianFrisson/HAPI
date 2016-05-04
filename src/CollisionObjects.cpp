@@ -2684,7 +2684,7 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
   } else {
 
     if( left.get() && right.get() ) {
-      vector< BinaryBoundTree * > children(2, NULL);
+      vector< BinaryBoundTree * > children(2);
       if( left->insideBound( p ) ) {
         children[0] = left.get();
         children[1] = right.get();
@@ -3095,7 +3095,7 @@ void BBPrimitiveTree::closestPoint( const Vec3 &p,
   }  else   {
    
     if( left.get() && right.get() ) {
-      vector< BBPrimitiveTree * > children(2, NULL);
+      vector< BBPrimitiveTree * > children(2);
       if( left->insideBound( p ) ) {
         children[0] = left.get();
         children[1] = right.get();
@@ -3968,7 +3968,7 @@ bool Cylinder::lineIntersect( const Vec3 &from,
       }
     }
   } else if (md + t * nd > dd) {
-    // Intersection outside cylinder on ‘_end_point’ side
+    // Intersection outside cylinder on \91_end_point\92 side
     if (nd >= 0.0f)
       return false; // Segment pointing away from endcap
     t = (dd - md) / nd;
