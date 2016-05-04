@@ -2631,15 +2631,15 @@ void BinaryBoundTree::getPrimitivesIntersectedByMovingSphere(
 void BinaryBoundTree::closestPoint( const Vec3 &p,
                                     Vec3 &closest_point,
                                     Vec3 &closest_normal,
-                                    Vec3 &tex_coord ) {
+                                    Vec3 &closest_tex_coord ) {
   if ( isLeaf() )  {
     if( triangles.size() == 0 && linesegments.size() == 0 &&
         points.size() == 0 ) return;
-    Vec3 cp, cn;
+    Vec3 cp, cn, tc;
     HAPIFloat d2 = std::numeric_limits<HAPIFloat>::max();
     for( vector< Triangle >::iterator i = triangles.begin();
          i != triangles.end(); ++i ) {
-      Vec3 point, normal;
+      Vec3 point, normal, tex_coord;
       (*i).closestPoint( p, point, normal, tex_coord );
       Vec3 v = p - point;
       HAPIFloat new_d2 = v * v;
@@ -2647,12 +2647,13 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
         cp = point;
         cn = normal;
         d2 = new_d2;
+        tc = tex_coord;
       }
     }
 
     for( vector< LineSegment >::iterator i = linesegments.begin();
          i != linesegments.end(); ++i ) {
-      Vec3 point, normal;
+      Vec3 point, normal, tex_coord;
       (*i).closestPoint( p, point, normal, tex_coord );
       Vec3 v = p - point;
       HAPIFloat new_d2 = v * v;
@@ -2660,12 +2661,13 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
         cp = point;
         cn = normal;
         d2 = new_d2;
+        tc = tex_coord;
       }
     }
 
     for( vector< Point >::iterator i = points.begin();
          i != points.end(); ++i ) {
-      Vec3 point, normal;
+      Vec3 point, normal, tex_coord;
       (*i).closestPoint( p, point, normal, tex_coord );
       Vec3 v = p - point;
       HAPIFloat new_d2 = v * v;
@@ -2673,30 +2675,48 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
         cp = point;
         cn = normal;
         d2 = new_d2;
+        tc = tex_coord;
       }
     }
     closest_point = cp;
     closest_normal = cn;
+    closest_tex_coord = tc;
   } else {
 
     if( left.get() && right.get() ) {
-      Vec3 cp, cn, tc;
-      left->closestPoint( p, cp, cn, tc  );
-      right->closestPoint( p, closest_point, closest_normal, tex_coord );
-      Vec3 v = p - cp;
-      HAPIFloat ld2 = v * v;
-      v = p - closest_point;
-      if( ld2 < v * v ) {
-        closest_point = cp;
-        closest_normal = cn;
-        tex_coord = tc;
+      vector< BinaryBoundTree * > children(2, NULL);
+      if( left->insideBound( p ) ) {
+        children[0] = left.get();
+        children[1] = right.get();
+      } else {
+        children[0] = right.get();
+        children[1] = left.get();
       }
 
+      children[0]->closestPoint( p, closest_point, closest_normal, closest_tex_coord );
+      HAPI::Vec3 cv = p - closest_point;
+      HAPI::Vec3 v;
+      if( !children[1]->isLeaf() ) {
+        HAPI::Vec3 cp;
+        cp = cp = children[1]->boundClosestPoint(p);
+        v = (cp-p);
+      }
+
+      if( children[1]->isLeaf() || v * v < cv * cv ) {
+        Vec3 cp, cn, tc;
+        children[1]->closestPoint( p, cp, cn, tc );
+        Vec3 v = p - cp;
+        if( v * v < cv * cv ) {
+          closest_point = cp;
+          closest_normal = cn;
+          closest_tex_coord = tc;
+        }
+      }
     } else {
-      if (left.get()) {
-        left->closestPoint( p, closest_point, closest_normal, tex_coord  );
+      if( left.get() ) {
+        left->closestPoint( p, closest_point, closest_normal, closest_tex_coord  );
       } else {
-        right->closestPoint( p, closest_point, closest_normal, tex_coord );
+        right->closestPoint( p, closest_point, closest_normal, closest_tex_coord );
       }
     }
   }
@@ -3054,10 +3074,9 @@ void BBPrimitiveTree::getPrimitivesWithinRadius(
 void BBPrimitiveTree::closestPoint( const Vec3 &p,
                                     Vec3 &closest_point,
                                     Vec3 &closest_normal,
-                                    Vec3 &tex_coord ) {
+                                    Vec3 &closest_tex_coord ) {
   if ( isLeaf() )  {
     if( primitives.size() == 0 ) return;
-    Vec3 cp, cn, tc;
     HAPIFloat d2 = std::numeric_limits<HAPIFloat>::max();
     for( H3DUtil::AutoRefVector< GeometryPrimitive >::const_iterator
           i = primitives.begin();
@@ -3067,35 +3086,48 @@ void BBPrimitiveTree::closestPoint( const Vec3 &p,
       Vec3 v = p - point;
       HAPIFloat new_d2 = v * v;
       if( new_d2 < d2 ) {
-        cp = point;
-        cn = normal;
+        closest_point = point;
+        closest_normal = normal;
         d2 = new_d2;
-        tc = tmp_tc;
+        closest_tex_coord = tmp_tc;
       }
     }
-    closest_point = cp;
-    closest_normal = cn;
-    tex_coord = tc;
   }  else   {
    
     if( left.get() && right.get() ) {
-      Vec3 cp, cn, tc;
-      left->closestPoint( p, cp, cn, tc  );
-      right->closestPoint( p, closest_point, closest_normal, tex_coord );
-      Vec3 v = p - cp;
-      HAPIFloat ld2 = v * v;
-      v = p - closest_point;
-      if( ld2 < v * v ) {
-        closest_point = cp;
-        closest_normal = cn;
-        tex_coord = tc;
-      }
-      
-    } else {
-      if (left.get()) {
-        left->closestPoint( p, closest_point, closest_normal, tex_coord  );
+      vector< BBPrimitiveTree * > children(2, NULL);
+      if( left->insideBound( p ) ) {
+        children[0] = left.get();
+        children[1] = right.get();
       } else {
-        right->closestPoint( p, closest_point, closest_normal, tex_coord );
+        children[0] = right.get();
+        children[1] = left.get();
+      }
+
+      children[0]->closestPoint( p, closest_point, closest_normal, closest_tex_coord );
+      HAPI::Vec3 cv = closest_point - p;
+      HAPI::Vec3 v;
+      if( !children[1]->isLeaf() ) {
+        HAPI::Vec3 cp;
+        cp = cp = children[1]->boundClosestPoint(p);
+        v = (cp-p);
+      }
+
+      if( children[1]->isLeaf() || v * v < cv * cv ) {
+        Vec3 cp, cn, tc;
+        children[1]->closestPoint( p, cp, cn, tc );
+        Vec3 v = cp - p;
+        if( v * v < cv * cv ) {
+          closest_point = cp;
+          closest_normal = cn;
+          closest_tex_coord = tc;
+        }
+      }
+    } else {
+      if( left.get() ) {
+        left->closestPoint( p, closest_point, closest_normal, closest_tex_coord );
+      } else {
+        right->closestPoint( p, closest_point, closest_normal, closest_tex_coord );
       }
     }
   }
