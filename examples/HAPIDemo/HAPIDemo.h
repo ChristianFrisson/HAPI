@@ -41,10 +41,10 @@
 #ifndef __HAPIDEMO__H__
 #define __HAPIDEMO__H__
 
-class WXDLLEXPORT wxCheckBox;
-class WXDLLEXPORT wxBookCtrlBase;
-class WXDLLEXPORT wxSizer;
-class WXDLLEXPORT wxTextCtrl;
+class wxCheckBox;
+class wxBookCtrlBase;
+class wxSizer;
+class wxTextCtrl;
 
 // Forward Declarations
 class WidgetsPageInfo;
