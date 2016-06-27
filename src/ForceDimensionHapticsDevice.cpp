@@ -71,7 +71,9 @@ ForceDimensionHapticsDevice::device_registration(
 ForceDimensionHapticsDevice::ForceDimensionHapticsDevice():
   device_id( -1 ),
   com_thread( NULL ),
-  com_func_cb_handle( -1 ) {
+  com_func_cb_handle( -1 ),
+  gripper_angle( 0 ),
+  gripper_angle_com_thread( 0 ) {
   // This might have to be changed if they redo it so that their
   // different devices have different maximum stiffness values.
   max_stiffness = 1450;
@@ -169,6 +171,7 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
     dv.velocity = current_values.velocity;
     dv.orientation = current_values.orientation;
     dv.button_status = current_values.button_status;
+    gripper_angle = gripper_angle_com_thread;
     com_lock.unlock();
   }
 }
@@ -244,10 +247,11 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     static_cast< ForceDimensionHapticsDevice * >( data );
   
   if( hd->device_id != -1 ) {
-    double x, y, z, rx, ry, rz, vx, vy, vz;
+    double x, y, z, rx, ry, rz, vx, vy, vz, gripper_angle;
     dhdGetPosition( &z, &x, &y, hd->device_id );
     dhdGetOrientationRad( &rz, &rx, &ry, hd->device_id );
     dhdGetLinearVelocity( &vz, &vx, &vy, hd->device_id );
+    dhdGetGripperAngleRad( &gripper_angle, hd->device_id );
 
     // TODO: multiple buttons
     bool button = (dhdGetButton( 0, hd->device_id ) == DHD_ON);
@@ -263,6 +267,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     hd->current_values.velocity = velocity;
     hd->current_values.button_status = button;
     hd->current_values.orientation = orientation;
+    hd->gripper_angle_com_thread = gripper_angle;
  
     Vec3 force = hd->current_values.force;
     Vec3 torque = hd->current_values.torque;
@@ -280,6 +285,14 @@ void ForceDimensionHapticsDevice::enableForce( bool enable ) {
     dhdEnableForce( enable ? DHD_ON : DHD_OFF,
                     device_id );
   }
+}
+
+void ForceDimensionHapticsDevice::setVibration( const HAPIFloat &frequency, const HAPIFloat &amplitude ) {
+#ifdef DHD_UNDEFINED // This define does not exist unless vibration support is added, I hope.
+  if( device_id != -1 ) {
+    dhdSetVibration( frequency, amplitude, 0, device_id );
+  }
+#endif
 }
 
 #endif

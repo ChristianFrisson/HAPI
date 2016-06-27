@@ -155,6 +155,18 @@ namespace HAPI {
     void enableForce( bool enable );
 
     Rotation (*rotation_func)( double &rx, double &ry, double &rz );
+
+    void setVibration( const HAPIFloat &frequency, const HAPIFloat &amplitude );
+
+    inline HAPIFloat getGripperAngle() {
+      return gripper_angle;
+    }
+  protected:
+    // Write access to these variables should only be done when locking with com_lock.
+    // The main reason for specifying them twice is simply to do obtain them in the same way
+    // as other values of the device are obtained.
+    // They are used to get the gripper angle;
+    HAPIFloat gripper_angle, gripper_angle_com_thread;
   };
 }
 
