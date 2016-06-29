@@ -579,7 +579,9 @@ IF( WIN32 )
                            PROPERTIES
                            LINK_FLAGS "${HAPI_LINK_FLAGS}
                            /DELAYLOAD:\"dhd.dll\" 
-                           /DELAYLOAD:\"dhd64.dll\" 
+                           /DELAYLOAD:\"dhd64.dll\"
+                           /DELAYLOAD:\"drd.dll\" 
+                           /DELAYLOAD:\"drd64.dll\" 
                            /DELAYLOAD:\"hdl.dll\"
                            /DELAYLOAD:\"Haptik.Library.dll\"
                            /DELAYLOAD:\"SimballMedicalHID.dll\" 
