@@ -533,6 +533,8 @@ void HAPIHapticsDevice::updateDeviceValues( HAPITime dt ) {
     current_device_values.torque = 
       position_calibration.getScaleRotationPart() * dv.torque;
     current_device_values.button_status = dv.button_status;
+    current_device_values.angular_velocity = 
+      orientation_calibration * dv.angular_velocity;
     device_values_lock.unlock();
   } else {
     if( device_state == INITIALIZED ) {
