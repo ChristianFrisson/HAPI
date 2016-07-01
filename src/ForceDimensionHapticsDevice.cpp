@@ -263,12 +263,14 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     static_cast< ForceDimensionHapticsDevice * >( data );
   
   if( hd->device_id != -1 ) {
-    double x, y, z, rx, ry, rz, vx, vy, vz, gripper_angle, avx, avy, avz;
+    double x, y, z, rx, ry, rz, vx, vy, vz, gripper_angle, avx = 0, avy = 0, avz = 0;
     dhdGetPosition( &z, &x, &y, hd->device_id );
     dhdGetOrientationRad( &rz, &rx, &ry, hd->device_id );
     dhdGetLinearVelocity( &vz, &vx, &vy, hd->device_id );
     dhdGetGripperAngleRad( &gripper_angle, hd->device_id );
+#ifdef DHD_DEVICE_SIGMA331
     dhdGetAngularVelocityRad( &avz, &avx, &avy, hd->device_id );
+#endif
 
     // TODO: multiple buttons
     bool button = (dhdGetButton( 0, hd->device_id ) == DHD_ON);
