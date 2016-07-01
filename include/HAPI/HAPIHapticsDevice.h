@@ -101,6 +101,9 @@ namespace HAPI {
       /// Extra data that can be used be developers when
       /// supporting new device types.
       void *user_data;
+      
+      /// The angular velocity in radius around each axis.
+      Vec3 angular_velocity;
     };
 
     typedef H3DUtil::AutoRefVector< HAPIHapticShape > HapticShapeVector;
@@ -1450,6 +1453,18 @@ namespace HAPI {
     /// If true objects are always transfered to the haptics thread. Otherwise
     /// they are checked and only transfered if they have changed.
     bool always_transfer_objects;
+  public:
+    /// Get the angular velocity of the haptics device without the calibration
+    /// matrix applied. 
+    inline Vec3 getRawAngularVelocity() {
+      return getRawDeviceValues().angular_velocity;
+    }
+
+    /// Get the angular velocity of the haptics device with the calibration matrix 
+    /// applied. 
+    inline Vec3 getAngularVelocity() {
+      return getDeviceValues().angular_velocity;
+    }
   };
 }
 

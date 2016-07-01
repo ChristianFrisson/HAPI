@@ -167,6 +167,8 @@ namespace HAPI {
     // as other values of the device are obtained.
     // They are used to get the gripper angle;
     HAPIFloat gripper_angle, gripper_angle_com_thread;
+  public:
+    Vec3 (*angular_velocity_func)( double &rx, double &ry, double &rz );
   };
 }
 

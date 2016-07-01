@@ -59,6 +59,15 @@ namespace ForceDimensionHapticsDeviceInternal {
            Rotation( 1, 0, 0, rx ) *
            Rotation( 0, 1, 0, ry );
   }
+
+  Vec3 calculateAngularVelocity( double &rx, double &ry, double &rz ) {
+    return Rotation( 1, 0, 0, (float)( H3DUtil::Constants::pi / 4 ) ) *
+           Rotation( 1, 0, 0, ( -H3DUtil::Constants::pi / 2 ) ) * Vec3( rx, ry, rz );
+  }
+
+  Vec3 calculateAngularVelocitySigma( double &rx, double &ry, double &rz ) {
+    return Vec3( rx, ry, rz );
+  }
 }
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
@@ -78,6 +87,7 @@ ForceDimensionHapticsDevice::ForceDimensionHapticsDevice():
   // different devices have different maximum stiffness values.
   max_stiffness = 1450;
   rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationOld;
+  angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocity;
 }
 
 std::vector< int > ForceDimensionHapticsDevice::free_dhd_ids;
@@ -133,9 +143,14 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   int device_type = getDeviceType();
   if( device_type >= DHD_DEVICE_SIGMA331 && device_type <= DHD_DEVICE_SIGMA331 + 5 ) {
     rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationSigma;
-  } else
+    angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocitySigma;
+  } else {
 #endif
-  rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationOld;
+    rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationOld;
+    angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocity;
+#ifdef DHD_DEVICE_SIGMA331
+  }
+#endif
 
   return true;
 }
@@ -172,6 +187,7 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
     dv.orientation = current_values.orientation;
     dv.button_status = current_values.button_status;
     gripper_angle = gripper_angle_com_thread;
+    dv.angular_velocity = current_values.angular_velocity;
     com_lock.unlock();
   }
 }
@@ -247,11 +263,12 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     static_cast< ForceDimensionHapticsDevice * >( data );
   
   if( hd->device_id != -1 ) {
-    double x, y, z, rx, ry, rz, vx, vy, vz, gripper_angle;
+    double x, y, z, rx, ry, rz, vx, vy, vz, gripper_angle, avx, avy, avz;
     dhdGetPosition( &z, &x, &y, hd->device_id );
     dhdGetOrientationRad( &rz, &rx, &ry, hd->device_id );
     dhdGetLinearVelocity( &vz, &vx, &vy, hd->device_id );
     dhdGetGripperAngleRad( &gripper_angle, hd->device_id );
+    dhdGetAngularVelocityRad( &avz, &avx, &avy, hd->device_id );
 
     // TODO: multiple buttons
     bool button = (dhdGetButton( 0, hd->device_id ) == DHD_ON);
@@ -260,6 +277,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     Vec3 velocity = Vec3( vx, vy, vz );
 
     Rotation orientation = hd->rotation_func( rx, ry, rz );
+    Vec3 angular_velocity = hd->angular_velocity_func( avx, avy, avz );
 
     hd->com_lock.lock();
 
@@ -268,6 +286,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     hd->current_values.button_status = button;
     hd->current_values.orientation = orientation;
     hd->gripper_angle_com_thread = gripper_angle;
+    hd->current_values.angular_velocity = angular_velocity;
  
     Vec3 force = hd->current_values.force;
     Vec3 torque = hd->current_values.torque;
