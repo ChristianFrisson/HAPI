@@ -37,8 +37,8 @@ namespace HAPI {
     }
 
     /// Sets the actual haptics device which is being wrapped.
-    inline void setActualHapticsDevice( HAPIHapticsDevice& _hapticsDevice ) { 
-      hd= &_hapticsDevice;
+    inline void setActualHapticsDevice( HAPIHapticsDevice* _hapticsDevice ) { 
+      hd= _hapticsDevice;
     }
 
     /// Enable the device. Positions can be read and force can be sent.
