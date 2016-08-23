@@ -68,6 +68,17 @@ namespace ForceDimensionHapticsDeviceInternal {
   Vec3 calculateAngularVelocitySigma( double &rx, double &ry, double &rz ) {
     return Vec3( rx, ry, rz );
   }
+
+  Rotation calculateRotationCustom204( double &rx, double &ry, double &rz ) {
+    return Rotation( 0, 0, 1, rz ) *
+           Rotation( 1, 0, 0, rx ) *
+           Rotation( 0, 1, 0, ry)*
+           Rotation( 1, 0, 0, ( -H3DUtil::Constants::pi / 2) );
+  }
+
+  Vec3 calculateAngularVelocityCustom204( double &rx, double &ry, double &rz ) {
+    return Vec3( rx, ry, rz );
+  }
 }
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
@@ -144,6 +155,9 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   if( device_type >= DHD_DEVICE_SIGMA331 && device_type <= DHD_DEVICE_SIGMA331 + 5 ) {
     rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationSigma;
     angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocitySigma;
+  } else if( device_type == 204 ) { // A customized device that is currently unnamed.
+    rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationCustom204;
+    angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocityCustom204;
   } else {
 #endif
     rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationOld;
