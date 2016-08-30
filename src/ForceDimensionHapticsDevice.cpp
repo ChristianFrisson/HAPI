@@ -155,13 +155,14 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   if( device_type >= DHD_DEVICE_SIGMA331 && device_type <= DHD_DEVICE_SIGMA331 + 5 ) {
     rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationSigma;
     angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocitySigma;
-  } else if( device_type == 204 ) { // A customized device that is currently unnamed.
+  } else if( device_type == 204 || device_type == 114 ) { // A customized device that is currently unnamed.
+    // Both device 204 and 114 seem to be ok with the same transformation functions.
     rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationCustom204;
     angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocityCustom204;
   } else {
 #endif
-    rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationOld;
-    angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocity;
+    rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationSigma;
+    angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocitySigma;
 #ifdef DHD_DEVICE_SIGMA331
   }
 #endif
@@ -285,6 +286,7 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
 #ifdef DHD_DEVICE_SIGMA331
     dhdGetAngularVelocityRad( &avz, &avx, &avy, hd->device_id );
 #endif
+    
 
     // TODO: multiple buttons
     bool button = (dhdGetButton( 0, hd->device_id ) == DHD_ON);
@@ -308,6 +310,13 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     Vec3 torque = hd->current_values.torque;
     hd->com_lock.unlock();
 
+    //double k = 3;
+    //
+    //dhdSetForceAndTorque( force.z, force.x, force.y, 
+    //                       -rz * k, -rx * k, 2 * -ry * k,
+    //                       hd->device_id );
+    //                       }
+    //
     dhdSetForceAndTorque( force.z, force.x, force.y, 
                           torque.z, torque.x, torque.y,
                           hd->device_id );
