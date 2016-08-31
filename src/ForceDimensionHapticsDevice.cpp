@@ -288,8 +288,16 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
 #endif
     
 
-    // TODO: multiple buttons
-    bool button = (dhdGetButton( 0, hd->device_id ) == DHD_ON);
+#ifdef DHD_DEVICE_SIGMA331
+    unsigned int button = dhdGetButtonMask( hd->device_id );
+#else
+    unsigned int button = 0;
+    for( unsigned int i = 0; i < DHD_MAX_BUTTONS; ++i ) {
+      if( dhdGetButton( i, hd->device_id ) == DHD_ON )
+        button |= 1 << i;
+    }
+    
+#endif
 
     Vec3 position = Vec3( x, y, z );
     Vec3 velocity = Vec3( vx, vy, vz );
