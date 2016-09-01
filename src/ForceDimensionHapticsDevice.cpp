@@ -289,12 +289,13 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     
 
 #ifdef DHD_DEVICE_SIGMA331
-    unsigned int button = dhdGetButtonMask( hd->device_id );
+    unsigned int button = ( dhdGetButtonMask( hd->device_id ) & 0xff );
 #else
     unsigned int button = 0;
-    for( unsigned int i = 0; i < DHD_MAX_BUTTONS; ++i ) {
-      if( dhdGetButton( i, hd->device_id ) == DHD_ON )
+    for( int i = 0; i < H3DMin( DHD_MAX_BUTTONS, 8 ); ++i ) {
+      if( dhdGetButton( i, hd->device_id ) == DHD_ON ) {
         button |= 1 << i;
+      }
     }
     
 #endif
@@ -318,13 +319,6 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     Vec3 torque = hd->current_values.torque;
     hd->com_lock.unlock();
 
-    //double k = 3;
-    //
-    //dhdSetForceAndTorque( force.z, force.x, force.y, 
-    //                       -rz * k, -rx * k, 2 * -ry * k,
-    //                       hd->device_id );
-    //                       }
-    //
     dhdSetForceAndTorque( force.z, force.x, force.y, 
                           torque.z, torque.x, torque.y,
                           hd->device_id );
