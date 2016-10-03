@@ -53,7 +53,8 @@ namespace HAPI {
     PhantomHapticsDevice( std::string _device_name = "" ):
       device_name( _device_name ),
       in_calibration_mode( false ),
-      motor_temperatures( 6, 0 ) {
+      motor_temperatures( 6, 0 ),
+      encoder_values( 6, 0 ) {
       hdapi_version = "NOT INITIALIZED YET";
       setup_haptic_rendering_callback = false;
     }
@@ -107,6 +108,11 @@ namespace HAPI {
     /// error will be generated and the device temporarily be shut down by the driver
     /// a few seconds to cool down.
     inline const std::vector< HAPIFloat > &getMotorTemperatures(){ return motor_temperatures; }
+
+    /// Get the encoder values
+    /// The returned vector contains 6 values, where the first three are
+    /// corresponding with the joint angles and the last three gimbal angles.
+    inline const std::vector< HAPIFloat > &getEncoderValues(){ return encoder_values; }
    
     /// \brief Get the maximum workspace dimensions of the device, i.e. the
     /// mechanical limits of the device. Undefined if
@@ -226,6 +232,8 @@ namespace HAPI {
     int input_dof, output_dof;
     Vec3 joint_angles, gimbal_angles;
     std::vector< HAPIFloat > motor_temperatures;
+    std::vector< HAPIFloat > encoder_values;
+    
     
     /// Implementation of updateDeviceValues using HD API to get the values.
     virtual void updateDeviceValues( DeviceValues &dv, HAPITime dt );

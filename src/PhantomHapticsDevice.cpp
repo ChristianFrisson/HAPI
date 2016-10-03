@@ -292,6 +292,16 @@ void PhantomHapticsDevice::updateDeviceValues( DeviceValues &dv,
   motor_temperatures[3] = v[3];
   motor_temperatures[4] = v[4];
   motor_temperatures[5] = v[5];
+  
+  HDlong vv[6];
+  hdGetLongv( HD_CURRENT_ENCODER_VALUES, vv );
+  encoder_values[0] = vv[0];
+  encoder_values[1] = vv[1];
+  encoder_values[2] = vv[2];
+  encoder_values[3] = vv[3];
+  encoder_values[4] = vv[4];
+  encoder_values[5] = vv[5];
+  
 }
 
 void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,
