@@ -597,17 +597,17 @@ IF( WIN32 )
     # Set link flags for HAPI
     SET_TARGET_PROPERTIES( HAPI
                            PROPERTIES
-                           LINK_FLAGS "${HAPI_LINK_FLAGS}\
- /DELAYLOAD:\"dhd.dll\"\
- /DELAYLOAD:\"dhd64.dll\"\
- /DELAYLOAD:\"drd.dll\"\
- /DELAYLOAD:\"drd64.dll\"\
- /DELAYLOAD:\"hdl.dll\"\
- /DELAYLOAD:\"Haptik.Library.dll\"\
- /DELAYLOAD:\"SimballMedicalHID.dll\"\
- /DELAYLOAD:\"VirtuoseDLL.dll\"\
- /DELAYLOAD:\"FTD2XX.dll\"\
- /DELAYLOAD:\"EntactAPI.dll\"" )
+                           LINK_FLAGS "${HAPI_LINK_FLAGS}
+                           /DELAYLOAD:\"dhd.dll\" 
+                           /DELAYLOAD:\"dhd64.dll\"
+                           /DELAYLOAD:\"drd.dll\" 
+                           /DELAYLOAD:\"drd64.dll\" 
+                           /DELAYLOAD:\"hdl.dll\"
+                           /DELAYLOAD:\"Haptik.Library.dll\"
+                           /DELAYLOAD:\"SimballMedicalHID.dll\" 
+                           /DELAYLOAD:\"VirtuoseDLL.dll\"
+                           /DELAYLOAD:\"FTD2XX.dll\"
+                           /DELAYLOAD:\"EntactAPI.dll\"" )
   ENDIF( MSVC )
 ENDIF( WIN32 )
 
