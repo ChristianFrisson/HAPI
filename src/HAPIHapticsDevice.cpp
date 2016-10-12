@@ -390,6 +390,10 @@ H3DUtil::PeriodicThread::CallbackCode
 
   hd->renderer_change_lock.unlock();
 
+  // scale output force
+  HAPIFloat scale = hd->getForceScale();
+  output.force = output.force * scale;
+
   // clamp to limits  
   HAPIFloat max_force = hd->getForceLimit();
   HAPIFloat max_torque = hd->getTorqueLimit();

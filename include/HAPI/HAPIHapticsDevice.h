@@ -127,6 +127,7 @@ namespace HAPI {
       error_handler( new DefaultErrorHandler ),
       force_limit( -1 ),
       torque_limit ( -1 ),
+      force_scale ( 1 ),
       transfer_objects_active ( false ),
       always_transfer_objects ( true ) {
       setHapticsRenderer( NULL );
@@ -932,6 +933,15 @@ namespace HAPI {
     /// Get the current maximum torque limit.
     inline HAPIFloat getTorqueLimit() { return torque_limit; }
 
+    /// Get the current force scale
+    inline HAPIFloat getForceScale() {
+      HAPIFloat scale;
+      device_values_lock.lock();
+      scale = force_scale;
+      device_values_lock.unlock();
+      return scale;
+    }
+
     /// Set the maximum force limit. The maximum force limit(in Newton) for the 
     /// device. Any forces generated that are higher than the limit will be 
     /// clamped to the limit before sent to the device. A negative value means
@@ -943,6 +953,14 @@ namespace HAPI {
     /// clamped to the limit before sent to the device. A negative value means
     /// no limit
     inline void setTorqueLimit( HAPIFloat limit ) { torque_limit = limit; }
+
+    /// Set the scaling of the output force. The forces generated will
+    /// be multiplied by the value.
+    inline void setForceScale( HAPIFloat scale ) {
+      device_values_lock.lock();
+      force_scale = scale;
+      device_values_lock.unlock();
+    }
 
     /// If true then shapes and force effects are always transfered to the haptic thread
     /// when transferObjects() is called. If false then they are only transfered if they have
@@ -1440,6 +1458,10 @@ namespace HAPI {
     /// generated that are higher than the limit will be clamped to the
     /// limit.
     HAPIFloat torque_limit;
+
+    /// The scale value that is multiplied with the forces applied
+    /// to the haptics device
+    HAPIFloat force_scale;
 
     /// The maximum stiffness the device can handle in N/mm.
     /// Should be set by each subclass to HAPIHapticsDevice.
