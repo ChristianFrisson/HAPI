@@ -391,8 +391,7 @@ H3DUtil::PeriodicThread::CallbackCode
   hd->renderer_change_lock.unlock();
 
   // scale output force
-  HAPIFloat scale = hd->getForceScale();
-  output.force = output.force * scale;
+  output.force = output.force * hd->ts_force_scale;
 
   // clamp to limits  
   HAPIFloat max_force = hd->getForceLimit();
@@ -517,11 +516,13 @@ HAPIHapticsDevice::ErrorCode HAPIHapticsDevice::initDevice(
 }
 
 void HAPIHapticsDevice::updateDeviceValues( HAPITime dt ) {
+
   if( device_state == ENABLED ) {
     DeviceValues dv;
     updateDeviceValues( dv, dt );
     
     device_values_lock.lock();
+    ts_force_scale = force_scale;
     last_device_values = current_device_values;
     last_raw_device_values = current_raw_device_values;
     current_raw_device_values = dv;
@@ -543,6 +544,7 @@ void HAPIHapticsDevice::updateDeviceValues( HAPITime dt ) {
   } else {
     if( device_state == INITIALIZED ) {
       device_values_lock.lock();
+      ts_force_scale = force_scale;
       last_device_values = current_device_values;
       last_raw_device_values = current_raw_device_values;
       device_values_lock.unlock();

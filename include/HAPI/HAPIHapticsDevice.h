@@ -1413,6 +1413,9 @@ namespace HAPI {
     std::string last_error_message;
     std::string device_name;
 
+    // Thread safe variable containing copy of force_scale value
+    HAPIFloat ts_force_scale = 1.0;
+
     /// Callback function to render forces.
     static H3DUtil::PeriodicThread::CallbackCode
       hapticRenderingCallback( void *data );
