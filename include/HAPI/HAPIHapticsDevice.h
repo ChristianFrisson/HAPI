@@ -129,7 +129,8 @@ namespace HAPI {
       torque_limit ( -1 ),
       force_scale ( 1 ),
       transfer_objects_active ( false ),
-      always_transfer_objects ( true ) {
+      always_transfer_objects ( true ),
+      ts_force_scale( 1.0 ) {
       setHapticsRenderer( NULL );
       haptic_rendering_callback_data = this;
       // This value is choosen ad hoc as fairly "standard".
@@ -1414,7 +1415,7 @@ namespace HAPI {
     std::string device_name;
 
     // Thread safe variable containing copy of force_scale value
-    HAPIFloat ts_force_scale = 1.0;
+    HAPIFloat ts_force_scale;
 
     /// Callback function to render forces.
     static H3DUtil::PeriodicThread::CallbackCode
