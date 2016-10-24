@@ -44,11 +44,6 @@ namespace GodObjectRendererConstants {
 
   const Vec3 UNINITIALIZED_PROXY_POS = Vec3( -200, -200, -202 );
 
-  // the minimum distance the proxy will be from the surface. The proxy
-  // will be moved above the surface with the given factor in order to
-  // avoid roundoff errors and fallthrough problems.
-  const HAPIFloat min_distance = 1e-7;
-
   // epsilon value for deciding if a point is the same
   const HAPIFloat length_sqr_point_epsilon = 1e-15; //12
 
@@ -56,8 +51,9 @@ namespace GodObjectRendererConstants {
   const HAPIFloat length_sqr_normal_epsilon = 1e-15;
 }
 
-GodObjectRenderer::GodObjectRenderer():
-  proxy_position( GodObjectRendererConstants::UNINITIALIZED_PROXY_POS ) {
+GodObjectRenderer::GodObjectRenderer( HAPIFloat _min_distance):
+  proxy_position( GodObjectRendererConstants::UNINITIALIZED_PROXY_POS ),
+  min_distance ( _min_distance ) {
 }
 
 inline bool planeIntersect( Vec3 p1, Vec3 n1, Vec3 p2, Vec3 n2,
@@ -116,7 +112,8 @@ inline Vec3 projectOntoPlaneIntersection( const Vec3 &p,
 
 inline Vec3 moveAboveConstraints(  
           const Vec3 &pos,                                        
-          vector< PlaneConstraint > &constraints ) {
+          vector< PlaneConstraint > &constraints,
+          HAPIFloat min_distance) {
   Vec3 moved_pos = pos;
   bool done = false;
   int counter = 0;
@@ -126,7 +123,7 @@ inline Vec3 moveAboveConstraints(
          i != constraints.end(); ++i ) {
       HAPIFloat d = (*i).normal * (moved_pos - (*i).point );
       if( d <= 0 ) {
-        moved_pos = moved_pos + (*i).normal * (-d+GodObjectRendererConstants::min_distance);
+        moved_pos = moved_pos + (*i).normal * (-d+min_distance);
         done = false;
       }
     }
@@ -176,7 +173,7 @@ void GodObjectRenderer::onOnePlaneContact(
 
   Vec3 new_proxy_pos = 
     contact.contact_point_global + 
-    contact.y_axis * GodObjectRendererConstants::min_distance +
+    contact.y_axis * min_distance +
     contact.proxy_movement_local.x * contact.x_axis + 
     contact.proxy_movement_local.y * contact.z_axis;
 
@@ -209,6 +206,7 @@ void GodObjectRenderer::onTwoPlaneContact(
            const HapticShapeVector &shapes ) {
   
   Vec3 contact_global = contact.globalContactPoint();
+
 
   // the direction along the intersection of the two planes. 
   Vec3 line_dir = p0.normal % p1.normal;
@@ -295,7 +293,7 @@ void GodObjectRenderer::onTwoPlaneContact(
  
     Vec3 new_proxy_pos = 
       contact.contact_point_global + 
-      contact.y_axis * GodObjectRendererConstants::min_distance +
+      contact.y_axis * min_distance +
       contact.proxy_movement_local.x * contact.x_axis + 
       contact.proxy_movement_local.y * contact.z_axis;
 
@@ -412,7 +410,7 @@ void GodObjectRenderer::onThreeOrMorePlaneContact(
 
     contact.x_axis.normalizeSafe();
     contact.z_axis.normalizeSafe();
-    contact.setGlobalOrigin( contact.contact_point_global + GodObjectRendererConstants::min_distance * contact.y_axis );
+    contact.setGlobalOrigin( contact.contact_point_global + min_distance * contact.y_axis );
 
     // calculate the force and proxy movement for the first plane
     assert( p0.haptic_shape.get() );
@@ -494,7 +492,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
       // point to which the proxy has been moved by the shape itself.
       if( (*i)->lineIntersect( moved_proxy_pos, moved_proxy_pos, intersection,
                                (*i)->getTouchableFace(), true ) ){
-        moved_proxy_pos = intersection.point + GodObjectRendererConstants::min_distance * intersection.normal;
+        moved_proxy_pos = intersection.point + min_distance * intersection.normal;
         // add an extra constraint for this shape at the new position. It might not have
         // been intersected last loop and ignoring it might cause fallthrough because
         // it will not be present when we move proxy above all constraint planes.
@@ -515,7 +513,7 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
     // make sure the new proxy position is above the constraint planes
     // from the last loop in order to prevent fallthrough.
     moved_proxy_pos = 
-      moveAboveConstraints( moved_proxy_pos, all_constraints );
+      moveAboveConstraints( moved_proxy_pos, all_constraints, min_distance );
   }
 
   proxy_pos = moved_proxy_pos;
@@ -704,7 +702,7 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
         // the from_point to an arbitrary position in the direction of the
         // closest_intersection normal.
         plane.normal = normal;
-        plane.point = closest_intersection.point + normal * GodObjectRendererConstants::min_distance;
+        plane.point = closest_intersection.point + normal * min_distance;
         Collision::IntersectionInfo intersection;
         if( plane.lineIntersect( from_point,
                                  closest_intersection.point,
@@ -722,10 +720,10 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
         from_point =  
           projectOntoPlaneIntersection( from_point, 
                                         closest_intersection.point + 
-                                        normal * GodObjectRendererConstants::min_distance,
+                                        normal * min_distance,
                                         normal,
                                         pc.point + 
-                                        pc.normal * GodObjectRendererConstants::min_distance,
+                                        pc.normal * min_distance,
                                         pc.normal );
 
         // This code will fix some fall through problems that occur sometimes
@@ -744,17 +742,17 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
         to_point = 
           projectOntoPlaneIntersection( to_point, 
                                         closest_intersection.point + 
-                                        normal * GodObjectRendererConstants::min_distance,
+                                        normal * min_distance,
                                         normal,
                                         pc.point + 
-                                        pc.normal * GodObjectRendererConstants::min_distance,
+                                        pc.normal * min_distance,
                                         pc.normal );
         have_new_goal = true;
       } else {
         Vec3 move = closest_intersection.point - from_point;
         HAPIFloat l = move.length();
-        if( l >= GodObjectRendererConstants::min_distance + 1e-11) {
-          move = move * ( (l-GodObjectRendererConstants::min_distance) / l );
+        if( l >= min_distance + 1e-11) {
+          move = move * ( (l-min_distance) / l );
           point = from_point + move;
         } else {
           point = from_point;
