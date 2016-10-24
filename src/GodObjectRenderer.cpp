@@ -51,9 +51,9 @@ namespace GodObjectRendererConstants {
   const HAPIFloat length_sqr_normal_epsilon = 1e-15;
 }
 
-GodObjectRenderer::GodObjectRenderer( HAPIFloat _min_distance):
+GodObjectRenderer::GodObjectRenderer( HAPIFloat _min_distance, bool _secondary_collisions):
   proxy_position( GodObjectRendererConstants::UNINITIALIZED_PROXY_POS ),
-  min_distance ( _min_distance ) {
+  min_distance ( _min_distance ), secondary_collisions ( _secondary_collisions ) {
 }
 
 inline bool planeIntersect( Vec3 p1, Vec3 n1, Vec3 p2, Vec3 n2,
@@ -710,10 +710,7 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
           from_point = intersection.point;
         }
 
-        // TODO:This code will fix some fall through problems that occur
-        // sometimes but the cost is at the moment to great to introduce this.
-        // Needs to be evaluated on a faster computer.
-        //Vec3 old_from_point = from_point;
+        Vec3 old_from_point = from_point;
 
         // project onto plane intersection between intersection plane and
         // closest constraint.
@@ -726,18 +723,18 @@ bool GodObjectRenderer::tryProxyMovement( Vec3 from, Vec3 to,
                                         pc.normal * min_distance,
                                         pc.normal );
 
-        // This code will fix some fall through problems that occur sometimes
-        // But the cost is at the moment to great to introduce this.
-        /*for( HapticShapeVector::const_iterator i = shapes.begin();
-          i != shapes.end();
-          ++i ) {
+        if (secondary_collisions) {
+          for (HapticShapeVector::const_iterator i = shapes.begin();
+            i != shapes.end();
+            ++i) {
             Collision::IntersectionInfo intersection;
-            if( (*i)->lineIntersect( old_from_point, from_point, intersection,
-              (*i)->getTouchableFace()) ) {
-                from_point = old_from_point;
-                break;
+            if ((*i)->lineIntersect(old_from_point, from_point, intersection,
+              (*i)->getTouchableFace())) {
+              from_point = old_from_point;
+              break;
             }
-        }*/
+          }
+        }
 
         to_point = 
           projectOntoPlaneIntersection( to_point, 

@@ -50,7 +50,7 @@ namespace HAPI {
   public:
 
     /// Constructor
-    GodObjectRenderer(HAPIFloat _min_distance = 1e-7);
+    GodObjectRenderer(HAPIFloat _min_distance = 1e-7, bool _secondary_collisions = false);
 
     /// Destructor.
     virtual ~GodObjectRenderer() {}
@@ -85,6 +85,12 @@ namespace HAPI {
       proxy_info_lock.lock();
       min_distance = m;
       proxy_info_lock.unlock();
+    }
+
+    /// Attempt to ensure that the from point is not placed behind
+    /// another surface when calculating proxy movement
+    inline void setSecondaryCollisions(bool b) {
+      secondary_collisions = b;
     }
 
     /// Register this renderer to the haptics renderer database.
@@ -130,6 +136,10 @@ namespace HAPI {
 
     // The minimum distance between the proxy and the surface
     HAPIFloat min_distance;
+
+    // Attempt to ensure that the from point is not placed behind
+    // another surface when calculating proxy movement
+    bool secondary_collisions;
 
     // Tmp container to store contacts in while rendering a new loop.
     Contacts tmp_contacts;
