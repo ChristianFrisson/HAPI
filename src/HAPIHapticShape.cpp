@@ -181,6 +181,12 @@ void HAPIHapticShape::initializeTransfer( HAPIHapticShape *s ) {
 }
 
 void HAPIHapticShape::moveTimestep( HAPITime dt ) {
+  if( !isDynamic() ) {
+    // Avoid small floating point errors that might
+    // lead to fall-through for static shapes
+    return;
+  }
+
   // save the previous transforms.
   last_transform = getTransform();
   last_inverse = getInverse();
