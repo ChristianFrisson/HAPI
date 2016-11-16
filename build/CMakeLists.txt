@@ -110,9 +110,14 @@ ELSE( TARGET H3DUtil )
   ENDIF(H3DUTIL_FOUND)
 ENDIF( TARGET H3DUtil )
 
+include( H3DCommonFunctions )
+SET( HAPI_LINK_FLAGS "" )
+
 FIND_PACKAGE(OpenHaptics)
 IF(OPENHAPTICS_FOUND)
   SET(HAVE_OPENHAPTICS 1)
+  SET( OPENHAPTICS_DLL_NAMES "HD" )
+  addDelayLoadFlagsFromNames( OPENHAPTICS_DLL_NAMES HAPI_LINK_FLAGS )
   INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} 
                        ../OpenHapticsRenderer/include )
   SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
@@ -179,6 +184,15 @@ ENDIF(CHAI3D_FOUND)
 FIND_PACKAGE(DHD)
 IF(DHD_FOUND)
   SET(HAVE_DHDAPI 1)
+  SET( DHD_DLL_NAMES "dhd" )
+  IF( DHD_DRD_FOUND )
+    SET( DHD_DLL_NAMES "drd" )
+    SET(HAVE_DRDAPI 1)
+  ENDIF()
+  IF( WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    SET( DHD_DLL_NAMES "${DHD_DLL_NAMES}64" )
+  ENDIF()
+  addDelayLoadFlagsFromNames( DHD_DLL_NAMES HAPI_LINK_FLAGS )
   INCLUDE_DIRECTORIES( ${DHD_INCLUDE_DIR} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${DHD_LIBRARIES} )
 ENDIF(DHD_FOUND)
@@ -188,6 +202,7 @@ IF(VIRTUOSE_FOUND)
   SET(HAVE_VIRTUOSEAPI 1)
   INCLUDE_DIRECTORIES( ${VIRTUOSE_INCLUDE_DIR} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${VIRTUOSE_LIBRARIES} )
+  addDelayLoadFlags( VIRTUOSE_LIBRARIES HAPI_LINK_FLAGS )
 ENDIF(VIRTUOSE_FOUND)
 
 FIND_PACKAGE(EntactAPI)
@@ -195,6 +210,7 @@ IF(ENTACTAPI_FOUND)
   SET(HAVE_ENTACTAPI 1)
   INCLUDE_DIRECTORIES( ${ENTACTAPI_INCLUDE_DIR} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${ENTACTAPI_LIBRARIES} )
+  addDelayLoadFlags( ENTACTAPI_LIBRARIES HAPI_LINK_FLAGS )
 ENDIF(ENTACTAPI_FOUND)
 
 FIND_PACKAGE(FalconAPI)
@@ -202,6 +218,7 @@ IF(FALCONAPI_FOUND)
   SET(HAVE_FALCONAPI 1)
   INCLUDE_DIRECTORIES( ${FALCONAPI_INCLUDE_DIR} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${FALCONAPI_LIBRARIES} )
+  addDelayLoadFlags( FALCONAPI_LIBRARIES HAPI_LINK_FLAGS )
 ENDIF(FALCONAPI_FOUND)
 
 FIND_PACKAGE(NiFalconAPI)
@@ -209,6 +226,8 @@ IF(NIFALCONAPI_FOUND)
   SET(HAVE_NIFALCONAPI 1)
   INCLUDE_DIRECTORIES( ${NIFALCONAPI_INCLUDE_DIR} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${NIFALCONAPI_LIBRARIES} )
+  SET( NiFalcon_DLL_NAMES "FTD2XX" )
+  addDelayLoadFlagsFromNames( NiFalcon_DLL_NAMES HAPI_LINK_FLAGS )
 ENDIF(NIFALCONAPI_FOUND)
 
 FIND_PACKAGE(Haptik)
@@ -216,6 +235,8 @@ IF(HAPTIK_FOUND)
   SET(HAVE_HAPTIK_LIBRARY 1)
   INCLUDE_DIRECTORIES( ${HAPTIK_INCLUDE_DIR} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${HAPTIK_LIBRARIES} )
+  SET( HAPTIK_DLL_NAMES "Haptik.Library" )
+  addDelayLoadFlagsFromNames( HAPTIK_DLL_NAMES HAPI_LINK_FLAGS )
 ENDIF(HAPTIK_FOUND)
 
 FIND_PACKAGE(SimballMedical)
@@ -223,6 +244,7 @@ IF(SIMBALLMEDICAL_FOUND)
   SET(HAVE_SIMBALLMEDICAL_API 1)
   INCLUDE_DIRECTORIES( ${SIMBALLMEDICAL_INCLUDE_DIR} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${SIMBALLMEDICAL_LIBRARIES} )
+  addDelayLoadFlags( SIMBALLMEDICAL_LIBRARIES HAPI_LINK_FLAGS )
 ENDIF(SIMBALLMEDICAL_FOUND)
 
 FIND_PACKAGE(MLHI)
@@ -515,7 +537,6 @@ IF( WIN32 )
   ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 
   IF( MSVC )
-    include( H3DCommonFunctions )
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
     setH3DMSVCOutputName( HAPI "HAPI" )
@@ -557,8 +578,8 @@ IF( WIN32 )
                              PROPERTIES
                              LINK_FLAGS "/DELAYLOAD:\"HD.dll\" /INCREMENTAL:NO" )
 
-    # When using OpenHaptics HAPI also need to delayload HD.dll.
-      SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /DELAYLOAD:\"HD.dll\" /INCREMENTAL:NO" )
+      # When using OpenHaptics HAPI also need to delayload HD.dll.
+      SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     ENDIF( MSVC )
   ENDIF(OPENHAPTICS_FOUND)
 
@@ -598,17 +619,7 @@ IF( WIN32 )
     # The backslashes are there because apparently endline characters will screw up the command line for anyone that wants to use Fastbuild
     SET_TARGET_PROPERTIES( HAPI
                            PROPERTIES
-                           LINK_FLAGS "${HAPI_LINK_FLAGS}\
-                           /DELAYLOAD:\"dhd.dll\"\
-                           /DELAYLOAD:\"dhd64.dll\"\
-                           /DELAYLOAD:\"drd.dll\"\
-                           /DELAYLOAD:\"drd64.dll\"\
-                           /DELAYLOAD:\"hdl.dll\"\
-                           /DELAYLOAD:\"Haptik.Library.dll\"\
-                           /DELAYLOAD:\"SimballMedicalHID.dll\"\
-                           /DELAYLOAD:\"VirtuoseDLL.dll\"\
-                           /DELAYLOAD:\"FTD2XX.dll\"\
-                           /DELAYLOAD:\"EntactAPI.dll\"" )
+                           LINK_FLAGS "${HAPI_LINK_FLAGS}" )
   ENDIF( MSVC )
 ENDIF( WIN32 )
 

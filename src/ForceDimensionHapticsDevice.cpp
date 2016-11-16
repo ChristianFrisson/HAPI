@@ -34,15 +34,27 @@
 
 #ifdef HAVE_DHDAPI
 #include <sstream>
+#ifdef HAVE_DRDAPI
+#include <drdc.h>
+#else
 #include <dhdc.h>
+#endif
 
 using namespace HAPI;
 
 namespace ForceDimensionHapticsDeviceInternal {
 #ifdef H3D_WIN64
+#ifdef HAVE_DRDAPI
+  std::string libs_array[1] = {"drd64.dll"};
+#else
   std::string libs_array[1] = {"dhd64.dll"};
+#endif
+#else
+#ifdef HAVE_DRDAPI
+  std::string libs_array[1] = {"drd.dll"};
 #else
   std::string libs_array[1] = {"dhd.dll"};
+#endif
 #endif
   std::list< std::string > force_dimension_libs(libs_array, libs_array + 1 );
 
@@ -93,7 +105,9 @@ ForceDimensionHapticsDevice::ForceDimensionHapticsDevice():
   com_thread( NULL ),
   com_func_cb_handle( -1 ),
   gripper_angle( 0 ),
-  gripper_angle_com_thread( 0 ) {
+  gripper_angle_com_thread( 0 ),
+  is_autocalibrated( true ), // Default value it true so a user of the class won't trigger autocalibration if the value has not yet been updated;
+  is_autocalibrated_com_thread( true ) {
   // This might have to be changed if they redo it so that their
   // different devices have different maximum stiffness values.
   max_stiffness = 1450;
@@ -119,7 +133,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     nr_of_connected_dhd_devices = dhdGetDeviceCount();
     if( nr_of_connected_dhd_devices <= 0 ) {
       std::stringstream s;
-      s << "Warning: Failed to open Omega device. No connected devices. ";
+      s << "Warning: Failed to open ForceDimension device. No connected devices. ";
       setErrorMsg( s.str() );
       return false;
     } else {
@@ -128,16 +142,20 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     }
   } else if( free_dhd_ids.empty() ) {
     std::stringstream s;
-    s << "Warning: Failed to open Omega device. All connected devices are "
+    s << "Warning: Failed to open ForceDimension device. All connected devices are "
       << "already initialized.";
     setErrorMsg( s.str() );
     return false;
   }
 
+#ifdef HAVE_DRDAPI
+  device_id = drdOpenID( free_dhd_ids.back() );
+#else
   device_id = dhdOpenID( free_dhd_ids.back() );
+#endif
   if( device_id == -1 ) {
     std::stringstream s;
-    s << "Warning: Failed to open Omega device. Error: " 
+    s << "Warning: Failed to open ForceDimension device. Error: "
       << dhdErrorGetLastStr();
     setErrorMsg( s.str() );
     return false;
@@ -184,7 +202,11 @@ bool ForceDimensionHapticsDevice::releaseHapticsDevice() {
 
     int id = device_id;
     device_id = -1;
+#ifdef HAVE_DRDAPI
+    drdClose( id );
+#else
     dhdClose( id );
+#endif
     free_dhd_ids.push_back( id );
 
   }
@@ -202,6 +224,7 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
     dv.orientation = current_values.orientation;
     dv.button_status = current_values.button_status;
     gripper_angle = gripper_angle_com_thread;
+    is_autocalibrated = is_autocalibrated_com_thread;
     dv.angular_velocity = current_values.angular_velocity;
     com_lock.unlock();
   }
@@ -235,7 +258,7 @@ void ForceDimensionHapticsDevice::reset() {
 }
 
 // Puts the device in RESET mode and wait for the user to calibrate
-// the device.  Optionally, a timeout can be defined after which the 
+// the device. Optionally, a timeout can be defined after which the 
 // call returns even if calibration has not occured.
 void ForceDimensionHapticsDevice::waitForReset( int timeout ) {
   if( device_id != -1 ) {
@@ -299,6 +322,10 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     }
     
 #endif
+#ifdef HAVE_DRDAPI
+    bool _is_autocalibrated = drdIsInitialized( hd->device_id );
+#endif
+    
 
     Vec3 position = Vec3( x, y, z );
     Vec3 velocity = Vec3( vx, vy, vz );
@@ -317,12 +344,13 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
  
     Vec3 force = hd->current_values.force;
     Vec3 torque = hd->current_values.torque;
+    hd->is_autocalibrated_com_thread = _is_autocalibrated;
     hd->com_lock.unlock();
 
     dhdSetForceAndTorque( force.z, force.x, force.y, 
                           torque.z, torque.x, torque.y,
                           hd->device_id );
-                          }
+  }
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }
 
@@ -342,3 +370,24 @@ void ForceDimensionHapticsDevice::setVibration( const HAPIFloat &frequency, cons
 }
 
 #endif
+
+bool ForceDimensionHapticsDevice::autoCalibrate() {
+#ifdef HAVE_DRDAPI
+  if( device_id != -1 ) {
+    if( com_thread->removeAsynchronousCallback( com_func_cb_handle ) ) {
+      com_func_cb_handle = -1;
+      if( drdAutoInit( device_id ) != 0 ) {
+        std::stringstream s;
+        s << "Warning: Failed to auto calibrate Force Dimension device. Error: "
+          << dhdErrorGetLastStr();
+        setErrorMsg( s.str() );
+        com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+        return false;
+      }
+      drdStop();
+      com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+    }
+  }
+#endif
+  return true;
+}

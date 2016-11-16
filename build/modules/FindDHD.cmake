@@ -4,6 +4,7 @@
 #  DHD_INCLUDE_DIR -  where to find DHD headers
 #  DHD_LIBRARIES    - List of libraries when using DHD.
 #  DHD_FOUND        - True if DHD found.
+#  DHD_DRD_SUPPORT  - True if DRD header/library was actually found.
 
 include( H3DExternalSearchPath )
 GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
@@ -15,16 +16,26 @@ FIND_PATH(DHD_INCLUDE_DIR NAMES dhdc.h
                           DOC "Path in which the file dhdc.h is located." )
 MARK_AS_ADVANCED(DHD_INCLUDE_DIR)
 
+FIND_PATH(DHD_DRD_INCLUDE_DIR NAMES drdc.h 
+                          PATHS ${module_include_search_paths}
+                          DOC "Path in which the file drdc.h is located, not needed if DHD_INCLUDE_DIR and DHD_LIBRARY is set." )
+MARK_AS_ADVANCED(DHD_DRD_INCLUDE_DIR)
 
 # Look for the library.
 IF(WIN32)
   FIND_LIBRARY(DHD_LIBRARY NAMES dhdms dhdms64
                            PATHS ${module_lib_search_paths}
                            DOC "Path to dhdms library." )
+  FIND_LIBRARY(DHD_DRD_LIBRARY NAMES drdms drdms64
+                           PATHS ${module_lib_search_paths}
+                           DOC "Path to drdms library, not needed if DHD_INCLUDE_DIR and DHD_LIBRARY is set." )
 ELSE(WIN32)
   FIND_LIBRARY(DHD_LIBRARY NAMES dhd
                            PATHS ${module_lib_search_paths}
                            DOC "Path to dhd library." )
+  FIND_LIBRARY(DHD_DRD_LIBRARY NAMES drdms drdms64
+                           PATHS ${module_lib_search_paths}
+                           DOC "Path to drd library, not needed if DHD_INCLUDE_DIR and DHD_LIBRARY is set." )
 
   IF(APPLE)
     FIND_LIBRARY( DHD_IOKIT_LIBRARY NAMES IOKit
@@ -45,13 +56,25 @@ ELSE(WIN32)
   ENDIF(APPLE)
 ENDIF(WIN32)
 MARK_AS_ADVANCED(DHD_LIBRARY)
+MARK_AS_ADVANCED(DHD_DRD_LIBRARY)
+
+IF( DHD_DRD_INCLUDE_DIR AND DHD_DRD_LIBRARY )
+  SET(DHD_DRD_FOUND ON)
+ELSE()
+  SET(DHD_DRD_FOUND OFF)
+ENDIF()
 
 
 # Copy the results to the output variables.
-IF(DHD_INCLUDE_DIR AND DHD_LIBRARY)
+IF( ( DHD_INCLUDE_DIR AND DHD_LIBRARY ) OR DHD_DRD_FOUND )
   SET(DHD_FOUND 1)
-  SET(DHD_LIBRARIES ${DHD_LIBRARY})
-  SET(DHD_INCLUDE_DIR ${DHD_INCLUDE_DIR})
+  IF( DHD_DRD_FOUND )
+    SET(DHD_LIBRARIES ${DHD_DRD_LIBRARY})
+    SET(DHD_INCLUDE_DIR ${DHD_DRD_INCLUDE_DIR})
+  ELSE()
+    SET(DHD_LIBRARIES ${DHD_LIBRARY})
+    SET(DHD_INCLUDE_DIR ${DHD_INCLUDE_DIR})
+  ENDIF()
   IF(APPLE)
     IF(DHD_IOKIT_LIBRARY AND DHD_COREFOUNDATION_LIBRARY)
         SET(DHD_LIBRARIES ${DHD_LIBRARIES} ${DHD_IOKIT_LIBRARY} ${DHD_COREFOUNDATION_LIBRARY})
@@ -71,11 +94,11 @@ IF(DHD_INCLUDE_DIR AND DHD_LIBRARY)
       ENDIF(DHD_USB_LIBRARY AND DHD_PCISCAN_LIBRARY)
     ENDIF(UNIX)
   ENDIF(APPLE)
-ELSE(DHD_INCLUDE_DIR AND DHD_LIBRARY)
+ELSE(( DHD_INCLUDE_DIR AND DHD_LIBRARY ) OR DHD_DRD_FOUND)
   SET(DHD_FOUND 0)
   SET(DHD_LIBRARIES)
   SET(DHD_INCLUDE_DIR)
-ENDIF(DHD_INCLUDE_DIR  AND DHD_LIBRARY)
+ENDIF(( DHD_INCLUDE_DIR AND DHD_LIBRARY ) OR DHD_DRD_FOUND)
 
 # Report the results.
 IF(NOT DHD_FOUND)

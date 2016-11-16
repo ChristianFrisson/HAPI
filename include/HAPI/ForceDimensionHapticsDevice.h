@@ -167,8 +167,17 @@ namespace HAPI {
     // as other values of the device are obtained.
     // They are used to get the gripper angle;
     HAPIFloat gripper_angle, gripper_angle_com_thread;
+    bool is_autocalibrated, is_autocalibrated_com_thread;
   public:
     Vec3 (*angular_velocity_func)( double &rx, double &ry, double &rz );
+
+    /// Run auto calibration procedure.
+    /// Will only do something if HAVE_DRDAPI is defined.
+    bool autoCalibrate();
+
+    inline bool isAutoCalibrated() {
+      return is_autocalibrated;
+    }
   };
 }
 

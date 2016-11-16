@@ -51,7 +51,9 @@
 
 /// Undef if you do not have DHD API(www.forcedimension.com) installed.
 /// Required for the Omega and Delta haptics devices.
+/// HAVE_DRDAPI is if the drd api exists as well.
 #cmakedefine HAVE_DHDAPI
+#cmakedefine HAVE_DRDAPI
 
 /// Undef if you do not have Virtuose API(www.haption.com) installed.
 /// Required for the Virtuose series haptics devices from  Haption.
