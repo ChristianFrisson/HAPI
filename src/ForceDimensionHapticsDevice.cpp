@@ -383,6 +383,7 @@ bool ForceDimensionHapticsDevice::autoCalibrate() {
         s << "Warning: Failed to auto calibrate Force Dimension device. Error: "
           << dhdErrorGetLastStr();
         setErrorMsg( s.str() );
+        drdStop();
         com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
         return false;
       }
