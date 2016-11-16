@@ -344,7 +344,9 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
  
     Vec3 force = hd->current_values.force;
     Vec3 torque = hd->current_values.torque;
+#ifdef HAVE_DRDAPI
     hd->is_autocalibrated_com_thread = _is_autocalibrated;
+#endif
     hd->com_lock.unlock();
 
     dhdSetForceAndTorque( force.z, force.x, force.y, 
