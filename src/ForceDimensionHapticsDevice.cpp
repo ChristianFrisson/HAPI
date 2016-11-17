@@ -371,8 +371,6 @@ void ForceDimensionHapticsDevice::setVibration( const HAPIFloat &frequency, cons
 #endif
 }
 
-#endif
-
 bool ForceDimensionHapticsDevice::autoCalibrate() {
 #ifdef HAVE_DRDAPI
   if( device_id != -1 ) {
@@ -383,14 +381,15 @@ bool ForceDimensionHapticsDevice::autoCalibrate() {
         s << "Warning: Failed to auto calibrate Force Dimension device. Error: "
           << dhdErrorGetLastStr();
         setErrorMsg( s.str() );
-        drdStop();
+        drdStop( true, device_id );
         com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
         return false;
       }
-      drdStop();
+      drdStop( true, device_id );
       com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
     }
   }
 #endif
   return true;
 }
+#endif
