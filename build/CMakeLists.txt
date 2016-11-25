@@ -626,6 +626,10 @@ ENDIF( WIN32 )
 # set compile flags for HAPI project
 SET_TARGET_PROPERTIES( HAPI PROPERTIES COMPILE_FLAGS "${HAPI_COMPILE_FLAGS}" )
 
+IF(MSVC)
+  SET_TARGET_PROPERTIES( HAPI PROPERTIES FOLDER "H3D" )
+ENDIF(MSVC)
+
 # autogenerate HAPI.h depending on the libraries available.
 IF( EXISTS ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.h )
   FILE( REMOVE ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.h )
