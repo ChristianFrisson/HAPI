@@ -91,6 +91,45 @@ namespace ForceDimensionHapticsDeviceInternal {
   Vec3 calculateAngularVelocityCustom204( double &rx, double &ry, double &rz ) {
     return Vec3( rx, ry, rz );
   }
+
+  void getDeviceValuesFromDHD( const int &device_id, HAPIInt32 &button, bool &_is_autocalibrated,
+                               Vec3 &position, Vec3 &velocity, Rotation &orientation, Vec3 &angular_velocity,
+                               double &gripper_angle,
+                               Rotation (*rotation_func)( double &rx, double &ry, double &rz ),
+                               Vec3 (*angular_velocity_func)( double &rx, double &ry, double &rz ) ) {
+    double x, y, z, rx, ry, rz, vx, vy, vz, avx = 0, avy = 0, avz = 0;
+    dhdGetPosition( &z, &x, &y, device_id );
+    dhdGetOrientationRad(&rz,&rx,&ry,device_id);
+    dhdGetLinearVelocity( &vz, &vx, &vy, device_id );
+    dhdGetGripperAngleRad( &gripper_angle, device_id );
+#ifdef DHD_DEVICE_SIGMA331
+    dhdGetAngularVelocityRad( &avz, &avx, &avy, device_id );
+#endif
+    
+
+#ifdef DHD_DEVICE_SIGMA331
+    button = ( dhdGetButtonMask( device_id ) & 0xff );
+#else
+    button = 0;
+    for( int i = 0; i < H3DMin( DHD_MAX_BUTTONS, 8 ); ++i ) {
+      if( dhdGetButton( i, device_id ) == DHD_ON ) {
+        button |= 1 << i;
+      }
+    }
+    
+#endif
+#ifdef HAVE_DRDAPI
+    _is_autocalibrated = drdIsInitialized( device_id );
+#endif
+    
+
+    position = Vec3( x, y, z );
+    velocity = Vec3( vx, vy, vz );
+
+    orientation = rotation_func(rx,ry,rz); 
+   
+    angular_velocity = angular_velocity_func( avx, avy, avz );
+  }
 }
 
 HAPIHapticsDevice::HapticsDeviceRegistration 
@@ -107,7 +146,8 @@ ForceDimensionHapticsDevice::ForceDimensionHapticsDevice():
   gripper_angle( 0 ),
   gripper_angle_com_thread( 0 ),
   is_autocalibrated( true ), // Default value it true so a user of the class won't trigger autocalibration if the value has not yet been updated;
-  is_autocalibrated_com_thread( true ) {
+  is_autocalibrated_com_thread( true ),
+  com_thread_frequency( 1000 ) {
   // This might have to be changed if they redo it so that their
   // different devices have different maximum stiffness values.
   max_stiffness = 1450;
@@ -161,12 +201,13 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     return false;
   }
   free_dhd_ids.pop_back();
-  
-  com_thread = 
-    new H3DUtil::PeriodicThread( H3DUtil::ThreadBase::HIGH_PRIORITY, 1000 );
-  com_thread->setThreadName( "DHD com thread" );
 
-  com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+  if( com_thread_frequency > 0 ) {
+    com_thread = 
+      new H3DUtil::PeriodicThread( H3DUtil::ThreadBase::HIGH_PRIORITY, com_thread_frequency );
+    com_thread->setThreadName( "DHD com thread" );
+    com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+  }
 
 #ifdef DHD_DEVICE_SIGMA331
   int device_type = getDeviceType();
@@ -218,25 +259,49 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
 
   if( device_id != -1 ) {
-    com_lock.lock();
-    dv.position = current_values.position;
-    dv.velocity = current_values.velocity;
-    dv.orientation = current_values.orientation;
-    dv.button_status = current_values.button_status;
-    gripper_angle = gripper_angle_com_thread;
-    is_autocalibrated = is_autocalibrated_com_thread;
-    dv.angular_velocity = current_values.angular_velocity;
-    com_lock.unlock();
+    if( com_thread ) {
+      com_lock.lock();
+      dv.position = current_values.position;
+      dv.velocity = current_values.velocity;
+      dv.orientation = current_values.orientation;
+      dv.button_status = current_values.button_status;
+      gripper_angle = gripper_angle_com_thread;
+      is_autocalibrated = is_autocalibrated_com_thread;
+      dv.angular_velocity = current_values.angular_velocity;
+      com_lock.unlock();
+    } else {
+      Vec3 _position, _velocity, _angular_velocity;
+      bool _is_autocalibrated;
+      Rotation _orientation;
+      double _gripper_angle;
+      HAPIInt32 _button;
+      ForceDimensionHapticsDeviceInternal::getDeviceValuesFromDHD( device_id, _button, _is_autocalibrated, _position,
+                                                                   _velocity, _orientation, _angular_velocity, _gripper_angle,
+                                                                   rotation_func, angular_velocity_func );
+      dv.position = _position;
+      dv.velocity = _velocity;
+      dv.orientation = _orientation;
+      dv.button_status = _button;
+      gripper_angle = _gripper_angle;
+      is_autocalibrated = _is_autocalibrated;
+      dv.angular_velocity = _angular_velocity;
+    }
   }
 }
 
 void ForceDimensionHapticsDevice::sendOutput( DeviceOutput &dv,
                                    HAPITime dt ) {
   if( device_id != -1 ) {
-    com_lock.lock();
-    current_values.force = dv.force;
-    current_values.torque = dv.torque;
-    com_lock.unlock();
+    if( com_thread ) {
+      com_lock.lock();
+      current_values.force = dv.force;
+      current_values.torque = dv.torque;
+      com_lock.unlock();
+    } else {
+      dhdSetForceAndTorque( dv.force.z, dv.force.x, dv.force.y, 
+                            dv.torque.z, dv.torque.x, dv.torque.y,
+                            device_id );
+    }
   }
 }
 
@@ -301,38 +366,15 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     static_cast< ForceDimensionHapticsDevice * >( data );
   
   if( hd->device_id != -1 ) {
-    double x, y, z, rx, ry, rz, vx, vy, vz, gripper_angle, avx = 0, avy = 0, avz = 0;
-    dhdGetPosition( &z, &x, &y, hd->device_id );
-    dhdGetOrientationRad( &rz, &rx, &ry, hd->device_id );
-    dhdGetLinearVelocity( &vz, &vx, &vy, hd->device_id );
-    dhdGetGripperAngleRad( &gripper_angle, hd->device_id );
-#ifdef DHD_DEVICE_SIGMA331
-    dhdGetAngularVelocityRad( &avz, &avx, &avy, hd->device_id );
-#endif
     
-
-#ifdef DHD_DEVICE_SIGMA331
-    unsigned int button = ( dhdGetButtonMask( hd->device_id ) & 0xff );
-#else
-    unsigned int button = 0;
-    for( int i = 0; i < H3DMin( DHD_MAX_BUTTONS, 8 ); ++i ) {
-      if( dhdGetButton( i, hd->device_id ) == DHD_ON ) {
-        button |= 1 << i;
-      }
-    }
-    
-#endif
-#ifdef HAVE_DRDAPI
-    bool _is_autocalibrated = drdIsInitialized( hd->device_id );
-#endif
-    
-
-    Vec3 position = Vec3( x, y, z );
-    Vec3 velocity = Vec3( vx, vy, vz );
-
-    Rotation orientation = hd->rotation_func( rx, ry, rz );
-    Vec3 angular_velocity = hd->angular_velocity_func( avx, avy, avz );
-
+    Vec3 position, velocity, angular_velocity;
+    bool _is_autocalibrated;
+    Rotation orientation;
+    double gripper_angle;
+    HAPIInt32 button;
+    ForceDimensionHapticsDeviceInternal::getDeviceValuesFromDHD( hd->device_id, button, _is_autocalibrated, position,
+                                                                 velocity, orientation, angular_velocity, gripper_angle,
+                                                                 hd->rotation_func, hd->angular_velocity_func );
     hd->com_lock.lock();
 
     hd->current_values.position = position;
@@ -374,7 +416,7 @@ void ForceDimensionHapticsDevice::setVibration( const HAPIFloat &frequency, cons
 bool ForceDimensionHapticsDevice::autoCalibrate() {
 #ifdef HAVE_DRDAPI
   if( device_id != -1 ) {
-    if( com_thread->removeAsynchronousCallback( com_func_cb_handle ) ) {
+    if( !com_thread || com_thread->removeAsynchronousCallback( com_func_cb_handle ) ) {
       com_func_cb_handle = -1;
       if( drdAutoInit( device_id ) != 0 ) {
         std::stringstream s;
@@ -382,11 +424,15 @@ bool ForceDimensionHapticsDevice::autoCalibrate() {
           << dhdErrorGetLastStr();
         setErrorMsg( s.str() );
         drdStop( true, device_id );
-        com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+        if( com_thread ) {
+          com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+        }
         return false;
       }
       drdStop( true, device_id );
-      com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+      if( com_thread ) {
+        com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+      }
     }
   }
 #endif

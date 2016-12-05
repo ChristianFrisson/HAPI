@@ -161,6 +161,7 @@ namespace HAPI {
     inline HAPIFloat getGripperAngle() {
       return gripper_angle;
     }
+
   protected:
     // Write access to these variables should only be done when locking with com_lock.
     // The main reason for specifying them twice is simply to do obtain them in the same way
@@ -168,6 +169,7 @@ namespace HAPI {
     // They are used to get the gripper angle;
     HAPIFloat gripper_angle, gripper_angle_com_thread;
     bool is_autocalibrated, is_autocalibrated_com_thread;
+
   public:
     Vec3 (*angular_velocity_func)( double &rx, double &ry, double &rz );
 
@@ -178,6 +180,13 @@ namespace HAPI {
     inline bool isAutoCalibrated() {
       return is_autocalibrated;
     }
+
+    inline void setComThreadFrequency( const HAPIInt32 &_com_thread_frequency ) {
+      com_thread_frequency = _com_thread_frequency;
+    }
+
+  protected:
+    HAPIInt32 com_thread_frequency;
   };
 }
 
