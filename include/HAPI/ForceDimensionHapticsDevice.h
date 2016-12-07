@@ -187,6 +187,7 @@ namespace HAPI {
 
   protected:
     HAPIInt32 com_thread_frequency;
+    bool auto_calibration_mode;
   };
 }
 

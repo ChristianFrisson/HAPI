@@ -147,7 +147,8 @@ ForceDimensionHapticsDevice::ForceDimensionHapticsDevice():
   gripper_angle_com_thread( 0 ),
   is_autocalibrated( true ), // Default value it true so a user of the class won't trigger autocalibration if the value has not yet been updated;
   is_autocalibrated_com_thread( true ),
-  com_thread_frequency( 1000 ) {
+  com_thread_frequency( 1000 ),
+  auto_calibration_mode( false ) {
   // This might have to be changed if they redo it so that their
   // different devices have different maximum stiffness values.
   max_stiffness = 1450;
@@ -270,6 +271,10 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
       dv.angular_velocity = current_values.angular_velocity;
       com_lock.unlock();
     } else {
+#ifdef HAVE_DRDAPI
+      com_lock.lock();
+      if( !auto_calibration_mode ) {
+#endif
       Vec3 _position, _velocity, _angular_velocity;
       bool _is_autocalibrated;
       Rotation _orientation;
@@ -285,6 +290,10 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
       gripper_angle = _gripper_angle;
       is_autocalibrated = _is_autocalibrated;
       dv.angular_velocity = _angular_velocity;
+#ifdef HAVE_DRDAPI
+      }
+      com_lock.unlock();
+#endif
     }
   }
 }
@@ -298,9 +307,17 @@ void ForceDimensionHapticsDevice::sendOutput( DeviceOutput &dv,
       current_values.torque = dv.torque;
       com_lock.unlock();
     } else {
+#ifdef HAVE_DRDAPI
+      com_lock.lock();
+      if( !auto_calibration_mode ) {
+#endif
       dhdSetForceAndTorque( dv.force.z, dv.force.x, dv.force.y, 
                             dv.torque.z, dv.torque.x, dv.torque.y,
                             device_id );
+#ifdef HAVE_DRDAPI
+      }
+      com_lock.unlock();
+#endif
     }
   }
 }
@@ -417,6 +434,11 @@ bool ForceDimensionHapticsDevice::autoCalibrate() {
 #ifdef HAVE_DRDAPI
   if( device_id != -1 ) {
     if( !com_thread || com_thread->removeAsynchronousCallback( com_func_cb_handle ) ) {
+      if( !com_thread ) {
+        com_lock.lock();
+        auto_calibration_mode = true;
+        com_lock.unlock();
+      }
       com_func_cb_handle = -1;
       if( drdAutoInit( device_id ) != 0 ) {
         std::stringstream s;
@@ -426,12 +448,20 @@ bool ForceDimensionHapticsDevice::autoCalibrate() {
         drdStop( true, device_id );
         if( com_thread ) {
           com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+        } else {
+          com_lock.lock();
+          auto_calibration_mode = false;
+          com_lock.unlock();
         }
         return false;
       }
       drdStop( true, device_id );
       if( com_thread ) {
         com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+      } else {
+        com_lock.lock();
+        auto_calibration_mode = false;
+        com_lock.unlock();
       }
     }
   }
