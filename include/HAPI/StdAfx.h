@@ -44,8 +44,6 @@
 #include <algorithm> //2
 #include <cstdlib> //1
 #include <cstring> //2
-#include <dhdc.h> //1
-#include <fparser.hh> //1
 #include <fstream> //3
 #include <iostream> //1
 #include <limits> //1
