@@ -8,7 +8,7 @@ IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INST
  SET( CMAKE_INSTALL_PREFIX ${HAPIExamples_SOURCE_DIR}/.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
 ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
-SET(CMAKE_MODULE_PATH ${HAPIExamples_SOURCE_DIR}/../../build/modules )
+SET(CMAKE_MODULE_PATH ${HAPIExamples_SOURCE_DIR}/../../build/modules ${HAPIExamples_SOURCE_DIR}/../../build/modules/sharedModules )
 
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 IF( H3D_USE_DEPENDENCIES_ONLY )

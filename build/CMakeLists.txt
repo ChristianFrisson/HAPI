@@ -79,7 +79,7 @@ SET( HAPI_MINOR_VERSION 3 )
 SET( HAPI_BUILD_VERSION 1 )
 
 # Set here already in case a special NSIS template needs to be used by cpack.
-SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules )
+SET(CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules ${HAPI_SOURCE_DIR}/modules/sharedModules )
 IF( COMMAND cmake_policy )
   if( POLICY CMP0011 )
     cmake_policy( SET CMP0011 NEW )

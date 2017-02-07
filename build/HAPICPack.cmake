@@ -385,20 +385,20 @@ IF( GENERATE_CPACK_PROJECT )
                  ${HAPI_SOURCE_DIR}/modules/FindH3DUtil.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindHAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindHaptik.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindMd5sum.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindMd5sum.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindMLHI.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindNiFalconAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindOpenHaptics.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindPTHREAD.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindPTHREAD.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindSimballMedical.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindVirtuoseAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindWxWidgetsWin.cmake
                  ${HAPI_SOURCE_DIR}/modules/InstallHAPIAndExternals.cmake
                  ${HAPI_SOURCE_DIR}/modules/NSIS.InstallOptions.ini.in
                  ${HAPI_SOURCE_DIR}/modules/NSIS.template.in
-                 ${HAPI_SOURCE_DIR}/modules/StripAndAddLibraryDirectories.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/StripAndAddLibraryDirectories.cmake
                  ${HAPI_SOURCE_DIR}/modules/TestIfVCExpress.cmake
-                 ${HAPI_SOURCE_DIR}/modules/UseDebian.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/UseDebian.cmake
            DESTINATION HAPI/build/modules
            COMPONENT HAPI_cpack_sources )
 

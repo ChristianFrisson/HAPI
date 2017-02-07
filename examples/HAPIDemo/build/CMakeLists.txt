@@ -56,7 +56,7 @@ INCLUDE_DIRECTORIES( ${HAPIDemo_SOURCE_DIR}/.. )
 
 SET(requiredLibs)
 
-SET(CMAKE_MODULE_PATH "${HAPIDemo_SOURCE_DIR}/../../../build/modules" )
+SET(CMAKE_MODULE_PATH ${HAPIDemo_SOURCE_DIR}/../../../build/modules ${HAPIDemo_SOURCE_DIR}/../../../build/modules/sharedModules )
 
 IF( H3D_USE_DEPENDENCIES_ONLY )
   # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
