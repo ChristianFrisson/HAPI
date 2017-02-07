@@ -39,7 +39,7 @@ INCLUDE_DIRECTORIES( ${FeedbackBufferCollector_SOURCE_DIR}/.. )
 
 SET(requiredLibs)
 
-SET(CMAKE_MODULE_PATH ${FeedbackBufferCollector_SOURCE_DIR}/../../../build/modules ${FeedbackBufferCollector_SOURCE_DIR}/../../../build/modules/sharedModules )
+SET(CMAKE_MODULE_PATH ${FeedbackBufferCollector_SOURCE_DIR}/../../../build/modules/sharedModules )
 IF( COMMAND cmake_policy )
   if( POLICY CMP0011 )
     cmake_policy( SET CMP0011 NEW )
