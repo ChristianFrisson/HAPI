@@ -375,29 +375,29 @@ IF( GENERATE_CPACK_PROJECT )
            DESTINATION HAPI/build
            COMPONENT HAPI_cpack_sources )
 
-  INSTALL( FILES ${HAPI_SOURCE_DIR}/modules/FindChai3D.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindDHD.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FINDDirectX.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindEntactAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindFalconAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindGLUTWin.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindH3Dfparser.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindH3DUtil.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindHAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindHaptik.cmake
+  INSTALL( FILES ${HAPI_SOURCE_DIR}/modules/sharedModules/FindChai3D.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindDHD.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FINDDirectX.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindEntactAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindFalconAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindGLUTWin.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindH3Dfparser.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindH3DUtil.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindHAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindHaptik.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindMd5sum.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindMLHI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindNiFalconAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindOpenHaptics.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindMLHI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindNiFalconAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindOpenHaptics.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindPTHREAD.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindSimballMedical.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindVirtuoseAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/FindWxWidgetsWin.cmake
-                 ${HAPI_SOURCE_DIR}/modules/InstallHAPIAndExternals.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindSimballMedical.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindVirtuoseAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindWxWidgetsWin.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/InstallHAPIAndExternals.cmake
                  ${HAPI_SOURCE_DIR}/modules/NSIS.InstallOptions.ini.in
                  ${HAPI_SOURCE_DIR}/modules/NSIS.template.in
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/StripAndAddLibraryDirectories.cmake
-                 ${HAPI_SOURCE_DIR}/modules/TestIfVCExpress.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/TestIfVCExpress.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/UseDebian.cmake
            DESTINATION HAPI/build/modules
            COMPONENT HAPI_cpack_sources )
