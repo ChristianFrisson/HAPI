@@ -302,6 +302,9 @@ void PhantomHapticsDevice::updateDeviceValues( DeviceValues &dv,
   encoder_values[4] = vv[4];
   encoder_values[5] = vv[5];
   
+  HDboolean inkwell_switch;
+  hdGetBooleanv( HD_CURRENT_INKWELL_SWITCH, &inkwell_switch );
+  in_inkwell = !inkwell_switch;
 }
 
 void PhantomHapticsDevice::sendOutput( DeviceOutput &dv,

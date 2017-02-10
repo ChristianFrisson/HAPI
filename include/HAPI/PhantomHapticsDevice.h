@@ -53,6 +53,7 @@ namespace HAPI {
     PhantomHapticsDevice( std::string _device_name = "" ):
       device_name( _device_name ),
       in_calibration_mode( false ),
+      in_inkwell( false ),
       motor_temperatures( 6, 0 ),
       encoder_values( 6, 0 ) {
       hdapi_version = "NOT INITIALIZED YET";
@@ -114,6 +115,9 @@ namespace HAPI {
     /// corresponding with the joint angles and the last three gimbal angles.
     inline const std::vector< HAPIFloat > &getEncoderValues(){ return encoder_values; }
    
+    /// Returns true if the device is in the inkwell
+    inline bool isInInkwell() { return in_inkwell; }
+    
     /// \brief Get the maximum workspace dimensions of the device, i.e. the
     /// mechanical limits of the device. Undefined if
     /// device not initialized.
@@ -274,6 +278,9 @@ namespace HAPI {
     /// calibrated. It is up to the user to decide if haptics should be
     /// shut off or not.
     bool in_calibration_mode;
+
+    /// True if the device is currently in the inkwell
+    bool in_inkwell;
 
     // If true the scheduler will be started when enableDevice is called.
     // If not then the startScheduler() function has to be called in order
