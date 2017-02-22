@@ -114,19 +114,19 @@ include( H3DCommonFunctions )
 SET( HAPI_LINK_FLAGS "" )
 
 FIND_PACKAGE(OpenHaptics)
-IF(OPENHAPTICS_FOUND)
+IF(OpenHaptics_FOUND)
   SET(HAVE_OPENHAPTICS 1)
   SET( OPENHAPTICS_DLL_NAMES "HD" )
   addDelayLoadFlagsFromNames( OPENHAPTICS_DLL_NAMES HAPI_LINK_FLAGS )
-  INCLUDE_DIRECTORIES( ${OPENHAPTICS_INCLUDE_DIR} 
+  INCLUDE_DIRECTORIES( ${OpenHaptics_INCLUDE_DIRS} 
                        ../OpenHapticsRenderer/include )
   SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
-  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${OPENHAPTICS_LIBRARIES} )
-  SET(OpenHaptics_requiredLibs ${OpenHaptics_requiredLibs} ${OPENHAPTICS_LIBRARIES} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${OpenHaptics_LIBRARIES} )
+  SET(OpenHaptics_requiredLibs ${OpenHaptics_requiredLibs} ${OpenHaptics_LIBRARIES} )
 ELSEIF( NOT WIN32 )
   INCLUDE_DIRECTORIES( ../OpenHapticsRenderer/include )
   SET( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
-ENDIF(OPENHAPTICS_FOUND)
+ENDIF(OpenHaptics_FOUND)
 
 # Option to include all available external libraries, haptics devices etc.
 # Otherwise only those required for release are included. This option should be
@@ -159,11 +159,7 @@ IF(CHAI3D_FOUND)
     # version handling, then FindChai3D.cmake needs to be updated.
     SET( CHAI3D_VERSION_2_0 "YES" )
     # Needed because glut is needed if chai3D is version 2.0.0 or above
-    IF(WIN32)
-      FIND_PACKAGE(GLUTWin)
-    ELSE(WIN32)
-      FIND_PACKAGE(GLUT)
-    ENDIF(WIN32)
+    FIND_PACKAGE(GLUT)
 
     IF(GLUT_FOUND)
       INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
@@ -193,64 +189,64 @@ IF(DHD_FOUND)
     SET( DHD_DLL_NAMES "${DHD_DLL_NAMES}64" )
   ENDIF()
   addDelayLoadFlagsFromNames( DHD_DLL_NAMES HAPI_LINK_FLAGS )
-  INCLUDE_DIRECTORIES( ${DHD_INCLUDE_DIR} )
+  INCLUDE_DIRECTORIES( ${DHD_INCLUDE_DIRS} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${DHD_LIBRARIES} )
 ENDIF(DHD_FOUND)
 
 FIND_PACKAGE(VirtuoseAPI)
-IF(VIRTUOSE_FOUND)
+IF(VirtuoseAPI_FOUND)
   SET(HAVE_VIRTUOSEAPI 1)
-  INCLUDE_DIRECTORIES( ${VIRTUOSE_INCLUDE_DIR} )
-  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${VIRTUOSE_LIBRARIES} )
-  addDelayLoadFlags( VIRTUOSE_LIBRARIES HAPI_LINK_FLAGS )
-ENDIF(VIRTUOSE_FOUND)
+  INCLUDE_DIRECTORIES( ${VirtuoseAPI_INCLUDE_DIRS} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${VirtuoseAPI_LIBRARIES} )
+  addDelayLoadFlags( VirtuoseAPI_LIBRARIES HAPI_LINK_FLAGS )
+ENDIF(VirtuoseAPI_FOUND)
 
 FIND_PACKAGE(EntactAPI)
 IF(ENTACTAPI_FOUND)
   SET(HAVE_ENTACTAPI 1)
-  INCLUDE_DIRECTORIES( ${ENTACTAPI_INCLUDE_DIR} )
+  INCLUDE_DIRECTORIES( ${ENTACTAPI_INCLUDE_DIRS} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${ENTACTAPI_LIBRARIES} )
   addDelayLoadFlags( ENTACTAPI_LIBRARIES HAPI_LINK_FLAGS )
 ENDIF(ENTACTAPI_FOUND)
 
 FIND_PACKAGE(FalconAPI)
-IF(FALCONAPI_FOUND)
+IF(FalconAPI_FOUND)
   SET(HAVE_FALCONAPI 1)
-  INCLUDE_DIRECTORIES( ${FALCONAPI_INCLUDE_DIR} )
-  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${FALCONAPI_LIBRARIES} )
-  addDelayLoadFlags( FALCONAPI_LIBRARIES HAPI_LINK_FLAGS )
-ENDIF(FALCONAPI_FOUND)
+  INCLUDE_DIRECTORIES( ${FalconAPI_INCLUDE_DIRS} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${FalconAPI_LIBRARIES} )
+  addDelayLoadFlags( FalconAPI_LIBRARIES HAPI_LINK_FLAGS )
+ENDIF(FalconAPI_FOUND)
 
 FIND_PACKAGE(NiFalconAPI)
-IF(NIFALCONAPI_FOUND)
+IF(NiFalconAPI_FOUND)
   SET(HAVE_NIFALCONAPI 1)
-  INCLUDE_DIRECTORIES( ${NIFALCONAPI_INCLUDE_DIR} )
-  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${NIFALCONAPI_LIBRARIES} )
+  INCLUDE_DIRECTORIES( ${NiFalconAPI_INCLUDE_DIRS} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${NiFalconAPI_LIBRARIES} )
   SET( NiFalcon_DLL_NAMES "FTD2XX" )
   addDelayLoadFlagsFromNames( NiFalcon_DLL_NAMES HAPI_LINK_FLAGS )
-ENDIF(NIFALCONAPI_FOUND)
+ENDIF(NiFalconAPI_FOUND)
 
 FIND_PACKAGE(Haptik)
-IF(HAPTIK_FOUND)
-  SET(HAVE_HAPTIK_LIBRARY 1)
-  INCLUDE_DIRECTORIES( ${HAPTIK_INCLUDE_DIR} )
-  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${HAPTIK_LIBRARIES} )
+IF(Haptik_FOUND)
+  SET(HAVE_Haptik_LIBRARY 1)
+  INCLUDE_DIRECTORIES( ${Haptik_INCLUDE_DIRS} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${Haptik_LIBRARIES} )
   SET( HAPTIK_DLL_NAMES "Haptik.Library" )
   addDelayLoadFlagsFromNames( HAPTIK_DLL_NAMES HAPI_LINK_FLAGS )
-ENDIF(HAPTIK_FOUND)
+ENDIF(Haptik_FOUND)
 
 FIND_PACKAGE(SimballMedical)
-IF(SIMBALLMEDICAL_FOUND)
+IF(SimballMedical_FOUND)
   SET(HAVE_SIMBALLMEDICAL_API 1)
-  INCLUDE_DIRECTORIES( ${SIMBALLMEDICAL_INCLUDE_DIR} )
-  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${SIMBALLMEDICAL_LIBRARIES} )
-  addDelayLoadFlags( SIMBALLMEDICAL_LIBRARIES HAPI_LINK_FLAGS )
-ENDIF(SIMBALLMEDICAL_FOUND)
+  INCLUDE_DIRECTORIES( ${SimballMedical_INCLUDE_DIR} )
+  SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${SimballMedical_LIBRARIES} )
+  addDelayLoadFlags( SimballMedical_LIBRARIES HAPI_LINK_FLAGS )
+ENDIF(SimballMedical_FOUND)
 
 FIND_PACKAGE(MLHI)
 IF(MLHI_FOUND)
   SET(HAVE_MLHI 1)
-  INCLUDE_DIRECTORIES( ${MLHI_INCLUDE_DIR} )
+  INCLUDE_DIRECTORIES( ${MLHI_INCLUDE_DIRS} )
   SET(HAPI_optionalLibs ${HAPI_optionalLibs} ${MLHI_LIBRARIES} )
 ENDIF(MLHI_FOUND)
 
@@ -261,7 +257,7 @@ IF(OPENGL_FOUND)
   SET(HAPI_requiredLibs ${HAPI_requiredLibs} ${OPENGL_LIBRARIES} )
 ENDIF(OPENGL_FOUND)
 
-FIND_PACKAGE(H3Dfparser)
+FIND_PACKAGE(fparser)
 IF(fparser_FOUND)
   SET(HAVE_FPARSER 1)
   INCLUDE_DIRECTORIES( ${fparser_INCLUDE_DIRS} )
@@ -341,7 +337,7 @@ IF(WIN32)
   # OpenHapticsRenderer and Chai3DRenderer are compiled as separate dlls 
   # on Windows 
   ADD_LIBRARY(HAPI SHARED ${HAPI_SRCS} ${HAPI_HEADERS} )
-  IF(OPENHAPTICS_FOUND)
+  IF(OpenHaptics_FOUND)
     IF(MSVC)
       SET( OH_SRCS ${OH_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
     ENDIF(MSVC)
@@ -349,7 +345,7 @@ IF(WIN32)
     IF( GENERATE_CPACK_PROJECT )
       SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} OpenHapticsRenderer )
     ENDIF( GENERATE_CPACK_PROJECT )
-  ENDIF(OPENHAPTICS_FOUND)
+  ENDIF(OpenHaptics_FOUND)
   
   IF(HAVE_CHAI3D)
     IF(MSVC)
@@ -407,7 +403,7 @@ IF(WIN32)
                           ARGS ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
     ENDIF( ENABLE_SVN_REVISION AND SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
 
-    IF(OPENHAPTICS_FOUND)
+    IF(OpenHaptics_FOUND)
       # autogenerate HAPI.rc depending on the version
       CONFIGURE_FILE( OpenHapticsRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
       
@@ -431,7 +427,7 @@ IF(WIN32)
                             COMMAND ${SubWCRev} 
                             ARGS ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
       ENDIF( ENABLE_SVN_REVISION AND SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
-    ENDIF(OPENHAPTICS_FOUND)
+    ENDIF(OpenHaptics_FOUND)
 
     IF(HAVE_CHAI3D)
       # autogenerate Chai3DRenderer.rc depending on the version
@@ -545,7 +541,7 @@ IF( WIN32 )
   ENDIF( MSVC )
 
   # Set properties for OpenHapticsRenderer if the project is created.
-  IF(OPENHAPTICS_FOUND)
+  IF(OpenHaptics_FOUND)
     TARGET_LINK_LIBRARIES( OpenHapticsRenderer ${OpenHaptics_requiredLibs} ${OpenHaptics_requiredLibs} HAPI )
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
@@ -581,7 +577,7 @@ IF( WIN32 )
       # When using OpenHaptics HAPI also need to delayload HD.dll.
       SET( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     ENDIF( MSVC )
-  ENDIF(OPENHAPTICS_FOUND)
+  ENDIF(OpenHaptics_FOUND)
 
   # Set properties for Chai3DRenderer if the project is created.
   IF(HAVE_CHAI3D)
@@ -649,13 +645,13 @@ INSTALL( TARGETS HAPI
          ARCHIVE DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_libraries )
 
 IF(WIN32)
-  IF(OPENHAPTICS_FOUND)
+  IF(OpenHaptics_FOUND)
     # Where to install OpenHapticsRenderer
     INSTALL( TARGETS OpenHapticsRenderer
              LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_runtime
              RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_runtime
              ARCHIVE DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_libraries )
-  ENDIF(OPENHAPTICS_FOUND)
+  ENDIF(OpenHaptics_FOUND)
 
   IF(HAVE_CHAI3D)
     # Where to install Chai3DRenderer

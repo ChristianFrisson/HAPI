@@ -78,7 +78,7 @@ ENDIF( TARGET HAPI )
 
 FIND_PACKAGE( DirectX REQUIRED )
 IF( DirectX_FOUND )
-  INCLUDE_DIRECTORIES( ${DirectX_INCLUDE_DIR} )
+  INCLUDE_DIRECTORIES( ${DirectX_INCLUDE_DIRS} )
   SET( requiredLibs ${requiredLibs} ${DirectX_LIBRARIES} )
 ENDIF( DirectX_FOUND )
 
