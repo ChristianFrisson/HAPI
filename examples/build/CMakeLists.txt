@@ -48,11 +48,7 @@ ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../SurfaceExample/build
                   ${CMAKE_CURRENT_BINARY_DIR}/SurfaceExample )
 
 FIND_PACKAGE( OpenGL )
-IF(WIN32)
-  FIND_PACKAGE(GLUTWin)
-ELSE(WIN32)
-  FIND_PACKAGE(GLUT)
-ENDIF(WIN32)
+FIND_PACKAGE(GLUT)
 IF( OPENGL_FOUND AND GLUT_FOUND )
   MESSAGE( STATUS "Including HAPI FeedbackBufferCollectionExample" )
   ADD_SUBDIRECTORY( ${HAPIExamples_SOURCE_DIR}/../FeedbackBufferCollectorExample/build
