@@ -484,7 +484,7 @@ endif()
 
 foreach( H3DUTIL_INCLUDE_DIR_TMP ${H3DUTIL_INCLUDE_DIR} )
   if( EXISTS ${H3DUTIL_INCLUDE_DIR_TMP}/H3DUtil/H3DUtil.h )
-    file( STRINGS ${H3DUTIL_INCLUDE_DIR_TMP}/H3DUtil/H3DUtil.h list_of_defines REGEX "#define THREAD_LOCK_DEBUG"  )
+    file( STRINGS ${H3DUTIL_INCLUDE_DIR_TMP}/H3DUtil/H3DUtil.h list_of_defines REGEX "#define THREAD_LOCK_DEBUG" )
     list( LENGTH list_of_defines list_of_defines_length )
     if( list_of_defines_length )
       if( "${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" )
@@ -633,7 +633,7 @@ endif()
 configure_file( ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.cmake ${CMAKE_CURRENT_BINARY_DIR}/include/HAPI/HAPI.h )
 
 if( NOT GENERATE_CPACK_PROJECT )
-  # Install header files on non-windows system ( e.g. Unix ).
+  # Install header files on non-windows system (e.g. Unix).
   install( FILES ${CMAKE_CURRENT_BINARY_DIR}/include/HAPI/HAPI.h
            DESTINATION ${HAPI_SOURCE_DIR}/../include/HAPI )
 endif()
@@ -661,7 +661,7 @@ if( WIN32 )
              ARCHIVE DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_libraries )
   endif()
 elseif( NOT GENERATE_CPACK_PROJECT )
-  # Install header files on non-windows system ( e.g. Unix ).
+  # Install header files on non-windows system (e.g. Unix).
   install( FILES ${HAPI_HEADERS} ${OH_HEADERS} ${CHAI_HEADERS}
            DESTINATION include/HAPI )
 endif()

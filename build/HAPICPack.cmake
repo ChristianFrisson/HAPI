@@ -86,7 +86,7 @@ if( GENERATE_CPACK_PROJECT )
         set( CPACK_H3D_64_BIT "TRUE" )
       endif()
 
-      # Extra install commands will be set to install vc8( 9 )_redists
+      # Extra install commands will be set to install vc8(9)_redists
       set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
       
       set( redist_versions 8 9 10 )
@@ -140,7 +140,7 @@ if( GENERATE_CPACK_PROJECT )
   if( WIN32 )
     # EXTERNAL_INCLUDES and EXTERNAL_INCLUDE_INSTALL_PATHS must be of equal lengths.
     # The reason for defining these variables here is in case we want to add functionality
-    # to configure installation in some other way ( using FIND-modules for example ).
+    # to configure installation in some other way (using FIND-modules for example).
     set( EXTERNAL_INCLUDES "" )
     set( EXTERNAL_INCLUDE_INSTALL_PATHS "" )
     # The EXTERNAL_INCLUDES_FILES are installed directly in External/include
@@ -193,7 +193,7 @@ if( GENERATE_CPACK_PROJECT )
         set( EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES}
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw30u_${library_name}.lib
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw30ud_${library_name}.lib )
-        #SET( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}
+        #set( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw30u_${library_name}.lib
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw30ud_${library_name}.lib )
         set( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}

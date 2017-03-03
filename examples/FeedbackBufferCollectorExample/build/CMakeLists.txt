@@ -17,7 +17,7 @@ endif()
 set( CMAKE_SKIP_BUILD_RPATH FALSE )
 
 # when building, don't use the install RPATH already
-# ( but later on when installing )
+# (but later on when installing)
 set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE ) 
 
 # add the automatically determined parts of the RPATH

@@ -21,7 +21,7 @@ endif()
 set( CMAKE_SKIP_BUILD_RPATH FALSE )
 
 # when building, don't use the install RPATH already
-# ( but later on when installing )
+# (but later on when installing)
 set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE ) 
 
 # add the automatically determined parts of the RPATH
@@ -122,7 +122,7 @@ if( MSVC )
   set( HAPIDemo_COMPILE_FLAGS "-DWXUSINGDLL" )
   
   # Treat wchar_t as built in type for all visual studio versions.
-  # This is default for every version above 7 ( so far ) but we still set it for all.
+  # This is default for every version above 7 (so far) but we still set it for all.
   set( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} /Zc:wchar_t" )
   
   if( ${MSVC_VERSION} GREATER 1399 )
@@ -137,7 +137,7 @@ if( MSVC )
   
   if( ${MSVC_VERSION} LESS 1600 )
     # Turn off optimization for visual studio versions 8 and below.
-    # Old setting which I ( Markus ) have no idea why it was added.
+    # Old setting which I (Markus) have no idea why it was added.
     set( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} /Od" )
   endif()
 
