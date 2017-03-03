@@ -32,7 +32,7 @@ if( GENERATE_CPACK_PROJECT )
     endif()
   endif()
   include( ${HAPI_SOURCE_DIR}/../../H3DUtil/build/H3DUtilCPack.cmake )
-  
+
   if( NOT TARGET H3DAPI )
     set( CPACK_ALL_INSTALL_TYPES Full Developer )
     set( CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules ${HAPI_SOURCE_DIR}/modules/sharedModules )
@@ -43,7 +43,7 @@ if( GENERATE_CPACK_PROJECT )
     set( CPACK_RESOURCE_FILE_LICENSE "${HAPI_SOURCE_DIR}/../LICENSE" )
     set( CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};HAPI;ALL;/" )
     set( CPACK_PACKAGE_INSTALL_DIRECTORY "HAPI" )
-    
+
     # File patterns to ignore, common for all operating systems.
     set( HAPI_CPACK_IGNORE_PATTERNS /\\\\.svn/
                                     \\\\.obj$
@@ -65,15 +65,15 @@ if( GENERATE_CPACK_PROJECT )
     set( CPACK_PACKAGE_VERSION_MAJOR ${HAPI_MAJOR_VERSION} )
     set( CPACK_PACKAGE_VERSION_MINOR ${HAPI_MINOR_VERSION} )
     set( CPACK_PACKAGE_VERSION_PATCH ${HAPI_BUILD_VERSION} )
-    
+
     if( WIN32 AND NOT UNIX )
       set( CPACK_NSIS_INSTALL_ROOT "C:" )
-      set( CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON" )  
+      set( CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON" )
       set( CPACK_PACKAGE_START_MENU_NAME "HAPI 1.1" )
-      
+
       # Extra links to start menu if values are "ON"
       set( CPACK_ADD_HAPIDOC_LINKS "ON" )
-      
+
       if( HAPI_EXAMPLE_PROJECTS )
         set( CPACK_ADD_HAPIEXAMPLES_LINKS "ON" )
       endif()
@@ -88,7 +88,7 @@ if( GENERATE_CPACK_PROJECT )
 
       # Extra install commands will be set to install vc8(9)_redists
       set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
-      
+
       set( redist_versions 8 9 10 )
       foreach( redist_version ${redist_versions} )
         # Add cache variable vc${redist_version}_redist which should be set to the install file
@@ -131,12 +131,12 @@ if( GENERATE_CPACK_PROJECT )
                                                    " A comment \\n  uninstall_vcredist_no:\\n\\n" )
         endif()
       endforeach()
-      
+
       # Modify path since in the NSIS template.
       set( CPACK_NSIS_MODIFY_PATH "ON" )
     endif()
   endif()
-  
+
   if( WIN32 )
     # EXTERNAL_INCLUDES and EXTERNAL_INCLUDE_INSTALL_PATHS must be of equal lengths.
     # The reason for defining these variables here is in case we want to add functionality
@@ -148,14 +148,14 @@ if( GENERATE_CPACK_PROJECT )
     set( EXTERNAL_LIBRARIES "" )
     set( EXTERNAL_STATIC_LIBRARIES "" )
     set( EXTERNAL_BINARIES "" )
-    
+
     set( EXTERNAL_BIN_PATH "bin32" )
     set( EXTERNAL_BIN_REPLACE_PATH "bin64" )
     if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
       set( EXTERNAL_BIN_PATH "bin64" )
       set( EXTERNAL_BIN_REPLACE_PATH "bin32" )
     endif()
-    
+
     if( EXISTS ${HAPI_CPACK_EXTERNAL_ROOT} )
       set( EXTERNAL_INCLUDES ${HAPI_CPACK_EXTERNAL_ROOT}/include/GL/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/DHD-API/
@@ -187,7 +187,7 @@ if( GENERATE_CPACK_PROJECT )
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/dhdms.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/fparser.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/fparser_d.lib )
-      
+
       set( wxlibs core adv aui html media propgrid ribbon stc webview xrc gl qa richtext )
       foreach( library_name ${wxlibs} )
         set( EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES}
@@ -214,7 +214,7 @@ if( GENERATE_CPACK_PROJECT )
                                ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30ud${library_name}_vc_custom.dll
                                ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30ud${library_name}_vc_x64_custom.dll )
       endforeach()
-      
+
       set( wxlibs expat jpeg png regexu scintilla tiff zlib )
       foreach( library_name ${wxlibs} )
         set( EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES}
@@ -226,7 +226,7 @@ if( GENERATE_CPACK_PROJECT )
       set( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}
                                      ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10.lib
                                      ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10_d.lib )
-     
+
       set( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
                              ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/freeglut.dll
                              ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/virtuoseDLL.dll
@@ -240,7 +240,7 @@ if( GENERATE_CPACK_PROJECT )
     else( EXISTS ${HAPI_CPACK_EXTERNAL_ROOT} )
       message( WARNING "HAPI_CPACK_EXTERNAL_ROOT must be set to the External directory used by HAPI in order to package properly." )
     endif()
-    
+
     if( EXTERNAL_INCLUDES )
       list( LENGTH EXTERNAL_INCLUDES EXTERNAL_INCLUDES_LENGTH )
       math( EXPR EXTERNAL_INCLUDES_LENGTH "${EXTERNAL_INCLUDES_LENGTH} - 1" )
@@ -254,7 +254,7 @@ if( GENERATE_CPACK_PROJECT )
                  REGEX ${val3} EXCLUDE )
       endforeach()
     endif()
-    
+
     foreach( include_file ${EXTERNAL_INCLUDES_FILES} )
       if( EXISTS ${include_file} )
         install( FILES ${include_file}
@@ -262,7 +262,7 @@ if( GENERATE_CPACK_PROJECT )
                  COMPONENT HAPI_cpack_external_source )
       endif()
     endforeach()
-    
+
     foreach( library ${EXTERNAL_LIBRARIES} )
       if( EXISTS ${library} )
         install( FILES ${library}
@@ -277,7 +277,7 @@ if( GENERATE_CPACK_PROJECT )
                  COMPONENT HAPI_cpack_external_source )
       endif()
     endforeach()
-    
+
     foreach( library ${EXTERNAL_STATIC_LIBRARIES} )
       if( EXISTS ${library} )
         install( FILES ${library}
@@ -292,7 +292,7 @@ if( GENERATE_CPACK_PROJECT )
                  COMPONENT HAPI_cpack_external_source )
       endif()
     endforeach()
-    
+
     foreach( binary ${EXTERNAL_BINARIES} )
       if( EXISTS ${binary} )
         install( FILES ${binary}
@@ -306,15 +306,15 @@ if( GENERATE_CPACK_PROJECT )
                  DESTINATION External/${EXTERNAL_BIN_REPLACE_PATH}
                  COMPONENT HAPI_cpack_external_runtime )
       endif()
-    endforeach()    
-    
+    endforeach()
+
     # setting names and dependencies between components and also grouping them.
     set( CPACK_COMPONENT_HAPI_CPACK_EXTERNAL_RUNTIME_DISPLAY_NAME "External runtime" )
     set( CPACK_COMPONENT_HAPI_CPACK_EXTERNAL_RUNTIME_DESCRIPTION "External runtime binaries needed by HAPI." )
     set( CPACK_COMPONENT_HAPI_CPACK_EXTERNAL_RUNTIME_DEPENDS H3DUtil_cpack_external_runtime )
     set( CPACK_COMPONENT_HAPI_CPACK_EXTERNAL_RUNTIME_GROUP "HAPI_cpack_group" )
     set( CPACK_COMPONENT_HAPI_CPACK_EXTERNAL_RUNTIME_INSTALL_TYPES Developer Full )
-    
+
     set( CPACK_COMPONENT_HAPI_CPACK_EXTERNAL_SOURCE_DISPLAY_NAME "External header/libraries" )
     set( CPACK_COMPONENT_HAPI_CPACK_EXTERNAL_SOURCE_DESCRIPTION "External headers and libraries needed by HAPI." )
     set( CPACK_COMPONENT_HAPI_CPACK_EXTERNAL_SOURCE_DEPENDS H3DUtil_cpack_external_source HAPI_cpack_external_runtime )
@@ -324,9 +324,9 @@ if( GENERATE_CPACK_PROJECT )
 
   # Our project depends on these debian packages for Linux.
   set( DEBIAN_PACKAGE_DEPENDS "libgl-dev, h3dutil(>=1.0.0)" )
-  
+
   # Install header files
-  install( FILES ${HAPI_HEADERS} 
+  install( FILES ${HAPI_HEADERS}
            DESTINATION HAPI/include/HAPI
            COMPONENT HAPI_cpack_headers )
 
@@ -342,7 +342,7 @@ if( GENERATE_CPACK_PROJECT )
   install( FILES ${CHAI_HEADERS}
            DESTINATION HAPI/Chai3DRenderer/include/HAPI
            COMPONENT HAPI_cpack_headers )
-  
+
   # Install src files.
   install( FILES ${HAPI_SRCS}
            DESTINATION HAPI/src
@@ -483,7 +483,7 @@ if( GENERATE_CPACK_PROJECT )
     set( HAPI_DOCS_DIRECTORY "${HAPI_DOCS_DIRECTORY_DEFAULT}" CACHE PATH "Set this to the directory containing the documentation of HAPI." )
     mark_as_advanced( HAPI_DOCS_DIRECTORY )
   endif()
-  
+
   if( EXISTS ${HAPI_DOCS_DIRECTORY} )
     install( DIRECTORY ${HAPI_DOCS_DIRECTORY}/HAPI
              DESTINATION doc
@@ -500,35 +500,35 @@ if( GENERATE_CPACK_PROJECT )
   set( CPACK_COMPONENT_HAPI_CPACK_RUNTIME_DEPENDS H3DUtil_cpack_runtime HAPI_cpack_external_runtime )
   set( CPACK_COMPONENT_HAPI_CPACK_RUNTIME_GROUP "HAPI_cpack_group" )
   set( CPACK_COMPONENT_HAPI_CPACK_RUNTIME_INSTALL_TYPES Developer Full )
-    
+
   set( CPACK_COMPONENT_HAPI_CPACK_LIBRARIES_DISPLAY_NAME "Libraries" )
   set( CPACK_COMPONENT_HAPI_CPACK_LIBRARIES_DESCRIPTION "HAPI libraries, needed for building against HAPI." )
   set( CPACK_COMPONENT_HAPI_CPACK_LIBRARIES_DEPENDS H3DUtil_cpack_libraries HAPI_cpack_external_source HAPI_cpack_headers )
   set( CPACK_COMPONENT_HAPI_CPACK_LIBRARIES_GROUP "HAPI_cpack_group" )
   set( CPACK_COMPONENT_HAPI_CPACK_LIBRARIES_INSTALL_TYPES Developer Full )
-    
+
   set( CPACK_COMPONENT_HAPI_CPACK_HEADERS_DISPLAY_NAME "C++ Headers" )
   set( CPACK_COMPONENT_HAPI_CPACK_HEADERS_DESCRIPTION "HAPI C++ headers, needed for building against HAPI." )
   set( CPACK_COMPONENT_HAPI_CPACK_HEADERS_DEPENDS H3DUtil_cpack_headers HAPI_cpack_external_source HAPI_cpack_libraries )
   set( CPACK_COMPONENT_HAPI_CPACK_HEADERS_GROUP "HAPI_cpack_group" )
   set( CPACK_COMPONENT_HAPI_CPACK_HEADERS_INSTALL_TYPES Developer Full )
-    
+
   set( CPACK_COMPONENT_HAPI_CPACK_SOURCES_DISPLAY_NAME "C++ Source" )
   set( CPACK_COMPONENT_HAPI_CPACK_SOURCES_DESCRIPTION "Everything needed to build HAPI." )
   set( CPACK_COMPONENT_HAPI_CPACK_SOURCES_DEPENDS HAPI_cpack_headers H3DUtil_cpack_sources )
   set( CPACK_COMPONENT_HAPI_CPACK_SOURCES_GROUP "HAPI_cpack_group" )
   set( CPACK_COMPONENT_HAPI_CPACK_SOURCES_INSTALL_TYPES Full )
-  
+
   set( CPACK_COMPONENT_HAPI_CPACK_EXAMPLES_RUNTIME_DISPLAY_NAME "Example applications" )
   set( CPACK_COMPONENT_HAPI_CPACK_EXAMPLES_RUNTIME_DESCRIPTION "The example applications for HAPI." )
   set( CPACK_COMPONENT_HAPI_CPACK_EXAMPLES_RUNTIME_DEPENDS HAPI_cpack_runtime )
   set( CPACK_COMPONENT_HAPI_CPACK_EXAMPLES_RUNTIME_GROUP "HAPI_cpack_group" )
   set( CPACK_COMPONENT_HAPI_CPACK_EXAMPLES_RUNTIME_INSTALL_TYPES Developer Full )
-  
+
   set( CPACK_COMPONENT_GROUP_HAPI_CPACK_GROUP_DISPLAY_NAME "HAPI" )
   set( CPACK_COMPONENT_GROUP_HAPI_CPACK_GROUP_DESCRIPTION "An open source cross platform haptics rendering engine with support for several haptics devices. C++ interface only." )
-  set( CPACK_COMPONENT_GROUP_H3DUTIL_CPACK_GROUP_PARENT_GROUP "HAPI_cpack_group" )  
-  
+  set( CPACK_COMPONENT_GROUP_H3DUTIL_CPACK_GROUP_PARENT_GROUP "HAPI_cpack_group" )
+
   # Add a cache variable H3D_cmake_runtime_path to point to cmake binary.
   set( H3D_cmake_runtime_path_default "" )
   if( NOT DEFINED H3D_cmake_runtime_path )
@@ -539,12 +539,12 @@ if( GENERATE_CPACK_PROJECT )
           set( H3D_cmake_runtime_path_default "C:/Program Files/CMake ${version_cmake}/bin/cmake.exe" )
           break()
         endif()
-        
+
         if( EXISTS "C:/Program Files (x86)/CMake ${version_cmake}/bin/cmake.exe" )
           set( H3D_cmake_runtime_path_default "C:/Program Files (x86)/CMake ${version_cmake}/bin/cmake.exe" )
           break()
         endif()
-        
+
         if( EXISTS "C:/Program/CMake ${version_cmake}/bin/cmake.exe" )
           set( H3D_cmake_runtime_path_default "C:/Program/CMake ${version_cmake}/bin/cmake.exe" )
           break()
@@ -558,32 +558,32 @@ if( GENERATE_CPACK_PROJECT )
   endif()
 
   if( UNIX )
-    set( CPACK_SOURCE_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/..;/" )  
-    set( CPACK_SOURCE_GENERATOR TGZ ZIP ) 
-    set( CPACK_SOURCE_PACKAGE_FILE_NAME "hapi-${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION}" ) 
+    set( CPACK_SOURCE_INSTALLED_DIRECTORIES "${HAPI_SOURCE_DIR}/..;/" )
+    set( CPACK_SOURCE_GENERATOR TGZ ZIP )
+    set( CPACK_SOURCE_PACKAGE_FILE_NAME "hapi-${HAPI_MAJOR_VERSION}.${HAPI_MINOR_VERSION}.${HAPI_BUILD_VERSION}" )
 
 
     set( HAPI_CPACK_IGNORE_PATTERNS ${HAPI_CPACK_IGNORE_PATTERNS}
             "/CVS/;/.svn/;/.bzr/;/.hg/;/.git.*/;.swp$;.#;/#;~$" )
     set( CPACK_SOURCE_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS} )
   endif()
-  
+
   if( H3D_cmake_runtime_path )
     set( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD}
-                                                       COMMAND ${H3D_cmake_runtime_path} 
-                                                       ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_runtime -P cmake_install.cmake 
-                                                       COMMAND ${H3D_cmake_runtime_path} 
+                                                       COMMAND ${H3D_cmake_runtime_path}
+                                                       ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_runtime -P cmake_install.cmake
+                                                       COMMAND ${H3D_cmake_runtime_path}
                                                        ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_libraries -P cmake_install.cmake
-                                                       COMMAND ${H3D_cmake_runtime_path} 
+                                                       COMMAND ${H3D_cmake_runtime_path}
                                                        ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_examples_runtime -P cmake_install.cmake )
-    
+
     if( NOT TARGET H3DAPI )
-      
+
       add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/DummyFile
                           COMMAND echo )
       add_custom_target( INSTALL_RUNTIME_AND_LIBRARIES_ONLY
                          DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/DummyFile )
-      
+
       add_custom_command( TARGET INSTALL_RUNTIME_AND_LIBRARIES_ONLY
                           POST_BUILD
                           ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD} )
@@ -592,16 +592,16 @@ if( GENERATE_CPACK_PROJECT )
   else( H3D_cmake_runtime_path )
     message( STATUS "H3D_cmake_runtime_path is not set, please set it to continue" )
   endif()
-  
+
   if( NOT H3D_USE_DEPENDENCIES_ONLY )
     if( NOT TARGET H3DAPI )
       include( CPack )
-      if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )  
+      if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
         include( UseDebian )
         if( DEBIAN_FOUND )
           ADD_DEBIAN_TARGETS( HAPI )
         endif()
-      endif()  
+      endif()
     endif()
   endif()
 endif()

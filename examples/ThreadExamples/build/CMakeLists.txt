@@ -16,7 +16,7 @@ set( CMAKE_SKIP_BUILD_RPATH FALSE )
 
 # when building, don't use the install RPATH already
 # (but later on when installing)
-set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE ) 
+set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
@@ -38,18 +38,18 @@ set( CMAKE_MODULE_PATH ${ThreadExamples_SOURCE_DIR}/../../../build/modules/share
 
 if( H3D_USE_DEPENDENCIES_ONLY )
   # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
-  include_directories( ${EXTERNAL_INCLUDE_DIR} ) 
+  include_directories( ${EXTERNAL_INCLUDE_DIR} )
 endif()
 
 if( TARGET H3DUtil )
-  include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
+  include_directories( ${H3DUTIL_INCLUDE_DIR} )
   set( requiredLibs ${requiredLibs} H3DUtil )
 else( TARGET H3DUtil )
   #H3DUtil
   find_package( H3DUtil REQUIRED )
 
   if( H3DUTIL_FOUND )
-    include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
+    include_directories( ${H3DUTIL_INCLUDE_DIR} )
     set( requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
   endif()
 endif()
@@ -80,13 +80,13 @@ if( WIN32 )
 endif()
 
 install( TARGETS SimpleThreadPrint
-	 LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
-	 RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
+         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
 
 install( TARGETS SimpleThreadPrintLock
-	 LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
-	 RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
+         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
 
 install( TARGETS PeriodicThreadCallbacks
-	 LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
-	 RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
+         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
