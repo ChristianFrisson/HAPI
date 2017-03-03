@@ -5,8 +5,8 @@ project( HAPIExamples )
 
 # set the install directory on Windows
 if( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
- set( CMAKE_INSTALL_PREFIX ${HAPIExamples_SOURCE_DIR}/.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
- set( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+  set( CMAKE_INSTALL_PREFIX ${HAPIExamples_SOURCE_DIR}/.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  set( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
 endif()
 set( CMAKE_MODULE_PATH ${HAPIExamples_SOURCE_DIR}/../../build/modules/sharedModules )
 
