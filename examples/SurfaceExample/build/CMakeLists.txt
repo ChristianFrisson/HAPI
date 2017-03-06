@@ -36,7 +36,7 @@ set( SurfaceExample_SRCS "${SurfaceExample_SOURCE_DIR}/../SurfaceDemo.cpp" )
 
 include_directories( ${SurfaceExample_SOURCE_DIR}/.. )
 
-set( requiredLibs )
+set( required_libs )
 
 set( CMAKE_MODULE_PATH ${SurfaceExample_SOURCE_DIR}/../../../build/modules/sharedModules )
 
@@ -47,27 +47,27 @@ endif()
 
 if( TARGET H3DUtil )
   include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
-  set( requiredLibs ${requiredLibs} H3DUtil )
+  set( required_libs ${required_libs} H3DUtil )
 else( TARGET H3DUtil )
   #H3DUtil
   find_package( H3DUtil REQUIRED )
 
   if( H3DUTIL_FOUND )
     include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
-    set( requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
+    set( required_libs ${required_libs} ${H3DUTIL_LIBRARIES} )
   endif()
 endif()
 
 if( TARGET HAPI )
   include_directories( ${HAPI_INCLUDE_DIR} ) 
-  set( requiredLibs ${requiredLibs} HAPI )
+  set( required_libs ${required_libs} HAPI )
 else( TARGET HAPI )
   #HAPI
   find_package( HAPI REQUIRED )
 
   if( HAPI_FOUND )
     include_directories( ${HAPI_INCLUDE_DIR} ) 
-    set( requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
+    set( required_libs ${required_libs} ${HAPI_LIBRARIES} )
   endif()
 endif()
 
@@ -76,20 +76,20 @@ add_executable( SurfaceExample ${SurfaceExample_SRCS} )
 # make the name of debug libraries end in _d.
 set_target_properties( SurfaceExample PROPERTIES DEBUG_POSTFIX "_d" )
 
-target_link_libraries( SurfaceExample ${requiredLibs} ${optionalLibs} )
+target_link_libraries( SurfaceExample ${required_libs} ${optional_libs} )
 
-set( DEFAULT_BIN_INSTALL "bin" )
-set( DEFAULT_LIB_INSTALL "lib" )
+set( default_bin_install "bin" )
+set( default_lib_install "lib" )
 
 if( WIN32 )
-  set( DEFAULT_BIN_INSTALL "bin32" )
-  set( DEFAULT_LIB_INSTALL "lib32" )
+  set( default_bin_install "bin32" )
+  set( default_lib_install "lib32" )
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( DEFAULT_BIN_INSTALL "bin64" )
-    set( DEFAULT_LIB_INSTALL "lib64" )
+    set( default_bin_install "bin64" )
+    set( default_lib_install "lib64" )
   endif()
 endif()
 
 install( TARGETS SurfaceExample
-         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
-         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
+         LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_examples_runtime )

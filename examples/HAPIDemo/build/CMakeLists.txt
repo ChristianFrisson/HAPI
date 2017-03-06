@@ -54,7 +54,7 @@ set( HAPIDemo_SRCS "${HAPIDemo_SOURCE_DIR}/../ForceFieldWidgetsPage.cpp"
 
 include_directories( ${HAPIDemo_SOURCE_DIR}/.. )
 
-set( requiredLibs )
+set( required_libs )
 
 set( CMAKE_MODULE_PATH ${HAPIDemo_SOURCE_DIR}/../../../build/modules/sharedModules )
 
@@ -65,27 +65,27 @@ endif()
 
 if( TARGET H3DUtil )
   include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
-  set( requiredLibs ${requiredLibs} H3DUtil )
+  set( required_libs ${required_libs} H3DUtil )
 else( TARGET H3DUtil )
   #H3DUtil
   find_package( H3DUtil REQUIRED )
 
   if( H3DUTIL_FOUND )
     include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
-    set( requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
+    set( required_libs ${required_libs} ${H3DUTIL_LIBRARIES} )
   endif()
 endif()
 
 if( TARGET HAPI )
   include_directories( ${HAPI_INCLUDE_DIR} ) 
-  set( requiredLibs ${requiredLibs} HAPI )
+  set( required_libs ${required_libs} HAPI )
 else( TARGET HAPI )
   #HAPI
   find_package( HAPI REQUIRED )
 
   if( HAPI_FOUND )
     include_directories( ${HAPI_INCLUDE_DIR} ) 
-    set( requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
+    set( required_libs ${required_libs} ${HAPI_LIBRARIES} )
   endif()
 endif()
 
@@ -97,7 +97,7 @@ if( WIN32 )
   find_package( wxWidgetsWin )
   if( wxWidgets_FOUND )
     include_directories( ${wxWidgets_INCLUDE_DIR} ) 
-    set( requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+    set( required_libs ${required_libs} ${wxWidgets_LIBRARIES} )
     set( TMP_wxWidgets_FOUND TRUE )
   endif()
 endif()
@@ -108,7 +108,7 @@ else( TMP_wxWidgets_FOUND )
   find_package( wxWidgets REQUIRED )
   if( wxWidgets_FOUND )
     include( ${wxWidgets_USE_FILE} )
-    set( requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+    set( required_libs ${required_libs} ${wxWidgets_LIBRARIES} )
   endif()
 endif()
 
@@ -145,20 +145,20 @@ if( MSVC )
   set_target_properties( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
 endif()
 
-target_link_libraries( HAPIDemo ${requiredLibs} ${optionalLibs} )
+target_link_libraries( HAPIDemo ${required_libs} ${optional_libs} )
 
-set( DEFAULT_BIN_INSTALL "bin" )
-set( DEFAULT_LIB_INSTALL "lib" )
+set( default_bin_install "bin" )
+set( default_lib_install "lib" )
 
 if( WIN32 )
-  set( DEFAULT_BIN_INSTALL "bin32" )
-  set( DEFAULT_LIB_INSTALL "lib32" )
+  set( default_bin_install "bin32" )
+  set( default_lib_install "lib32" )
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( DEFAULT_BIN_INSTALL "bin64" )
-    set( DEFAULT_LIB_INSTALL "lib64" )
+    set( default_bin_install "bin64" )
+    set( default_lib_install "lib64" )
   endif()
 endif()
 
 install( TARGETS HAPIDemo
-         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
-         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
+         LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_examples_runtime )

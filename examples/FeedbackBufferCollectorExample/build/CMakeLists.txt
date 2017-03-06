@@ -37,7 +37,7 @@ set( FeedbackBufferCollector_SRCS "${FeedbackBufferCollector_SOURCE_DIR}/../Feed
 
 include_directories( ${FeedbackBufferCollector_SOURCE_DIR}/.. )
 
-set( requiredLibs )
+set( required_libs )
 
 set( CMAKE_MODULE_PATH ${FeedbackBufferCollector_SOURCE_DIR}/../../../build/modules/sharedModules )
 if( COMMAND cmake_policy )
@@ -54,27 +54,27 @@ endif()
 
 if( TARGET H3DUtil )
   include_directories( ${H3DUTIL_INCLUDE_DIR} )
-  set( requiredLibs ${requiredLibs} H3DUtil )
+  set( required_libs ${required_libs} H3DUtil )
 else( TARGET H3DUtil )
   #H3DUtil
   find_package( H3DUtil REQUIRED )
 
   if( H3DUTIL_FOUND )
     include_directories( ${H3DUTIL_INCLUDE_DIR} )
-    set( requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
+    set( required_libs ${required_libs} ${H3DUTIL_LIBRARIES} )
   endif()
 endif()
 
 if( TARGET HAPI )
   include_directories( ${HAPI_INCLUDE_DIR} )
-  set( requiredLibs ${requiredLibs} HAPI )
+  set( required_libs ${required_libs} HAPI )
 else( TARGET HAPI )
   #HAPI
   find_package( HAPI REQUIRED )
 
   if( HAPI_FOUND )
     include_directories( ${HAPI_INCLUDE_DIR} )
-    set( requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
+    set( required_libs ${required_libs} ${HAPI_LIBRARIES} )
   endif()
 endif()
 
@@ -82,7 +82,7 @@ find_package( OpenGL REQUIRED )
 if( OPENGL_FOUND )
   set( HAVE_OPENGL 1 )
   include_directories( ${OPENGL_INCLUDE_DIR} )
-  set( requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
+  set( required_libs ${required_libs} ${OPENGL_LIBRARIES} )
 endif()
 
 # Glut.
@@ -93,7 +93,7 @@ if( GLUT_FOUND )
   if( WIN32 )
     STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
   else( WIN32 )
-    set( requiredLibs ${requiredLibs} ${GLUT_LIBRARIES} )
+    set( required_libs ${required_libs} ${GLUT_LIBRARIES} )
   endif()
 endif()
 
@@ -102,20 +102,20 @@ add_executable( FeedbackBufferCollector ${FeedbackBufferCollector_SRCS} )
 # make the name of debug libraries end in _d.
 set_target_properties( FeedbackBufferCollector PROPERTIES DEBUG_POSTFIX "_d" )
 
-target_link_libraries( FeedbackBufferCollector ${requiredLibs} )
+target_link_libraries( FeedbackBufferCollector ${required_libs} )
 
-set( DEFAULT_BIN_INSTALL "bin" )
-set( DEFAULT_LIB_INSTALL "lib" )
+set( default_bin_install "bin" )
+set( default_lib_install "lib" )
 
 if( WIN32 )
-  set( DEFAULT_BIN_INSTALL "bin32" )
-  set( DEFAULT_LIB_INSTALL "lib32" )
+  set( default_bin_install "bin32" )
+  set( default_lib_install "lib32" )
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( DEFAULT_BIN_INSTALL "bin64" )
-    set( DEFAULT_LIB_INSTALL "lib64" )
+    set( default_bin_install "bin64" )
+    set( default_lib_install "lib64" )
   endif()
 endif()
 
 install( TARGETS FeedbackBufferCollector
-         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
-         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
+         LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_examples_runtime )

@@ -32,7 +32,7 @@ set( SimpleThreadPrint_SRCS "${ThreadExamples_SOURCE_DIR}/../SimpleThreadPrint/S
 set( SimpleThreadPrintLock_SRCS "${ThreadExamples_SOURCE_DIR}/../SimpleThreadPrintLock/SimpleThreadPrintLock.cpp" )
 set( PeriodicThreadCallbacks_SRCS "${ThreadExamples_SOURCE_DIR}/../PeriodicThreadCallbacks/PeriodicThreadCallbacks.cpp" )
 
-set( requiredLibs )
+set( required_libs )
 
 set( CMAKE_MODULE_PATH ${ThreadExamples_SOURCE_DIR}/../../../build/modules/sharedModules )
 
@@ -43,14 +43,14 @@ endif()
 
 if( TARGET H3DUtil )
   include_directories( ${H3DUTIL_INCLUDE_DIR} )
-  set( requiredLibs ${requiredLibs} H3DUtil )
+  set( required_libs ${required_libs} H3DUtil )
 else( TARGET H3DUtil )
   #H3DUtil
   find_package( H3DUtil REQUIRED )
 
   if( H3DUTIL_FOUND )
     include_directories( ${H3DUTIL_INCLUDE_DIR} )
-    set( requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
+    set( required_libs ${required_libs} ${H3DUTIL_LIBRARIES} )
   endif()
 endif()
 
@@ -63,30 +63,30 @@ set_target_properties( SimpleThreadPrint PROPERTIES DEBUG_POSTFIX "_d" )
 set_target_properties( SimpleThreadPrintLock PROPERTIES DEBUG_POSTFIX "_d" )
 set_target_properties( PeriodicThreadCallbacks PROPERTIES DEBUG_POSTFIX "_d" )
 
-target_link_libraries( SimpleThreadPrint ${requiredLibs} )
-target_link_libraries( SimpleThreadPrintLock ${requiredLibs} )
-target_link_libraries( PeriodicThreadCallbacks ${requiredLibs} )
+target_link_libraries( SimpleThreadPrint ${required_libs} )
+target_link_libraries( SimpleThreadPrintLock ${required_libs} )
+target_link_libraries( PeriodicThreadCallbacks ${required_libs} )
 
-set( DEFAULT_BIN_INSTALL "bin" )
-set( DEFAULT_LIB_INSTALL "lib" )
+set( default_bin_install "bin" )
+set( default_lib_install "lib" )
 
 if( WIN32 )
-  set( DEFAULT_BIN_INSTALL "bin32" )
-  set( DEFAULT_LIB_INSTALL "lib32" )
+  set( default_bin_install "bin32" )
+  set( default_lib_install "lib32" )
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( DEFAULT_BIN_INSTALL "bin64" )
-    set( DEFAULT_LIB_INSTALL "lib64" )
+    set( default_bin_install "bin64" )
+    set( default_lib_install "lib64" )
   endif()
 endif()
 
 install( TARGETS SimpleThreadPrint
-         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
-         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
+         LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_examples_runtime )
 
 install( TARGETS SimpleThreadPrintLock
-         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
-         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
+         LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_examples_runtime )
 
 install( TARGETS PeriodicThreadCallbacks
-         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_examples_runtime
-         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_examples_runtime )
+         LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_examples_runtime
+         RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_examples_runtime )

@@ -94,8 +94,8 @@ set( HAPI_optionalLibs )
 
 # add all required libraries to this variable, one for each project
 set( HAPI_requiredLibs )
-set( Chai3D_requiredLibs )
-set( OpenHaptics_requiredLibs )
+set( chai3d_required_libs )
+set( openhaptics_required_libs )
 
 if( TARGET H3DUtil )
   # Target was created by ADD_SUBDIRECTORY command.
@@ -122,7 +122,7 @@ if( OpenHaptics_FOUND )
                        ../OpenHapticsRenderer/include )
   set( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
   set( HAPI_optionalLibs ${HAPI_optionalLibs} ${OpenHaptics_LIBRARIES} )
-  set( OpenHaptics_requiredLibs ${OpenHaptics_requiredLibs} ${OpenHaptics_LIBRARIES} )
+  set( openhaptics_required_libs ${openhaptics_required_libs} ${OpenHaptics_LIBRARIES} )
 elseif( NOT WIN32 )
   include_directories( ../OpenHapticsRenderer/include )
   set( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
@@ -149,7 +149,7 @@ if( CHAI3D_FOUND )
   include_directories( ${CHAI3D_INCLUDE_DIR}
                        ../Chai3DRenderer/include )
   set( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
-  set( Chai3D_requiredLibs ${Chai3D_requiredLibs} ${CHAI3D_LIBRARIES} )
+  set( chai3d_required_libs ${chai3d_required_libs} ${CHAI3D_LIBRARIES} )
 
   if( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
     # No need to make a better comparasion than version 2.0.0 since the
@@ -166,7 +166,7 @@ if( CHAI3D_FOUND )
       if( WIN32 )
         STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
       else( WIN32 )
-        set( Chai3D_requiredLibs ${Chai3D_requiredLibs} ${GLUT_LIBRARIES} )
+        set( chai3d_required_libs ${chai3d_required_libs} ${GLUT_LIBRARIES} )
       endif()
     else( GLUT_FOUND )
       set( HAVE_CHAI3D 0 )
@@ -521,15 +521,15 @@ if( UNIX )
     set_target_properties( HAPI PROPERTIES OUTPUT_NAME hapi )
 endif()
 
-set( DEFAULT_BIN_INSTALL "bin" )
-set( DEFAULT_LIB_INSTALL "lib" )
+set( default_bin_install "bin" )
+set( default_lib_install "lib" )
 
 if( WIN32 )
-  set( DEFAULT_BIN_INSTALL "bin32" )
-  set( DEFAULT_LIB_INSTALL "lib32" )
+  set( default_bin_install "bin32" )
+  set( default_lib_install "lib32" )
   if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( DEFAULT_BIN_INSTALL "bin64" )
-    set( DEFAULT_LIB_INSTALL "lib64" )
+    set( default_bin_install "bin64" )
+    set( default_lib_install "lib64" )
   endif()
 
   if( MSVC )
@@ -542,7 +542,7 @@ if( WIN32 )
 
   # Set properties for OpenHapticsRenderer if the project is created.
   if( OpenHaptics_FOUND )
-    target_link_libraries( OpenHapticsRenderer ${OpenHaptics_requiredLibs} ${OpenHaptics_requiredLibs} HAPI )
+    target_link_libraries( OpenHapticsRenderer ${openhaptics_required_libs} ${openhaptics_required_libs} HAPI )
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
     setH3DMSVCOutputName( OpenHapticsRenderer "OpenHapticsRenderer" )
@@ -581,7 +581,7 @@ if( WIN32 )
 
   # Set properties for Chai3DRenderer if the project is created.
   if( HAVE_CHAI3D )
-    target_link_libraries( Chai3DRenderer ${Chai3D_requiredLibs} ${Chai3D_requiredLibs} HAPI )
+    target_link_libraries( Chai3DRenderer ${chai3d_required_libs} ${chai3d_required_libs} HAPI )
     
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
@@ -640,25 +640,25 @@ endif()
 
 # Where to install HAPI
 install( TARGETS HAPI 
-         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_runtime
-         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_runtime
-         ARCHIVE DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_libraries )
+         LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_runtime
+         RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_runtime
+         ARCHIVE DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_libraries )
 
 if( WIN32 )
   if( OpenHaptics_FOUND )
     # Where to install OpenHapticsRenderer
     install( TARGETS OpenHapticsRenderer
-             LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_runtime
-             RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_runtime
-             ARCHIVE DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_libraries )
+             LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_runtime
+             RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_runtime
+             ARCHIVE DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_libraries )
   endif()
 
   if( HAVE_CHAI3D )
     # Where to install Chai3DRenderer
     install( TARGETS Chai3DRenderer 
-             LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_runtime
-             RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL} COMPONENT HAPI_cpack_runtime
-             ARCHIVE DESTINATION ${DEFAULT_LIB_INSTALL} COMPONENT HAPI_cpack_libraries )
+             LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_runtime
+             RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_runtime
+             ARCHIVE DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_libraries )
   endif()
 elseif( NOT GENERATE_CPACK_PROJECT )
   # Install header files on non-windows system (e.g. Unix).

@@ -138,48 +138,48 @@ if( GENERATE_CPACK_PROJECT )
   endif()
 
   if( WIN32 )
-    # EXTERNAL_INCLUDES and EXTERNAL_INCLUDE_INSTALL_PATHS must be of equal lengths.
+    # external_includes and external_include_install_paths must be of equal lengths.
     # The reason for defining these variables here is in case we want to add functionality
     # to configure installation in some other way (using FIND-modules for example).
-    set( EXTERNAL_INCLUDES "" )
-    set( EXTERNAL_INCLUDE_INSTALL_PATHS "" )
-    # The EXTERNAL_INCLUDES_FILES are installed directly in External/include
-    set( EXTERNAL_INCLUDES_FILES "" )
-    set( EXTERNAL_LIBRARIES "" )
-    set( EXTERNAL_STATIC_LIBRARIES "" )
-    set( EXTERNAL_BINARIES "" )
+    set( external_includes "" )
+    set( external_include_install_paths "" )
+    # The external_include_files are installed directly in External/include
+    set( external_include_files "" )
+    set( external_libraries "" )
+    set( external_static_libraries "" )
+    set( external_binaries "" )
 
-    set( EXTERNAL_BIN_PATH "bin32" )
-    set( EXTERNAL_BIN_REPLACE_PATH "bin64" )
+    set( external_bin_path "bin32" )
+    set( external_bin_replace_path "bin64" )
     if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-      set( EXTERNAL_BIN_PATH "bin64" )
-      set( EXTERNAL_BIN_REPLACE_PATH "bin32" )
+      set( external_bin_path "bin64" )
+      set( external_bin_replace_path "bin32" )
     endif()
 
     if( EXISTS ${HAPI_CPACK_EXTERNAL_ROOT} )
-      set( EXTERNAL_INCLUDES ${HAPI_CPACK_EXTERNAL_ROOT}/include/GL/
+      set( external_includes ${HAPI_CPACK_EXTERNAL_ROOT}/include/GL/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/DHD-API/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/chai3d/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/Simball/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/wx/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/fparser/ )
-      set( EXTERNAL_INCLUDE_INSTALL_PATHS External/include/GL
+      set( external_include_install_paths External/include/GL
                                           External/include/DHD-API
                                           External/include/chai3d
                                           External/include/Simball
                                           External/include/wx
                                           External/include/fparser )
-      set( EXTERNAL_INCLUDE_IGNORE_PATTERN "((/.svn)|(/CVS))|(/old)"
+      set( external_include_ignore_pattern "((/.svn)|(/CVS))|(/old)"
                                            "(/.svn)|(/CVS)"
                                            "(/.svn)|(/CVS)"
                                            "(/.svn)|(/CVS)"
                                            "(/.svn)|(/CVS)"
                                            "(/.svn)|(/CVS)" )
 
-      set( EXTERNAL_INCLUDES_FILES ${HAPI_CPACK_EXTERNAL_ROOT}/include/VirtuoseAPI.h
+      set( external_include_files ${HAPI_CPACK_EXTERNAL_ROOT}/include/VirtuoseAPI.h
                                    ${HAPI_CPACK_EXTERNAL_ROOT}/include/EntactAPI.h )
 
-      set( EXTERNAL_LIBRARIES ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/freeglut.lib
+      set( external_libraries ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/freeglut.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/virtuoseDLL.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/EntactAPI.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/SimballMedicalHID.lib
@@ -190,64 +190,64 @@ if( GENERATE_CPACK_PROJECT )
 
       set( wxlibs core adv aui html media propgrid ribbon stc webview xrc gl qa richtext )
       foreach( library_name ${wxlibs} )
-        set( EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES}
+        set( external_libraries ${external_libraries}
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw30u_${library_name}.lib
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw30ud_${library_name}.lib )
-        #set( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}
+        #set( external_static_libraries ${external_static_libraries}
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw30u_${library_name}.lib
         #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw30ud_${library_name}.lib )
-        set( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_${library_name}_vc_x64_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30ud_${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30ud_${library_name}_vc_x64_custom.dll )
+        set( external_binaries ${external_binaries}
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30u_${library_name}_vc_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30u_${library_name}_vc_x64_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30ud_${library_name}_vc_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30ud_${library_name}_vc_x64_custom.dll )
       endforeach()
       set( wxlibs "" _net _xml )
       # IN LISTS means that the empty argument is parsed
       foreach( library_name IN LISTS wxlibs )
-        set( EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES}
+        set( external_libraries ${external_libraries}
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxbase30u${library_name}.lib
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxbase30ud${library_name}.lib )
-        set( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30u${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30u${library_name}_vc_x64_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30ud${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30ud${library_name}_vc_x64_custom.dll )
+        set( external_binaries ${external_binaries}
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxbase30u${library_name}_vc_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxbase30u${library_name}_vc_x64_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxbase30ud${library_name}_vc_custom.dll
+                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxbase30ud${library_name}_vc_x64_custom.dll )
       endforeach()
 
       set( wxlibs expat jpeg png regexu scintilla tiff zlib )
       foreach( library_name ${wxlibs} )
-        set( EXTERNAL_LIBRARIES ${EXTERNAL_LIBRARIES}
+        set( external_libraries ${external_libraries}
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wx${library_name}.lib
                                 ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wx${library_name}d.lib )
-        set( EXTERNAL_BINARIES ${EXTERNAL_BINARIES} )
+        set( external_binaries ${external_binaries} )
       endforeach()
 
-      set( EXTERNAL_STATIC_LIBRARIES ${EXTERNAL_STATIC_LIBRARIES}
+      set( external_static_libraries ${external_static_libraries}
                                      ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10.lib
                                      ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10_d.lib )
 
-      set( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/freeglut.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/virtuoseDLL.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/EntactAPI.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/SimballMedicalHID.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/HapticAPI.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/HapticMasterDriver.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/fparser.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/fparser_d.dll )
+      set( external_binaries ${external_binaries}
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/freeglut.dll
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/virtuoseDLL.dll
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/EntactAPI.dll
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/SimballMedicalHID.dll
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/HapticAPI.dll
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/HapticMasterDriver.dll
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/fparser.dll
+                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/fparser_d.dll )
 
     else( EXISTS ${HAPI_CPACK_EXTERNAL_ROOT} )
       message( WARNING "HAPI_CPACK_EXTERNAL_ROOT must be set to the External directory used by HAPI in order to package properly." )
     endif()
 
-    if( EXTERNAL_INCLUDES )
-      list( LENGTH EXTERNAL_INCLUDES EXTERNAL_INCLUDES_LENGTH )
-      math( EXPR EXTERNAL_INCLUDES_LENGTH "${EXTERNAL_INCLUDES_LENGTH} - 1" )
-      foreach( val RANGE ${EXTERNAL_INCLUDES_LENGTH} )
-        list( GET EXTERNAL_INCLUDES ${val} val1 )
-        list( GET EXTERNAL_INCLUDE_INSTALL_PATHS ${val} val2 )
-        list( GET EXTERNAL_INCLUDE_IGNORE_PATTERN ${val} val3 )
+    if( external_includes )
+      list( LENGTH external_includes external_includes_length )
+      math( EXPR external_includes_length "${external_includes_length} - 1" )
+      foreach( val RANGE ${external_includes_length} )
+        list( GET external_includes ${val} val1 )
+        list( GET external_include_install_paths ${val} val2 )
+        list( GET external_include_ignore_pattern ${val} val3 )
         install( DIRECTORY ${val1}
                  DESTINATION ${val2}
                  COMPONENT HAPI_cpack_external_source
@@ -255,7 +255,7 @@ if( GENERATE_CPACK_PROJECT )
       endforeach()
     endif()
 
-    foreach( include_file ${EXTERNAL_INCLUDES_FILES} )
+    foreach( include_file ${external_include_files} )
       if( EXISTS ${include_file} )
         install( FILES ${include_file}
                  DESTINATION External/include
@@ -263,7 +263,7 @@ if( GENERATE_CPACK_PROJECT )
       endif()
     endforeach()
 
-    foreach( library ${EXTERNAL_LIBRARIES} )
+    foreach( library ${external_libraries} )
       if( EXISTS ${library} )
         install( FILES ${library}
                  DESTINATION External/lib32
@@ -278,7 +278,7 @@ if( GENERATE_CPACK_PROJECT )
       endif()
     endforeach()
 
-    foreach( library ${EXTERNAL_STATIC_LIBRARIES} )
+    foreach( library ${external_static_libraries} )
       if( EXISTS ${library} )
         install( FILES ${library}
                  DESTINATION External/lib32/static
@@ -293,17 +293,17 @@ if( GENERATE_CPACK_PROJECT )
       endif()
     endforeach()
 
-    foreach( binary ${EXTERNAL_BINARIES} )
+    foreach( binary ${external_binaries} )
       if( EXISTS ${binary} )
         install( FILES ${binary}
-                 DESTINATION External/${EXTERNAL_BIN_PATH}
+                 DESTINATION External/${external_bin_path}
                  COMPONENT HAPI_cpack_external_runtime )
       endif()
 
-      string( REGEX REPLACE "(/${EXTERNAL_BIN_PATH}/)" "/${EXTERNAL_BIN_REPLACE_PATH}/" other_binary ${binary} )
+      string( REGEX REPLACE "(/${external_bin_path}/)" "/${external_bin_replace_path}/" other_binary ${binary} )
       if( EXISTS ${other_binary} )
         install( FILES ${other_binary}
-                 DESTINATION External/${EXTERNAL_BIN_REPLACE_PATH}
+                 DESTINATION External/${external_bin_replace_path}
                  COMPONENT HAPI_cpack_external_runtime )
       endif()
     endforeach()
