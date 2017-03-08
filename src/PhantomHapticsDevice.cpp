@@ -97,7 +97,14 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   device_handle = hdInitDevice( device_name == "" ? 
                                 HD_DEFAULT_DEVICE : device_name.c_str() );
   HDErrorInfo error = hdGetError();
-  if( HD_DEVICE_ERROR( error ) ) {
+  // NOTE: The device_handle > 1024 is a "fix" suggested by the owners of OpenHaptics.
+  // The reason this check is needed, even though it looks like a complete hack for someone
+  // that is not familiar with the inner workings of OpenHaptics, is that sometimes
+  // some internal states are not set correctly for certain versions of OpenHaptics
+  // which makes it impossible to have a chain of deviceName to test to initialize.
+  // If failing to initialize the first device then the next call to hdInitDevice will
+  // not result in an error and the device_handle will be a seemingly high garbage number.
+  if( HD_DEVICE_ERROR( error ) || device_handle > 1024 ) {
     std::stringstream s;
     if( device_name == "" )
       s << "Could not init default Phantom device. ";
