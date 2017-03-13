@@ -6,6 +6,8 @@ endif()
 # in the included file. All header files are added to a variable called
 # HAPI_HEADERS.
 include( ${HAPI_SOURCE_DIR}/HAPISourceFiles.txt )
+list( APPEND HAPI_HEADERS ${HAPI_SOURCE_DIR}/../include/HAPI/StdAfx.h )
+list( APPEND HAPI_SRCS ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp )
 
 # If cpack should be configured.
 if( GENERATE_CPACK_PROJECT )
@@ -372,11 +374,18 @@ if( GENERATE_CPACK_PROJECT )
            DESTINATION HAPI/build
            COMPONENT HAPI_cpack_sources )
 
+  install( FILES ${HAPI_SOURCE_DIR}/modules/NSIS.InstallOptions.ini.in
+                 ${HAPI_SOURCE_DIR}/modules/NSIS.template.in
+           DESTINATION HAPI/build/modules
+           COMPONENT HAPI_cpack_sources )
+
   install( FILES ${HAPI_SOURCE_DIR}/modules/sharedModules/FindChai3D.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindDHD.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FINDDirectX.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindEntactAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindFalconAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/Findfparser.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindGLUT.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindGLUTWin.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindH3Dfparser.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindH3DUtil.cmake
@@ -390,13 +399,13 @@ if( GENERATE_CPACK_PROJECT )
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindSimballMedical.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindVirtuoseAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindWxWidgetsWin.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/H3DCommonFunctions.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/H3DExternalSearchPath.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/InstallHAPIAndExternals.cmake
-                 ${HAPI_SOURCE_DIR}/modules/NSIS.InstallOptions.ini.in
-                 ${HAPI_SOURCE_DIR}/modules/NSIS.template.in
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/StripAndAddLibraryDirectories.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/TestIfVCExpress.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/UseDebian.cmake
-           DESTINATION HAPI/build/modules
+           DESTINATION HAPI/build/modules/sharedModules
            COMPONENT HAPI_cpack_sources )
 
   install( FILES ${HAPI_SOURCE_DIR}/../examples/build/CMakeLists.txt

@@ -38,7 +38,7 @@ include_directories( ${SpringExample_SOURCE_DIR}/.. )
 
 set( required_libs )
 
-set( CMAKE_MODULE_PATH ${SpringExample_SOURCE_DIR}/../../../build/modules/sharedModules )
+set( CMAKE_MODULE_PATH "${SpringExample_SOURCE_DIR}/../../../build/modules/sharedModules" )
 
 if( H3D_USE_DEPENDENCIES_ONLY )
   # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
