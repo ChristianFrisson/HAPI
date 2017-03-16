@@ -136,22 +136,22 @@ if( NOT DEFINED H3D_INCLUDE_GPL_EXTERNALS )
 endif()
 
 if( H3D_INCLUDE_GPL_EXTERNALS )
-  if( NOT CHAI3D_INCLUDE_DIR )
-    set( CHAI3D_INCLUDE_DIR "NOTFOUND" CACHE PATH "" FORCE )
+  if( NOT Chai3D_INCLUDE_DIR )
+    set( Chai3D_INCLUDE_DIR "NOTFOUND" CACHE PATH "" FORCE )
   endif()
 else( H3D_INCLUDE_GPL_EXTERNALS )
-  set( CHAI3D_INCLUDE_DIR "" CACHE PATH "" FORCE )
+  set( Chai3D_INCLUDE_DIR "" CACHE PATH "" FORCE )
 endif()
 
 find_package( Chai3D )
-if( CHAI3D_FOUND )
+if( Chai3D_FOUND )
   set( HAVE_CHAI3D 1 )
-  include_directories( ${CHAI3D_INCLUDE_DIR}
+  include_directories( ${Chai3D_INCLUDE_DIRS}
                        ../Chai3DRenderer/include )
   set( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
-  set( chai3d_required_libs ${chai3d_required_libs} ${CHAI3D_LIBRARIES} )
+  set( chai3d_required_libs ${chai3d_required_libs} ${Chai3D_LIBRARIES} )
 
-  if( NOT ${CHAI3D_VERSION} VERSION_LESS "2.0.0" )
+  if( NOT ${Chai3D_VERSION} VERSION_LESS "2.0.0" )
     # No need to make a better comparasion than version 2.0.0 since the
     # way we get the version number might be unreliable since the version
     # number is not updated in every file for previous releases of chai3d.
