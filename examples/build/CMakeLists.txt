@@ -12,15 +12,8 @@ set( CMAKE_MODULE_PATH "${HAPIExamples_SOURCE_DIR}/../../build/modules/sharedMod
 
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 if( H3D_USE_DEPENDENCIES_ONLY )
-  if( WIN32 )
-    find_package( wxWidgets )
-  endif()
-
-  if( wxWidgets_FOUND )
-  else()
-    set( wxWidgets_USE_LIBS base core )
-    find_package( wxWidgets )
-  endif()
+  set( WXWINDOWS_USE_GL 1 )
+  find_package( wxWidgets COMPONENTS base core )
 endif()
 
 if( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
