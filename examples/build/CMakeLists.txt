@@ -13,11 +13,11 @@ set( CMAKE_MODULE_PATH "${HAPIExamples_SOURCE_DIR}/../../build/modules/sharedMod
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 if( H3D_USE_DEPENDENCIES_ONLY )
   if( WIN32 )
-    find_package( wxWidgetsWin )
+    find_package( wxWidgets )
   endif()
 
   if( wxWidgets_FOUND )
-  else( wxWidgets_FOUND )
+  else()
     set( wxWidgets_USE_LIBS base core )
     find_package( wxWidgets )
   endif()
@@ -27,7 +27,7 @@ if( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
   message( STATUS "Including HAPIDemo" )
   add_subdirectory( ${HAPIExamples_SOURCE_DIR}/../HAPIDemo/build
                     ${CMAKE_CURRENT_BINARY_DIR}/HAPIDemo )
-else( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+else()
   message( WARNING "wxWidgets was not found. HAPIDemo will not be generated." )
 endif()
 
@@ -45,7 +45,7 @@ if( OPENGL_FOUND AND GLUT_FOUND )
   message( STATUS "Including HAPI FeedbackBufferCollectionExample" )
   add_subdirectory( ${HAPIExamples_SOURCE_DIR}/../FeedbackBufferCollectorExample/build
                     ${CMAKE_CURRENT_BINARY_DIR}/FeedbackBufferCollectorExample )
-else( OPENGL_FOUND AND GLUT_FOUND )
+else()
   message( STATUS "OpenGL or GLUT was not found. FeedbackBufferCollectorExample will not be generated." )
 endif()
 
@@ -59,7 +59,7 @@ if( WIN32 )
     message( STATUS "Including HAPI DirectXExample" )
     add_subdirectory( ${HAPIExamples_SOURCE_DIR}/../DirectXExample/build
                       ${BINARY_DIR_FOR_Example} )
-  else( DirectX_FOUND )
+  else()
     message( STATUS "DirectX headers and libraries were not found. DirectXExample will not be generated." )
   endif()
 endif()

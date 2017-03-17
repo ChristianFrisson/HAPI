@@ -44,7 +44,7 @@ endif()
 if( TARGET H3DUtil )
   include_directories( ${H3DUTIL_INCLUDE_DIR} )
   set( required_libs ${required_libs} H3DUtil )
-else( TARGET H3DUtil )
+else()
   #H3DUtil
   find_package( H3DUtil REQUIRED )
 

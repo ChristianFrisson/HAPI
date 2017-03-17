@@ -23,13 +23,13 @@ if( GENERATE_CPACK_PROJECT )
               set( HAPI_CPACK_EXTERNAL_ROOT_DEFAULT "${EXTERNAL_INCLUDE_DIR_TMP}/.." )
             endif()
           endforeach()
-        else( H3D_USE_DEPENDENCIES_ONLY )
+        else()
           set( HAPI_CPACK_EXTERNAL_ROOT_DEFAULT "$ENV{H3D_EXTERNAL_ROOT}" )
         endif()
         set( HAPI_CPACK_EXTERNAL_ROOT "${HAPI_CPACK_EXTERNAL_ROOT_DEFAULT}" CACHE PATH "Set to the External directory used with HAPI, needed to pack properly. If not set FIND_modules will be used instead." )
         mark_as_advanced( HAPI_CPACK_EXTERNAL_ROOT )
       endif()
-    else( NOT DEFINED H3DAPI_CPACK_EXTERNAL_ROOT )
+    else()
       set( HAPI_CPACK_EXTERNAL_ROOT ${H3DAPI_CPACK_EXTERNAL_ROOT} )
     endif()
   endif()
@@ -103,33 +103,33 @@ if( GENERATE_CPACK_PROJECT )
         if( vc${redist_version}_redist )
           string( REPLACE "/" "\\\\" Temp_vc${redist_version}_redist ${vc${redist_version}_redist} )
           get_filename_component( VC${redist_version}_FILE_NAME ${vc${redist_version}_redist} NAME )
-          set( MS_REDIST_INSTALL_COMMAND_1 " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n"
+          set( ms_redist_install_command_1 " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n"
                                            " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc${redist_version}_redist}\\\"\\n" )
           set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                                 ${MS_REDIST_INSTALL_COMMAND_1} )
+                                                 ${ms_redist_install_command_1} )
           set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
                                                    " Check if uninstall vc redist \\n  MessageBox MB_YESNO \\\"Do you want to uninstall Visual studio ${redist_version} redistributable? It is recommended if no other applications use it.\\\" IDYES uninstall_vcredist_yes IDNO uninstall_vcredist_no\\n"
                                                    " A comment \\n  uninstall_vcredist_yes:\\n"
-                                                   ${MS_REDIST_INSTALL_COMMAND_1} )
+                                                   ${ms_redist_install_command_1} )
           if( ${redist_version} LESS 9 )
             set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
                                                    " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"'\\n" )
             set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
                                                    " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /x vcredist.msi /qn\\\"'\\n" )
-          else( )
+          else()
             set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
                                                    " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"'" )
             set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
                                                    " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /uninstall \\\"'" )
           endif()
-          set( MS_REDIST_INSTALL_COMMAND_2 " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+          set( ms_redist_install_command_2 " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
                                            " Delete file\\n  Delete \\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"\\n"
                                            " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
                                            " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n\\n" )
           set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                                 ${MS_REDIST_INSTALL_COMMAND_2} )
+                                                 ${ms_redist_install_command_2} )
           set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
-                                                   ${MS_REDIST_INSTALL_COMMAND_2}
+                                                   ${ms_redist_install_command_2}
                                                    " A comment \\n  uninstall_vcredist_no:\\n\\n" )
         endif()
       endforeach()
@@ -239,7 +239,7 @@ if( GENERATE_CPACK_PROJECT )
                              ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/fparser.dll
                              ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/fparser_d.dll )
 
-    else( EXISTS ${HAPI_CPACK_EXTERNAL_ROOT} )
+    else()
       message( WARNING "HAPI_CPACK_EXTERNAL_ROOT must be set to the External directory used by HAPI in order to package properly." )
     endif()
 
@@ -399,6 +399,7 @@ if( GENERATE_CPACK_PROJECT )
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindSimballMedical.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindVirtuoseAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/FindWxWidgetsWin.cmake
+                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindwxWidgets.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/H3DCommonFunctions.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/H3DExternalSearchPath.cmake
                  ${HAPI_SOURCE_DIR}/modules/sharedModules/InstallHAPIAndExternals.cmake
@@ -559,7 +560,7 @@ if( GENERATE_CPACK_PROJECT )
           break()
         endif()
       endforeach()
-    else( WIN32 AND NOT UNIX )
+    else()
       set( H3D_cmake_runtime_path_default "cmake" )
     endif()
     set( H3D_cmake_runtime_path ${H3D_cmake_runtime_path_default} CACHE FILEPATH "The path to the cmake runtime." )
@@ -598,7 +599,7 @@ if( GENERATE_CPACK_PROJECT )
                           ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD} )
       add_dependencies( INSTALL_RUNTIME_AND_LIBRARIES_ONLY HAPI ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} )
     endif()
-  else( H3D_cmake_runtime_path )
+  else()
     message( STATUS "H3D_cmake_runtime_path is not set, please set it to continue" )
   endif()
 

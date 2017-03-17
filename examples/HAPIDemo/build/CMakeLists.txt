@@ -66,7 +66,7 @@ endif()
 if( TARGET H3DUtil )
   include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
   set( required_libs ${required_libs} H3DUtil )
-else( TARGET H3DUtil )
+else()
   #H3DUtil
   find_package( H3DUtil REQUIRED )
 
@@ -79,7 +79,7 @@ endif()
 if( TARGET HAPI )
   include_directories( ${HAPI_INCLUDE_DIR} ) 
   set( required_libs ${required_libs} HAPI )
-else( TARGET HAPI )
+else()
   #HAPI
   find_package( HAPI REQUIRED )
 
@@ -89,27 +89,15 @@ else( TARGET HAPI )
   endif()
 endif()
 
-# TMP_wxWidgets_FOUND is needed in a metarepository build, otherwise if
-# Wxwidgets have been found already then wxWidgets_USE_FILE will not be used
-# properly. On non-Windows systems.
-set( TMP_wxWidgets_FOUND FALSE )
-if( WIN32 )
-  find_package( wxWidgetsWin )
-  if( wxWidgets_FOUND )
+set( WXWINDOWS_USE_GL 1 )
+find_package( wxWidgets REQUIRED COMPONENTS base core )
+if( wxWidgets_FOUND )
+  if( WIN32 )
     include_directories( ${wxWidgets_INCLUDE_DIR} ) 
-    set( required_libs ${required_libs} ${wxWidgets_LIBRARIES} )
-    set( TMP_wxWidgets_FOUND TRUE )
-  endif()
-endif()
-
-if( TMP_wxWidgets_FOUND )
-else( TMP_wxWidgets_FOUND )
-  set( wxWidgets_USE_LIBS base core )
-  find_package( wxWidgets REQUIRED )
-  if( wxWidgets_FOUND )
+  else()
     include( ${wxWidgets_USE_FILE} )
-    set( required_libs ${required_libs} ${wxWidgets_LIBRARIES} )
   endif()
+  set( required_libs ${required_libs} ${wxWidgets_LIBRARIES} )
 endif()
 
 add_executable( HAPIDemo WIN32 MACOSX_BUNDLE ${HAPIDemo_SRCS} )

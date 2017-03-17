@@ -53,7 +53,7 @@ endif()
 if( TARGET H3DUtil )
   include_directories( ${H3DUTIL_INCLUDE_DIR} )
   set( required_libs ${required_libs} H3DUtil )
-else( TARGET H3DUtil )
+else()
   #H3DUtil
   find_package( H3DUtil REQUIRED )
 
@@ -66,7 +66,7 @@ endif()
 if( TARGET HAPI )
   include_directories( ${HAPI_INCLUDE_DIR} )
   set( required_libs ${required_libs} HAPI )
-else( TARGET HAPI )
+else()
   #HAPI
   find_package( HAPI REQUIRED )
 
