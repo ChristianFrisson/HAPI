@@ -1,6 +1,6 @@
-SET( HAPI_HEADERS "${HAPI_SOURCE_DIR}/../include/HAPI/AnyHapticsDevice.h"
+set( HAPI_HEADERS "${HAPI_SOURCE_DIR}/../include/HAPI/AnyHapticsDevice.h"
                   "${HAPI_SOURCE_DIR}/../include/HAPI/ClutchedHapticsDevice.h"
-                  "${HAPI_SOURCE_DIR}/../include/HAPI/CollisionObjects.h"                  
+                  "${HAPI_SOURCE_DIR}/../include/HAPI/CollisionObjects.h"
                   "${HAPI_SOURCE_DIR}/../include/HAPI/DepthMapSurface.h"
                   "${HAPI_SOURCE_DIR}/../include/HAPI/DeviceLog.h"
                   "${HAPI_SOURCE_DIR}/../include/HAPI/EntactHapticsDevice.h"
@@ -53,13 +53,13 @@ SET( HAPI_HEADERS "${HAPI_SOURCE_DIR}/../include/HAPI/AnyHapticsDevice.h"
                   "${HAPI_SOURCE_DIR}/../include/HAPI/RuspiniRenderer.h"
                   "${HAPI_SOURCE_DIR}/../include/HAPI/SimballHapticsDevice.h" )
 
-IF( EXISTS ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/HAPI )
-  SET( HAPI_HEADERS ${HAPI_HEADERS} "${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/HAPI/include/HAPI/HAPI.h" )
-ELSE( EXISTS ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/HAPI )
-  SET( HAPI_HEADERS ${HAPI_HEADERS} "${CMAKE_CURRENT_BINARY_DIR}/include/HAPI/HAPI.h" )
-ENDIF( EXISTS ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/HAPI )
+if( EXISTS ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/HAPI )
+  set( HAPI_HEADERS ${HAPI_HEADERS} "${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/HAPI/include/HAPI/HAPI.h" )
+else()
+  set( HAPI_HEADERS ${HAPI_HEADERS} "${CMAKE_CURRENT_BINARY_DIR}/include/HAPI/HAPI.h" )
+endif()
 
-SET( HAPI_SOURCE_FILES "AnyHapticsDevice.cpp"
+set( HAPI_SOURCE_FILES "AnyHapticsDevice.cpp"
                "ClutchedHapticsDevice.cpp"
                "CollisionObjects.cpp"
                "DepthMapSurface.cpp"
@@ -108,33 +108,33 @@ SET( HAPI_SOURCE_FILES "AnyHapticsDevice.cpp"
                "RuspiniRenderer.cpp"
                "SimballHapticsDevice.cpp" )
 
-IF(OPENHAPTICS_FOUND)
-  SET( OH_HEADERS "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include/HAPI/Config.h"
+if( OpenHaptics_FOUND )
+  set( OH_HEADERS "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include/HAPI/Config.h"
                   "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include/HAPI/HLCustomObject.h"
                   "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include/HAPI/HLDepthBufferShape.h"
                   "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include/HAPI/HLFeedbackShape.h"
                   "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include/HAPI/OpenHapticsRenderer.h" )
 
-  SET( OH_SRCS "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/src/HLCustomObject.cpp"
+  set( OH_SRCS "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/src/HLCustomObject.cpp"
                "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/src/HLDepthBufferShape.cpp"
                "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/src/HLFeedbackShape.cpp"
                "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/src/OpenHapticsRenderer.cpp" )
-ENDIF(OPENHAPTICS_FOUND)
+endif()
 
-IF(CHAI3D_FOUND)
-  SET( CHAI_HEADERS "${HAPI_SOURCE_DIR}/../Chai3DRenderer/include/HAPI/Chai3DRenderer.h"
+if( Chai3D_FOUND )
+  set( CHAI_HEADERS "${HAPI_SOURCE_DIR}/../Chai3DRenderer/include/HAPI/Chai3DRenderer.h"
                     "${HAPI_SOURCE_DIR}/../Chai3DRenderer/include/HAPI/Chai3DRendererConfig.h" )
 
-  SET( CHAI_SRCS "${HAPI_SOURCE_DIR}/../Chai3DRenderer/src/Chai3DRenderer.cpp" )
-ENDIF(CHAI3D_FOUND)
+  set( CHAI_SRCS "${HAPI_SOURCE_DIR}/../Chai3DRenderer/src/Chai3DRenderer.cpp" )
+endif()
 
 
 
 # The sources for a normal build is all files used for unity build and
 # the rest of the files.
-SET( HAPI_SRCS "" )
-foreach(filename ${HAPI_SOURCE_FILES})
-  SET( HAPI_SRCS ${HAPI_SRCS} "${HAPI_SOURCE_DIR}/../src/${filename}" )
-endforeach(filename)
+set( HAPI_SRCS "" )
+foreach( filename ${HAPI_SOURCE_FILES} )
+  set( HAPI_SRCS ${HAPI_SRCS} "${HAPI_SOURCE_DIR}/../src/${filename}" )
+endforeach()
 
 
