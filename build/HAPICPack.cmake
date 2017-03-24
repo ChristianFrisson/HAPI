@@ -37,7 +37,7 @@ if( GENERATE_CPACK_PROJECT )
 
   if( NOT TARGET H3DAPI )
     set( CPACK_ALL_INSTALL_TYPES Full Developer )
-    set( CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/modules ${HAPI_SOURCE_DIR}/modules/sharedModules )
+    set( CMAKE_MODULE_PATH ${HAPI_SOURCE_DIR}/localModules ${HAPI_SOURCE_DIR}/modules )
     set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform, device independent haptics library." )
     set( CPACK_PACKAGE_VENDOR "SenseGraphics AB" )
     set( CPACK_PACKAGE_CONTACT "support@sensegraphics.com" )
@@ -374,39 +374,39 @@ if( GENERATE_CPACK_PROJECT )
            DESTINATION HAPI/build
            COMPONENT HAPI_cpack_sources )
 
-  install( FILES ${HAPI_SOURCE_DIR}/modules/NSIS.InstallOptions.ini.in
-                 ${HAPI_SOURCE_DIR}/modules/NSIS.template.in
-           DESTINATION HAPI/build/modules
+  install( FILES ${HAPI_SOURCE_DIR}/modules/localModules/NSIS.InstallOptions.ini.in
+                 ${HAPI_SOURCE_DIR}/modules/localModules/NSIS.template.in
+           DESTINATION HAPI/build/modules/localModules
            COMPONENT HAPI_cpack_sources )
 
-  install( FILES ${HAPI_SOURCE_DIR}/modules/sharedModules/FindChai3D.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindDHD.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FINDDirectX.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindEntactAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindFalconAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/Findfparser.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindGLUT.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindGLUTWin.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindH3Dfparser.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindH3DUtil.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindHAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindHaptik.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindMd5sum.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindMLHI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindNiFalconAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindOpenHaptics.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindPTHREAD.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindSimballMedical.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindVirtuoseAPI.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindWxWidgetsWin.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/FindwxWidgets.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/H3DCommonFunctions.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/H3DExternalSearchPath.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/InstallHAPIAndExternals.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/StripAndAddLibraryDirectories.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/TestIfVCExpress.cmake
-                 ${HAPI_SOURCE_DIR}/modules/sharedModules/UseDebian.cmake
-           DESTINATION HAPI/build/modules/sharedModules
+  install( FILES ${HAPI_SOURCE_DIR}/modules/FindChai3D.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindDHD.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FINDDirectX.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindEntactAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindFalconAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/Findfparser.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindGLUT.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindGLUTWin.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindH3Dfparser.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindH3DUtil.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindHAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindHaptik.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindMd5sum.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindMLHI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindNiFalconAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindOpenHaptics.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindPTHREAD.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindSimballMedical.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindVirtuoseAPI.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindWxWidgetsWin.cmake
+                 ${HAPI_SOURCE_DIR}/modules/FindwxWidgets.cmake
+                 ${HAPI_SOURCE_DIR}/modules/H3DCommonFunctions.cmake
+                 ${HAPI_SOURCE_DIR}/modules/H3DExternalSearchPath.cmake
+                 ${HAPI_SOURCE_DIR}/modules/InstallHAPIAndExternals.cmake
+                 ${HAPI_SOURCE_DIR}/modules/StripAndAddLibraryDirectories.cmake
+                 ${HAPI_SOURCE_DIR}/modules/TestIfVCExpress.cmake
+                 ${HAPI_SOURCE_DIR}/modules/UseDebian.cmake
+           DESTINATION HAPI/build/modules
            COMPONENT HAPI_cpack_sources )
 
   install( FILES ${HAPI_SOURCE_DIR}/../examples/build/CMakeLists.txt
