@@ -374,9 +374,9 @@ if( GENERATE_CPACK_PROJECT )
            DESTINATION HAPI/build
            COMPONENT HAPI_cpack_sources )
 
-  install( FILES ${HAPI_SOURCE_DIR}/modules/localModules/NSIS.InstallOptions.ini.in
-                 ${HAPI_SOURCE_DIR}/modules/localModules/NSIS.template.in
-           DESTINATION HAPI/build/modules/localModules
+  install( FILES ${HAPI_SOURCE_DIR}/localModules/NSIS.InstallOptions.ini.in
+                 ${HAPI_SOURCE_DIR}/localModules/NSIS.template.in
+           DESTINATION HAPI/build/localModules
            COMPONENT HAPI_cpack_sources )
 
   install( FILES ${HAPI_SOURCE_DIR}/modules/FindChai3D.cmake
