@@ -104,9 +104,9 @@ if( TARGET H3DUtil )
 else()
   #H3DUtil
   find_package( H3DUtil REQUIRED )
-  if( H3DUTIL_FOUND )
-    include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
-    set( HAPI_requiredLibs ${HAPI_requiredLibs} ${H3DUTIL_LIBRARIES} )
+  if( H3DUtil_FOUND )
+    include_directories( ${H3DUtil_INCLUDE_DIRS} ) 
+    set( HAPI_requiredLibs ${HAPI_requiredLibs} ${H3DUtil_LIBRARIES} )
   endif()
 endif()
 
