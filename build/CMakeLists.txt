@@ -7,47 +7,17 @@ set( CMAKE_FIND_FRAMEWORK "LAST" )
 
 project( HAPI )
 
-# set the install directory on Windows
-if( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
-  set( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  set( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
-endif()
+# Set here already in case a special NSIS template needs to be used by cpack.
+set( CMAKE_MODULE_PATH "${HAPI_SOURCE_DIR}/localModules" "${HAPI_SOURCE_DIR}/modules" )
+
+include( H3DCommonFunctions )
+handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. GENERATE_CPACK_PROJECT PREFER_STATIC_LIBRARIES )
 
 # Add a cache variable GENERATE_UNITY_BUILD to have the choice of selecting
 # a unity build project. Default is NO.
 if( NOT DEFINED GENERATE_UNITY_BUILD )
   set( GENERATE_UNITY_BUILD "NO" CACHE BOOL "Decides if a the generated project files should build through a unity build instead of a normal build. A unity builds packs all .cpp files into a UnityBuild.cpp file and then only include this in the project. This greatly reduces build times." )
 endif()
-
-# Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
-# for packaging HAPI. Default is NO since most people will not use this.
-if( NOT DEFINED GENERATE_CPACK_PROJECT )
-  set( GENERATE_CPACK_PROJECT "NO" CACHE BOOL "Decides if a cpack project should be generated. The project in the first loaded CMakeLists will configure CPack." )
-  mark_as_advanced( GENERATE_CPACK_PROJECT )
-endif()
-
-# Add a cache variable ENABLE_SVN_REVISION to have the choice of using
-# SubWCRev.exe to embed svn revision number in generated DLLs.
-# Default is YES for Visual Studio and NMake generators, NO otherwise.
-if( MSVC AND NOT DEFINED ENABLE_SVN_REVISION )
-  set( ENABLE_SVN_REVISION_DEFAULT "NO" )
-  if( CMAKE_GENERATOR MATCHES "Visual Studio|NMake" )
-    set( ENABLE_SVN_REVISION_DEFAULT "YES" )
-  endif()
-  set( ENABLE_SVN_REVISION ${ENABLE_SVN_REVISION_DEFAULT} CACHE BOOL "Use SubWCRev.exe to embed svn revision number in generated DLLs." )
-endif()
-
-# Add a cache variable PREFER_STATIC_LIBRARIES to have the choice of generating a project
-# linking against static libraries if they exist. Default is NO since most people will not use this.
-if( NOT DEFINED PREFER_STATIC_LIBRARIES )
-  set( PREFER_STATIC_LIBRARIES "NO" CACHE BOOL "Decides if CMake should prefer static libraries to dynamic libraries when both exist." )
-  mark_as_advanced( PREFER_STATIC_LIBRARIES )
-endif()
-
-if( PREFER_STATIC_LIBRARIES )
-  set( CMAKE_FIND_LIBRARY_SUFFIXES .a;${CMAKE_FIND_LIBRARY_SUFFIXES} )  
-endif()
-
 
 # include H3DUtil in the build
 if( ( WIN32 OR NOT H3D_USE_DEPENDENCIES_ONLY ) AND EXISTS "${HAPI_SOURCE_DIR}/../../H3DUtil/build" )
@@ -349,99 +319,32 @@ if( WIN32 )
   if( MSVC )
     # make sure that HAPI.rc, OpenHapticsRenderer.rc and Chai3DRenderer.rc contains the correct svn-version
     # and autogenerate the resource files.
-    set( HAPI_SVN_VERSION "0" )
-    
-    if( ENABLE_SVN_REVISION )
-      # Find SubWCRev.exe
-      find_file( SubWCRev
-                 NAMES "SubWCRev.exe"
-                 DOC   "Set to SubWCRev.exe that comes with TortoiseSVN. Used to find svn revision number." )
-      mark_as_advanced( SubWCRev )
-    endif()
-
-    set( HAPI_is_working_copy 10 )
-    if( ENABLE_SVN_REVISION AND SubWCRev )
-      execute_process( COMMAND ${SubWCRev} ${HAPI_SOURCE_DIR}/../
-                       RESULT_VARIABLE HAPI_is_working_copy )
-      if( ${HAPI_is_working_copy} EQUAL 0 )
-        set( HAPI_SVN_VERSION "$WCREV$" )
-      endif()
-    endif()
-
-    # autogenerate HAPI.rc depending on the version
-    configure_file( HAPI.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
-
-    if( ENABLE_SVN_REVISION )
-      add_custom_command( TARGET HAPI
-                          PRE_BUILD
-                          COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                          ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${HAPI_SOURCE_DIR}/HAPI.rc.cmake
-                          ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
-                          ${HAPI_BUILD_VERSION} "${HAPI_SVN_VERSION}"
-                          "HAPI_Output_Name"
-                          "$(TargetFileName)" )
-    endif()
-
-    if( ENABLE_SVN_REVISION AND SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
-      # Update SVN revision in file.
-      execute_process( COMMAND ${SubWCRev} ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
-      
-      add_custom_command( TARGET HAPI 
-                          PRE_BUILD 
-                          COMMAND ${SubWCRev} 
-                          ARGS ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
-    endif()
+    setupResourceFile( HAPI
+                       VERSION_PREFIX HAPI
+                       SVN_DIR_CANDIDATE ${HAPI_SOURCE_DIR}/../
+                       RESOURCE_FILE_CMAKE_TEMPLATE ${HAPI_SOURCE_DIR}/HAPI.rc.cmake
+                       RESOURCE_FILE_OUTPUT_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc
+                       UPDATERESOURCEFILE_EXE ${HAPI_SOURCE_DIR}/UpdateResourceFile
+                       UPDATERESOURCEFILE_EXE_EXTRA_ARGS "HAPI_Output_Name" "$(TargetFileName)" )
 
     if( OpenHaptics_FOUND )
-      # autogenerate HAPI.rc depending on the version
-      configure_file( OpenHapticsRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
-      
-      if( ENABLE_SVN_REVISION )
-        add_custom_command( TARGET OpenHapticsRenderer
-                            PRE_BUILD
-                            COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                            ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc.cmake
-                            ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
-                            ${HAPI_BUILD_VERSION} "${HAPI_SVN_VERSION}"
-                            "OpenHapticsRenderer_Output_Name"
-                            "$(TargetFileName)" )
-      endif()
-
-      if( ENABLE_SVN_REVISION AND SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
-        # Update SVN revision in file.
-        execute_process( COMMAND ${SubWCRev} ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
-        
-        add_custom_command( TARGET OpenHapticsRenderer 
-                            PRE_BUILD 
-                            COMMAND ${SubWCRev} 
-                            ARGS ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
-      endif()
+      setupResourceFile( OpenHapticsRenderer
+                   VERSION_PREFIX HAPI
+                   SVN_DIR_CANDIDATE ${HAPI_SOURCE_DIR}/../
+                   RESOURCE_FILE_CMAKE_TEMPLATE ${HAPI_SOURCE_DIR}/OpenHapticsRenderer.rc.cmake
+                   RESOURCE_FILE_OUTPUT_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc
+                   UPDATERESOURCEFILE_EXE ${HAPI_SOURCE_DIR}/UpdateResourceFile
+                   UPDATERESOURCEFILE_EXE_EXTRA_ARGS "OpenHapticsRenderer_Output_Name" "$(TargetFileName)" )
     endif()
 
     if( HAVE_CHAI3D )
-      # autogenerate Chai3DRenderer.rc depending on the version
-      configure_file( Chai3DRenderer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
-      
-      if( ENABLE_SVN_REVISION )
-        add_custom_command( TARGET Chai3DRenderer
-                            PRE_BUILD
-                            COMMAND ${HAPI_SOURCE_DIR}/UpdateResourceFile 
-                            ARGS HAPI ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc.cmake
-                            ${HAPI_MAJOR_VERSION} ${HAPI_MINOR_VERSION}
-                            ${HAPI_BUILD_VERSION} "${HAPI_SVN_VERSION}"
-                            "Chai3DRenderer_Output_Name"
-                            "$(TargetFileName)" )
-      endif()
-
-      if( ENABLE_SVN_REVISION AND SubWCRev AND ${HAPI_is_working_copy} EQUAL 0 )
-        # Update SVN revision in file.
-        execute_process( COMMAND ${SubWCRev} ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
-        
-        add_custom_command( TARGET Chai3DRenderer 
-                            PRE_BUILD 
-                            COMMAND ${SubWCRev} 
-                            ARGS ${HAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
-      endif()
+      setupResourceFile( Chai3DRenderer
+                   VERSION_PREFIX HAPI
+                   SVN_DIR_CANDIDATE ${HAPI_SOURCE_DIR}/../
+                   RESOURCE_FILE_CMAKE_TEMPLATE ${HAPI_SOURCE_DIR}/Chai3DRenderer.rc.cmake
+                   RESOURCE_FILE_OUTPUT_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc
+                   UPDATERESOURCEFILE_EXE ${HAPI_SOURCE_DIR}/UpdateResourceFile
+                   UPDATERESOURCEFILE_EXE_EXTRA_ARGS "Chai3DRenderer_Output_Name" "$(TargetFileName)" )
     endif()
   endif()
  

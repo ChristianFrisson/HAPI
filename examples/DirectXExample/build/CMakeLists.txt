@@ -6,28 +6,10 @@ cmake_policy( VERSION 2.8.7 )
 # to the root binary directory of the project as ${DirectXExample_BINARY_DIR}.
 project( DirectXExample )
 
-# set the install directory on Windows
-if( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
-  set( CMAKE_INSTALL_PREFIX ${DirectXExample_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  set( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
-endif()
-
-# use, i.e. don't skip the full RPATH for the build tree
-set( CMAKE_SKIP_BUILD_RPATH FALSE )
-
-# when building, don't use the install RPATH already
-# (but later on when installing)
-set( CMAKE_BUILD_WITH_INSTALL_RPATH FALSE )
-
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
-
-# the RPATH to be used when installing, but only if it's not a system directory
-list( FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir )
-if( "${isSystemDir}" STREQUAL "-1" )
-   set( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
-endif()
+set( CMAKE_MODULE_PATH "${DirectXExample_SOURCE_DIR}/../../../build/modules" )
+include( H3DCommonFunctions )
+handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${DirectXExample_SOURCE_DIR}/../.. )
+setupRPathForLib()
 
 # Create a library called "DirectXExample" which includes the source files.
 # The extension is already found.  Any number of sources could be listed here.
@@ -37,8 +19,6 @@ set( DirectXExample_SRCS "${DirectXExample_SOURCE_DIR}/../src/main.cpp" )
 include_directories( ${DirectXExample_SOURCE_DIR}/../src )
 
 set( required_libs )
-
-set( CMAKE_MODULE_PATH "${DirectXExample_SOURCE_DIR}/../../../build/modules" )
 
 if( H3D_USE_DEPENDENCIES_ONLY )
   # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
