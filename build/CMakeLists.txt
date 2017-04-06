@@ -12,13 +12,6 @@ set( CMAKE_MODULE_PATH "${HAPI_SOURCE_DIR}/localModules" "${HAPI_SOURCE_DIR}/mod
 
 include( H3DCommonFunctions )
 handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. GENERATE_CPACK_PROJECT PREFER_STATIC_LIBRARIES )
-
-# Add a cache variable GENERATE_UNITY_BUILD to have the choice of selecting
-# a unity build project. Default is NO.
-if( NOT DEFINED GENERATE_UNITY_BUILD )
-  set( GENERATE_UNITY_BUILD "NO" CACHE BOOL "Decides if a the generated project files should build through a unity build instead of a normal build. A unity builds packs all .cpp files into a UnityBuild.cpp file and then only include this in the project. This greatly reduces build times." )
-endif()
-
 # include H3DUtil in the build
 if( ( WIN32 OR NOT H3D_USE_DEPENDENCIES_ONLY ) AND EXISTS "${HAPI_SOURCE_DIR}/../../H3DUtil/build" )
   message( STATUS "Including H3DUtil" )
@@ -234,38 +227,10 @@ endif()
 # OH_SRCS and CHAI_SRCS defined in the included file. Header files are added
 # to variables named HAPI_HEADERS, OH_HEADERS and CHAIR_HEADERS.
 include( ${HAPI_SOURCE_DIR}/HAPISourceFiles.txt )
-
-if( GENERATE_UNITY_BUILD )
-  if( NOT DEFINED UNITY_BUILD_${PROJECT_NAME} )
-    set(  UNITY_BUILD_${PROJECT_NAME} "YES" CACHE BOOL "Decides if a the generated project files should build through a unity build instead of a normal build. A unity builds packs all .cpp files into a UnityBuild.cpp file and then only include this in the project. This greatly reduces build times." )
-  endif()
-
-  if( UNITY_BUILD_${PROJECT_NAME} )
-    # Generate a unity build, by creating the UnityBuild.cpp and only including the required 
-    # source files.
-
-    set( UNITYBUILD_INCLUDES "" )
-
-    foreach( filename ${HAPI_SOURCE_FILES} )
-      set( UNITYBUILD_INCLUDES "${UNITYBUILD_INCLUDES}\n #include \"${HAPI_SOURCE_DIR}/../src/${filename}\"" )
-    endforeach()
-
-    # Using a cached variable with our string in it. Because cmake doesn't support multi-line strings we have to replace the newlines with a delimiter, so we arbitrarily use +=+.
-    string( REPLACE "
-" "+=+" UnitybuildIncludesConverted ${UNITYBUILD_INCLUDES} ) # Convert the file we're going to write to use our delimiter instead of newlines
-    if( NOT ( UNITY_BUILD_CACHE_${PROJECT_NAME} ) OR NOT ( UnitybuildIncludesConverted STREQUAL UNITY_BUILD_CACHE_${PROJECT_NAME} )) # If we don't have the cache variable or if its contents don't match our new string then we write the unmodified new UnityBuild file and store the one with the swapped out delimiters in the cache variable
-      message( STATUS "Updating UnityBuild.cpp for " ${PROJECT_NAME} )
-      string( REPLACE "
-" "+=+" unityBuildCacheNew ${UNITYBUILD_INCLUDES} )
-      set( UNITY_BUILD_CACHE_${PROJECT_NAME} ${unityBuildCacheNew} CACHE INTERNAL "Used for determining if UnityBuild.cpp should be updated or not." )
-      file( WRITE UnityBuild.cpp ${UNITYBUILD_INCLUDES} )
-    else()
-      message( STATUS "Unitybuild.cpp for ${PROJECT_NAME} already up to date" )
-    endif()
-    set( HAPI_SRCS "UnityBuild.cpp" )
-
-  endif()
-endif()
+handleUnityBuild( PROJECT_NAME ${PROJECT_NAME}
+                  SOURCE_FILES ${HAPI_SOURCE_FILES}
+                  OUTPUT_VARIABLE HAPI_SRCS
+                  SOURCE_PREFIX_PATH ${HAPI_SOURCE_DIR}/../src/ )
 
 set( PRECOMPILED_HEADERS_${PROJECT_NAME} "YES" CACHE BOOL "Decides if a the generated project files should use precompiled headers. This greatly reduces build times after first build." )
 
