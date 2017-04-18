@@ -231,25 +231,11 @@ handleUnityBuild( PROJECT_NAME ${PROJECT_NAME}
                   SOURCE_FILES ${HAPI_SOURCE_FILES}
                   OUTPUT_VARIABLE HAPI_SRCS
                   SOURCE_PREFIX_PATH ${HAPI_SOURCE_DIR}/../src/ )
-
-set( PRECOMPILED_HEADERS_${PROJECT_NAME} "YES" CACHE BOOL "Decides if a the generated project files should use precompiled headers. This greatly reduces build times after first build." )
-
-# set up precompiled headers  
-if( MSVC AND PRECOMPILED_HEADERS_${PROJECT_NAME} )
-  list( APPEND HAPI_HEADERS ${HAPI_SOURCE_DIR}/../include/HAPI/StdAfx.h )
-  list( APPEND HAPI_SRCS ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp )
-  if( ${MSVC_VERSION} LESS 1900 )
-    set_source_files_properties( ${HAPI_SRCS}
-                                 PROPERTIES COMPILE_FLAGS "/Zm900 /FIHAPI/StdAfx.h /YuHAPI/StdAfx.h" )
-    set_source_files_properties( ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp 
-                                 PROPERTIES COMPILE_FLAGS "/Zm900 /YcHAPI/StdAfx.h" )
-  else()
-    set_source_files_properties( ${HAPI_SRCS}
-                                 PROPERTIES COMPILE_FLAGS "/FIHAPI/StdAfx.h /YuHAPI/StdAfx.h" )
-    set_source_files_properties( ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp 
-                                 PROPERTIES COMPILE_FLAGS "/YcHAPI/StdAfx.h" )
-  endif()                               
-endif()
+handlePrecompiledHeaders( PROJECT_NAME ${PROJECT_NAME}
+                          HEADERS_VARIABLE HAPI_HEADERS
+                          SRCS_VARIABLE HAPI_SRCS_SRCS
+                          STDAFX_HEADER_LOCATION ${HAPI_SOURCE_DIR}/../include/HAPI/
+                          STDAFX_SOURCE_LOCATION ${HAPI_SOURCE_DIR}/../src/ )
 
 # add the HAPI.rc resource file if Visual Studio
 if( MSVC )
