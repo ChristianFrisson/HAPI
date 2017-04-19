@@ -319,27 +319,7 @@ set( HAPI_COMPILE_FLAGS "-DHAPI_EXPORTS" )
 # add the libraries needed for linking
 target_link_libraries( HAPI ${HAPI_requiredLibs} ${HAPI_optionalLibs} )
 
-foreach( h3dutil_include_dir_tmp ${H3DUTIL_INCLUDE_DIR} )
-  if( EXISTS ${h3dutil_include_dir_tmp}/H3DUtil/H3DUtil.h )
-    file( STRINGS ${h3dutil_include_dir_tmp}/H3DUtil/H3DUtil.h list_of_defines REGEX "#define THREAD_LOCK_DEBUG" )
-    list( LENGTH list_of_defines list_of_defines_length )
-    if( list_of_defines_length )
-      if( "${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" )
-        execute_process( COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION )
-        if( GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7 )
-          add_definitions( "-std=gnu++11" )
-        elseif( GCC_VERSION VERSION_GREATER 4.3 OR GCC_VERSION VERSION_EQUAL 4.3 )
-          add_definitions( "-std=gnu++0x" )
-        else()
-          message( FATAL_ERROR "Enabling ENABLE_THREAD_LOCK_DEBUG requires C++11 support. This compiler lacks such support." )
-        endif()
-      elseif( ${MSVC_VERSION} LESS 1600 )
-        message( FATAL_ERROR "Enabling ENABLE_THREAD_LOCK_DEBUG requires C++11 support. This compiler lacks such support." )
-      endif()
-    endif()
-  endif()
-endforeach()
-
+handleCommonCacheVar( ENABLE_THREAD_LOCK_DEBUG FALSE )
 
 # make the name of debug libraries end in _d.
 set_target_properties( HAPI PROPERTIES DEBUG_POSTFIX "_d" )
