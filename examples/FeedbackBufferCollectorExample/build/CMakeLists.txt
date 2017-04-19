@@ -81,17 +81,7 @@ set_target_properties( FeedbackBufferCollector PROPERTIES DEBUG_POSTFIX "_d" )
 
 target_link_libraries( FeedbackBufferCollector ${required_libs} )
 
-set( default_bin_install "bin" )
-set( default_lib_install "lib" )
-
-if( WIN32 )
-  set( default_bin_install "bin32" )
-  set( default_lib_install "lib32" )
-  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( default_bin_install "bin64" )
-    set( default_lib_install "lib64" )
-  endif()
-endif()
+getDefaultH3DOutputDirectoryName( default_bin_install default_lib_install )
 
 install( TARGETS FeedbackBufferCollector
          LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_examples_runtime

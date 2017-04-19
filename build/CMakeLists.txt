@@ -338,17 +338,9 @@ if( UNIX )
     set_target_properties( HAPI PROPERTIES OUTPUT_NAME hapi )
 endif()
 
-set( default_bin_install "bin" )
-set( default_lib_install "lib" )
+getDefaultH3DOutputDirectoryName( default_bin_install default_lib_install )
 
 if( WIN32 )
-  set( default_bin_install "bin32" )
-  set( default_lib_install "lib32" )
-  if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( default_bin_install "bin64" )
-    set( default_lib_install "lib64" )
-  endif()
-
   if( MSVC )
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
