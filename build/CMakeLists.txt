@@ -381,9 +381,8 @@ if( WIN32 )
     if( MSVC )
       set_target_properties( OpenHapticsRenderer HAPI
                              PROPERTIES
-                             LINK_FLAGS "/DELAYLOAD:\"HD.dll\" /INCREMENTAL:NO" )
+                             LINK_FLAGS "/DELAYLOAD:\"${OPENHAPTICS_DLL_NAMES}.dll\" /INCREMENTAL:NO" )
 
-      # When using OpenHaptics HAPI also need to delayload HD.dll.
       set( HAPI_LINK_FLAGS "${HAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     endif()
   endif()
