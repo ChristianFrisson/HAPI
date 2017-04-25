@@ -150,7 +150,6 @@ if( VirtuoseAPI_FOUND )
   set( HAVE_VIRTUOSEAPI 1 )
   include_directories( ${VirtuoseAPI_INCLUDE_DIRS} )
   set( HAPI_optionalLibs ${HAPI_optionalLibs} ${VirtuoseAPI_LIBRARIES} )
-  addDelayLoadFlags( VirtuoseAPI_LIBRARIES HAPI_LINK_FLAGS )
 endif()
 
 find_package( EntactAPI )
