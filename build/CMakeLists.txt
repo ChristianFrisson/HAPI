@@ -13,23 +13,16 @@ set( CMAKE_MODULE_PATH "${HAPI_SOURCE_DIR}/localModules" "${HAPI_SOURCE_DIR}/mod
 include( H3DCommonFunctions )
 handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. GENERATE_CPACK_PROJECT PREFER_STATIC_LIBRARIES )
 # include H3DUtil in the build
-if( ( WIN32 OR NOT H3D_USE_DEPENDENCIES_ONLY ) AND EXISTS "${HAPI_SOURCE_DIR}/../../H3DUtil/build" )
+if( ( WIN32 OR NOT CMAKE_PARENT_LIST_FILE ) AND EXISTS "${HAPI_SOURCE_DIR}/../../H3DUtil/build" )
   message( STATUS "Including H3DUtil" )
   add_subdirectory( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
                     ${CMAKE_CURRENT_BINARY_DIR}/H3DUtil )
-  
-  get_directory_property( h3dutil_include_dir_tmp DIRECTORY ${HAPI_SOURCE_DIR}/../../H3DUtil/build INCLUDE_DIRECTORIES )
-  set( H3DUTIL_INCLUDE_DIR ${h3dutil_include_dir_tmp} CACHE INTERNAL "Set to internal so H3DUtil and/or HAPI can change it." )
 endif()
 
 # Add the directory to INCLUDE_DIRECTORIES before any other statement to make sure that this header file is found first.
 # This assumes that we always use "#include <path/include_header.h>" in our code even if the file is actually found in
 # the same directory as the file that contains the include statement.
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include )
-set( HAPI_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include ${HAPI_SOURCE_DIR}/../include CACHE INTERNAL "Set to internal to propagate change" )
-
-# include header directory.
-include_directories( ${HAPI_SOURCE_DIR}/../include )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include ${HAPI_SOURCE_DIR}/../include )
 
 set( HAPI_MAJOR_VERSION 1 )
 set( HAPI_MINOR_VERSION 3 )
@@ -49,18 +42,12 @@ set( HAPI_requiredLibs )
 set( chai3d_required_libs )
 set( openhaptics_required_libs )
 
-if( TARGET H3DUtil )
-  # Target was created by ADD_SUBDIRECTORY command.
-  include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
-  set( HAPI_requiredLibs ${HAPI_requiredLibs} H3DUtil )
-else()
-  #H3DUtil
-  find_package( H3DUtil REQUIRED )
-  if( H3DUtil_FOUND )
-    include_directories( ${H3DUtil_INCLUDE_DIRS} ) 
-    set( HAPI_requiredLibs ${HAPI_requiredLibs} ${H3DUtil_LIBRARIES} )
-  endif()
-endif()
+set( tmp_h3d_include_dirs )
+findIncludeDirsAndLibrariesForH3DProjects ( PROJECT_NAMES H3DUtil
+                                            INCLUDE_DIRS_OUTPUT_VAR tmp_h3d_include_dirs
+                                            LIBRARIES_OUTPUT_VAR HAPI_requiredLibs
+                                            REQUIRED_PROJECTS H3DUtil )
+include_directories( ${tmp_h3d_include_dirs} ) 
 
 include( H3DCommonFunctions )
 set( HAPI_LINK_FLAGS "" )
@@ -71,13 +58,11 @@ if( OpenHaptics_FOUND )
   set( OPENHAPTICS_DLL_NAMES "HD" )
   addDelayLoadFlagsFromNames( OPENHAPTICS_DLL_NAMES HAPI_LINK_FLAGS )
   include_directories( ${OpenHaptics_INCLUDE_DIRS} 
-                       ../OpenHapticsRenderer/include )
-  set( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
+                       ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include )
   set( HAPI_optionalLibs ${HAPI_optionalLibs} ${OpenHaptics_LIBRARIES} )
   set( openhaptics_required_libs ${openhaptics_required_libs} ${OpenHaptics_LIBRARIES} )
 elseif( NOT WIN32 )
-  include_directories( ../OpenHapticsRenderer/include )
-  set( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
+  include_directories( ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include )
 endif()
 
 # Option to include all available external libraries, haptics devices etc.
@@ -99,8 +84,7 @@ find_package( Chai3D )
 if( Chai3D_FOUND )
   set( HAVE_CHAI3D 1 )
   include_directories( ${Chai3D_INCLUDE_DIRS}
-                       ../Chai3DRenderer/include )
-  set( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
+                       ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include )
   set( chai3d_required_libs ${chai3d_required_libs} ${Chai3D_LIBRARIES} )
 
   if( NOT ${Chai3D_VERSION} VERSION_LESS "2.0.0" )
@@ -125,8 +109,7 @@ if( Chai3D_FOUND )
     endif()
   endif()
 elseif( NOT WIN32 )
-  include_directories( ../Chai3DRenderer/include )
-  set( HAPI_INCLUDE_DIR ${HAPI_INCLUDE_DIR} ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include CACHE INTERNAL "Set to internal to propagate change" )
+  include_directories( ${HAPI_SOURCE_DIR}/../Chai3DRenderer/include )
 endif()
 
 find_package( DHD )
@@ -189,7 +172,7 @@ endif()
 find_package( SimballMedical )
 if( SimballMedical_FOUND )
   set( HAVE_SIMBALLMEDICAL_API 1 )
-  include_directories( ${SimballMedical_INCLUDE_DIR} )
+  include_directories( ${SimballMedical_INCLUDE_DIRS} )
   set( HAPI_optionalLibs ${HAPI_optionalLibs} ${SimballMedical_LIBRARIES} )
   addDelayLoadFlags( SimballMedical_LIBRARIES HAPI_LINK_FLAGS )
 endif()
@@ -240,6 +223,9 @@ handlePrecompiledHeaders( PROJECT_NAME ${PROJECT_NAME}
 if( MSVC )
   set( HAPI_SRCS ${HAPI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/HAPI.rc )
 endif()
+
+populateProjectIncludeDirectoriesCacheVar( VARIABLE_NAME HAPI_INCLUDE_DIRS
+                                           DEPRECATED_VARIABLE_NAMES HAPI_INCLUDE_DIR )
 
 if( WIN32 )
 

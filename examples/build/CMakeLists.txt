@@ -9,12 +9,12 @@ include( H3DCommonFunctions )
 handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPIExamples_SOURCE_DIR}/.. )
 
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-if( H3D_USE_DEPENDENCIES_ONLY )
+if( CMAKE_PARENT_LIST_FILE )
   set( WXWINDOWS_USE_GL 1 )
   find_package( wxWidgets COMPONENTS base core )
 endif()
 
-if( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+if( ( NOT CMAKE_PARENT_LIST_FILE ) OR wxWidgets_FOUND )
   message( STATUS "Including HAPIDemo" )
   add_subdirectory( ${HAPIExamples_SOURCE_DIR}/../HAPIDemo/build
                     ${CMAKE_CURRENT_BINARY_DIR}/HAPIDemo )

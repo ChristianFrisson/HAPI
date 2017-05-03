@@ -21,36 +21,12 @@ include_directories( ${SurfaceExample_SOURCE_DIR}/.. )
 
 set( required_libs )
 
-if( H3D_USE_DEPENDENCIES_ONLY )
-  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
-  include_directories( ${EXTERNAL_INCLUDE_DIR} ) 
-endif()
-
-if( TARGET H3DUtil )
-  include_directories( ${H3DUTIL_INCLUDE_DIR} ) 
-  set( required_libs ${required_libs} H3DUtil )
-else()
-  #H3DUtil
-  find_package( H3DUtil REQUIRED )
-
-  if( H3DUtil_FOUND )
-    include_directories( ${H3DUtil_INCLUDE_DIRS} ) 
-    set( required_libs ${required_libs} ${H3DUtil_LIBRARIES} )
-  endif()
-endif()
-
-if( TARGET HAPI )
-  include_directories( ${HAPI_INCLUDE_DIR} ) 
-  set( required_libs ${required_libs} HAPI )
-else()
-  #HAPI
-  find_package( HAPI REQUIRED )
-
-  if( HAPI_FOUND )
-    include_directories( ${HAPI_INCLUDE_DIRS} ) 
-    set( required_libs ${required_libs} ${HAPI_LIBRARIES} )
-  endif()
-endif()
+set( tmp_h3d_include_dirs )
+findIncludeDirsAndLibrariesForH3DProjects ( PROJECT_NAMES H3DUtil HAPI
+                                            INCLUDE_DIRS_OUTPUT_VAR tmp_h3d_include_dirs
+                                            LIBRARIES_OUTPUT_VAR required_libs
+                                            REQUIRED_PROJECTS H3DUtil HAPI )
+include_directories( ${tmp_h3d_include_dirs} ) 
 
 add_executable( SurfaceExample ${SurfaceExample_SRCS} )
 
