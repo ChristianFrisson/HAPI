@@ -22,7 +22,7 @@ findIncludeDirsAndLibrariesForH3DProjects ( PROJECT_NAMES H3DUtil
                                             INCLUDE_DIRS_OUTPUT_VAR tmp_h3d_include_dirs
                                             LIBRARIES_OUTPUT_VAR required_libs
                                             REQUIRED_PROJECTS H3DUtil )
-include_directories( ${tmp_h3d_include_dirs} ) 
+include_directories( ${tmp_h3d_include_dirs} )
 
 add_executable( SimpleThreadPrint ${SimpleThreadPrint_SRCS} )
 add_executable( SimpleThreadPrintLock ${SimpleThreadPrintLock_SRCS} )

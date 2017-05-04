@@ -13,7 +13,7 @@ set( CMAKE_MODULE_PATH "${HAPI_SOURCE_DIR}/localModules" "${HAPI_SOURCE_DIR}/mod
 include( H3DCommonFunctions )
 handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. GENERATE_CPACK_PROJECT PREFER_STATIC_LIBRARIES )
 # include H3DUtil in the build
-if( ( WIN32 OR NOT CMAKE_PARENT_LIST_FILE ) AND EXISTS "${HAPI_SOURCE_DIR}/../../H3DUtil/build" )
+if( ( WIN32 OR ( ${CMAKE_PARENT_LIST_FILE} STREQUAL ${CMAKE_CURRENT_LIST_FILE} ) ) AND EXISTS "${HAPI_SOURCE_DIR}/../../H3DUtil/build" )
   message( STATUS "Including H3DUtil" )
   add_subdirectory( ${HAPI_SOURCE_DIR}/../../H3DUtil/build
                     ${CMAKE_CURRENT_BINARY_DIR}/H3DUtil )
