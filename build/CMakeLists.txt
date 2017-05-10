@@ -215,7 +215,7 @@ handleUnityBuild( PROJECT_NAME ${PROJECT_NAME}
                   SOURCE_PREFIX_PATH ${HAPI_SOURCE_DIR}/../src/ )
 handlePrecompiledHeaders( PROJECT_NAME ${PROJECT_NAME}
                           HEADERS_VARIABLE HAPI_HEADERS
-                          SRCS_VARIABLE HAPI_SRCS_SRCS
+                          SRCS_VARIABLE HAPI_SRCS
                           STDAFX_HEADER_LOCATION ${HAPI_SOURCE_DIR}/../include/HAPI/
                           STDAFX_SOURCE_LOCATION ${HAPI_SOURCE_DIR}/../src/ )
 
