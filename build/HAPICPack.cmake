@@ -490,7 +490,7 @@ if( GENERATE_CPACK_PROJECT )
     elseif( TARGET H3DAPI )
       set( HAPI_DOCS_DIRECTORY_DEFAULT "${H3DAPI_DOCS_DIRECTORY}" )
     endif()
-    set( HAPI_DOCS_DIRECTORY "${HAPI_DOCS_DIRECTORY_DEFAULT}" CACHE PATH "Set this to the directory containing the documentation of HAPI." )
+    set( HAPI_DOCS_DIRECTORY "${HAPI_DOCS_DIRECTORY_DEFAULT}" CACHE PATH "Set this to the directory containing the manual and generated doxygen documentation of HAPI." )
     mark_as_advanced( HAPI_DOCS_DIRECTORY )
   endif()
 
