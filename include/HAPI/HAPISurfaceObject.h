@@ -58,7 +58,9 @@ namespace HAPI {
       ContactInfo(): geom_primitive( 0 ),
                      haptic_shape( 0 ),
                      proxy_radius( 0 ),
-                     has_inverse( false ) {}
+                     has_inverse( false ),
+                     hd( NULL ),
+                     shape_id( 0 ) {}
     protected:
       // INPUT
 
