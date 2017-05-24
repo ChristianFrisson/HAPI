@@ -11,7 +11,7 @@ project( HAPI )
 set( CMAKE_MODULE_PATH "${HAPI_SOURCE_DIR}/localModules" "${HAPI_SOURCE_DIR}/modules" )
 
 include( H3DCommonFunctions )
-handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. GENERATE_CPACK_PROJECT PREFER_STATIC_LIBRARIES )
+handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. GENERATE_H3D_PACKAGE_PROJECT H3D_PREFER_STATIC_LIBRARIES )
 # include H3DUtil in the build
 if( ( WIN32 OR ( ${CMAKE_PROJECT_NAME} STREQUAL "HAPI" ) ) AND EXISTS "${HAPI_SOURCE_DIR}/../../H3DUtil/build" )
   message( STATUS "Including H3DUtil" )
@@ -202,8 +202,12 @@ endif()
 # No use in looking for the libs/dlls on the system since the dlls for
 # haptic master are run-time loaded.
 if( WIN32 )
-  set( HAVE_HAPTIC_MASTER_API "YES" CACHE BOOL "Disable if you do not want haptic master support." )
+  handleRenamingVariablesBackwardCompatibility( NEW_VARIABLE_NAMES USE_HapticMasterDevice
+                                                OLD_VARIABLE_NAMES HAVE_HAPTIC_MASTER_API
+                                                DOC_STRINGS "Disable if you do not want haptic master support." )
+  set( USE_HapticMasterDevice "YES" CACHE BOOL "Disable if you do not want haptic master support." )
 endif()
+set( HAVE_HAPTIC_MASTER_API ${USE_HapticMasterDevice} ) # In order to get HAPI.h to generate with correct settings.
 
 # add all sources, they are added to variables called HAPI_SRCS,
 # OH_SRCS and CHAI_SRCS defined in the included file. Header files are added
@@ -237,7 +241,7 @@ if( WIN32 )
       set( OH_SRCS ${OH_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/OpenHapticsRenderer.rc )
     endif()
     add_library( OpenHapticsRenderer SHARED ${OH_SRCS} ${OH_HEADERS} )
-    if( GENERATE_CPACK_PROJECT )
+    if( GENERATE_H3D_PACKAGE_PROJECT )
       set( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} OpenHapticsRenderer )
     endif()
   endif()
@@ -247,7 +251,7 @@ if( WIN32 )
       set( CHAI_SRCS ${CHAI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/Chai3DRenderer.rc )
     endif()
     add_library( Chai3DRenderer SHARED ${CHAI_SRCS} ${CHAI_HEADERS} )
-    if( GENERATE_CPACK_PROJECT )
+    if( GENERATE_H3D_PACKAGE_PROJECT )
       set( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} Chai3DRenderer )
     endif()
   endif()
@@ -304,7 +308,7 @@ set( HAPI_COMPILE_FLAGS "-DHAPI_EXPORTS" )
 # add the libraries needed for linking
 target_link_libraries( HAPI ${HAPI_requiredLibs} ${HAPI_optionalLibs} )
 
-handleCommonCacheVar( ENABLE_THREAD_LOCK_DEBUG FALSE )
+handleCommonCacheVar( USE_thread_lock_debug FALSE )
 
 # make the name of debug libraries end in _d.
 set_target_properties( HAPI PROPERTIES DEBUG_POSTFIX "_d" )
@@ -425,7 +429,7 @@ if( EXISTS ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.h )
 endif()
 configure_file( ${HAPI_SOURCE_DIR}/../include/HAPI/HAPI.cmake ${CMAKE_CURRENT_BINARY_DIR}/include/HAPI/HAPI.h )
 
-if( NOT GENERATE_CPACK_PROJECT )
+if( NOT GENERATE_H3D_PACKAGE_PROJECT )
   # Install header files on non-windows system (e.g. Unix).
   install( FILES ${CMAKE_CURRENT_BINARY_DIR}/include/HAPI/HAPI.h
            DESTINATION ${HAPI_SOURCE_DIR}/../include/HAPI )
@@ -453,17 +457,21 @@ if( WIN32 )
              RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_runtime
              ARCHIVE DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_libraries )
   endif()
-elseif( NOT GENERATE_CPACK_PROJECT )
+elseif( NOT GENERATE_H3D_PACKAGE_PROJECT )
   # Install header files on non-windows system (e.g. Unix).
   install( FILES ${HAPI_HEADERS} ${OH_HEADERS} ${CHAI_HEADERS}
            DESTINATION include/HAPI )
 endif()
 
-if( NOT DEFINED HAPI_EXAMPLE_PROJECTS )
-  set( HAPI_EXAMPLE_PROJECTS "NO" CACHE BOOL "If set to YES the example projects distributed with HAPI will be included in the build." )
+handleRenamingVariablesBackwardCompatibility( NEW_VARIABLE_NAMES GENERATE_HAPI_example_PROJECTS
+                                              OLD_VARIABLE_NAMES HAPI_EXAMPLE_PROJECTS
+                                              DOC_STRINGS "If set to YES the example projects distributed with HAPI will be included in the build." )
+
+if( NOT DEFINED GENERATE_HAPI_example_PROJECTS )
+  set( GENERATE_HAPI_example_PROJECTS NO CACHE BOOL "If set to YES the example projects distributed with HAPI will be included in the build." )
 endif()
 
-if( HAPI_EXAMPLE_PROJECTS )
+if( GENERATE_HAPI_example_PROJECTS )
   add_subdirectory( ${HAPI_SOURCE_DIR}/../examples/build
                     ${CMAKE_CURRENT_BINARY_DIR}/examples )
   if( TARGET HAPIDemo )

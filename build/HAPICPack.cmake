@@ -10,27 +10,31 @@ list( APPEND HAPI_HEADERS ${HAPI_SOURCE_DIR}/../include/HAPI/StdAfx.h )
 list( APPEND HAPI_SRCS ${HAPI_SOURCE_DIR}/../src/StdAfx.cpp )
 
 # If cpack should be configured.
-if( GENERATE_CPACK_PROJECT )
+if( GENERATE_H3D_PACKAGE_PROJECT )
   if( WIN32 )
+    handleRenamingVariablesBackwardCompatibility( NEW_VARIABLE_NAMES H3D_EXTERNAL_ROOT
+                                                  OLD_VARIABLE_NAMES HAPI_CPACK_EXTERNAL_ROOT
+                                                  DOC_STRINGS "Set to the External directory used with HAPI, needed to pack properly. If not set FIND_modules will be used instead." )
+
     # Add a cache variable which indicates where the Externals directory used for packaging
     # HAPI is located. If not set then FIND modules will be used instead.
-    if( NOT DEFINED H3DAPI_CPACK_EXTERNAL_ROOT )
-      if( NOT DEFINED HAPI_CPACK_EXTERNAL_ROOT )
-        set( HAPI_CPACK_EXTERNAL_ROOT_DEFAULT "" )
+    if( NOT DEFINED H3D_EXTERNAL_ROOT )
+      if( NOT DEFINED H3D_EXTERNAL_ROOT )
+        set( h3d_external_root_default "" )
         if( NOT ${CMAKE_PROJECT_NAME} STREQUAL "HAPI" )
           foreach( external_include_dir_tmp ${HAPI_INCLUDE_DIRS} )
             if( EXISTS ${external_include_dir_tmp}/../include/pthread )
-              set( HAPI_CPACK_EXTERNAL_ROOT_DEFAULT "${external_include_dir_tmp}/.." )
+              set( h3d_external_root_default "${external_include_dir_tmp}/.." )
             endif()
           endforeach()
         else()
-          set( HAPI_CPACK_EXTERNAL_ROOT_DEFAULT "$ENV{H3D_EXTERNAL_ROOT}" )
+          set( h3d_external_root_default "$ENV{H3D_EXTERNAL_ROOT}" )
         endif()
-        set( HAPI_CPACK_EXTERNAL_ROOT "${HAPI_CPACK_EXTERNAL_ROOT_DEFAULT}" CACHE PATH "Set to the External directory used with HAPI, needed to pack properly. If not set FIND_modules will be used instead." )
-        mark_as_advanced( HAPI_CPACK_EXTERNAL_ROOT )
+        set( H3D_EXTERNAL_ROOT "${h3d_external_root_default}" CACHE PATH "Set to the External directory used with HAPI, needed to pack properly. If not set FIND_modules will be used instead." )
+        mark_as_advanced( H3D_EXTERNAL_ROOT )
       endif()
     else()
-      set( HAPI_CPACK_EXTERNAL_ROOT ${H3DAPI_CPACK_EXTERNAL_ROOT} )
+      set( H3D_EXTERNAL_ROOT ${H3D_EXTERNAL_ROOT} )
     endif()
   endif()
   include( ${HAPI_SOURCE_DIR}/../../H3DUtil/build/H3DUtilCPack.cmake )
@@ -76,7 +80,7 @@ if( GENERATE_CPACK_PROJECT )
       # Extra links to start menu if values are "ON"
       set( CPACK_ADD_HAPIDOC_LINKS "ON" )
 
-      if( HAPI_EXAMPLE_PROJECTS )
+      if( GENERATE_HAPI_example_PROJECTS )
         set( CPACK_ADD_HAPIEXAMPLES_LINKS "ON" )
       endif()
 
@@ -158,8 +162,8 @@ if( GENERATE_CPACK_PROJECT )
       set( external_bin_replace_path "bin32" )
     endif()
 
-    if( EXISTS ${HAPI_CPACK_EXTERNAL_ROOT} )
-      set( external_includes ${HAPI_CPACK_EXTERNAL_ROOT}/include/GL/
+    if( EXISTS ${H3D_EXTERNAL_ROOT} )
+      set( external_includes ${H3D_EXTERNAL_ROOT}/include/GL/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/DHD-API/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/chai3d/
                              ${HAPI_CPACK_EXTERNAL_ROOT}/include/Simball/
@@ -178,10 +182,10 @@ if( GENERATE_CPACK_PROJECT )
                                            "(/.svn)|(/CVS)"
                                            "(/.svn)|(/CVS)" )
 
-      set( external_include_files ${HAPI_CPACK_EXTERNAL_ROOT}/include/VirtuoseAPI.h
+      set( external_include_files ${H3D_EXTERNAL_ROOT}/include/VirtuoseAPI.h
                                    ${HAPI_CPACK_EXTERNAL_ROOT}/include/EntactAPI.h )
 
-      set( external_libraries ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/freeglut.lib
+      set( external_libraries ${H3D_EXTERNAL_ROOT}/lib32/freeglut.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/virtuoseDLL.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/EntactAPI.lib
                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/SimballMedicalHID.lib
@@ -482,24 +486,29 @@ if( GENERATE_CPACK_PROJECT )
            DESTINATION HAPI/examples/ThreadExamples/SimpleThreadPrintLock
            COMPONENT HAPI_cpack_sources )
 
+  handleRenamingVariablesBackwardCompatibility( NEW_VARIABLE_NAMES HAPI_documentation_directory H3D_CMake_runtime_path
+                                                OLD_VARIABLE_NAMES HAPI_DOCS_DIRECTORY H3D_cmake_runtime_path
+                                                DOC_STRINGS "Set this to the directory containing the manual and generated doxygen documentation of HAPI."
+                                                            "The path to the cmake runtime." )
+
   # Add a cache variable HAPI_DOCS_DIRECTORY used to indicate where the HAPI docs are.
-  if( NOT DEFINED HAPI_DOCS_DIRECTORY )
+  if( NOT DEFINED HAPI_documentation_directory )
     set( HAPI_DOCS_DIRECTORY_DEFAULT "" )
     if( NOT ${CMAKE_PROJECT_NAME} STREQUAL "HAPI" )
       set( HAPI_DOCS_DIRECTORY_DEFAULT "${HAPI_SOURCE_DIR}/../../doc" )
     elseif( TARGET H3DAPI )
-      set( HAPI_DOCS_DIRECTORY_DEFAULT "${H3DAPI_DOCS_DIRECTORY}" )
+      set( HAPI_DOCS_DIRECTORY_DEFAULT "${H3DAPI_documentation_directory}" )
     endif()
-    set( HAPI_DOCS_DIRECTORY "${HAPI_DOCS_DIRECTORY_DEFAULT}" CACHE PATH "Set this to the directory containing the manual and generated doxygen documentation of HAPI." )
-    mark_as_advanced( HAPI_DOCS_DIRECTORY )
+    set( HAPI_documentation_directory "${HAPI_DOCS_DIRECTORY_DEFAULT}" CACHE PATH "Set this to the directory containing the manual and generated doxygen documentation of HAPI." )
+    mark_as_advanced( HAPI_documentation_directory )
   endif()
 
-  if( EXISTS ${HAPI_DOCS_DIRECTORY} )
-    install( DIRECTORY ${HAPI_DOCS_DIRECTORY}/HAPI
+  if( EXISTS ${HAPI_documentation_directory} )
+    install( DIRECTORY ${HAPI_documentation_directory}/HAPI
              DESTINATION doc
              COMPONENT HAPI_cpack_headers
              REGEX "(/.svn)|(/CVS)" EXCLUDE )
-    install( FILES "${HAPI_DOCS_DIRECTORY}/HAPI Manual.pdf"
+    install( FILES "${HAPI_documentation_directory}/HAPI Manual.pdf"
              DESTINATION doc
              COMPONENT HAPI_cpack_headers )
   endif()
@@ -539,32 +548,32 @@ if( GENERATE_CPACK_PROJECT )
   set( CPACK_COMPONENT_GROUP_HAPI_CPACK_GROUP_DESCRIPTION "An open source cross platform haptics rendering engine with support for several haptics devices. C++ interface only." )
   set( CPACK_COMPONENT_GROUP_H3DUTIL_CPACK_GROUP_PARENT_GROUP "HAPI_cpack_group" )
 
-  # Add a cache variable H3D_cmake_runtime_path to point to cmake binary.
-  set( H3D_cmake_runtime_path_default "" )
-  if( NOT DEFINED H3D_cmake_runtime_path )
+  # Add a cache variable H3D_CMake_runtime_path to point to cmake binary.
+  set( h3d_cmake_runtime_path_default "" )
+  if( NOT DEFINED H3D_CMake_runtime_path )
     if( WIN32 AND NOT UNIX )
       set( VERSION_CMAKES "4.0" "3.9" "3.8" "3.7" "3.6" "3.5" "3.4" "3.3" "3.2" "3.1" "3.0" "2.9" "2.8" "2.7" "2.6" )
       foreach( version_cmake ${VERSION_CMAKES} )
         if( EXISTS "C:/Program Files/CMake ${version_cmake}/bin/cmake.exe" )
-          set( H3D_cmake_runtime_path_default "C:/Program Files/CMake ${version_cmake}/bin/cmake.exe" )
+          set( h3d_cmake_runtime_path_default "C:/Program Files/CMake ${version_cmake}/bin/cmake.exe" )
           break()
         endif()
 
         if( EXISTS "C:/Program Files (x86)/CMake ${version_cmake}/bin/cmake.exe" )
-          set( H3D_cmake_runtime_path_default "C:/Program Files (x86)/CMake ${version_cmake}/bin/cmake.exe" )
+          set( h3d_cmake_runtime_path_default "C:/Program Files (x86)/CMake ${version_cmake}/bin/cmake.exe" )
           break()
         endif()
 
         if( EXISTS "C:/Program/CMake ${version_cmake}/bin/cmake.exe" )
-          set( H3D_cmake_runtime_path_default "C:/Program/CMake ${version_cmake}/bin/cmake.exe" )
+          set( h3d_cmake_runtime_path_default "C:/Program/CMake ${version_cmake}/bin/cmake.exe" )
           break()
         endif()
       endforeach()
     else()
-      set( H3D_cmake_runtime_path_default "cmake" )
+      set( h3d_cmake_runtime_path_default "cmake" )
     endif()
-    set( H3D_cmake_runtime_path ${H3D_cmake_runtime_path_default} CACHE FILEPATH "The path to the cmake runtime." )
-    mark_as_advanced( H3D_cmake_runtime_path )
+    set( H3D_CMake_runtime_path ${h3d_cmake_runtime_path_default} CACHE FILEPATH "The path to the cmake runtime." )
+    mark_as_advanced( H3D_CMake_runtime_path )
   endif()
 
   if( UNIX )
@@ -578,13 +587,13 @@ if( GENERATE_CPACK_PROJECT )
     set( CPACK_SOURCE_IGNORE_FILES ${HAPI_CPACK_IGNORE_PATTERNS} )
   endif()
 
-  if( H3D_cmake_runtime_path )
+  if( H3D_CMake_runtime_path )
     set( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_POST_BUILD}
-                                                       COMMAND ${H3D_cmake_runtime_path}
+                                                       COMMAND ${H3D_CMake_runtime_path}
                                                        ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_runtime -P cmake_install.cmake
-                                                       COMMAND ${H3D_cmake_runtime_path}
+                                                       COMMAND ${H3D_CMake_runtime_path}
                                                        ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_libraries -P cmake_install.cmake
-                                                       COMMAND ${H3D_cmake_runtime_path}
+                                                       COMMAND ${H3D_CMake_runtime_path}
                                                        ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=HAPI_cpack_examples_runtime -P cmake_install.cmake )
 
     if( NOT TARGET H3DAPI )
@@ -600,7 +609,7 @@ if( GENERATE_CPACK_PROJECT )
       add_dependencies( INSTALL_RUNTIME_AND_LIBRARIES_ONLY HAPI ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} )
     endif()
   else()
-    message( STATUS "H3D_cmake_runtime_path is not set, please set it to continue" )
+    message( STATUS "H3D_CMake_runtime_path is not set, please set it to continue" )
   endif()
 
   if( ${CMAKE_PROJECT_NAME} STREQUAL "HAPI" )
