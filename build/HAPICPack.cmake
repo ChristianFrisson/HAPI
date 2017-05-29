@@ -164,11 +164,11 @@ if( GENERATE_H3D_PACKAGE_PROJECT )
 
     if( EXISTS ${H3D_EXTERNAL_ROOT} )
       set( external_includes ${H3D_EXTERNAL_ROOT}/include/GL/
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/include/DHD-API/
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/include/chai3d/
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/include/Simball/
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/include/wx/
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/include/fparser/ )
+                             ${H3D_EXTERNAL_ROOT}/include/DHD-API/
+                             ${H3D_EXTERNAL_ROOT}/include/chai3d/
+                             ${H3D_EXTERNAL_ROOT}/include/Simball/
+                             ${H3D_EXTERNAL_ROOT}/include/wx/
+                             ${H3D_EXTERNAL_ROOT}/include/fparser/ )
       set( external_include_install_paths External/include/GL
                                           External/include/DHD-API
                                           External/include/chai3d
@@ -183,68 +183,68 @@ if( GENERATE_H3D_PACKAGE_PROJECT )
                                            "(/.svn)|(/CVS)" )
 
       set( external_include_files ${H3D_EXTERNAL_ROOT}/include/VirtuoseAPI.h
-                                   ${HAPI_CPACK_EXTERNAL_ROOT}/include/EntactAPI.h )
+                                   ${H3D_EXTERNAL_ROOT}/include/EntactAPI.h )
 
       set( external_libraries ${H3D_EXTERNAL_ROOT}/lib32/freeglut.lib
-                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/virtuoseDLL.lib
-                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/EntactAPI.lib
-                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/SimballMedicalHID.lib
-                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/dhdms64.lib
-                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/dhdms.lib
-                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/fparser.lib
-                              ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/fparser_d.lib )
+                              ${H3D_EXTERNAL_ROOT}/lib32/virtuoseDLL.lib
+                              ${H3D_EXTERNAL_ROOT}/lib32/EntactAPI.lib
+                              ${H3D_EXTERNAL_ROOT}/lib32/SimballMedicalHID.lib
+                              ${H3D_EXTERNAL_ROOT}/lib32/dhdms64.lib
+                              ${H3D_EXTERNAL_ROOT}/lib32/dhdms.lib
+                              ${H3D_EXTERNAL_ROOT}/lib32/fparser.lib
+                              ${H3D_EXTERNAL_ROOT}/lib32/fparser_d.lib )
 
       set( wxlibs core adv aui html media propgrid ribbon stc webview xrc gl qa richtext )
       foreach( library_name ${wxlibs} )
         set( external_libraries ${external_libraries}
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw30u_${library_name}.lib
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxmsw30ud_${library_name}.lib )
+                                ${H3D_EXTERNAL_ROOT}/lib32/wxmsw30u_${library_name}.lib
+                                ${H3D_EXTERNAL_ROOT}/lib32/wxmsw30ud_${library_name}.lib )
         #set( external_static_libraries ${external_static_libraries}
-        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw30u_${library_name}.lib
-        #                               ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/wxmsw30ud_${library_name}.lib )
+        #                               ${H3D_EXTERNAL_ROOT}/lib32/static/wxmsw30u_${library_name}.lib
+        #                               ${H3D_EXTERNAL_ROOT}/lib32/static/wxmsw30ud_${library_name}.lib )
         set( external_binaries ${external_binaries}
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30u_${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30u_${library_name}_vc_x64_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30ud_${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30ud_${library_name}_vc_x64_custom.dll )
+                               ${H3D_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30u_${library_name}_vc_custom.dll
+                               ${H3D_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30u_${library_name}_vc_x64_custom.dll
+                               ${H3D_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30ud_${library_name}_vc_custom.dll
+                               ${H3D_EXTERNAL_ROOT}/${external_bin_path}/wxmsw30ud_${library_name}_vc_x64_custom.dll )
       endforeach()
       set( wxlibs "" _net _xml )
       # IN LISTS means that the empty argument is parsed
       foreach( library_name IN LISTS wxlibs )
         set( external_libraries ${external_libraries}
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxbase30u${library_name}.lib
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wxbase30ud${library_name}.lib )
+                                ${H3D_EXTERNAL_ROOT}/lib32/wxbase30u${library_name}.lib
+                                ${H3D_EXTERNAL_ROOT}/lib32/wxbase30ud${library_name}.lib )
         set( external_binaries ${external_binaries}
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxbase30u${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxbase30u${library_name}_vc_x64_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxbase30ud${library_name}_vc_custom.dll
-                               ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/wxbase30ud${library_name}_vc_x64_custom.dll )
+                               ${H3D_EXTERNAL_ROOT}/${external_bin_path}/wxbase30u${library_name}_vc_custom.dll
+                               ${H3D_EXTERNAL_ROOT}/${external_bin_path}/wxbase30u${library_name}_vc_x64_custom.dll
+                               ${H3D_EXTERNAL_ROOT}/${external_bin_path}/wxbase30ud${library_name}_vc_custom.dll
+                               ${H3D_EXTERNAL_ROOT}/${external_bin_path}/wxbase30ud${library_name}_vc_x64_custom.dll )
       endforeach()
 
       set( wxlibs expat jpeg png regexu scintilla tiff zlib )
       foreach( library_name ${wxlibs} )
         set( external_libraries ${external_libraries}
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wx${library_name}.lib
-                                ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/wx${library_name}d.lib )
+                                ${H3D_EXTERNAL_ROOT}/lib32/wx${library_name}.lib
+                                ${H3D_EXTERNAL_ROOT}/lib32/wx${library_name}d.lib )
         set( external_binaries ${external_binaries} )
       endforeach()
 
       set( external_static_libraries ${external_static_libraries}
-                                     ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10.lib
-                                     ${HAPI_CPACK_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10_d.lib )
+                                     ${H3D_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10.lib
+                                     ${H3D_EXTERNAL_ROOT}/lib32/static/chai3d_complete_vc10_d.lib )
 
       set( external_binaries ${external_binaries}
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/freeglut.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/virtuoseDLL.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/EntactAPI.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/SimballMedicalHID.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/HapticAPI.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/HapticMasterDriver.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/fparser.dll
-                             ${HAPI_CPACK_EXTERNAL_ROOT}/${external_bin_path}/fparser_d.dll )
+                             ${H3D_EXTERNAL_ROOT}/${external_bin_path}/freeglut.dll
+                             ${H3D_EXTERNAL_ROOT}/${external_bin_path}/virtuoseDLL.dll
+                             ${H3D_EXTERNAL_ROOT}/${external_bin_path}/EntactAPI.dll
+                             ${H3D_EXTERNAL_ROOT}/${external_bin_path}/SimballMedicalHID.dll
+                             ${H3D_EXTERNAL_ROOT}/${external_bin_path}/HapticAPI.dll
+                             ${H3D_EXTERNAL_ROOT}/${external_bin_path}/HapticMasterDriver.dll
+                             ${H3D_EXTERNAL_ROOT}/${external_bin_path}/fparser.dll
+                             ${H3D_EXTERNAL_ROOT}/${external_bin_path}/fparser_d.dll )
 
     else()
-      message( WARNING "HAPI_CPACK_EXTERNAL_ROOT must be set to the External directory used by HAPI in order to package properly." )
+      message( WARNING "H3D_EXTERNAL_ROOT must be set to the External directory used by HAPI in order to package properly." )
     endif()
 
     if( external_includes )
