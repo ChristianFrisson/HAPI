@@ -169,7 +169,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       return false; // if required lib can not be loaed, do not register this device
     }
   }
-#endif
+#endif // H3D_WINDOWS
   if( nr_of_connected_dhd_devices <= 0 ) {
     nr_of_connected_dhd_devices = dhdGetDeviceCount();
     if( nr_of_connected_dhd_devices <= 0 ) {

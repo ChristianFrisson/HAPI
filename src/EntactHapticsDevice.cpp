@@ -88,7 +88,7 @@ eapi_device_handle handles[MAX_NR_DEVICES]; // detecting up to 10 attached devic
 
 
 bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-#ifdef WIN32
+#ifdef H3D_WINDOWS
   /// need to go check if the dll to support this haptic device can be correctly
   /// loaded
   list<string>::iterator it = device_registration.libs_to_support.begin();
@@ -98,7 +98,7 @@ bool EntactHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       return false; // if required lib can not be loaed, do not register this device
     }
   }
-#endif
+#endif // H3D_WINDOWS
   if( serial_number != -1 || ip_address == "" ) {
     if( EAPI_initialized == ENTACT_UNINITIALIZED ) {
       nr_entact_devices = openEAPI( handles, MAX_NR_DEVICES );

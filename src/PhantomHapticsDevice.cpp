@@ -82,7 +82,7 @@ bool PhantomHapticsDevice::enable_start_scheduler = true;
 int PhantomHapticsDevice::nr_of_scheduled = 0;
 
 bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-  #ifdef WIN32
+  #ifdef H3D_WINDOWS
     /// need to go check if the dll to support this haptic device can be correctly
     /// loaded
     std::list<std::string>::iterator it = device_registration.libs_to_support.begin();
@@ -92,7 +92,7 @@ bool PhantomHapticsDevice::initHapticsDevice( int _thread_frequency ) {
         return false; // if required lib can not be loaed, do not register this device
       }
     }
-  #endif
+  #endif // H3D_WINDOWS
   hdapi_version = hdGetString( HD_VERSION );
   device_handle = hdInitDevice( device_name == "" ? 
                                 HD_DEFAULT_DEVICE : device_name.c_str() );

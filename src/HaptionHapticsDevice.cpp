@@ -50,7 +50,7 @@ HaptionHapticsDevice::device_registration(
 
 
 bool HaptionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-#ifdef WIN32
+#ifdef H3D_WINDOWS
   /// need to go check if the dll to support this haptic device can be correctly
   /// loaded
   std::list<std::string>::iterator it = device_registration.libs_to_support.begin();
@@ -60,7 +60,7 @@ bool HaptionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       return false; // if required lib can not be loaed, do not register this device
     }
   }
-#endif
+#endif //H3D_WINDOWS
   context = virtOpen( ip_address.c_str() );
   if (context == NULL) {
     int error_code = virtGetErrorCode(NULL);

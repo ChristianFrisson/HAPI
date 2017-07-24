@@ -51,7 +51,7 @@ int SimballHapticsDevice::nr_found_devices = -1;
 int SimballHapticsDevice::nr_initialized_devices = 0;
 
 bool SimballHapticsDevice::initHapticsDevice( int _thread_frequency ) {
-#ifdef WIN32
+#ifdef H3D_WINDOWS
   /// need to go check if the dll to support this haptic device can be correctly
   /// loaded
   std::list<std::string>::iterator it = device_registration.libs_to_support.begin();
@@ -61,7 +61,7 @@ bool SimballHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       return false; // if required lib can not be loaed, do not register this device
     }
   }
-#endif
+#endif //H3D_WINDOWS
   int nr_devices = -1;
   int error_ms = SBM_Init( nr_devices );
   if( error_ms != SBMError_NoError ) {

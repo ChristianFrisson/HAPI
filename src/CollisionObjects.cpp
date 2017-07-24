@@ -42,7 +42,7 @@
 #include <stack>
 #include <map>
 
-#ifdef WIN32
+#ifdef H3D_WINDOWS
 #undef max
 #undef min
 #endif

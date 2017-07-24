@@ -48,7 +48,7 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
          registered_devices->begin(); 
        i != registered_devices->end(); ++i ) {
     if( (*i).name != "Any" ) {
-#ifdef WIN32
+#ifdef H3D_WINDOWS
       /// need to go through list of libs to see if it is even
       /// possible to try to initialize the device.
       bool all_libs_ok = true;
@@ -61,7 +61,7 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
         }
       }
       if( all_libs_ok ) {
-#endif
+#endif // H3D_WINDOWS
       HAPIHapticsDevice *device = ((*i).create_func)();
       if( device ) { // Device should never be NULL here, but who knows.
         if( device->initHapticsDevice( _thread_frequency ) ) {
@@ -79,9 +79,9 @@ bool AnyHapticsDevice::initHapticsDevice( int _thread_frequency ) {
           delete device;
         }
       }
-#ifdef WIN32
+#ifdef H3D_WINDOWS
       }
-#endif
+#endif // H3D_WINDOWS
     }
   }
 
