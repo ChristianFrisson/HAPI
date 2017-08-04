@@ -31,6 +31,7 @@
 
 #include <H3DUtil/Threads.h> 
 #include <HAPI/HAPIForceEffect.h> 
+#include <HAPI/HAPIHapticsDevice.h>
 #include <fstream>
 
 namespace HAPI {
