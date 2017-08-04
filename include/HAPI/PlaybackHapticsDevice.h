@@ -66,7 +66,8 @@ namespace HAPI {
       playback_start_time ( 0 ),
       seek_to_time ( 0 ),
       playback_speed ( 1 ),
-      binary ( false ) {
+      binary ( false ),
+      got_first_value ( false ) {
     }
 
     /// Populates the DeviceValues structure with values from the
@@ -241,6 +242,9 @@ namespace HAPI {
 
     /// If true, then the recording is assumed to be in binary format, otherwise text
     bool binary;
+
+    /// False until the first device values are read from the recording
+    bool got_first_value;
 
     /// A mutex lock used to access playback data
     H3DUtil::MutexLock playback_lock;

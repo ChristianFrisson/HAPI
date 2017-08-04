@@ -136,6 +136,7 @@ void PlaybackHapticsDevice::startPlayback () {
 
     playback_start_time= H3DUtil::TimeStamp()-playback_time;
     playing= true;
+    got_first_value = false;
   }
 
   playback_lock.unlock();
@@ -235,7 +236,8 @@ bool PlaybackHapticsDevice::getPlaybackValuesNextBinary ( HAPIHapticsDevice::Dev
 
 
 bool PlaybackHapticsDevice::getPlaybackValuesAtTime ( HAPI::HAPIHapticsDevice::DeviceValues &dv, HAPI::HAPITime _time ) {
-  if ( _time > playback_time ) {
+  if ( _time > playback_time || !got_first_value ) {
+    got_first_value = true;
     DeviceValues dv_tmp= playback_device_values;
 
     HAPITime timestamp;

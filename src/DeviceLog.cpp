@@ -74,6 +74,14 @@ void DeviceLog::close () {
   H3DUtil::HapticThread::synchronousHapticCB ( closeCallback, this );
 }
 
+const HAPIHapticsDevice::DeviceValues& HAPI::DeviceLog::getLastLoggedDeviceValues() {
+  return last_logged_device_values;
+}
+
+const HAPIHapticsDevice::DeviceValues& HAPI::DeviceLog::getLastLoggedRawDeviceValues() {
+  return last_logged_raw_device_values;
+}
+
 void DeviceLog::writeLog( const EffectInput &input, HAPITime log_time ) {
   writeLogRow ( input, log_time );
 
@@ -96,6 +104,8 @@ void DeviceLog::writeHeader( const EffectInput &input ) {
 void DeviceLog::writeLogRow ( const EffectInput &input, HAPITime log_time ) {
   HAPIHapticsDevice::DeviceValues cdv = input.hd->getDeviceValues();
   HAPIHapticsDevice::DeviceValues crdv = input.hd->getRawDeviceValues();
+  last_logged_device_values = cdv;
+  last_logged_raw_device_values = crdv;
   if( binary ) {
     for( LogTypeVector::iterator i = log_type.begin();
          i != log_type.end(); ++i ) {

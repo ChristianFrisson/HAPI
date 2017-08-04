@@ -157,6 +157,22 @@ namespace HAPI {
     /// Stop logging and flush and close the log file
     virtual void close ();
 
+    /// Get the last device values which were logged
+    /// 
+    /// This may be used instead of device->getDeviceValues() for cases where
+    /// we need the live interaction to match the recording/playback exactly
+    ///
+    /// \note Must be called from the same thread that is used for logging
+    const HAPIHapticsDevice::DeviceValues& getLastLoggedDeviceValues();
+
+    /// Get the last raw device values which were logged
+    /// 
+    /// This may be used instead of device->getRawDeviceValues() for cases where
+    /// we need the live interaction to match the recording/playback exactly 
+    ///
+    /// \note Must be called from the same thread that is used for logging
+    const HAPIHapticsDevice::DeviceValues& getLastLoggedRawDeviceValues();
+
   protected:
     // Contains certain times needed in order to know when to log.
     HAPITime last_time, start_time;
@@ -180,6 +196,12 @@ namespace HAPI {
     /// A callback executed in the haptic thread when the node is destroyed
     /// in order to force the HAPI loggers to flush and close their logging files
     static H3DUtil::PeriodicThread::CallbackCode closeCallback ( void* data );
+
+    /// The last device values which were written to the log
+    HAPIHapticsDevice::DeviceValues last_logged_device_values;
+
+    /// The last raw device values which were written to the log
+    HAPIHapticsDevice::DeviceValues last_logged_raw_device_values;
   };
 }
 
