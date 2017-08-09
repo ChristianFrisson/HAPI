@@ -1102,8 +1102,8 @@ void BinaryBoundTree::renderBounds( int depth ) {
     return a;
   
   bool discard_ca = ca_t < 0 || ca_t > 1;
-  bool discard_cb = cb_t < 0 || cb_t > 1;;
-  bool discard_ab = ab_t < 0 || ab_t > 1;;
+  bool discard_cb = cb_t < 0 || cb_t > 1;
+  bool discard_ab = ab_t < 0 || ab_t > 1;
 
   Vec3 ca_p = c + ca * ca_t;
   Vec3 cb_p = c + cb * cb_t;
