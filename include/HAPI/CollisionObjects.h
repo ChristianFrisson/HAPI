@@ -1425,7 +1425,7 @@ namespace HAPI {
 
       /// Convenience template for creating BoundNewFunc functions.
       template< class N >
-      static BoundPrimitive *newInstance() { return new N; };
+      static BoundPrimitive *newInstance() { return new N; }
 
       /// Default constructor.
       BinaryBoundTree(  ): left( NULL ), right( NULL ), new_func( NULL ) {}
@@ -1759,7 +1759,7 @@ namespace HAPI {
 
       /// Convenience template for creating BoundNewFunc functions.
       template< class N >
-      static BoundPrimitive *newInstance() { return new N; };
+      static BoundPrimitive *newInstance() { return new N; }
 
       /// Default constructor.
       BBPrimitiveTree(  ): left( NULL ), right( NULL ), new_func( NULL ) {}

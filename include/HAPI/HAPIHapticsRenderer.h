@@ -127,7 +127,7 @@ namespace HAPI {
     typedef HAPIHapticsRenderer*( *CreateInstanceFunc)(); 
 
     template< class N >
-    static HAPIHapticsRenderer *newInstance() { return new N; };
+    static HAPIHapticsRenderer *newInstance() { return new N; }
 
     /// Struct used to register a class to the registered renderers.
     struct HAPI_API HapticsRendererRegistration{

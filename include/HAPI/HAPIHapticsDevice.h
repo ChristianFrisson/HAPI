@@ -979,7 +979,7 @@ namespace HAPI {
     typedef HAPIHapticsDevice*( *CreateInstanceFunc)(); 
 
     template< class N >
-    static HAPIHapticsDevice *newInstance() { return new N; };
+    static HAPIHapticsDevice *newInstance() { return new N; }
 
     /// Struct used to register a class to the registered haptics devices.
     /// For example on how to use this class see source code of
