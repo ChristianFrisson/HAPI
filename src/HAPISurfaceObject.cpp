@@ -35,5 +35,5 @@ HAPISurfaceObject::HAPISurfaceObject( bool _use_ref_count_lock ):
 RefCountedClass( _use_ref_count_lock ){}
 
 HAPISurfaceObject::~HAPISurfaceObject() {
-};
+}
 
