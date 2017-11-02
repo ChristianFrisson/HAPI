@@ -56,9 +56,7 @@ set( HAPI_LINK_FLAGS_DEBUG "" )
 find_package( OpenHaptics )
 if( OpenHaptics_FOUND )
   set( HAVE_OPENHAPTICS 1 )
-  set( OPENHAPTICS_DLL_NAMES "HD" )
-  addDelayLoadFlagsFromNames( OPENHAPTICS_DLL_NAMES HAPI_LINK_FLAGS_DEBUG )
-  addDelayLoadFlagsFromNames( OPENHAPTICS_DLL_NAMES HAPI_LINK_FLAGS_RELEASE )
+  set( OPENHAPTICS_DLL_NAMES "hd" )
   include_directories( ${OpenHaptics_INCLUDE_DIRS} 
                        ${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include )
   set( HAPI_optionalLibs ${HAPI_optionalLibs} ${OpenHaptics_LIBRARIES} )
@@ -421,9 +419,10 @@ if( WIN32 )
     # The backslashes are there because apparently endline characters will screw up the command line for anyone that wants to use Fastbuild
     set_target_properties( HAPI
                            PROPERTIES
-                           LINK_FLAGS_DEBUG "${HAPI_LINK_FLAGS_DEBUG}"
-                           LINK_FLAGS_RELEASE "${HAPI_LINK_FLAGS_RELEASE}"
-                           LINK_FLAGS_RELWITHDEBINFO "${HAPI_LINK_FLAGS_RELEASE}")
+                           LINK_FLAGS_DEBUG "${HAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:LIBCMT"
+                           LINK_FLAGS_RELEASE "${HAPI_LINK_FLAGS_RELEASE} /NODEFAULTLIB:LIBCMT"
+                           LINK_FLAGS_RELWITHDEBINFO "${HAPI_LINK_FLAGS_RELEASE} /NODEFAULTLIB:LIBCMT"
+                           LINK_FLAGS_MINSIZEREL "/NODEFAULTLIB:LIBCMT")
   endif()
 endif()
 
