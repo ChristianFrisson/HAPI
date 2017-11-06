@@ -193,8 +193,6 @@ void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {
 void HAPIVariableDepthSurface::getForces( ContactInfo &contact_info ) {
   Vec3 temp_point = contact_info.globalOrigin();
   Vec3 glbl_vect = temp_point - contact_info.globalContactPoint();
-  Vec3 glbl_local_probe_vector = contact_info.globalProbePosition() -
-    - contact_info.globalContactPoint();
   depth_get_lock.lock();
   this_contact_info = &contact_info;
   Vec3 temp_local_vec = contact_info.vectorToLocal( glbl_vect );

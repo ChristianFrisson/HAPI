@@ -1766,6 +1766,7 @@ void eigenValuesAndEigenVectorsJacobi(const Matrix3& A,
   Matrix3 J, b, t;
 
   // Repeat for some maximum number of iterations
+  prevoff = 0;
   for (n = 0; n < maxIterations; ++n)  {
     p = 0; q = 1;
     for ( i = 0; i < 3; ++i) for (j = 0; j < 3; ++j ) {
@@ -2698,7 +2699,7 @@ void BinaryBoundTree::closestPoint( const Vec3 &p,
       HAPI::Vec3 v;
       if( !children[1]->isLeaf() ) {
         HAPI::Vec3 cp;
-        cp = cp = children[1]->boundClosestPoint(p);
+        cp = children[1]->boundClosestPoint(p);
         v = (cp-p);
       }
 
@@ -3109,7 +3110,7 @@ void BBPrimitiveTree::closestPoint( const Vec3 &p,
       HAPI::Vec3 v;
       if( !children[1]->isLeaf() ) {
         HAPI::Vec3 cp;
-        cp = cp = children[1]->boundClosestPoint(p);
+        cp = children[1]->boundClosestPoint(p);
         v = (cp-p);
       }
 
@@ -4472,7 +4473,6 @@ bool AABox::lineIntersect( const Vec3 &from,
                            PointLocation &from_location,
                            FaceType face ) {
   HAPIFloat tmin = 0.0f;
-  HAPIFloat tmax = 1.0f;
   Vec3 d = to - from;
   Vec3 normal;
   FaceType return_face = face == BACK ? BACK : FRONT;
@@ -4500,7 +4500,6 @@ bool AABox::lineIntersect( const Vec3 &from,
         normal = tmp_normal;
       } else {
         tmin = 0.0f;
-        tmax = 1.0f;
         normal = Vec3();
         if( !CollisionInternals::findTMin( tmin, normal, -d, 
                                            _min, _max, to, from ) )

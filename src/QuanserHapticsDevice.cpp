@@ -170,7 +170,7 @@ void QuanserHapticsDevice::updateDeviceValues( DeviceValues &dv,
   // 0 180 -90
 
   /*dv.orientation = Rotation(1,0,0,0);
-  dv.orientation = Rotation( 0, 0, 1, (rcv_temp[3] + rotation_offset.z) ); //* H3DUtil::Constants::pi / 180  ); 
+  dv.orientation = Rotation( 0, 0, 1, (rcv_temp[3] + rotation_offset.z) ); // * H3DUtil::Constants::pi / 180  ); 
   dv.orientation = Rotation( dv.orientation * Vec3( 0, 1, 0 ), (rcv_temp[5] + rotation_offset.y) ) * dv.orientation;
   dv.orientation = Rotation( dv.orientation * Vec3( 1, 0, 0 ), (rcv_temp[4] + rotation_offset.x) ) * dv.orientation;
   */
