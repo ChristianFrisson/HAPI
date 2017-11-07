@@ -330,7 +330,7 @@ if( APPLE )
 endif()
 
 if( UNIX )
-    set_target_properties( HAPI PROPERTIES OUTPUT_NAME hapi )
+  set_target_properties( HAPI PROPERTIES OUTPUT_NAME hapi )
 endif()
 
 getDefaultH3DOutputDirectoryName( default_bin_install default_lib_install )
@@ -424,6 +424,10 @@ if( WIN32 )
                            LINK_FLAGS_RELWITHDEBINFO "${HAPI_LINK_FLAGS_RELEASE} /NODEFAULTLIB:LIBCMT"
                            LINK_FLAGS_MINSIZEREL "/NODEFAULTLIB:LIBCMT")
   endif()
+endif()
+
+if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
+  addCommonH3DGNUCompileFlags( HAPI_COMPILE_FLAGS )
 endif()
 
 # set compile flags for HAPI project
