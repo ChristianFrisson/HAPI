@@ -56,6 +56,7 @@ namespace HAPI {
       normal( _normal ),
       tex_coord( _tex_coord ),
       intersection( false ),
+      t( 0 ),
       id( _id ),
       face( intersected_face ),
       primitive( NULL ) {}
