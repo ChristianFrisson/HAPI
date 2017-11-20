@@ -160,7 +160,7 @@
 #define H3D_OSX
 #define HAPI_API
 #ifndef HAVE_SYS_TIME_H
-#define HAVE_SYS_TIME_H
+#define HAVE_SYS_TIME_H 1
 #endif
 #endif
 
@@ -169,7 +169,7 @@
 #define H3D_LINUX
 #define HAPI_API 
 #ifndef HAVE_SYS_TIME_H
-#define HAVE_SYS_TIME_H
+#define HAVE_SYS_TIME_H 1
 #endif
 #endif
 
