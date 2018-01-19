@@ -558,7 +558,6 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         // first shape that was intersected, and therefore also the
         // closest intersection
         closest_intersection = intersection;
-        //Vec3 v = intersection.point - proxy_pos;
         has_intersection = true;
         closest_constraints.push_back( pc  );
       } else {
