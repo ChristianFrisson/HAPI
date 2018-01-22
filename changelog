@@ -42,6 +42,10 @@ Compability issues:
 - The close function of DeviceLog is now meant to be called outside the
   haptics thread.
 - std namespace is not included into global namespace in HAPI anymore
+- Deprecated H3D_USE_DEPENDENCIES_ONLY used in CMake configuration. Replace
+  by checking existing targets.
+- Many CMake cache variables are now deprecated. Warnings should give
+  instructions on what to do about them.
 
 
 Changes for version 1.3.0:
