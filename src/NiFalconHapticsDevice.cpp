@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2014, SenseGraphics AB
+//    Copyright 2004-2018, SenseGraphics AB
 //    Copyright 2008-2009, Kyle Machulis
 //    Copyright 2009, Karljohan Lundin Palmerius
 //
