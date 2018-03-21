@@ -75,8 +75,8 @@ namespace HAPI {
     /// have no idea what it contains.
     /// \param _shape_id The id of this HAPIHapticShape.
     /// \param _clean_up_func A function that can be used for cleaning up
-    /// contents of user_data when this HAPIHapticShape is destroyed. The
-    /// argument to the function will be the contents of user_data member
+    /// contents of userdata when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of userdata member
     /// variable.
     HAPIHapticShape( const Matrix4 &_transform,
                      HAPISurfaceObject *_surface,
@@ -112,8 +112,8 @@ namespace HAPI {
     /// have no idea what it contains.
     /// \param _shape_id The id of this HAPIHapticShape.
     /// \param _clean_up_func A function that can be used for cleaning up
-    /// contents of user_data when this HAPIHapticShape is destroyed. The
-    /// argument to the function will be the contents of user_data member
+    /// contents of userdata when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of userdata member
     /// variable.
     HAPIHapticShape( HAPISurfaceObject *_surface,
                      Collision::FaceType _touchable_face = 
@@ -152,8 +152,8 @@ namespace HAPI {
     /// have no idea what it contains.
     /// \param _shape_id The id of this HAPIHapticShape.
     /// \param _clean_up_func A function that can be used for cleaning up
-    /// contents of user_data when this HAPIHapticShape is destroyed. The
-    /// argument to the function will be the contents of user_data member
+    /// contents of userdata when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of userdata member
     /// variable.
     HAPIHapticShape( const Matrix4 &_transform,
                      const Vec3 &_velocity,
@@ -200,8 +200,8 @@ namespace HAPI {
     /// have no idea what it contains.
     /// \param _shape_id The id of this HAPIHapticShape.
     /// \param _clean_up_func A function that can be used for cleaning up
-    /// contents of user_data when this HAPIHapticShape is destroyed. The
-    /// argument to the function will be the contents of user_data member
+    /// contents of userdata when this HAPIHapticShape is destroyed. The
+    /// argument to the function will be the contents of userdata member
     /// variable.
     HAPIHapticShape( const Vec3 &_velocity,
                      const Rotation &_angular_velocity,
