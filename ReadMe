@@ -60,13 +60,13 @@ Using debian packages:
 1. Modify sources.list ( or whatever file is used to specify urls to debian
    packages ) by adding ftp://www.h3dapi.org/pub/releases/linux/debian/
    to it.
-   On Ubuntu 12.04 simply use:
+   On Ubuntu 18.04 simply use:
      sudo gedit /etc/apt/sources.list
      Then add 
-       deb ftp://www.h3dapi.org/pub/releases/linux/debian precise sensegraphics
-       deb-src ftp://www.h3dapi.org/pub/releases/linux/debian precise sensegraphics
+       deb ftp://www.h3dapi.org/pub/releases/linux/debian bionic sensegraphics
+       deb-src ftp://www.h3dapi.org/pub/releases/linux/debian bionic sensegraphics
      
-     If you use a different linux version simply switch "precise" for the name
+     If you use a different linux version simply switch "bionic" for the name
      of your distribution.
      
 2. sudo apt-get update
@@ -82,7 +82,7 @@ Using debian packages:
 Building from source:
 Since you have this file you have already obtained and unpacked the source for
 HAPI. To build HAPI on Linux follow these steps.
-1. Install version 2.8.0 or later of CMake. To do this on Ubuntu open a
+1. Install version 2.8.7 or later of CMake. To do this on Ubuntu open a
    terminal and write:
     sudo apt-get install cmake
 
@@ -99,13 +99,13 @@ HAPI. To build HAPI on Linux follow these steps.
    PCISCAN_LIBRARY should also be set if the library is not found in
    default location.
 
-   If using Ubuntu 7.10 or later, several of these libraries can be obtained
-   by using the apt-get feature. Note that for later versions of Ubuntu than
-   7.10 the required and/or optional libraries might be of newer versions that
-   those given here. The newer versions shold work with HAPI but it might not
+   If using Ubuntu, several of these libraries can be obtained
+   by using the apt-get feature. Note that for previous or later versions of
+   Ubuntu than 18.04 the required and/or optional libraries might be of newer versions
+   that those given here. The newer versions should work with HAPI but it might not
    be guaranteed. In a terminal write:
-    sudo apt-get update sudo apt-get install gcc g++ libglew-dev libglut \
-    libglut3-dev alien
+    sudo apt-get update sudo apt-get install gcc g++ libglew-dev freeglut3 \
+    freeglut3-dev alien
 
    The first two are the C++ compilers needed to compile HAPI.
 
@@ -156,7 +156,9 @@ Build from source:
    expand the H3DAPI line and deselect and then select HAPI (all features of HAPI).
    Then proceed with installation.
 4. Use CMake to generate project files for your compiler. Tested with visual
-   studio 2003, 2005, 2008, 2010 and 2012.
+   studio 2010, 2012, 2013, 2015 and 2017.
+   Note: We recommend using other visual studio than 2012, as the support of some
+   features have been disabled such as wxWidgets.
 5. Open the solution file and build the INSTALL target.
 6. Build examples in HAPI/examples/build directory.
 
@@ -166,7 +168,7 @@ Installation on MacOS X:
 Currently you need to build HAPI on MacOS X yourself. Since you have this
 file you have already obtained and unpacked the source for HAPI. To build
 HAPI on MacOS X follow these steps.
-1. Install version 2.8.0 or later of CMake.
+1. Install version 2.8.7 or later of CMake.
 2. Install XCode. If gcc is an unrecognized command in the terminal after
    installing XCode there is a high probability that CMake will not be able to
    generate build files for gcc and/or XCode. Another version of XCode could be
@@ -184,8 +186,8 @@ HAPI on MacOS X follow these steps.
    of where the build files will be created. Use for example HAPI/build/OSX.
    Press configure, choose which system to generate build files for wait and
    press configure again until the generate button can be used. Press generate
-   and then the build files will be in the choosen folder. If "Unix Makefile"
-   are choosen then proceed from step 3 in the linux guide above.
+   and then the build files will be in the chosen folder. If "Unix Makefile"
+   are chosen then proceed from step 3 in the linux guide above.
 5. There are example applications in this distribution that use HAPI. To build
    these use the CMakeLists.txt located in the folder HAPI/examples.
 
