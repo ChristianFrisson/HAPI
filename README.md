@@ -175,8 +175,6 @@ To install HAPI on Windows follow these steps:
    Then proceed with installation.
 4. Use CMake to generate project files for your compiler. Tested with visual
    studio 2010, 2012, 2013, 2015 and 2017.  
-   Note: We recommend using other visual studio than 2012, as the support of some
-   features have been disabled such as wxWidgets.
 5. Open the solution file and build the INSTALL target.
 6. Build examples in HAPI/examples/build directory.
 
