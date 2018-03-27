@@ -1,11 +1,12 @@
+# HAPI
 HAPI is a cross-platform, device independent easily extendable API that can be
 used to add haptics to an application. For information on how you are allowed
 to use HAPI see the LICENSE file in the same folder as this file.
 
 This file contains complete installation instructions for Linux, Mac and Windows.
 
--------------------------------------------------------------------------------
-External Libraries:
+
+## External Libraries
 HAPI depends on other libraries. Some of them are required for HAPI to
 compile others are optional. The build system used by HAPI will detect which
 libraries are installed on the system and only enable the features that the
@@ -13,11 +14,11 @@ system can support. For Windows most libraries are included. Those missing must
 be downloaded, compiled and installed on the system used if that feature is
 desired. The libraries used by HAPI are:
  
- Required libraries. Without these HAPI will not function.
+**Required libraries :** Without these HAPI will not function.
   - pthread. Included with Windows distribution, most probably installed on
     other systems.
  
- Optional libraries, without these some features of HAPI will be disabled
+**Optional libraries :** Without these some features of HAPI will be disabled
  and some of the distributed examples will not work.
   - wxWidgets. Needed for one of the examples distributed. http://www.wxwidgets.org/
   - OpenGL. Installed on all systems. For those interested see http://www.opengl.org/
@@ -53,38 +54,46 @@ desired. The libraries used by HAPI are:
   
   Note that all haptics libraries does not exist for all operating systems.
 
--------------------------------------------------------------------------------
 
-Installation on Linux:
+## Installation on Linux
 Using debian packages:
 1. Modify sources.list ( or whatever file is used to specify urls to debian
    packages ) by adding ftp://www.h3dapi.org/pub/releases/linux/debian/
-   to it.
-   On Ubuntu 18.04 simply use:
+   to it.  
+   On Ubuntu 18.04 simply use:  
+     ``` 
      sudo gedit /etc/apt/sources.list
-     Then add 
-       deb ftp://www.h3dapi.org/pub/releases/linux/debian bionic sensegraphics
-       deb-src ftp://www.h3dapi.org/pub/releases/linux/debian bionic sensegraphics
-     
-     If you use a different linux version simply switch "bionic" for the name
-     of your distribution.
-     
-2. sudo apt-get update
-3. sudo apt-get install libhapi1
-4. If examples are required use:
-     apt-get source libhapi
-     then navigate to libhapi-directory/examples/build
-     mkdir linux
-     cd linux
-     cmake ../
-     make
+     ```
+   Then add
+     ``` 
+     deb ftp://www.h3dapi.org/pub/releases/linux/debian bionic sensegraphics
+     deb-src ftp://www.h3dapi.org/pub/releases/linux/debian bionic sensegraphics
+     ``` 
+   If you use a different linux version simply switch "bionic" for the name
+   of your distribution.
 
-Building from source:
+2. ` sudo apt-get update `
+3. ` sudo apt-get install libhapi1 `
+4. If examples are required use:
+   ```
+   apt-get source libhapi
+   ```
+   then navigate to libhapi-directory/examples/build
+   ```
+   mkdir linux
+   cd linux
+   cmake ../
+   make
+   ```
+
+### Building from source:
 Since you have this file you have already obtained and unpacked the source for
 HAPI. To build HAPI on Linux follow these steps.
 1. Install version 2.8.7 or later of CMake. To do this on Ubuntu open a
    terminal and write:
-    sudo apt-get install cmake
+   ```
+   sudo apt-get install cmake
+   ```
 
 2. Download and install H3DUtil.
 
@@ -93,7 +102,7 @@ HAPI. To build HAPI on Linux follow these steps.
    features that the system can support. If more features are desired the
    corresponding library has to be installed. Note that some libraries are
    required for HAPI to compile. See the list of external libraries in the
-   beginning of this ReadMe.
+   beginning of this README.
    
    If DHD-API is obtained then libusb needs to be installed .
    PCISCAN_LIBRARY should also be set if the library is not found in
@@ -104,9 +113,9 @@ HAPI. To build HAPI on Linux follow these steps.
    Ubuntu than 18.04 the required and/or optional libraries might be of newer versions
    that those given here. The newer versions should work with HAPI but it might not
    be guaranteed. In a terminal write:
-    sudo apt-get update sudo apt-get install gcc g++ libglew-dev freeglut3 \
-    freeglut3-dev alien
-
+   ```
+   sudo apt-get update sudo apt-get install gcc g++ libglew-dev freeglut3 freeglut3-dev alien
+   ```
    The first two are the C++ compilers needed to compile HAPI.
 
    HAPI support more devices but only the two mentioned are tested. See the wiki
@@ -114,34 +123,43 @@ HAPI. To build HAPI on Linux follow these steps.
 
    To install libusb required by DHD-api from ForceDimension on Ubuntu do the
    following:
-    sudo apt-get install libusb++-dev
+   ```
+   sudo apt-get install libusb++-dev
+   ```
    
    In version 8.04 of Ubuntu another library might need to be installed:
-     sudo apt-get install libxi-dev libxmu-dev   
+   ```
+   sudo apt-get install libxi-dev libxmu-dev
+   ```   
 
 4. In the terminal change folder to the HAPI/build folder. Write:
-    cmake .
+   ```
+   cmake .
+   ```
    This will generate a make file. To use the makefile write:
-    make
+   ```
+   make
+   ```
 
    HAPI will be built. When the make finished write:
-    sudo make install
-
+   ```
+   sudo make install
+   ```
    HAPI libraries are now installed on your system. But there is no
    application installed that use HAPI libraries.
 
 5. There are example applications in this distribution that use HAPI. To build
    these simply do the following:
     Change folder to HAPI/examples.
+    ```
     cmake .
-
-   To test one of the examples do the following.
+    ```
+   To test one of the examples do the following.  
     Change folder to HAPI/examples/SurfaceExample/build
     ./SurfaceExample
 
--------------------------------------------------------------------------------
 
-Installation on Windows:
+## Installation on Windows
 To install HAPI on Windows follow these steps:
 1. Go to www.h3d.org.
 2. Download latest release of H3DAPI.
@@ -149,25 +167,26 @@ To install HAPI on Windows follow these steps:
    expand the H3DAPI line and deselect and then select HAPI runtime.
    Then proceed with installation.
 
-Build from source:
+### Building from source:
 1. Go to www.h3d.org.
 2. Download latest release of H3DAPI.
 3. In the installer, on the page where you choose what to install,
    expand the H3DAPI line and deselect and then select HAPI (all features of HAPI).
    Then proceed with installation.
 4. Use CMake to generate project files for your compiler. Tested with visual
-   studio 2010, 2012, 2013, 2015 and 2017.
+   studio 2010, 2012, 2013, 2015 and 2017.  
    Note: We recommend using other visual studio than 2012, as the support of some
    features have been disabled such as wxWidgets.
 5. Open the solution file and build the INSTALL target.
 6. Build examples in HAPI/examples/build directory.
 
--------------------------------------------------------------------------------
 
-Installation on MacOS X:
+## Installation on MacOS X
 Currently you need to build HAPI on MacOS X yourself. Since you have this
 file you have already obtained and unpacked the source for HAPI. To build
-HAPI on MacOS X follow these steps.
+HAPI on MacOS X follow the steps below.
+
+### Building from source:
 1. Install version 2.8.7 or later of CMake.
 2. Install XCode. If gcc is an unrecognized command in the terminal after
    installing XCode there is a high probability that CMake will not be able to
