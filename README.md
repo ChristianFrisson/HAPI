@@ -43,9 +43,9 @@ desired. The libraries used by HAPI are:
   - EntactAPI. Needed to compile with support for devices from Entact. Included with
     the windows distrubition of HAPI. See http://www.entactrobotics.com/ for more info.
   - Virtuose API. Needed to compile with support for devices from Haption. Included with
-    the windows distrubition of HAPI. See www.haption.com for more info.
+    the windows distribution of HAPI. See www.haption.com for more info.
   - SimballMedical API. Needed for the SimballHapticsDevice class. Included with
-    the windows distrubition of HAPI. See http://www.g-coder.com for more info.
+    the windows distribution of HAPI. See http://www.g-coder.com for more info.
     Note that this is not really a haptics device at the moment.
   - Quanser API. Needed to compile with support for Quanser devices.
     See www.quanser.com for more info.
