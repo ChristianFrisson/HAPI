@@ -45,7 +45,7 @@ if( GENERATE_H3D_PACKAGE_PROJECT )
     set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "HAPI. A cross platform, device independent haptics library." )
     set( CPACK_PACKAGE_VENDOR "SenseGraphics AB" )
     set( CPACK_PACKAGE_CONTACT "support@sensegraphics.com" )
-    set( CPACK_PACKAGE_DESCRIPTION_FILE "${HAPI_SOURCE_DIR}/../ReadMe" )
+    set( CPACK_PACKAGE_DESCRIPTION_FILE "${HAPI_SOURCE_DIR}/../README.md" )
     set( CPACK_RESOURCE_FILE_LICENSE "${HAPI_SOURCE_DIR}/../LICENSE" )
     set( CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};HAPI;ALL;/" )
     set( CPACK_PACKAGE_INSTALL_DIRECTORY "HAPI" )
@@ -364,7 +364,7 @@ if( GENERATE_H3D_PACKAGE_PROJECT )
 
   install( FILES ${HAPI_SOURCE_DIR}/../changelog
                  ${HAPI_SOURCE_DIR}/../LICENSE
-                 ${HAPI_SOURCE_DIR}/../ReadMe
+                 ${HAPI_SOURCE_DIR}/../README.md
            DESTINATION HAPI
            COMPONENT HAPI_cpack_sources )
 

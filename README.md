@@ -195,7 +195,7 @@ HAPI on MacOS X follow the steps below.
    features that the system can support. If more features are desired the
    corresponding library has to be installed. Note that some libraries are
    required for HAPI to compile. See the list of external libraries in the
-   beginning of this ReadMe.
+   beginning of this README.
 4. Generate build files for your build system using CMake. Either use the
    console version as in the guide for linux above or use the GUI version in
    which the first textbox should contain the location of the CMakeLists.txt
