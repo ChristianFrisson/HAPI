@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 /// \mainpage HAPI Documentation
-/// Copyright 2004 - 2014, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
+/// Copyright 2004 - 2018, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
 
 #ifndef __HAPI_H__
 #define __HAPI_H__
