@@ -54,17 +54,17 @@ inherit from the class HAPIHapticShape. These are the abstract functions
 that must be implemented when subclassing HAPIHapticShape.
 
 \begin{itemize}
-\item void closestPointOnShape( const Vec3 \&p, Vec3 \&cp, Vec3 \&n, Vec3 \&tc )
+\item {\ttfamily void closestPointOnShape( const Vec3 \&p, Vec3 \&cp, Vec3 \&n, Vec3 \&tc )}
 - Get the closest point and normal on the object to the given point p.
-\item bool lineIntersectShape( const Vec3 \&from, const Vec3 \&to, Collision::IntersectionInfo \&result, Collision::FaceType face )
+\item {\ttfamily bool lineIntersectShape( const Vec3 \&from, const Vec3 \&to, Collision::IntersectionInfo \&result, Collision::FaceType face )}
 - Detect collision between a line segment and the object.
-\item bool movingSphereIntersectShape( HAPIFloat radius, const Vec3 \&from, const Vec3 \&to )
+\item {\ttfamily bool movingSphereIntersectShape( HAPIFloat radius, const Vec3 \&from, const Vec3 \&to )}
 - Detect collision between a moving sphere and the object.
-\item void getConstraintsOfShape( const Vec3 \&point, Constraints \&constraints, Collision::FaceType face, HAPIFloat radius )
+\item {\ttfamily void getConstraintsOfShape( const Vec3 \&point, Constraints \&constraints, Collision::FaceType face, HAPIFloat radius )}
 - Get constraint planes of the shape. A proxy of a haptics renderer will always stay above any constraints added.
-\item void getTangentSpaceMatrixShape( const Vec3 \&point, Matrix4 \&result\_mtx )
+\item {\ttfamily void getTangentSpaceMatrixShape( const Vec3 \&point, Matrix4 \&result\_mtx )}
 - Calculates a matrix which transforms from local space of the shape to texture space of the shape.
-\item void glRenderShape() - Render a graphical representation of the shape
+\item {\ttfamily void glRenderShape() - Render a graphical representation of the shape}
 using OpenGL. This function only needs to be implemented if HAPI is built with OpenGL support.
 \end{itemize}
 

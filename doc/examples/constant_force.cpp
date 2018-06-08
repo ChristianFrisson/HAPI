@@ -1,4 +1,3 @@
-
 #include <HAPI/AnyHapticsDevice.h>
 #include <HAPI/HapticForceField.h>
 

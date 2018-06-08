@@ -19,8 +19,8 @@ then generated to bring the haptics device out of the surface, towards
 the proxy, and usally some kind of spring force between the proxy and
 haptics device is used ( see figure \ref{Proxy-probe} ). When the user 
 moves the haptics device inside
-the object the proxy follows the movement, but on the surface. How the
-proxy follows determines how the structure of the surface will
+the object the proxy follows the movement, but stays on the surface. In what way the
+proxy follows the probe determines how the structure of the surface will
 feel. For example, if the proxy is always moved to a local minimum on
 the distance to the surface, the surface will feel completely smooth,
 but if the proxy is dragging behind friction effects are felt. In
@@ -112,7 +112,7 @@ Chai3D \cite{chai3d} is an open source haptics library distributed under the GNU
 \end{minipage}
 
 \subsection{OpenHaptics}
-OpenHaptics \cite{openhaptics} is a proprietary haptics library developed by SensAble Technologies. It uses a point proxy based approach and provides a stable haptic feedback. It is however not very extendable in terms of user defined surfaces and only works with haptics from SensAble Technologies.
+OpenHaptics \cite{openhaptics} is a proprietary haptics library. It uses a point proxy based approach and provides a stable haptic feedback. It is however not very extendable in terms of user defined surfaces and only works with haptics devices from 3D Systems.
 
 \begin{minipage}[t]{3in}
 \subsubsection{Pros}
@@ -124,7 +124,7 @@ OpenHaptics \cite{openhaptics} is a proprietary haptics library developed by Sen
 \begin{minipage}[t]{3in}
 \subsubsection{Cons}
 \begin{itemize}
-\item Only works with devices from SensAble.
+\item Only works with devices from 3D Systems (or old Sensable/GeoMagic devices).
 \item No user defined surfaces.
 \item Closed source.
 \end{itemize}
@@ -135,7 +135,7 @@ OpenHaptics \cite{openhaptics} is a proprietary haptics library developed by Sen
 A surface object in HAPI is an object that defines the haptic properties of a geometric shape, such as stiffness and friction. It is responsible for generating forces at a local contact point on a shape. The base class of all such objects is HAPISurfaceObject and there are several surfaces available in HAPI. 
 
 \begin{itemize}
-\item FrictionSurface - Allows the user to set stiffness, damping, static friction and dynamic friction parameters. The force produced is a linear spring-damper force between the proxy position and probe position, i.e. F = stiffness * (proxy\_pos - probe\_pos) - damping * probe\_velocity. The friction parameters control how the proxy move over the surface during contact. The static friction parameter controls how hard it is to start moving across the surface from a resting contact while the dynamic friction parameter controls how hard it is to move across the surface when the proxy has started moving.
+\item FrictionSurface - Allows the user to set stiffness, damping, static friction and dynamic friction parameters. The force produced is a linear spring-damper force between the proxy position and probe position, i.e. {\ttfamily F = stiffness * (proxy\_pos - probe\_pos) - damping * probe\_velocity}. The friction parameters control how the proxy move over the surface during contact. The static friction parameter controls how hard it is to start moving across the surface from a resting contact while the dynamic friction parameter controls how hard it is to move across the surface when the proxy has started moving.
 \item DepthMapSurface - Use a texture to define the depth of the surface (only available for GodObjectRenderer and RuspiniRenderer). A minimization algorithm controls how the proxy move over the surface. If the proxy is in an area on the surface that is considered deep it will be harder to move the proxy to an area on the surface which is considered higher. The depth calculated also modifies the force so that deep (and high) parts of the surface can be felt.
 \item HapticTexturesSurface - A surface similar to FrictionSurface with the exception that the four parameters stiffness, damping, static\_friction and dynamic\_friction are modified by textures given to the surface.
 \end{itemize}
@@ -162,7 +162,7 @@ The base class for all surface classes is HAPISurfaceObject. The surface object 
 \subsubsection{Moving the proxy}
 The movement of the proxy is often used to control the feeling of an object when moving across the surface, e.g. if the surface should feel smooth or rough. Letting the proxy move along the contact plane as to minimise the distance between proxy and probe will create a totally smooth surface since the forces will always just be normal forces and no tangential forces ( see figure \ref{proxy movement} ). Letting the proxy lag behind in different ways can be used to create different friction-like effects and not letting it move at all forces the proxy to be stuck at the first point of contact of the surface (unless the probe is lifted out of the surface). The proxy movement is a 2D movement along the xz-plane of the local contact coordinate system. 
 
-When defining a new surface the virtual function getProxyMovement( ContactInfo \&ci ) in HAPISurfaceObject is used to define the proxy movement. The user should call the ci.setLocalProxyMovement( Vec2f \&pm ) function here to set the proxy movement. The rendering system will try to move the proxy according to the specified movement but might be stopped by colliding with other shapes along the path to the new position. The proxy will then stay at this collision point instead of moving all the way to the specified position.
+When defining a new surface the virtual function {\ttfamily getProxyMovement( ContactInfo \&ci )} in HAPISurfaceObject is used to define the proxy movement. The user should call {\ttfamily ci.setLocalProxyMovement( Vec2f \&pm )} here to set the proxy movement. The rendering system will try to move the proxy according to the specified movement but might be stopped by colliding with other shapes along the path to the new position. The proxy will then stay at this collision point instead of moving all the way to the specified position.
 
 \begin{figure} 
   \centering 
@@ -173,7 +173,7 @@ When defining a new surface the virtual function getProxyMovement( ContactInfo \
 
 \subsubsection{Calculating an interaction force}
 After the new position of the proxy has been calculated, the interaction force with the surface has to be determined. For the most common surface types this is usually a linear spring force pulling the device back towards the proxy. It is however totally up to the user to define the force profile of the interaction to model e.g. button clicks and other non-linear behaviour. To have the most stable force feedback it is recommended that the direction of the force is towards the proxy.  
-The interaction force(and possible torque) in a new surface is determined by defining the virtual function getForces( ContactInfo \&ci ) by calling the setGlobalForce or setLocalForce functions in the ci object. 
+The interaction force(and possible torque) in a new surface is determined by defining the virtual function {\ttfamily getForces( ContactInfo \&ci )} by calling the setGlobalForce or setLocalForce functions of the ci object. 
 
 \subsection{The ContactInfo object}
 When calculating the proxy movement and the interaction force the user has access to a ContactInfo object. This object contains information about the surface contact that can be used in the calculations. It is also the object in which to return the calculated forces and proxy movement. The most commonly used values provided are:
@@ -202,7 +202,7 @@ The output parameters that can be set are:
 
 \begin{itemize}
 \item Force - setGlobalForce/setLocalForce
-\item Torque - setGlobalForce/setLocalForce
+\item Torque - setGlobalTorque/setLocalTorque
 \item Proxy movement - setLocalProxyMovement
 \end{itemize}
 

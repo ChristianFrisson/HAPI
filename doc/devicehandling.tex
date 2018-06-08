@@ -1,17 +1,18 @@
 
 \chapter {Device handling}
-HAPI is device independent and can be used with a wide variety of haptics devices. The haptics devices currently supported by HAPI are:
+HAPI is device independent and can be used with a wide variety of haptics devices. Some of the haptics devices currently supported by HAPI are:
 
 \begin{itemize}
-\item PHANToM Devices from SensAble Technologies ( implemented in the
-  PhantomHapticsDevice class ) \cite{sensable}
+\item Haptic Devices from 3D Systems \cite{3dsystems} ( implemented in the
+  PhantomHapticsDevice class ). Note that this includes the devices from
+  SensAble Technologies and GeoMagic.
 \item Delta and Omega devices from ForceDimension ( implemented in the
-  ForceDimensionHapticsDevice class ). \cite{forcedimension} 
-\item Falcon from Novint ( implemented in the FalconHapticsDevice class ). \cite{novint} 
-\item HapticMaster from Moog FCS Robotics( implemented in the HapticMasterDevice class ).\cite{moogfcs} \cite{linde02hapticmaster} 
+  ForceDimensionHapticsDevice class ). \cite{forcedimension}
+\item Falcon from Novint ( implemented in the FalconHapticsDevice class, not maintained ). \cite{novint}
 \end{itemize}
 
-Each of these devices has a special class implementing the interface to the device. These classes also provide device specific functions that can be used. Most of the time the user does not care what haptics device is used and can then use the AnyHapticsDevice class when specifying the haptics device instead. The AnyHapticsDevice class will try to find a haptics device to use by trying to initialize all the devices that are supported. The haptics devices used will be the first one that initializes successfully.
+Each of these devices has a special class implementing the interface to the device. These classes also provide device specific functions that can be used. Most of the time the user should not have to care what haptics device is used and can then use the AnyHapticsDevice class when specifying the haptics device instead. The AnyHapticsDevice class will try to find a haptics device to use by trying to initialize all the devices that are supported. The haptics devices used will be the first one that initializes successfully.
+For a complete list of supported haptics device see the inheritance diagram for the class HAPIHapticsDevice in the class documentation.
 
 \section{Calibration}
 By default the coordinates given by the haptics device classes are
@@ -19,19 +20,19 @@ given in metres in the local coordinate space of the haptics
 device. Often this is not the coordinate system a user wants
 though, and therefore HAPI provides a means to change the coordinate
 system by adding a calibration matrix. The position given by the
-getPosition() function will then be pos = matrix * orig\_pos. It is
+getPosition() function will then be {\ttfamily pos = matrix * orig\_pos}. It is
 also possible to calibrate the orientation and the result will be in
-the same way, i.e. orn = orn\_calib * orig\_orn. In this case the
+the same way, i.e. {\ttfamily orn = orn\_calib * orig\_orn}. In this case the
 calibration value will not be a matrix, but a Rotation object.
 
 \section{Layering}
 When adding shapes to be rendered at the haptics device, one can
-specify what ``layer'' in which it should be rendered. Each layer has
+specify which layer they should be rendered in. Each layer can have
 its own haptics rendering algorithm, which makes it possible to render
 different shapes with different haptics rendering algorithms on one
 haptics device. The resulting force will be the sum of the forces from
-each layer as illustrated in figure \ref{Layering_fig}. A common use is,
-for example in medical simulation, to
+each layer as illustrated in figure \ref{Layering_fig}. A common use in
+medical simulation would be to
 specify shapes for different tissue layers in different haptic
 layers. For example, if rendering a hand, one might use one layer for
 the skin and one layer for the bone of the hand. This will make it
@@ -47,7 +48,7 @@ information on how to add shapes to a specific layer.
   \includegraphics{images/layering2.pdf}
   \caption{To the right all surface are part of layer 0. The proxy is then stopped at the first surface and the
 underlying surface will never be felt. To the left the two surfaces are put in two different layers which
-each has its own proxy, which means it will be felt.} 
+each has its own proxy, which means both surfaces will be felt.} 
   \label{Layering_fig} 
 \end{figure}
 
@@ -71,31 +72,31 @@ The device handling functions are for communication with the haptics device, suc
 
 The calibration functions lets the user manipulate the coordinate system the values of the haptics device are reported in.
 
-The haptic rendering functions are used to define what to render on the haptics device, e.g. which effects, which shapes and what haptics renderer.
+The haptic rendering functions are used to define what to render on the haptics device, e.g. which effects, which shapes and which haptics renderers to use.
 
 \subsection{Device handling functions}
 
 Most common device handling functions:
 
 \begin{itemize}
-\item ErrorCode initDevice( int \_thread\_frequency = 1024 ) -  Does all the initialization needed for the
+\item {\ttfamily ErrorCode initDevice( int \_thread\_frequency = 1024 )} -  Does all the initialization needed for the
 device before starting to use it.
-\item ErrorCode releaseDevice() - Releases all resources that were allocated
+\item {\ttfamily ErrorCode releaseDevice()} - Releases all resources that were allocated
 in initDevice.
-\item ErrorCode enableDevice() - Enabling the device means that the
-positions and forces will be updated.  
-\item ErrorCode disableDevice() - Stop the forces and position
+\item {\ttfamily ErrorCode enableDevice()} - Enabling the device means that the
+positions and forces will be updated.
+\item {\ttfamily ErrorCode disableDevice()} - Stop the forces and position
 from being updated, but does not release the device.
-\item DeviceValues getDeviceValues() - Get a structure with all the
+\item {\ttfamily DeviceValues getDeviceValues()} - Get a structure with all the
   device values that are recorded each frame (such as position,
   velocity,etc)
-\item Vec3 getPosition() - Get the position of the haptics device (in
+\item {\ttfamily Vec3 getPosition()} - Get the position of the haptics device (in
   m)
-\item Vec3 getVelocity() - Get the velocity of the haptics device (in
+\item {\ttfamily Vec3 getVelocity()} - Get the velocity of the haptics device (in
   m/s)
-\item Rotation getOrientation() - Get the orientation of the haptics
+\item {\ttfamily Rotation getOrientation()} - Get the orientation of the haptics
   device stylus (if 6 DOF input).
-\item bool getButtonStatus( unsigned int button\_nr ) - get the status
+\item {\ttfamily bool getButtonStatus( unsigned int button\_nr )} - get the status
   for a given button on the haptics device.
 \end{itemize}
 
@@ -107,13 +108,13 @@ Following are the most commonly used functions for modifying the local
 coordinate system the values of the haptics device are reported in.
 
 \begin{itemize}
-\item void setPositionCalibration( const Matrix4 \&m ) - Set the
+\item {\ttfamily void setPositionCalibration( const Matrix4 \&m )} - Set the
  position calibration matrix
-\item const Matrix4 \&getPositionCalibration() - Get the current
+\item {\ttfamily const Matrix4 \&getPositionCalibration()} - Get the current
  position calibration matrix
-\item void setOrientationCalibration( const Rotation \&r ) - Set the
+\item {\ttfamily void setOrientationCalibration( const Rotation \&r )} - Set the
   orientation calibration
-\item const Rotation \&getOrientationCalibration() - Get the
+\item {\ttfamily const Rotation \&getOrientationCalibration()} - Get the
   current orientation calibration
 \end{itemize}
 
@@ -125,31 +126,31 @@ how to render objects with the haptics device.
 
 \begin{itemize} 
 
-\item void setHapticsRenderer( HAPIHapticsRenderer *r, unsigned int
-  layer = 0 ) - Set the haptics rendering algoritm to use for a
+\item {\ttfamily void setHapticsRenderer( HAPIHapticsRenderer *r, unsigned int
+  layer = 0 )} - Set the haptics rendering algoritm to use for a
   specific layer on the haptics device
 
-\item void addShape( HAPIHapticShape *shape, unsigned int layer = 0 )
-  - Render a shape on the given layer. The shape will be rendered
+\item {\ttfamily void addShape( HAPIHapticShape *shape, unsigned int layer = 0 )
+ } - Render a shape on the given layer. The shape will be rendered
   until removed.
-\item void removeShape( HAPIHapticShape *shape, unsigned int layer = 0
-  ) - Remove a shape currently being rendered.
-\item void clearShapes( unsigned int layer = 0 ) - Remove all shapes
+\item {\ttfamily void removeShape( HAPIHapticShape *shape, unsigned int layer = 0
+  )} - Remove a shape currently being rendered.
+\item {\ttfamily void clearShapes( unsigned int layer = 0 )} - Remove all shapes
   on a layer. 
 
-\item void addEffect( HAPIForceEffect *effect, HAPITime fade\_in\_time = 0 ) - Add a haptic
+\item {\ttfamily void addEffect( HAPIForceEffect *effect, HAPITime fade\_in\_time = 0 )} - Add a haptic
   effect to render by the haptics device. The effect will be rendered
   until removed.
-\item void removeEffect( HapticForceEffect *effect, HAPITime fade\_out\_time = 0 ) - Remove a haptic
+\item {\ttfamily void removeEffect( HapticForceEffect *effect, HAPITime fade\_out\_time = 0 )} - Remove a haptic
   effect currently being rendered.
-\item void clearEffects() - Remove all haptic effects currently rendered.
-\item void transferObjects() - Transfer the current objects to the haptics loop.
+\item {\ttfamily void clearEffects()} - Remove all haptic effects currently rendered.
+\item {\ttfamily void transferObjects()} - Transfer the current objects to the haptics loop.
 \end{itemize}
 
 The above functions works at a temporary local copy of effects and
 shapes. The haptics is rendered in a different loop and in order to
 transfer the changes made to that loop the user has to call the
-transferObjects() function. 
+{\ttfamily transferObjects()} function. 
 
 Example:
 
@@ -171,16 +172,16 @@ Support for new devices can easily be added to HAPI by subclassing the
 HAPIHapticsDevice class and implement the four abstract functions below.
 
 \begin{itemize}
-\item bool initHapticsDevice( int \_thread\_frequency = 1024 ) - initialize the haptics device. Return
+\item {\ttfamily bool initHapticsDevice( int \_thread\_frequency = 1024 )} - initialize the haptics device. Return
   true on success, otherwise false and set an error message. 
-\item bool releaseHapticsDevice() - releases all resources held by the
+\item {\ttfamily bool releaseHapticsDevice()} - releases all resources held by the
   haptics device. Return true on success, otherwise false and set an
   error message. 
-\item void updateDeviceValues( DeviceValues \&dv, HAPITime dt ) - fill
+\item {\ttfamily void updateDeviceValues( DeviceValues \&dv, HAPITime dt ) } - fill
   in the DeviceValues structures with the current values from the
   haptics device(values are e.g. position, velocity, etc). dt is the
   time in seconds since the last update.
-\item void sendOutput( DeviceOutput \&dv, HAPITime dt ) - render the
+\item {\ttfamily void sendOutput( DeviceOutput \&dv, HAPITime dt )} - render the
   output given in the DeviceOutput structure (such as force and torque)
   on the haptics device. dt is the time in seconds since the last update.
 \end{itemize}

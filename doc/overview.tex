@@ -49,7 +49,7 @@ Some of them have restrictions on what features of HAPI can be used, e.g. some d
 HAPI contains classes for collision handling used in the
 haptics rendering algorithms. A user have to create instances of these
 classes and feed them to the haptics device that they are to be
-rendered at. It also contains classes for building binary bound trees
+rendered at. HAPI also contains classes for building binary bound trees
 such as axis-aligned and oriented bounding box trees from triangles,
 that can be used in order to do faster collision detection. 
 
@@ -65,7 +65,7 @@ mentioned earlier).
 
 \subsubsection{Force effects}
 Often a user wants to generate forces that are not based on
-touching geometries, but instead is only depending on the state of the haptics device, such as the position and orientation. Some exampels of such effects are force fields, gravity, springs, viscosity, etc. In these cases a force effect can be used.
+touching geometries, but instead is only depending on the state of the haptics device, such as the position and orientation. Some examples of such effects are force fields, gravity, springs, viscosity, etc. In these cases a force effect can be used.
 
 \subsection{Thread handling}
 HAPI manages high-priority threads running at 1000 Hz for the haptics
