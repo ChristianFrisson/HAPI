@@ -51,7 +51,6 @@ H3DUtil::PeriodicThread::CallbackCode
     static_cast< HAPIHapticsDevice * >( data );
 
   // update last transform for all shapes.
-  // TODO: do this much faster/better
   for( unsigned int layer = 0; layer < hd->tmp_shapes.size(); ++layer ) {
     H3DTIMER_BEGIN("TransferObjectPerLayer");
     for( HapticShapeVector::const_iterator s = hd->tmp_shapes[layer].begin(); 

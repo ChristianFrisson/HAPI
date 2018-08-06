@@ -824,9 +824,7 @@ namespace HAPI {
         haptics_renderers.resize( layer + 1, NULL );
         renderer_change_lock.unlock();
       }
-      // TODO: synchronise with haptic thread in a way that does not
-      // lock up openhaptics if openhaptics is used. Right now it is
-      // not correctly synchronised or locked.
+
       if( device_state != UNINITIALIZED ) {
         if( haptics_renderers[layer] ) {
           haptics_renderers[layer]->releaseRenderer( this );
@@ -1354,13 +1352,6 @@ namespace HAPI {
       bool set_max_fraction;
     };
 
-    // TODO: evaluate whether a change to std::list< std::pair< int, PhaseInOut > > would
-    // be a better solution. The shifted part may go faster. The search
-    // function that needs to be implemented could use an extra variable that
-    // tells where to start the search. Because of the way things are added
-    // the index part (int) is added in increasing order. So no need to start
-    // searching from the beginning each time, maybe only need to go one step.
-    // Need to check that.
     typedef std::map< int, PhaseInOut > IndexTimeMap;
     // map to keep track of which force effects in current_force_effects that
     // are phased in.
@@ -1445,8 +1436,6 @@ namespace HAPI {
       transferObjectsCallback( void *data );
 
     friend class AnyHapticsDevice;
-    ///\todo Remove this friend statement (CluthedHapticsDevice) when we figure out
-    /// a better way to do it.
     friend class ClutchedHapticsDevice;
 
     unsigned int nr_haptics_loops;

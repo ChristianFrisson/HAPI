@@ -43,7 +43,6 @@ namespace HAPI {
   /// this see http://www.g-coder.com/
   /// Please note that these devices does not have haptics feedback and as such
   /// are not really haptics devices but can be seen as tracking devices.
-  /// TODO: Add extended API functions to get device information and such.
   class HAPI_API SimballHapticsDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.

@@ -321,7 +321,6 @@ void MLHIHapticsDevice::updatePositionAndVelocity(ml_position_t position)
 
 // Callback functions
 
-//TODO: Maybe: store these error messages in the device that has the error. 
 int MLHIHapticsDevice::checkFaultCallback( ml_device_handle_t device_hdl,
                                           ml_fault_t fault )
 {

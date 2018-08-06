@@ -293,8 +293,6 @@ void FalconHapticsDevice::checkIfHDALError() {
   HDLError error;
   error = hdlGetError();
   if ( error != HDL_NO_ERROR ) {
-    // TODO: Verify that error handling is working. Never caught any error
-    // here. 
     if( error_handler.get() ) {
       string error_string = "";
       switch (error) {

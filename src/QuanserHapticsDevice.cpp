@@ -64,8 +64,6 @@ bool QuanserHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     return false;
   }
 
-  // TODO: initialize force control mode, stiffness ,damping gains?
-  
   return true;
   
   /*
@@ -159,7 +157,6 @@ void QuanserHapticsDevice::updateDeviceValues( DeviceValues &dv,
   // error in communication, return.
   //if( result != 0 ) return;  
 
-  // TODO: interpret data.
   // Cartesian position and velocity in metres
   //dv.position = Vec3( rcv_temp[1], rcv_temp[2], rcv_temp[0] );
   dv.position = Vec3( -rcv_temp[0], rcv_temp[2], rcv_temp[1] );
@@ -239,7 +236,6 @@ void QuanserHapticsDevice::sendOutput( DeviceOutput &dv,
   snd_temp[4] = dv.torque.z;
   snd_temp[5] = dv.torque.y;
 
-  // TODO: check return value
   // dv.force, dv.torque
   t_int result = stream_send_doubles(client, snd_temp, SND_STREAM_SIZE); 
 }

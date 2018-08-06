@@ -261,9 +261,6 @@ void RuspiniRenderer::onThreeOrMorePlaneContact(
       // to trigger the "three-plane-constraint" code further down. I guess theoretically
       // this case should result in a movement along the normal perpendicular to
       // the plane spanned by the three normals, but this is a much faster fix.
-      /// \todo Implement correct case for when three normals are in the same plane?
-      /// Not very likely to happen unless FakeHapticsDevice is used with surface
-      /// that changes. probe_local_pos is already 0,0,0 so do nothing here.
     }
   } else {
     while( i != _constraints.end() ) {
@@ -433,7 +430,6 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
         //
         // Pontus added: "|| alwaysFollowSurface" to override this check. If not set, the proxy will not move along
         // with a moving rigid body when "dragging" it using lateral friction force.
-        // Todo: Investigate if problems occur, do this check in a cleaner way.
         if( (proxy_pos - moved_proxy_pos).dotProduct( proxy_pos - input.position ) <= 0 || alwaysFollowSurface ) {
           proxy_pos = moved_proxy_pos;
           done = true;
@@ -564,8 +560,7 @@ RuspiniRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
 
   unsigned int nr_constraints = closest_constraints.size();
 
-  // TODO: Could this check be included in the first loop somehow
-  // or will that just slow it down more. Without this part the
+  // Without this part the
   // proxy will be stuck between two planes in the part where the angle
   // is below pi/4
   if( nr_constraints > 0 ) {

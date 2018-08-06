@@ -206,8 +206,7 @@ void Chai3DRenderer::preProcessShapes( HAPIHapticsDevice *hd,
       
       new_meshes.push_back( mesh );
       new_mesh_map[mesh] = shape;
-      
-      // TODO: fix for other shape types
+
       HapticTriangleSet *tri_set = 
         dynamic_cast< HapticTriangleSet * >( shape );
 
@@ -319,29 +318,7 @@ int Chai3DRenderer::H3DDevice::command(int a_command, void* a_data)
                           m[2][0], m[2][1], m[2][2] );
            }
            break;
-/*
-           // set force to phantom device
-           case CHAI_CMD_SET_FORCE_3D:
-           {
-             // TODO:
-                //cVector3d *force;
-                //force = (cVector3d *) a_data;
-                //result = SetForcePhantom(m_phantomHandle, force->y, force->z, force->x);
-           }
-           break;
 
-           // set force and torque to phantom stylus
-           case CHAI_CMD_SET_FORCE_TORQUE_3D:
-           {
-             // TODO:
-             //   cVector3d *genforce;
-             //   genforce = (cVector3d *) a_data;
-             //   result = SetForceTorquePhantom(m_phantomHandle,
-             //                genforce[0].y, genforce[0].z, genforce[0].x,
-              //               genforce[1].y, genforce[1].z, genforce[1].x);
-           }
-           break;
-*/
            // read user switch from phantom stylus
            case CHAI_CMD_GET_SWITCH_0: {
              int* switchstate = (int *) a_data;
@@ -368,9 +345,6 @@ int Chai3DRenderer::H3DDevice::command(int a_command, void* a_data)
 
            // read scale factor from normalized coords to mm
            case CHAI_CMD_GET_NORMALIZED_SCALE_FACTOR: {
-             // TODO:
-             //  double* scale = (double*)a_data;
-             //  result = GetWorkspaceScalePhantom(m_phantomHandle,*scale);               
            }
            break;
 

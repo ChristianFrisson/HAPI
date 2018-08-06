@@ -487,15 +487,11 @@ namespace HAPI {
                                           const Vec3 &to,
                                           IntersectionInfo &result);
 
-      /// Detect collision between a moving sphere and the object.
-      /// \param radius The radius of the sphere
-      /// \param from The start position of the sphere
-      /// \param to The end position of the sphere.
-      /// object
-      /// \returns true if intersected, false otherwise.
-      /// NOTE: This function is deprecated, kept for backwards
-      /// compability, all it does is call the corresponding
-      /// movingSphereIntersect version.
+      /// \deprecated This function is replaced with movingSphereIntersect and will be removed in
+      /// future versions.
+      /// \cond MAKE_SURE_DOXYGEN_IS_NOT_FOOLED_BY_MACRO
+      DEPRECATED("movingSphereIntersect", )
+      /// \endcond
       bool movingSphereIntersectRobust( HAPIFloat radius,
                                           const Vec3 &from, 
                                           const Vec3 &to );
@@ -526,10 +522,6 @@ namespace HAPI {
 
       // The vectors from a to c and from a to b. Help variables for collision
       // functions.
-      /// \todo Consider removing these since they are not always used in the collision
-      /// functions and when they are there might be issues if a, b and c are updated
-      /// but ab/ac are not. So either add function to set a,b,c, and hide them or
-      /// remove these.
       Vec3 ac, ab;
     };
 

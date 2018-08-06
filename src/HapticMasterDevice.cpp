@@ -178,7 +178,6 @@ bool HapticMasterDevice::initHapticsDevice( int _thread_frequency ) {
   device_handle = OpenHapticMaster( (char * )device_name.c_str() ); 
 
   if (device_handle != -1) {
-    // TODO: what is the return values.
     int result = InitialiseHapticMaster(device_handle);
 
     // initalize the thread used for communication.

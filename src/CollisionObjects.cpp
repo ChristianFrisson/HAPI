@@ -388,9 +388,8 @@ bool AABoxBound::boundIntersect( const Vec3 &from,
   HAPIFloat adz = H3DUtil::H3DAbs(d.z);
   if (H3DUtil::H3DAbs(m.z) > e.z + adz) return false;
 
-  // bias with an epsilon to increase robustness when segment is parallel 
-  // to a box plane...
-  //TODO? mm->m conversion? change to 100 instead of 100000
+  // bias with an epsilon to increase robustness when segment is parallel
+  // to a box plane.
   HAPIFloat epsilon = (e*e)/100000;
   adx += epsilon;
   ady += epsilon;
@@ -409,7 +408,6 @@ void AABoxBound::closestPoint( const Vec3 &p,
                                Vec3 &closest_point,
                                Vec3 &normal,
                                Vec3 &tex_coord ) {
-  // TODO: implement
   assert( false );
 }
 
@@ -453,7 +451,7 @@ void SphereBound::closestPoint( const Vec3 &p,
     closest_point = center + dir * radius;
     normal = dir;
   }
-  // Todo
+
   tex_coord = Vec3();
 }
 
@@ -1328,7 +1326,6 @@ bool Triangle::movingSphereIntersect( HAPIFloat radius,
                                       const Vec3 &from, 
                                       const Vec3 &to ) {
 
-  // TODO: Look in book if better way
   Vec3 closest, tmp;
   closestPoint( from, closest, tmp, tmp );
   Vec3 ttt = from - closest;
@@ -1437,28 +1434,6 @@ bool Triangle::movingSphereIntersect( HAPIFloat radius,
   Plane plane( closest, n );
   IntersectionInfo info;
   Vec3 v = to - from;
-
-  // TODO: Test if this is needed. I no longer remember why I added this
-  // looking at the code, and the comment in the errata section of the
-  // realtimecollisiondetection homepage means that the idea behind this
-  // code is broken.
-  /*
-  plane.closestPoint( from, closest, tmp, tmp );
-  if( ( from - closest ).length() <= radius ) {
-    Vec3 Q;
-    closestPoint( closest, Q, tmp, tmp );
-
-    bool res = sphere.lineIntersect( Q, Q - v, info );
-    if( res ) {
-      result.point = info.point;
-      result.intersection = true;
-      result.primitive = this;
-      result.t = info.t;
-      result.normal = ( from + v * result.t ) - result.point;
-      result.normal.normalize();
-      return true;
-    } 
-  }*/
 
   Vec3 D = from - radius * n;
 
@@ -1688,9 +1663,7 @@ bool BinaryBoundTree::movingSphereIntersect( HAPIFloat radius,
   }
 }
 
-// TODO: document function.
 Matrix3 covarianceMatrix( const vector< Vec3 >&points ) {
-  // TODO: if no points?
 
   size_t nr_points = points.size();
 
@@ -1730,7 +1703,6 @@ void symmetricSchurDecomposition( const Matrix3 &A,
                                   unsigned int q, 
                                   HAPIFloat &c, 
                                   HAPIFloat &s) {
-  // TODO: epsilon?? FIX? not touched when changing from mm to m.
   if (H3DUtil::H3DAbs(A[p][q]) > 0.0001f) {
     HAPIFloat r = (A[q][q] - A[p][p]) / (2.0f * A[p][q]);
     HAPIFloat t = (r >= 0.0f ? 
@@ -1881,7 +1853,6 @@ void OrientedBoxBound::closestPoint( const Vec3 &p,
                                      Vec3 &closest_point,
                                      Vec3 &normal,
                                      Vec3 &tex_coord ) {
-  // TODO: implement
   assert( false );
 }
 
@@ -2091,7 +2062,6 @@ void LineSegment::closestPoint( const Vec3 &p,
   }
   normal = p - closest_point;
   normal.normalizeSafe();
-  // TODO:
   tex_coord = Vec3();
 }
 
@@ -2110,7 +2080,6 @@ bool LineSegment::lineIntersect( const Vec3 &from,
     result.point = c0;
     result.primitive = this;
     result.t = t;
-    // TODO:
     result.tex_coord = Vec3();
     result.face = Collision::FRONT;
     return true;
@@ -2222,14 +2191,12 @@ bool Collision::Point::lineIntersect( const Vec3 &from,
   Vec3 ab = to - from;
   // Project c onto ab, but deferring divide by Dot( ab, ab )
   HAPIFloat t = ( position - from ) * ab;
-  //TODO: <=?
   if( t <= 0.0f ) {
     // c project outside the [from, to] interval, on from side.
     return false;
   }
   else {
     HAPIFloat denom = ab * ab;
-    //TODO: >=?
     if( t >= denom ) {
       // c projects outside the [from, to] interval, on to side.
       return false;
@@ -2866,6 +2833,7 @@ struct StackElementPrimitive {
   BBPrimitiveTree *tree;
   vector< int > primitives;
 }; 
+
 BBPrimitiveTree::BBPrimitiveTree(
             BoundNewFunc func, 
             const vector< GeometryPrimitive * > &primitive_vector,
@@ -2950,11 +2918,6 @@ BBPrimitiveTree::BBPrimitiveTree(
             Point * pt = dynamic_cast< Point * >(a_primitive);
             if( pt ) {
               points.push_back( pt->position );
-            } else {
-              Plane * pl = dynamic_cast< Plane * >(a_primitive);
-              if( pl ) {
-                // TODO
-              }
             }
           }
         }
@@ -3661,7 +3624,6 @@ void Cylinder::closestPoint( const Vec3 &p,
     Vec3 center_edge = Vec3( p.x, 0, p.z );
     HAPIFloat center_edge_length_sqr = center_edge.lengthSqr();
     if( center_edge_length_sqr > radius * radius || part == CYLINDER ) {
-      // TODO: decide what to do if center_edge_length_sqrt is zero.
       center_edge = center_edge / H3DUtil::H3DSqrt( center_edge_length_sqr );
       closest_point = center_edge * radius;
       closest_point.y = cap_center_point_y;
@@ -4181,10 +4143,7 @@ void Cylinder::getConstraints( const Vec3 &point,
         // This removes vibrations and reduces fall through when touching
         // the cylinder from inside. The idea is simply to have two planes
         // intersecting at a line in the direction of the cylinder axis
-        // through the closest point on the cylinder.
-        // TODO: evaluate if the constant should be modified for different
-        // values of the cylinder radius and the _radius inside which
-        // constraints should be found.
+        // through the closest point on the cylinder.y
         Rotation offset( Vec3( 0, 1, 0), 0.01 );
         Vec3 plane_point = proj_pos + radius * closest_cylinder_normal;
         constraints.push_back(

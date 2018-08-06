@@ -118,9 +118,6 @@ void SimballHapticsDevice::updateDeviceValues( DeviceValues &dv,
       Rotation( 1, 0, 0, (float)(simball_values.theta - half_pi) ) *
       Rotation( 0, -1, 0, (float)(simball_values.phi - half_pi) );
 
-    // TODO, Should we do this check, since SBMFlag_AInserted will be false
-    // even when there is a device A connected if the device is almost pulled
-    // out of the ball. Angles and insertion values are still sent.
     if( simball_values.flags == SBMFlag_AInserted ) {
       dv.position = about_x_and_y *
                     Vec3( 0, 0, -simball_values.insertionA * 1e-3 );

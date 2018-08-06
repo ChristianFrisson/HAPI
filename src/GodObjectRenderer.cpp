@@ -613,7 +613,6 @@ GodObjectRenderer::renderHapticsOneStep( HAPIHapticsDevice *hd,
   contact.tex_coord = closest_intersection.tex_coord;
 
   if( nr_constraints == 0 ) {
-    // TODO: 0.05??
     new_proxy_pos = proxy_pos + (input.position-proxy_pos)*0.05;
   } else {
     if( nr_constraints == 1 ) {

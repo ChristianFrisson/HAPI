@@ -173,7 +173,8 @@ namespace HAPI {
     inline unsigned int size() { return nr_constraints; }
 
 
-    // TODO: implement properly
+    // This function is not yet properly implemented.
+    // It will only add the constraint to the end of the container.
     inline void insert( iterator pos, iterator s, iterator e ) {
       for( iterator i = s; i != e; ++i )
         push_back( *i );
