@@ -89,6 +89,16 @@ target_link_libraries( HAPIDemo ${required_libs} ${optional_libs} )
 
 getDefaultH3DOutputDirectoryName( default_bin_install default_lib_install )
 
+set( bundle_installation_command )
+if( APPLE )
+  if( NOT DEFINED HAPIDemo_OSX_BUNDLE_INSTALL_DESTINATION )
+    set( HAPIDemo_OSX_BUNDLE_INSTALL_DESTINATION /Applications CACHE PATH "Directory into which to install the HAPIDemo.app bundle." )
+  endif()
+
+  set( bundle_installation_command BUNDLE DESTINATION ${HAPIDemo_OSX_BUNDLE_INSTALL_DESTINATION} COMPONENT HAPI_cpack_examples_runtime )
+endif()
+
 install( TARGETS HAPIDemo
          LIBRARY DESTINATION ${default_lib_install} COMPONENT HAPI_cpack_examples_runtime
-         RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_examples_runtime )
+         RUNTIME DESTINATION ${default_bin_install} COMPONENT HAPI_cpack_examples_runtime
+         ${bundle_installation_command} )
