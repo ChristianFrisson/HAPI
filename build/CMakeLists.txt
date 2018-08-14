@@ -1,5 +1,8 @@
 cmake_minimum_required( VERSION 2.8.7 )
 cmake_policy( VERSION 2.8.7 )
+if( APPLE AND POLICY CMP0042 )
+  cmake_policy( SET CMP0042 NEW )
+endif()
 
 # Make include files in paths like /usr/local/include have preference before
 # files in OSX frameworks. 
@@ -429,6 +432,7 @@ endif()
 if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
   addCommonH3DGNUCompileFlags( HAPI_COMPILE_FLAGS )
 endif()
+addCommonAppleClangCompileFlags( HAPI_COMPILE_FLAGS )
 
 # set compile flags for HAPI project
 set_target_properties( HAPI PROPERTIES COMPILE_FLAGS "${HAPI_COMPILE_FLAGS}" )

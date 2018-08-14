@@ -57,6 +57,10 @@ set_target_properties( FeedbackBufferCollector PROPERTIES DEBUG_POSTFIX "_d" )
 
 target_link_libraries( FeedbackBufferCollector ${required_libs} )
 
+addCommonAppleClangCompileFlags( FeedbackBufferCollector_COMPILE_FLAGS )
+
+set_target_properties( FeedbackBufferCollector PROPERTIES COMPILE_FLAGS "${FeedbackBufferCollector_COMPILE_FLAGS}" )
+
 getDefaultH3DOutputDirectoryName( default_bin_install default_lib_install )
 
 install( TARGETS FeedbackBufferCollector
