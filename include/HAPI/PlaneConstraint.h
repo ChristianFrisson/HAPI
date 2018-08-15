@@ -188,8 +188,8 @@ namespace HAPI {
         allocated_constraints *= 2; //< Growth factor!
         constraints = new PlaneConstraint[allocated_constraints];
         
-        ::memcpy( constraints,
-                  old_constraints,
+        ::memcpy( (void *)constraints,
+                  (void *)old_constraints,
                   old_allocated_constraints * sizeof(PlaneConstraint) );
         // Have to go through all shapes and call ref because memcpy does not
         // increase reference count of the contained haptic shapes and

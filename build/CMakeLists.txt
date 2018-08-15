@@ -432,7 +432,6 @@ endif()
 if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
   addCommonH3DGNUCompileFlags( HAPI_COMPILE_FLAGS )
 endif()
-addCommonAppleClangCompileFlags( HAPI_COMPILE_FLAGS )
 
 # set compile flags for HAPI project
 set_target_properties( HAPI PROPERTIES COMPILE_FLAGS "${HAPI_COMPILE_FLAGS}" )

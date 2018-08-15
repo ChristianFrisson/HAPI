@@ -33,6 +33,10 @@
 #ifdef HAVE_OPENGL
 #ifdef MACOSX
 #include <OpenGL/glu.h>
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 #else
 #include <GL/glu.h>
 #endif
@@ -352,5 +356,11 @@ int FeedbackBufferCollector::parseVertex( GLfloat *_buffer, int index,
   
   return 11;
 }
+
+#ifdef MACOSX
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
 
 #endif //HAVE_OPENGL

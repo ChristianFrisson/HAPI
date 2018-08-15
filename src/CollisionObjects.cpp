@@ -38,6 +38,13 @@
 #endif
 #endif
 
+#ifdef MACOSX
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#endif
+
 
 #include <stack>
 #include <map>
@@ -4702,3 +4709,8 @@ void AABox::getConstraints( const Vec3 &point,
   }
 }
 
+#ifdef MACOSX
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#endif
