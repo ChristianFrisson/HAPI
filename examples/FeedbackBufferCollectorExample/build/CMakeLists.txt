@@ -57,7 +57,9 @@ set_target_properties( FeedbackBufferCollector PROPERTIES DEBUG_POSTFIX "_d" )
 
 target_link_libraries( FeedbackBufferCollector ${required_libs} )
 
-addCommonAppleClangCompileFlags( FeedbackBufferCollector_COMPILE_FLAGS )
+set( FeedbackBufferCollector_COMPILE_FLAGS )
+
+addCommonH3DCompileFlags( FeedbackBufferCollector_COMPILE_FLAGS )
 
 set_target_properties( FeedbackBufferCollector PROPERTIES COMPILE_FLAGS "${FeedbackBufferCollector_COMPILE_FLAGS}" )
 

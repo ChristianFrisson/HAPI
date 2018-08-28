@@ -57,33 +57,17 @@ add_executable( HAPIDemo WIN32 MACOSX_BUNDLE ${HAPIDemo_SRCS} )
 # make the name of debug libraries end in _d.
 set_target_properties( HAPIDemo PROPERTIES DEBUG_POSTFIX "_d" )
 
+set( HAPIDemo_COMPILE_FLAGS )
 if( MSVC )
   
   set( HAPIDemo_COMPILE_FLAGS "-DWXUSINGDLL" )
-  
-  # Treat wchar_t as built in type for all visual studio versions.
-  # This is default for every version above 7 (so far) but we still set it for all.
-  set( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} /Zc:wchar_t" )
-  
-  if( ${MSVC_VERSION} GREATER 1399 )
-    # Remove compiler warnings about deprecation for visual studio versions 8 and above.
-    set( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
-  endif()
-  
-  if( ${MSVC_VERSION} GREATER 1499 )
-    # Build using several threads for visual studio versions 9 and above.
-    set( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} /MP" )
-  endif()
-  
-  if( ${MSVC_VERSION} LESS 1600 )
-    # Turn off optimization for visual studio versions 8 and below.
-    # Old setting which I (Markus) have no idea why it was added.
-    set( HAPIDemo_COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS} /Od" )
-  endif()
 
-  set_target_properties( HAPIDemo PROPERTIES COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS}" )
   set_target_properties( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
 endif()
+
+addCommonH3DCompileFlags( HAPIDemo_COMPILE_FLAGS )
+
+set_target_properties( HAPIDemo PROPERTIES COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS}" )
 
 target_link_libraries( HAPIDemo ${required_libs} ${optional_libs} )
 

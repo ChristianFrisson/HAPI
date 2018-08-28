@@ -33,6 +33,12 @@ add_executable( SpringExample ${SpringExample_SRCS} )
 # make the name of debug libraries end in _d.
 set_target_properties( SpringExample PROPERTIES DEBUG_POSTFIX "_d" )
 
+set( SpringExample_COMPILE_FLAGS )
+
+addCommonH3DCompileFlags( SpringExample_COMPILE_FLAGS )
+
+set_target_properties( SpringExample PROPERTIES COMPILE_FLAGS "${SpringExample_COMPILE_FLAGS}" )
+
 target_link_libraries( SpringExample ${required_libs} ${optional_libs} )
 
 getDefaultH3DOutputDirectoryName( default_bin_install default_lib_install )

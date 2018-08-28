@@ -33,6 +33,12 @@ add_executable( SurfaceExample ${SurfaceExample_SRCS} )
 # make the name of debug libraries end in _d.
 set_target_properties( SurfaceExample PROPERTIES DEBUG_POSTFIX "_d" )
 
+set( SurfaceExample_COMPILE_FLAGS )
+
+addCommonH3DCompileFlags( SurfaceExample_COMPILE_FLAGS )
+
+set_target_properties( SurfaceExample PROPERTIES COMPILE_FLAGS "${SurfaceExample_COMPILE_FLAGS}" )
+
 target_link_libraries( SurfaceExample ${required_libs} ${optional_libs} )
 
 getDefaultH3DOutputDirectoryName( default_bin_install default_lib_install )
