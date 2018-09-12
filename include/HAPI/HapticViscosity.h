@@ -52,6 +52,8 @@ namespace HAPI {
     /// there is a need to stop vibrations that comes from a to large
     /// constant e.g. when the force calculated exceeds the force inputed by
     /// the user when moving the proxy.
+    /// \param _use_ref_count_lock If true, the force effect will have lock 
+    ///                            protected ref counting to guarantee its thread safety
     HapticViscosity( const HAPIFloat &_viscosity,
                      const HAPIFloat &_radius,
                      const HAPIFloat &_damping_factor = 1,

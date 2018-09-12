@@ -168,6 +168,7 @@ namespace HAPI {
     ///
     /// \param[out] _dv   The device values read from the recording
     /// \param[out] _time The time of the device values in the recording
+    /// \param[out] _timestamp The absolute timestamp of the device values in the recording
     ///
     bool getPlaybackValuesNext ( HAPIHapticsDevice::DeviceValues& _dv, HAPITime& _time, HAPITime& _timestamp );
 

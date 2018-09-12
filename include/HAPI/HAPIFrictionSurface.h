@@ -96,8 +96,8 @@ namespace HAPI {
     /// \param t_force_length The magnitude of the tangential force.
     /// \param n_force_length The magnitude of the normal force.
     /// \param proxy_movement The estimated proxy movement.
-    /// \param static_friction The static friction parameter.
-    /// \param dynamic_friction The dynamic friction parameter.
+    /// \param _static_friction The static friction parameter.
+    /// \param _dynamic_friction The dynamic friction parameter.
     /// \param proxy_mov_length The magnitude of the proxy movement. This
     /// parameter can be omitted if the function should calculate the length.
     void setLocalProxyMovement( ContactInfo &contact_info,

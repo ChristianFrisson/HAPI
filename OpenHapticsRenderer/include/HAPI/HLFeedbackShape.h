@@ -76,7 +76,7 @@ namespace HAPI {
     /// This function performs all the HLAPI calls that are needed to render
     /// the shape. Uses HL_SHAPE_FEEDBACK_BUFFER to render the object.
     /// \param hd The haptics device for which the surface should be rendered.
-    /// \param shape_id The HL-id for the shape.
+    /// \param _shape_id The HL-id for the shape.
     virtual void hlRender( HAPI::HAPIHapticsDevice *hd,
                            HLuint _shape_id );
   protected:

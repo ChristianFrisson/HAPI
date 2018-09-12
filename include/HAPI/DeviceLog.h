@@ -147,6 +147,8 @@ namespace HAPI {
     /// \param _freq The frequency of logging.
     /// \param _binary If true the logging will be done to a binary file.
     ///                Otherwise it will be done to an ASCII-text file.
+    /// \param _use_ref_count_lock If true, the force effect will have lock 
+    ///                            protected ref counting to guarantee its thread safety
     DeviceLog( const std::string &_log_file, const LogTypeVector &_log_type,
                int _freq = 100, bool _binary = false, bool _use_ref_count_lock = false );
 
