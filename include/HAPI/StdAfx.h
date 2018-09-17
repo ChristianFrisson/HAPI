@@ -6,7 +6,7 @@
 //    www.sensegraphics.com, for more information.
 //
 //
-/// \file StdAfx.h
+/// \file HAPI/StdAfx.h
 /// \brief Header file for precompiled headers.
 ///
 //////////////////////////////////////////////////////////////////////////////
