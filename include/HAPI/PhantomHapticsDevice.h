@@ -240,6 +240,9 @@ namespace HAPI {
     int input_dof, output_dof;
     Vec3 joint_angles, gimbal_angles;
     std::vector< HAPIFloat > motor_temperatures;
+    /// Raw encoder values for this device. I.e. the output from
+    /// calling hdGetLongv with HD_CURRENT_ENCODER_VALUES as input.
+    /// See the OpenHaptics SDK documentation for more information.
     std::vector< HAPIFloat > encoder_values;
     
     
