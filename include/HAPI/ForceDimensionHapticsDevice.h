@@ -159,6 +159,10 @@ namespace HAPI {
     void setVibration( const HAPIFloat &frequency, const HAPIFloat &amplitude );
 
     inline HAPIFloat getGripperAngle() {
+      HAPIFloat gripper_angle;
+      device_values_lock.lock();
+      gripper_angle = current_device_values.gripper_angle;
+      device_values_lock.unlock();
       return gripper_angle;
     }
 
@@ -167,7 +171,6 @@ namespace HAPI {
     // The main reason for specifying them twice is simply to do obtain them in the same way
     // as other values of the device are obtained.
     // They are used to get the gripper angle;
-    HAPIFloat gripper_angle, gripper_angle_com_thread;
     bool is_autocalibrated, is_autocalibrated_com_thread;
 
   public:
@@ -188,6 +191,7 @@ namespace HAPI {
   protected:
     HAPIInt32 com_thread_frequency;
     bool auto_calibration_mode;
+    bool has_gripper_support;
   };
 }
 

@@ -94,20 +94,21 @@ namespace ForceDimensionHapticsDeviceInternal {
 
   void getDeviceValuesFromDHD( const int &device_id, HAPIInt32 &button, bool &_is_autocalibrated,
                                Vec3 &position, Vec3 &velocity, Rotation &orientation, Vec3 &angular_velocity,
-                               double &gripper_angle,
+                               double &gripper_angle, bool gripper_support,
                                Rotation (*rotation_func)( double &rx, double &ry, double &rz ),
                                Vec3 (*angular_velocity_func)( double &rx, double &ry, double &rz ) ) {
     double x, y, z, rx, ry, rz, vx, vy, vz, avx = 0, avy = 0, avz = 0;
-    dhdGetPosition( &z, &x, &y, device_id );
-    dhdGetOrientationRad(&rz,&rx,&ry,device_id);
+    dhdGetPositionAndOrientationRad( &z, &x, &y, &rz, &rx, &ry, device_id );
     dhdGetLinearVelocity( &vz, &vx, &vy, device_id );
-    dhdGetGripperAngleRad( &gripper_angle, device_id );
-#ifdef DHD_DEVICE_SIGMA331
+    if( gripper_support ) {
+      dhdGetGripperAngleRad( &gripper_angle, device_id );
+    }
+#ifdef DHD_DEVICE_SIGMA331 // This ifdef is used as a replacement for the lack of version define for the dhd headers.
     dhdGetAngularVelocityRad( &avz, &avx, &avy, device_id );
 #endif
     
 
-#ifdef DHD_DEVICE_SIGMA331
+#ifdef DHD_DEVICE_SIGMA331 // This ifdef is used as a replacement for the lack of version define for the dhd headers.
     button = ( dhdGetButtonMask( device_id ) & 0xff );
 #else
     button = 0;
@@ -129,6 +130,7 @@ namespace ForceDimensionHapticsDeviceInternal {
     orientation = rotation_func(rx,ry,rz); 
    
     angular_velocity = angular_velocity_func( avx, avy, avz );
+
   }
 }
 
@@ -143,12 +145,11 @@ ForceDimensionHapticsDevice::ForceDimensionHapticsDevice():
   device_id( -1 ),
   com_thread( NULL ),
   com_func_cb_handle( -1 ),
-  gripper_angle( 0 ),
-  gripper_angle_com_thread( 0 ),
   is_autocalibrated( true ), // Default value it true so a user of the class won't trigger autocalibration if the value has not yet been updated;
   is_autocalibrated_com_thread( true ),
   com_thread_frequency( 1000 ),
-  auto_calibration_mode( false ) {
+  auto_calibration_mode( false ),
+  has_gripper_support( 0 ) {
   // This might have to be changed if they redo it so that their
   // different devices have different maximum stiffness values.
   max_stiffness = 1450;
@@ -203,6 +204,15 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   }
   free_dhd_ids.pop_back();
 
+#ifdef DHD_DEVICE_SIGMA331 // This ifdef is used as a replacement for the lack of version define for the dhd headers.
+  has_gripper_support = dhdHasGripper( device_id );
+#else
+  // dhdGetGripperAngle will not fail if you call it for versions of dhd api before the dhdHasGripper function exists.
+  // Maybe it will never fail. I do not know.
+  // So in order to support reporting gripper angle in these cases we simply need to set it to true.
+  has_gripper_support = true;
+#endif
+
   if( com_thread_frequency > 0 ) {
     com_thread = 
       new H3DUtil::PeriodicThread( H3DUtil::ThreadBase::HIGH_PRIORITY, com_thread_frequency );
@@ -210,7 +220,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
     com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
   }
 
-#ifdef DHD_DEVICE_SIGMA331
+#ifdef DHD_DEVICE_SIGMA331 // This ifdef is used as a replacement for the lack of version define for the dhd headers.
   int device_type = getDeviceType();
   if( device_type >= DHD_DEVICE_SIGMA331 && device_type <= DHD_DEVICE_SIGMA331 + 5 ) {
     rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationSigma;
@@ -223,7 +233,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 #endif
     rotation_func = &ForceDimensionHapticsDeviceInternal::calculateRotationSigma;
     angular_velocity_func = &ForceDimensionHapticsDeviceInternal::calculateAngularVelocitySigma;
-#ifdef DHD_DEVICE_SIGMA331
+#ifdef DHD_DEVICE_SIGMA331 // This ifdef is used as a replacement for the lack of version define for the dhd headers.
   }
 #endif
 
@@ -266,7 +276,7 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
       dv.velocity = current_values.velocity;
       dv.orientation = current_values.orientation;
       dv.button_status = current_values.button_status;
-      gripper_angle = gripper_angle_com_thread;
+      dv.gripper_angle = current_values.gripper_angle;
       is_autocalibrated = is_autocalibrated_com_thread;
       dv.angular_velocity = current_values.angular_velocity;
       com_lock.unlock();
@@ -282,12 +292,12 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
       HAPIInt32 _button;
       ForceDimensionHapticsDeviceInternal::getDeviceValuesFromDHD( device_id, _button, _is_autocalibrated, _position,
                                                                    _velocity, _orientation, _angular_velocity, _gripper_angle,
-                                                                   rotation_func, angular_velocity_func );
+                                                                   has_gripper_support, rotation_func, angular_velocity_func );
       dv.position = _position;
       dv.velocity = _velocity;
       dv.orientation = _orientation;
       dv.button_status = _button;
-      gripper_angle = _gripper_angle;
+      dv.gripper_angle = _gripper_angle;
       is_autocalibrated = _is_autocalibrated;
       dv.angular_velocity = _angular_velocity;
 #ifdef HAVE_DRDAPI
@@ -311,8 +321,8 @@ void ForceDimensionHapticsDevice::sendOutput( DeviceOutput &dv,
       com_lock.lock();
       if( !auto_calibration_mode ) {
 #endif
-      dhdSetForceAndTorque( dv.force.z, dv.force.x, dv.force.y, 
-                            dv.torque.z, dv.torque.x, dv.torque.y,
+      dhdSetForceAndTorqueAndGripperForce( dv.force.z, dv.force.x, dv.force.y, 
+                            dv.torque.z, dv.torque.x, dv.torque.y, dv.gripper_force,
                             device_id );
 #ifdef HAVE_DRDAPI
       }
@@ -391,26 +401,28 @@ ForceDimensionHapticsDevice::com_func( void *data ) {
     HAPIInt32 button;
     ForceDimensionHapticsDeviceInternal::getDeviceValuesFromDHD( hd->device_id, button, _is_autocalibrated, position,
                                                                  velocity, orientation, angular_velocity, gripper_angle,
-                                                                 hd->rotation_func, hd->angular_velocity_func );
+                                                                 hd->has_gripper_support, hd->rotation_func, hd->angular_velocity_func );
     hd->com_lock.lock();
 
     hd->current_values.position = position;
     hd->current_values.velocity = velocity;
     hd->current_values.button_status = button;
     hd->current_values.orientation = orientation;
-    hd->gripper_angle_com_thread = gripper_angle;
+    hd->current_values.gripper_angle = gripper_angle;
     hd->current_values.angular_velocity = angular_velocity;
  
     Vec3 force = hd->current_values.force;
     Vec3 torque = hd->current_values.torque;
+    HAPIFloat gripper_force = hd->current_values.gripper_force;
 #ifdef HAVE_DRDAPI
     hd->is_autocalibrated_com_thread = _is_autocalibrated;
 #endif
     hd->com_lock.unlock();
 
-    dhdSetForceAndTorque( force.z, force.x, force.y, 
-                          torque.z, torque.x, torque.y,
-                          hd->device_id );
+    dhdSetForceAndTorqueAndGripperForce( force.z, force.x, force.y, 
+                                         torque.z, torque.x, torque.y,
+                                         gripper_force,
+                                         hd->device_id );
   }
   return H3DUtil::PeriodicThread::CALLBACK_CONTINUE;
 }

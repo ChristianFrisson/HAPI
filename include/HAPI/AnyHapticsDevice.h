@@ -101,6 +101,7 @@ namespace HAPI {
       if( hd.get() ) {
         hd->output.force = output.force;
         hd->output.torque = output.torque;
+        hd->output.gripper_force = output.gripper_force;
         hd->sendOutput( dv, dt );
       }
     }
