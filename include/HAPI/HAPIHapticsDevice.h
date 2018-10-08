@@ -85,8 +85,8 @@ namespace HAPI {
       DeviceValues():
         button_status( 0 ),
         user_data( NULL ),
-        gripper_force( 0 ),
-        gripper_angle( 0 ) {}
+        dof7_force( 0 ),
+        dof7_angle( 0 ) {}
 
       /// The force currently being rendered
       Vec3 force;
@@ -107,10 +107,10 @@ namespace HAPI {
       /// The angular velocity in radius around each axis.
       Vec3 angular_velocity;
 
-      /// The gripper force for 7DoF devices. Defaults to 0.
-      HAPIFloat gripper_force;
-      /// The gripper angle for 7Dof devices. Defaults to 0.
-      HAPIFloat gripper_angle;
+      /// The gripper force for 7DoF devices, to for example a gripper. Defaults to 0.
+      HAPIFloat dof7_force;
+      /// The angle for 7Dof devices, for example a gripper. Defaults to 0.
+      HAPIFloat dof7_angle;
     };
 
     typedef H3DUtil::AutoRefVector< HAPIHapticShape > HapticShapeVector;
@@ -1171,7 +1171,7 @@ namespace HAPI {
     struct HAPI_API DeviceOutput {
       Vec3 force;  /// The force in Newtons
       Vec3 torque; /// The torque in Newtons/mm
-      HAPIFloat gripper_force; /// Gripper force in Newtons. Only applicable to 7DoF devices.
+      HAPIFloat dof7_force; /// 7dof force in Newtons. For example for a gripper.
     };
 
     /// Updates the current_device_values member to contain

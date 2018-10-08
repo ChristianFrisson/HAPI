@@ -539,6 +539,8 @@ void HAPIHapticsDevice::updateDeviceValues( HAPITime dt ) {
     current_device_values.button_status = dv.button_status;
     current_device_values.angular_velocity = 
       orientation_calibration * dv.angular_velocity;
+    current_device_values.dof7_angle = dv.dof7_angle;
+    current_device_values.dof7_force = dv.dof7_force;
     device_values_lock.unlock();
   } else {
     if( device_state == INITIALIZED ) {

@@ -158,14 +158,6 @@ namespace HAPI {
 
     void setVibration( const HAPIFloat &frequency, const HAPIFloat &amplitude );
 
-    inline HAPIFloat getGripperAngle() {
-      HAPIFloat gripper_angle;
-      device_values_lock.lock();
-      gripper_angle = current_device_values.gripper_angle;
-      device_values_lock.unlock();
-      return gripper_angle;
-    }
-
   protected:
     // Write access to these variables should only be done when locking with com_lock.
     // The main reason for specifying them twice is simply to do obtain them in the same way
