@@ -242,7 +242,7 @@ H3DUtil::PeriodicThread::CallbackCode
 
   hd->updateDeviceValues( dt );
   
-  HAPIForceEffect::EffectOutput output;
+  HAPIForceEffect::EffectOutput _output;
   
   bool last_add_interpolate = !hd->last_add_rem_effect_map.empty();
   bool current_add_interpolate = !hd->current_add_rem_effect_map.empty();
@@ -282,10 +282,10 @@ H3DUtil::PeriodicThread::CallbackCode
                 hd->last_add_rem_effect_map[ j ];
               hd->last_add_rem_effect_map.erase( j );
             }
-            output = output + (*i)->calculateForces( input ) * temp_fraction;
+            _output = _output + (*i)->calculateForces( input ) * temp_fraction;
           }
         } else {
-          output = output + (*i)->calculateForces( input );
+          _output = _output + (*i)->calculateForces( input );
         }
       }
     } else {
@@ -294,7 +294,7 @@ H3DUtil::PeriodicThread::CallbackCode
            hd->last_force_effects.begin();
          i != hd->last_force_effects.end();
          ++i ) {
-        output = output + (*i)->calculateForces( input );
+        _output = _output + (*i)->calculateForces( input );
       }
     }
 
@@ -311,7 +311,7 @@ H3DUtil::PeriodicThread::CallbackCode
         hd->last_add_rem_effect_map.clear();
         hd->switching_effects = false;
       }
-      output = output * ( 1 - force_interpolation_fraction );
+      _output = _output * ( 1 - force_interpolation_fraction );
     }
 
     if( !hd->last_force_effects.empty() ) {
@@ -342,11 +342,11 @@ H3DUtil::PeriodicThread::CallbackCode
             temp_fraction = 1;
             hd->current_add_rem_effect_map.erase( found );
           }
-          output = output + (*i)->calculateForces( input ) *
+          _output = _output + (*i)->calculateForces( input ) *
                             temp_fraction *
                             force_interpolation_fraction;
         } else
-          output = output + (*i)->calculateForces( input ) *
+          _output = _output + (*i)->calculateForces( input ) *
                             force_interpolation_fraction;
       }
     } else {
@@ -355,7 +355,7 @@ H3DUtil::PeriodicThread::CallbackCode
            hd->current_force_effects.begin();
          i != hd->current_force_effects.end();
          ++i ) {
-        output = output + (*i)->calculateForces( input )
+        _output = _output + (*i)->calculateForces( input )
           * force_interpolation_fraction;
       }
     }
@@ -366,7 +366,7 @@ H3DUtil::PeriodicThread::CallbackCode
            hd->current_force_effects.begin();
          i != hd->current_force_effects.end();
          ++i ) {
-      output = output + (*i)->calculateForces( input );
+      _output = _output + (*i)->calculateForces( input );
     }
   }
 
@@ -381,7 +381,7 @@ H3DUtil::PeriodicThread::CallbackCode
       if( s + 1 > hd->current_shapes.size() )
         hd->current_shapes.resize( s + 1 );
 
-      output = output + 
+      _output = _output + 
         hd->haptics_renderers[s]->
         renderHapticsOneStep( hd, hd->current_shapes[s], dt );
     }
@@ -390,29 +390,30 @@ H3DUtil::PeriodicThread::CallbackCode
   hd->renderer_change_lock.unlock();
 
   // scale output force
-  output.force = output.force * hd->ts_force_scale;
+  _output.force = _output.force * hd->ts_force_scale;
 
-  // clamp to limits  
+  // clamp to limits
   HAPIFloat max_force = hd->getForceLimit();
   HAPIFloat max_torque = hd->getTorqueLimit();
 
   if( max_force >= 0 ) {
-    HAPIFloat length_sqr = output.force.lengthSqr();
+    HAPIFloat length_sqr = _output.force.lengthSqr();
     if( length_sqr > max_force * max_force ) {
-      output.force = output.force * (max_force / H3DUtil::H3DSqrt( length_sqr ) );
+      _output.force = _output.force * (max_force / H3DUtil::H3DSqrt( length_sqr ) );
     }
   }
 
   if( max_torque >= 0 ) {
-    HAPIFloat length_sqr = output.torque.lengthSqr();
+    HAPIFloat length_sqr = _output.torque.lengthSqr();
     if( length_sqr > max_torque * max_torque ) {
-      output.torque = output.torque * (max_torque / H3DUtil::H3DSqrt( length_sqr ) );
+      _output.torque = _output.torque * (max_torque / H3DUtil::H3DSqrt( length_sqr ) );
     }
   }
 
   // add the resulting force and torque to the rendered force.
-  hd->sendForce( output.force );
-  hd->sendTorque( output.torque );
+  hd->sendForce( _output.force );
+  hd->sendTorque( _output.torque );
+  hd->sendRawDof7Force( _output.dof7_force );
 
   hd->sendOutput( dt );
 

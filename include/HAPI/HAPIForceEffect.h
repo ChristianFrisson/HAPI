@@ -74,34 +74,42 @@ namespace HAPI {
     struct HAPI_API EffectOutput {
       /// Constructor.
       EffectOutput( const Vec3 _force = Vec3( 0,0,0 ),
-                    const Vec3 _torque = Vec3( 0,0,0 ) ) :
+                    const Vec3 _torque = Vec3( 0,0,0 ),
+                    const HAPIFloat _dof7_force = 0 ) :
         force( _force ),
-        torque( _torque ) {}
+        torque( _torque ),
+        dof7_force( _dof7_force ) {}
       
       /// The force to render.
       Vec3 force;
       /// The torque to render.
       Vec3 torque;
+
+      /// The torque to render.
+      HAPIFloat dof7_force;
       
       /// Addition operator. Adds the forces and torques of the
       /// two EffectOutput instances.
       EffectOutput operator +( const EffectOutput &o ) {
         return EffectOutput( force + o.force,
-                             torque + o.torque );
+                             torque + o.torque,
+                             dof7_force + o.dof7_force );
       }
 
       /// Multiplication by float operator. Scales the forces and
       /// torque.
       EffectOutput operator *( float f ) {
         return EffectOutput( force * f,
-                             torque *f );
+                             torque *f,
+                             dof7_force * f );
       }
 
       /// Multiplication by double operator. Scales the forces and
       /// torque.
       EffectOutput operator *( double f ) {
         return EffectOutput( force * f,
-                             torque *f );
+                             torque *f,
+                             dof7_force * f );
       }
     };
     

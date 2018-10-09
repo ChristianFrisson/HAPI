@@ -1216,6 +1216,7 @@ namespace HAPI {
                                      HAPITime dt ) {
       dv.force = output.force;
       dv.torque = output.torque;
+      dv.dof7_force = output.dof7_force;
     }
 
     /// This function should be overridden by all subclasses of 
@@ -1486,6 +1487,16 @@ namespace HAPI {
     /// applied. 
     inline Vec3 getAngularVelocity() {
       return getDeviceValues().angular_velocity;
+    }
+
+    /// Send the dof7 force to render on the haptics device. Since it does not have a direction
+    /// only the raw function exists for now.
+    inline void sendRawDof7Force( const HAPIFloat &f ) {
+      if( device_state == ENABLED ) {
+        device_values_lock.lock();
+        output.dof7_force = f;
+        device_values_lock.unlock();
+      }
     }
   };
 }

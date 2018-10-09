@@ -309,12 +309,13 @@ void ForceDimensionHapticsDevice::updateDeviceValues( DeviceValues &dv,
 }
 
 void ForceDimensionHapticsDevice::sendOutput( DeviceOutput &dv,
-                                   HAPITime dt ) {
+                                              HAPITime dt ) {
   if( device_id != -1 ) {
     if( com_thread ) {
       com_lock.lock();
       current_values.force = dv.force;
       current_values.torque = dv.torque;
+      current_values.dof7_force = dv.dof7_force;
       com_lock.unlock();
     } else {
 #ifdef HAVE_DRDAPI
