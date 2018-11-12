@@ -4,6 +4,10 @@ if( APPLE AND POLICY CMP0042 )
   cmake_policy( SET CMP0042 NEW )
 endif()
 
+if( POLICY CMP0072 )
+  cmake_policy( SET CMP0072 NEW )
+endif()
+
 # Make include files in paths like /usr/local/include have preference before
 # files in OSX frameworks. 
 set( CMAKE_FIND_FRAMEWORK "LAST" )
