@@ -434,8 +434,8 @@ if( WIN32 )
   endif()
 endif()
 
-if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
-  addCommonH3DGNUCompileFlags( HAPI_COMPILE_FLAGS )
+if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+  addCommonH3DGNUCompileFlags( HAPI_COMPILE_FLAGS TRUE )
 endif()
 
 # set compile flags for HAPI project
