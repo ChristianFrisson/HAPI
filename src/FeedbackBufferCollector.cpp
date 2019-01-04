@@ -213,7 +213,7 @@ FeedbackBufferCollector::endCollecting(
       Vec3 v0, v1, v2; 
       Vec3 tc0, tc1, tc2; 
       if( nr_vertices > 4 ) { 
-        cerr << "Too Many vertices: " << nr_vertices << endl;
+        H3DUtil::Console( H3DUtil::LogLevel::Error ) << "Too Many vertices: " << nr_vertices << endl;
       }
 
       i+= parseVertex( buffer, i, p, col, tc0 );
@@ -307,7 +307,7 @@ FeedbackBufferCollector::endCollecting(
       Vec3 v0, v1, v2; 
       Vec3 tc0, tc1, tc2; 
       if( nr_vertices > 4 ) { 
-        cerr << "Too Many vertices: " << nr_vertices << endl;
+        H3DUtil::Console( H3DUtil::LogLevel::Error ) << "Too Many vertices: " << nr_vertices << endl;
       }
       i+= parseVertex( buffer, i, p, col, tc0 );
       gluUnProject( p.x, p.y, p.z, mv, pm, vp, &v0.x, &v0.y, &v0.z );
