@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2018, SenseGraphics AB
+//    Copyright 2004-2019, SenseGraphics AB
 //
 //    Any use, or distribution, of this file without permission from the
 //    copyright holders is strictly prohibited. Please contact SenseGraphics,

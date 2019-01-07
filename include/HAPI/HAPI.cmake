@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2018, SenseGraphics AB
+//    Copyright 2004-2019, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 /// \mainpage HAPI Documentation
-/// Copyright 2004 - 2018, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
+/// Copyright 2004 - 2019, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
 
 #ifndef __HAPI_H__
 #define __HAPI_H__

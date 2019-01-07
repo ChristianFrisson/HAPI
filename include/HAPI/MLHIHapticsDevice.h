@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2010-2018, SenseGraphics AB
+//    Copyright 2010-2019, SenseGraphics AB
 //
 //    This file is part of HAPI.
 //
