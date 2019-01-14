@@ -1,12 +1,5 @@
 cmake_minimum_required( VERSION 2.8.7 )
 cmake_policy( VERSION 2.8.7 )
-if( APPLE AND POLICY CMP0042 )
-  cmake_policy( SET CMP0042 NEW )
-endif()
-
-if( POLICY CMP0072 )
-  cmake_policy( SET CMP0072 NEW )
-endif()
 
 # Make include files in paths like /usr/local/include have preference before
 # files in OSX frameworks. 
@@ -18,6 +11,7 @@ project( HAPI )
 set( CMAKE_MODULE_PATH "${HAPI_SOURCE_DIR}/localModules" "${HAPI_SOURCE_DIR}/modules" )
 
 include( H3DCommonFunctions )
+setCommonH3DCMakePolicies()
 setupRPathForLib()
 handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. GENERATE_H3D_PACKAGE_PROJECT H3D_PREFER_STATIC_LIBRARIES )
 # include H3DUtil in the build
