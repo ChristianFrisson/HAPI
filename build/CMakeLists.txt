@@ -27,7 +27,7 @@ endif()
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include ${HAPI_SOURCE_DIR}/../include )
 
 set( HAPI_MAJOR_VERSION 1 )
-set( HAPI_MINOR_VERSION 3 )
+set( HAPI_MINOR_VERSION 4 )
 set( HAPI_BUILD_VERSION 1 )
 
 # Set here already in case a special NSIS template needs to be used by cpack.
