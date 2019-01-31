@@ -1,4 +1,4 @@
-Changes for version 1.4.1:
+Changes for version 1.4.0:
 - Updates to minimize the sync time for transfer of new haptics data.
 - Fixes to some collision functions.
 - Renamed many CMake cache variables and added functions to make it easier
