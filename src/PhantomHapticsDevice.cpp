@@ -372,8 +372,13 @@ void PhantomHapticsDevice::calibrateDeviceInternal() {
 void PhantomHapticsDevice::startScheduler() {
   if( !scheduler_started ) {
     hdStartScheduler();
-    HLThread::getInstance()->setActive( true );
-    scheduler_started = true;
+    HDErrorInfo err = hdGetError();
+    if( HD_DEVICE_ERROR( err ) ) {
+      std::cerr << "Error starting haptics scheduler: " << hdGetErrorString( err.errorCode ) << std::endl;
+    } else {
+      HLThread::getInstance()->setActive( true );
+      scheduler_started = true;
+    }
   }
 }
 

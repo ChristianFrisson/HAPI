@@ -58,16 +58,24 @@ namespace HAPI {
 
     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {
-      ErrorCode e = HAPIHapticsDevice::enableDevice();
-      if(hd.get() ) hd->enableDevice();
-      return e;
+      if( hd.get() ) {
+        ErrorCode e = hd->enableDevice();
+        device_state = hd->getDeviceState();
+        return e;
+      } else {
+        return ErrorCode::NOT_INITIALIZED;
+      }
     }
 
     /// Disable the device. 
     inline virtual ErrorCode disableDevice() {
-      ErrorCode e = HAPIHapticsDevice::disableDevice();
-      if(hd.get() ) hd->disableDevice();
-      return e;
+      if( hd.get() ) {
+        ErrorCode e = hd->disableDevice();
+        device_state = hd->getDeviceState();
+        return e;
+      } else {
+        return ErrorCode::NOT_INITIALIZED;
+      }
     }
 
     virtual void setErrorHandler( ErrorHandler *_error_handler ) {
