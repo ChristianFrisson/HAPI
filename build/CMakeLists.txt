@@ -13,7 +13,7 @@ set( CMAKE_MODULE_PATH "${HAPI_SOURCE_DIR}/localModules" "${HAPI_SOURCE_DIR}/mod
 include( H3DCommonFunctions )
 setCommonH3DCMakePolicies()
 setupRPathForLib()
-handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/../.. GENERATE_H3D_PACKAGE_PROJECT H3D_PREFER_STATIC_LIBRARIES )
+handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPI_SOURCE_DIR}/.. GENERATE_H3D_PACKAGE_PROJECT H3D_PREFER_STATIC_LIBRARIES )
 # include H3DUtil in the build
 if( ( WIN32 OR ( ${CMAKE_PROJECT_NAME} STREQUAL "HAPI" ) ) AND EXISTS "${HAPI_SOURCE_DIR}/../../H3DUtil/build" )
   message( STATUS "Including H3DUtil" )
