@@ -201,12 +201,7 @@ namespace HAPI {
       if( enable_start_scheduler ) {
         startScheduler();
       }
-      if( isSchedulerStarted() ) {
-        return e;
-      } else {
-        HAPIHapticsDevice::disableDevice();
-        return ErrorCode::NOT_ENABLED;
-      }
+      return e;
     }
 
     /// Returns true if the device is currently updating its calibration.
