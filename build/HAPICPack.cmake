@@ -404,8 +404,10 @@ if( GENERATE_H3D_PACKAGE_PROJECT )
                  ${HAPI_SOURCE_DIR}/modules/FindVirtuoseAPI.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindWxWidgetsWin.cmake
                  ${HAPI_SOURCE_DIR}/modules/FindwxWidgets.cmake
+				 ${HAPI_SOURCE_DIR}/H3DCommonFindModuleFunctions.cmake
                  ${HAPI_SOURCE_DIR}/modules/H3DCommonFunctions.cmake
                  ${HAPI_SOURCE_DIR}/modules/H3DExternalSearchPath.cmake
+				 ${HAPI_SOURCE_DIR}/modules/H3DUtilityFunctions.cmake
                  ${HAPI_SOURCE_DIR}/modules/InstallHAPIAndExternals.cmake
                  ${HAPI_SOURCE_DIR}/modules/StripAndAddLibraryDirectories.cmake
                  ${HAPI_SOURCE_DIR}/modules/TestIfVCExpress.cmake
