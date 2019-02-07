@@ -63,7 +63,7 @@ namespace HAPI {
         device_state = hd->getDeviceState();
         return e;
       } else {
-        return ErrorCode::NOT_INITIALIZED;
+        return NOT_INITIALIZED;
       }
     }
 
@@ -74,7 +74,7 @@ namespace HAPI {
         device_state = hd->getDeviceState();
         return e;
       } else {
-        return ErrorCode::NOT_INITIALIZED;
+        return NOT_INITIALIZED;
       }
     }
 
