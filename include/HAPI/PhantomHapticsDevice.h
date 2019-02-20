@@ -194,14 +194,22 @@ namespace HAPI {
     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {
       ErrorCode e = HAPIHapticsDevice::enableDevice();
-      // Starting scheduler here instead of in initHapticsDevice since because
-      // of random crashes when using OpenHapticsRenderer. Apparantly HL API does
-      // not like the scheduler to have already been started when creating a new
-      // HL context.
-      if( enable_start_scheduler ) {
-        startScheduler();
+      if( e != ErrorCode::SUCCESS ) {
+        return e;
+      } else {
+        // Starting scheduler here instead of in initHapticsDevice since because
+        // of random crashes when using OpenHapticsRenderer. Apparantly HL API does
+        // not like the scheduler to have already been started when creating a new
+        // HL context.
+        if( enable_start_scheduler ) {
+          startScheduler();
+          if( !scheduler_started ) {
+            device_state = DeviceState::INITIALIZED;
+            return ErrorCode::NOT_ENABLED;
+          }
+        }
+        return SUCCESS;
       }
-      return e;
     }
 
     /// Returns true if the device is currently updating its calibration.
