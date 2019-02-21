@@ -194,7 +194,7 @@ namespace HAPI {
     /// Enable the device. Positions can be read and force can be sent.
     inline virtual ErrorCode enableDevice() {
       ErrorCode e = HAPIHapticsDevice::enableDevice();
-      if( e != ErrorCode::SUCCESS ) {
+      if( e != SUCCESS ) {
         return e;
       } else {
         // Starting scheduler here instead of in initHapticsDevice since because
@@ -204,8 +204,8 @@ namespace HAPI {
         if( enable_start_scheduler ) {
           startScheduler();
           if( !scheduler_started ) {
-            device_state = DeviceState::INITIALIZED;
-            return ErrorCode::NOT_ENABLED;
+            device_state = INITIALIZED;
+            return NOT_ENABLED;
           }
         }
         return SUCCESS;
