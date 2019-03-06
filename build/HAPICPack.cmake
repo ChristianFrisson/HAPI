@@ -165,16 +165,18 @@ if( GENERATE_H3D_PACKAGE_PROJECT )
     if( EXISTS ${H3D_EXTERNAL_ROOT} )
       set( external_includes ${H3D_EXTERNAL_ROOT}/include/GL/
                              ${H3D_EXTERNAL_ROOT}/include/DHD-API/
-                             ${H3D_EXTERNAL_ROOT}/include/chai3d/
                              ${H3D_EXTERNAL_ROOT}/include/Simball/
                              ${H3D_EXTERNAL_ROOT}/include/wx/
                              ${H3D_EXTERNAL_ROOT}/include/fparser/ )
       set( external_include_install_paths External/include/GL
                                           External/include/DHD-API
-                                          External/include/chai3d
                                           External/include/Simball
                                           External/include/wx
                                           External/include/fparser )
+      if( EXISTS ${H3D_EXTERNAL_ROOT}/include/chai3d/ )
+        set( external_includes ${external_includes} ${H3D_EXTERNAL_ROOT}/include/chai3d/ )
+        set( external_include_install_paths ${external_include_install_paths} External/include/chai3d )
+      endif()
       set( external_include_ignore_pattern "((/.svn)|(/CVS))|(/old)"
                                            "(/.svn)|(/CVS)"
                                            "(/.svn)|(/CVS)"

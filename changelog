@@ -8,12 +8,12 @@ Changes for version 1.4.0:
 - Improved DeviceLog and PlaybackHapticsDevice in many ways.
 - Fixes to compile for visual studio 2015 and 2017.
 - Fixed many compile warnings.
-- HLThread updates to fix potential cryptic OpenHaptics crashes.
+- HLThread updates to fix potential OpenHaptics crashes.
 - std namespace is not included into global namespace in HAPI anymore
 - Added possibility for user to make force effect instance
   creation/destruction thread safe.
 - Added functions to ForceDimensionDevice to enable/disable force as
-  well as setting vibration and getting gripper angle.
+  well as setting vibration.
 - Fixes to OpenHapticsRenderer matrix push/pop.
 - Corrections to correctly handle rotation for different devices from
   ForceDimension.
@@ -34,6 +34,9 @@ Changes for version 1.4.0:
   ForceDimensionDevice. Or to simply disable it and do communication
   directly in the haptics thread.
 - It is now possible to check if a phantom device is in the inkwell.
+- Added dof7_angle and dof7_force to HAPIHapticsDevice. For
+  ForceDimensionDevice this would correspond to a gripper for those
+  devices that have this.
 
 New classes:
 - ClutchedHapticsDevice

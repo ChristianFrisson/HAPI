@@ -108,7 +108,7 @@ set( HAPI_SOURCE_FILES "AnyHapticsDevice.cpp"
                "RuspiniRenderer.cpp"
                "SimballHapticsDevice.cpp" )
 
-if( OpenHaptics_FOUND )
+if( OpenHaptics_FOUND OR GENERATE_H3D_PACKAGE_PROJECT )
   set( OH_HEADERS "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include/HAPI/Config.h"
                   "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include/HAPI/HLCustomObject.h"
                   "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/include/HAPI/HLDepthBufferShape.h"
@@ -121,7 +121,7 @@ if( OpenHaptics_FOUND )
                "${HAPI_SOURCE_DIR}/../OpenHapticsRenderer/src/OpenHapticsRenderer.cpp" )
 endif()
 
-if( Chai3D_FOUND )
+if( Chai3D_FOUND OR GENERATE_H3D_PACKAGE_PROJECT )
   set( CHAI_HEADERS "${HAPI_SOURCE_DIR}/../Chai3DRenderer/include/HAPI/Chai3DRenderer.h"
                     "${HAPI_SOURCE_DIR}/../Chai3DRenderer/include/HAPI/Chai3DRendererConfig.h" )
 
