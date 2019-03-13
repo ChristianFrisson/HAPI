@@ -236,15 +236,19 @@ void HapticTexturesSurface::setParameterMaxValue( HAPIFloat value,
   switch( param ) {
     case STIFFNESS: {
       max_stiffness_value = value;
+      break;
     }
     case DAMPING: {
       max_damping_value = value;
+      break;
     }
     case STATIC_FRICTION: {
       max_static_friction_value = value;
+      break;
     }
     case DYNAMIC_FRICTION: {
       max_dynamic_friction_value = value;
+      break;
     }
     default: {}
   }
@@ -273,15 +277,19 @@ void HapticTexturesSurface::setParameterMinValue( HAPIFloat value,
   switch( param ) {
     case STIFFNESS: {
       min_stiffness_value = value;
+      break;
     }
     case DAMPING: {
       min_damping_value = value;
+      break;
     }
     case STATIC_FRICTION: {
       min_static_friction_value = value;
+      break;
     }
     case DYNAMIC_FRICTION: {
       min_dynamic_friction_value = value;
+      break;
     }
     default: {}
   }
