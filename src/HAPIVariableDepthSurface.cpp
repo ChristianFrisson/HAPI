@@ -49,7 +49,8 @@ HAPIVariableDepthSurface::HAPIVariableDepthSurface(
   func( _func ),
   minimization_epsilon( _minimization_epsilon ),
   max_iterations( _max_iterations ),
-  depth_invert( false ) {
+  depth_invert( false ),
+  this_contact_info( NULL ) {
 }
 
 void HAPIVariableDepthSurface::getProxyMovement( ContactInfo &contact ) {

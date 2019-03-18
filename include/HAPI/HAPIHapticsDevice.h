@@ -76,7 +76,9 @@ namespace HAPI {
                        /// use getLastErrorMsg() to get info about the error.
     } ErrorCode;
 
+#ifdef HAVE_PROFILER
     std::string profiled_result_haptic[2];
+#endif
 
     /// \struct DeviceValues
     /// \brief Struct for holding a snapshot of current values of different
@@ -1301,7 +1303,13 @@ namespace HAPI {
     struct HAPI_API PhaseInOut {
     public:
       // Default Constructor
-      PhaseInOut(){};
+      PhaseInOut() : 
+        duration( 0 ),
+        start_time( 0 ),
+        phase_in( false ),
+        max_fraction( false ),
+        set_max_fraction( 0 )
+      {}
 
       // Constructor.
       PhaseInOut( HAPITime _duration,

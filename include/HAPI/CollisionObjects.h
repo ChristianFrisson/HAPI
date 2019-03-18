@@ -733,7 +733,13 @@ namespace HAPI {
       } CylinderPart;
 
       /// Default constructor.
-      Cylinder() {}
+      Cylinder() :
+        height( 0 ),
+        radius( 0 ),
+        start_cap( true ),
+        end_cap( true )
+      {
+      }
 
       /// Constructor.
       /// \param _radius The cylinder radius.

@@ -31,7 +31,14 @@
 using namespace HAPI;
 
 ImageInterfaceObject::ImageInterfaceObject( H3DUtil::Image * _image_object ) :
-  image_object( _image_object ) {
+  image_object( _image_object ),
+  isUnsignedLuminance( false ),
+  image_data( NULL ),
+  byte_rem( 0 ),
+  bytes_per_pixel( 0 ),
+  width( 0 ),
+  height( 0 ),
+  depth( 0 ) {
   image_lock = 0;
   if( image_object.get() ) {
     image_data = (unsigned char *) image_object->getImageData();
@@ -50,7 +57,14 @@ ImageInterfaceObject::ImageInterfaceObject( H3DUtil::Image * _image_object ) :
 
 ImageInterfaceObject::ImageInterfaceObject( H3DUtil::Image * _image_object,
                                            H3DUtil::MutexLock *_image_lock ) :
-  image_object( _image_object ) {
+  image_object( _image_object ),
+  isUnsignedLuminance( false ),
+  image_data( NULL ),
+  byte_rem( 0 ),
+  bytes_per_pixel( 0 ),
+  width( 0 ),
+  height( 0 ),
+  depth( 0 ) {
   image_lock = _image_lock;
   if( image_object.get() ) {
     image_data = (unsigned char *) image_object->getImageData();

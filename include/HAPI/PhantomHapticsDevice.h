@@ -59,7 +59,10 @@ namespace HAPI {
       device_firmware_version( 0.0 ),
       device_handle( -1 ),
       input_dof( -1 ),
-      output_dof( -1 ) {
+      output_dof( -1 ),
+      max_force( -1 ),
+      max_cont_force( -1 ),
+      tabletop_offset( 0 ) {
       hdapi_version = "NOT INITIALIZED YET";
       setup_haptic_rendering_callback = false;
     }

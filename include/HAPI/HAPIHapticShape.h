@@ -227,7 +227,8 @@ namespace HAPI {
       growth_rate( _growth_rate ),
       forced_dynamic( false ),
       first_use_time( -1 ),
-      clean_up_func( _clean_up_func ) {
+      clean_up_func( _clean_up_func ),
+      non_uniform_scaling( false ) {
         scale_factor = Vec3( 1.0, 1.0, 1.0 );
     }
 

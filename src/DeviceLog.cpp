@@ -36,7 +36,7 @@ using namespace HAPI;
 DeviceLog::DeviceLog( const std::string &_log_file, 
                       const DeviceLog::LogTypeVector &_log_type,
                       int _freq, bool _binary, bool _use_ref_count_lock ) :
-  HAPIForceEffect( _use_ref_count_lock ), log_type( _log_type ), binary( _binary ) {
+  HAPIForceEffect( _use_ref_count_lock ), log_type( _log_type ), binary( _binary ), start_time( 0 ) {
 
   std::ios_base::openmode mode = std::ios::out | std::ios::trunc;
   if( binary )

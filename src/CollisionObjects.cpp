@@ -427,7 +427,7 @@ bool AABoxBound::insideBound( const Vec3 &p ) {
            p.z >= min.z );
 }
 
-SphereBound::SphereBound() {
+SphereBound::SphereBound() : radius( 0 ) {
 #ifdef HAVE_OPENGL
   CollisionInternals::increaseSphereCounter();
 #endif
