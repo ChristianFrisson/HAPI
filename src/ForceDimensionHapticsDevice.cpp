@@ -102,6 +102,8 @@ namespace ForceDimensionHapticsDeviceInternal {
     dhdGetLinearVelocity( &vz, &vx, &vy, device_id );
     if( gripper_support ) {
       dhdGetGripperAngleRad( &dof7_angle, device_id );
+    } else {
+      dof7_angle = 0;
     }
 #ifdef DHD_DEVICE_SIGMA331 // This ifdef is used as a replacement for the lack of version define for the dhd headers.
     dhdGetAngularVelocityRad( &avz, &avx, &avy, device_id );
@@ -121,6 +123,8 @@ namespace ForceDimensionHapticsDeviceInternal {
 #endif
 #ifdef HAVE_DRDAPI
     _is_autocalibrated = drdIsInitialized( device_id );
+#else
+    _is_autocalibrated = true;
 #endif
     
 
