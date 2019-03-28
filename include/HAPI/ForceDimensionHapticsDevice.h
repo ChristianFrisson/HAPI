@@ -46,7 +46,7 @@ namespace HAPI {
   class HAPI_API ForceDimensionHapticsDevice: public HAPIHapticsDevice {
   public:
     /// Constructor.
-    ForceDimensionHapticsDevice();
+    ForceDimensionHapticsDevice( int _device_type = -1, bool _flip_7dof_values = false );
 
     /// Destructor.
     virtual ~ForceDimensionHapticsDevice() {}
@@ -184,6 +184,15 @@ namespace HAPI {
     HAPIInt32 com_thread_frequency;
     bool auto_calibration_mode;
     bool has_gripper_support;
+    bool flip_7dof_values; // If set then the 7dof force output and angle input will be flipped.
+    int device_type;
+    Vec3 release_position;
+    bool release_position_set;
+
+  public:
+    /// If this function is called and HAPI was compiled with DRD support then
+    /// when the device is released the device will be moved to the given position.
+    void setReleasePosition( const Vec3 &_release_position );
   };
 }
 
