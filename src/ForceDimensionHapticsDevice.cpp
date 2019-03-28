@@ -213,13 +213,6 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
   has_gripper_support = true;
 #endif
 
-  if( com_thread_frequency > 0 ) {
-    com_thread = 
-      new H3DUtil::PeriodicThread( H3DUtil::ThreadBase::HIGH_PRIORITY, com_thread_frequency );
-    com_thread->setThreadName( "DHD com thread" );
-    com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
-  }
-
 #ifdef DHD_DEVICE_SIGMA331 // This ifdef is used as a replacement for the lack of version define for the dhd headers.
   int device_type = getDeviceType();
   if( device_type >= DHD_DEVICE_SIGMA331 && device_type <= DHD_DEVICE_SIGMA331 + 5 ) {
@@ -236,6 +229,13 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
 #ifdef DHD_DEVICE_SIGMA331 // This ifdef is used as a replacement for the lack of version define for the dhd headers.
   }
 #endif
+
+  if( com_thread_frequency > 0 ) {
+    com_thread = 
+      new H3DUtil::PeriodicThread( H3DUtil::ThreadBase::HIGH_PRIORITY, com_thread_frequency );
+    com_thread->setThreadName( "DHD com thread" );
+    com_func_cb_handle = com_thread->asynchronousCallback( com_func, this );
+  }
 
   return true;
 }
