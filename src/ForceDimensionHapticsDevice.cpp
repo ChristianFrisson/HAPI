@@ -221,6 +221,7 @@ bool ForceDimensionHapticsDevice::initHapticsDevice( int _thread_frequency ) {
       break;
     } else {
       device_ids_to_close.push_back( device_id );
+      device_id = -1;
     }
   }
   
