@@ -14,9 +14,6 @@
 #ifndef __H3D_HAPI_STDAFX__
 #define __H3D_HAPI_STDAFX__
 
-#include <GL/glew.h>
-#include <GL/gl.h> //3
-#include <GL/glu.h> //2
 #include <Windows.h>
 
 #include <H3DUtil/LinAlgTypes.h>
