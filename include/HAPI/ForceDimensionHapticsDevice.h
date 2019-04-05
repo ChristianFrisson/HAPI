@@ -184,7 +184,9 @@ namespace HAPI {
     HAPIInt32 com_thread_frequency;
     bool auto_calibration_mode;
     bool has_gripper_support;
-    bool flip_7dof_values; // If set then the 7dof force output and angle input will be flipped.
+    // If set then the 7dof force will be negated before being applied.
+    // The 7dof angle will also be negated before being used anywhere.
+    bool flip_7dof_values;
     int device_type;
     Vec3 release_position;
     bool release_position_set;
