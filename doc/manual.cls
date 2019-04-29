@@ -47,7 +47,7 @@
   \begin{picture}(150,150)(0,0)
     \put(0,75){\textcolor{sensegraphicscolor}{\Huge\bf\scshape HAPI Manual}}
     \put(0,70){\textcolor{sensegraphicscolor}{\rule{185mm}{3mm}}}
-    \put(1,65){\textcolor{sensegraphicscolor}{\large\bf\ For version 1.3.1}}
+    \put(1,65){\textcolor{sensegraphicscolor}{\large\bf\ For version 1.4.1}}
   \end{picture}\newpage}
 
 \renewcommand{\@makechapterhead}[1]{%
