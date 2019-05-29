@@ -185,11 +185,12 @@ if( GENERATE_H3D_PACKAGE_PROJECT )
                                            "(/.svn)|(/CVS)" )
 
       set( external_include_files ${H3D_EXTERNAL_ROOT}/include/VirtuoseAPI.h
-                                   ${H3D_EXTERNAL_ROOT}/include/EntactAPI.h )
+                                  ${H3D_EXTERNAL_ROOT}/include/EntactAPI.h )
 
       set( external_libraries ${H3D_EXTERNAL_ROOT}/lib32/freeglut.lib
                               ${H3D_EXTERNAL_ROOT}/lib32/virtuoseDLL.lib
                               ${H3D_EXTERNAL_ROOT}/lib32/EntactAPI.lib
+                              ${H3D_EXTERNAL_ROOT}/lib32/EntactAPI_d.lib
                               ${H3D_EXTERNAL_ROOT}/lib32/SimballMedicalHID.lib
                               ${H3D_EXTERNAL_ROOT}/lib32/dhdms64.lib
                               ${H3D_EXTERNAL_ROOT}/lib32/dhdms.lib
