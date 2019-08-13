@@ -162,6 +162,14 @@ void DeviceLog::writeLogRow ( const EffectInput &input, HAPITime log_time ) {
           H3DUtil::writeH3DType( log_file, TimeStamp() );
           break;
         }
+        case DOF7_ANGLE: {
+          H3DUtil::writeH3DType( log_file, cdv.dof7_angle );
+          break;
+        }
+        case DOF7_FORCE: {
+          H3DUtil::writeH3DType( log_file, cdv.dof7_force );
+          break;
+        }
         default: {}
       }
     }
@@ -221,6 +229,14 @@ void DeviceLog::writeLogRow ( const EffectInput &input, HAPITime log_time ) {
         }
         case TIMESTAMP: {
           log_file << TimeStamp();
+          break;
+        }
+        case DOF7_ANGLE: {
+          log_file << cdv.dof7_angle;
+          break;
+        }
+        case DOF7_FORCE: {
+          log_file << cdv.dof7_force;
           break;
         }
         default: {}
@@ -286,6 +302,14 @@ void DeviceLog::writeHeaderRow ( const EffectInput & /*input*/ ) {
           H3DUtil::writeH3DType( log_file, "TIMESTAMP" );
           break;
         }
+        case DOF7_ANGLE: {
+          H3DUtil::writeH3DType( log_file, "DOF7_ANGLE" );
+          break;
+        }
+        case DOF7_FORCE: {
+          H3DUtil::writeH3DType( log_file, "DOF7_FORCE" );
+          break;
+        }
         default: {}
       }
     }
@@ -347,6 +371,14 @@ void DeviceLog::writeHeaderRow ( const EffectInput & /*input*/ ) {
         }
         case TIMESTAMP: {
           log_file << "TIMESTAMP";
+          break;
+        }
+        case DOF7_ANGLE: {
+          log_file << "DOF7_ANGLE";
+          break;
+        }
+        case DOF7_FORCE: {
+          log_file << "DOF7_FORCE";
           break;
         }
         default: {}

@@ -135,7 +135,9 @@ namespace HAPI {
       RAW_VELOCITY = 9,
       RAW_FORCE = 10,
       RAW_TORQUE = 11,
-      TIMESTAMP = 12
+      TIMESTAMP = 12,
+      DOF7_ANGLE = 13,
+      DOF7_FORCE = 14
     } LogType;
 
     typedef std::vector< LogType > LogTypeVector;
