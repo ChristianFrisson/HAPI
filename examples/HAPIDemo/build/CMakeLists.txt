@@ -11,6 +11,7 @@ set( CMAKE_MODULE_PATH "${HAPIDemo_SOURCE_DIR}/../../../build/modules" )
 include( H3DCommonFunctions )
 handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${HAPIDemo_SOURCE_DIR}/../.. )
 setupRPathForLib()
+enableCpp11( FAIL_MESSAGE "Enabling C++11 support. This compiler lacks such support." )
 
 # Create a library called "Hello" which include sourcefiles.
 # The extension is already found.  Any number of sources could be listed here.
@@ -65,7 +66,7 @@ if( MSVC )
   set_target_properties( HAPIDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
 endif()
 
-addCommonH3DCompileFlags( HAPIDemo_COMPILE_FLAGS )
+addCommonH3DCompileFlags( HAPIDemo_COMPILE_FLAGS TRUE )
 
 set_target_properties( HAPIDemo PROPERTIES COMPILE_FLAGS "${HAPIDemo_COMPILE_FLAGS}" )
 

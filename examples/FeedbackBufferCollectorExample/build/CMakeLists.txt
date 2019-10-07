@@ -12,6 +12,7 @@ include( H3DCommonFunctions )
 handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${FeedbackBufferCollector_SOURCE_DIR}/../.. )
 
 setupRPathForLib()
+enableCpp11( FAIL_MESSAGE "Enabling C++11 support. This compiler lacks such support." )
 
 # Create a library called "FeedbackBufferCollector" which includes the source files.
 # The extension is already found.  Any number of sources could be listed here.
@@ -59,7 +60,7 @@ target_link_libraries( FeedbackBufferCollector ${required_libs} )
 
 set( FeedbackBufferCollector_COMPILE_FLAGS )
 
-addCommonH3DCompileFlags( FeedbackBufferCollector_COMPILE_FLAGS )
+addCommonH3DCompileFlags( FeedbackBufferCollector_COMPILE_FLAGS TRUE )
 
 set_target_properties( FeedbackBufferCollector PROPERTIES COMPILE_FLAGS "${FeedbackBufferCollector_COMPILE_FLAGS}" )
 

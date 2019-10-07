@@ -11,6 +11,7 @@ set( CMAKE_MODULE_PATH "${SurfaceExample_SOURCE_DIR}/../../../build/modules" )
 include( H3DCommonFunctions )
 handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${SurfaceExample_SOURCE_DIR}/../.. )
 setupRPathForLib()
+enableCpp11( FAIL_MESSAGE "Enabling C++11 support. This compiler lacks such support." )
 
 # Create a library called "SurfaceExample" which includes the source file "SurfaceExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
@@ -35,7 +36,7 @@ set_target_properties( SurfaceExample PROPERTIES DEBUG_POSTFIX "_d" )
 
 set( SurfaceExample_COMPILE_FLAGS )
 
-addCommonH3DCompileFlags( SurfaceExample_COMPILE_FLAGS )
+addCommonH3DCompileFlags( SurfaceExample_COMPILE_FLAGS TRUE )
 
 set_target_properties( SurfaceExample PROPERTIES COMPILE_FLAGS "${SurfaceExample_COMPILE_FLAGS}" )
 

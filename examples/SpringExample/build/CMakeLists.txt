@@ -11,6 +11,7 @@ set( CMAKE_MODULE_PATH "${SpringExample_SOURCE_DIR}/../../../build/modules" )
 include( H3DCommonFunctions )
 handleCommonCacheVar( CMAKE_INSTALL_PREFIX ${SpringExample_SOURCE_DIR}/../.. )
 setupRPathForLib()
+enableCpp11( FAIL_MESSAGE "Enabling C++11 support. This compiler lacks such support." )
 
 # Create a library called "SpringExample" which includes the source file "SpringExample.cpp".
 # The extension is already found.  Any number of sources could be listed here.
@@ -35,7 +36,7 @@ set_target_properties( SpringExample PROPERTIES DEBUG_POSTFIX "_d" )
 
 set( SpringExample_COMPILE_FLAGS )
 
-addCommonH3DCompileFlags( SpringExample_COMPILE_FLAGS )
+addCommonH3DCompileFlags( SpringExample_COMPILE_FLAGS TRUE )
 
 set_target_properties( SpringExample PROPERTIES COMPILE_FLAGS "${SpringExample_COMPILE_FLAGS}" )
 
